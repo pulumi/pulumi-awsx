@@ -201,6 +201,15 @@ func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestHttpApi(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: filepath.Join(getCwd(t), "ts-http-api"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
 	nodeBase := base.With(integration.ProgramTestOptions{

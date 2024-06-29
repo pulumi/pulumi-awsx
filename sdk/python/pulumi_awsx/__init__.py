@@ -9,6 +9,8 @@ from .provider import *
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
+    import pulumi_awsx.apigatewayv2 as __apigatewayv2
+    apigatewayv2 = __apigatewayv2
     import pulumi_awsx.awsx as __awsx
     awsx = __awsx
     import pulumi_awsx.cloudtrail as __cloudtrail
@@ -22,6 +24,7 @@ if typing.TYPE_CHECKING:
     import pulumi_awsx.lb as __lb
     lb = __lb
 else:
+    apigatewayv2 = _utilities.lazy_import('pulumi_awsx.apigatewayv2')
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     ec2 = _utilities.lazy_import('pulumi_awsx.ec2')
@@ -32,6 +35,14 @@ else:
 _utilities.register(
     resource_modules="""
 [
+ {
+  "pkg": "awsx",
+  "mod": "apigatewayv2",
+  "fqn": "pulumi_awsx.apigatewayv2",
+  "classes": {
+   "awsx:apigatewayv2:HttpApi": "HttpApi"
+  }
+ },
  {
   "pkg": "awsx",
   "mod": "cloudtrail",

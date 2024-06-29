@@ -13,6 +13,8 @@
         "strict": true
     },
     "files": [
+        "apigatewayv2/httpApi.ts",
+        "apigatewayv2/index.ts",
         "classic/acmpca/index.ts",
         "classic/acmpca/metrics.ts",
         "classic/apigateway/api.ts",

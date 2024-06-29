@@ -9,6 +9,9 @@ import * as enums from "../types/enums";
 import * as pulumiAws from "@pulumi/aws";
 import * as utilities from "../utilities";
 
+export namespace apigatewayv2 {
+}
+
 export namespace awsx {
 }
 

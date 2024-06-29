@@ -6,6 +6,7 @@
 import * as pulumi from "@pulumi/pulumi";
 export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
 export type ResourceConstructor = {
+    readonly "awsx:apigatewayv2:HttpApi": ConstructComponent<HttpApi>;
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
     readonly "awsx:ec2:DefaultVpc": ConstructComponent<DefaultVpc>;
     readonly "awsx:ec2:Vpc": ConstructComponent<Vpc>;
@@ -24,6 +25,36 @@ export type Functions = {
 };
 import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
+export abstract class HttpApi<TData = any> extends (pulumi.ComponentResource)<TData> {
+    public api!: aws.apigatewayv2.Api | pulumi.Output<aws.apigatewayv2.Api>;
+    public apiMappings?: aws.apigatewayv2.ApiMapping[] | pulumi.Output<aws.apigatewayv2.ApiMapping[]>;
+    public authorizers!: aws.apigatewayv2.Authorizer[] | pulumi.Output<aws.apigatewayv2.Authorizer[]>;
+    public deployment!: aws.apigatewayv2.Deployment | pulumi.Output<aws.apigatewayv2.Deployment>;
+    public domainNames!: aws.apigatewayv2.DomainName[] | pulumi.Output<aws.apigatewayv2.DomainName[]>;
+    public integrations!: aws.apigatewayv2.Integration[] | pulumi.Output<aws.apigatewayv2.Integration[]>;
+    public routes!: aws.apigatewayv2.Route[] | pulumi.Output<aws.apigatewayv2.Route[]>;
+    public stages!: aws.apigatewayv2.Stage[] | pulumi.Output<aws.apigatewayv2.Stage[]>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:apigatewayv2:HttpApi", name, opts.urn ? { api: undefined, apiMappings: undefined, authorizers: undefined, deployment: undefined, domainNames: undefined, integrations: undefined, routes: undefined, stages: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface HttpApiArgs {
+    readonly apiKeySelectionExpression?: pulumi.Input<string>;
+    readonly authorizers?: Record<string, pulumi.Input<HttpAuthorizerInputs>>;
+    readonly body?: pulumi.Input<string>;
+    readonly corsConfiguration?: pulumi.Input<aws.types.input.apigatewayv2.ApiCorsConfiguration>;
+    readonly description?: pulumi.Input<string>;
+    readonly disableExecuteApiEndpoint?: pulumi.Input<boolean>;
+    readonly domainMappings?: Record<string, pulumi.Input<DomainMappingInputs>>;
+    readonly failOnWarnings?: pulumi.Input<boolean>;
+    readonly integrations?: Record<string, pulumi.Input<HttpIntegrationInputs>>;
+    readonly name?: pulumi.Input<string>;
+    readonly routeSelectionExpression?: pulumi.Input<string>;
+    readonly routes: Record<string, pulumi.Input<HttpRouteInputs>>;
+    readonly stages?: Record<string, pulumi.Input<HttpStageInputs>>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly version?: pulumi.Input<string>;
+}
 export abstract class Trail<TData = any> extends (pulumi.ComponentResource)<TData> {
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
@@ -367,6 +398,130 @@ export interface TargetGroupAttachmentArgs {
     readonly lambdaArn?: pulumi.Input<string>;
     readonly targetGroup?: pulumi.Input<aws.lb.TargetGroup>;
     readonly targetGroupArn?: pulumi.Input<string>;
+}
+export interface DomainMappingInputs {
+    readonly apiMappingKey?: pulumi.Input<string>;
+    readonly domainId?: pulumi.Input<string>;
+    readonly domainName?: DomainNameInputs;
+    readonly stage: pulumi.Input<string>;
+}
+export interface DomainMappingOutputs {
+    readonly apiMappingKey?: pulumi.Output<string>;
+    readonly domainId?: pulumi.Output<string>;
+    readonly domainName?: DomainNameOutputs;
+    readonly stage: pulumi.Output<string>;
+}
+export interface DomainNameInputs {
+    readonly domainNameConfiguration: pulumi.Input<aws.types.input.apigatewayv2.DomainNameDomainNameConfiguration>;
+    readonly mutualTlsAuthentication?: pulumi.Input<aws.types.input.apigatewayv2.DomainNameMutualTlsAuthentication>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface DomainNameOutputs {
+    readonly domainNameConfiguration: pulumi.Output<aws.types.output.apigatewayv2.DomainNameDomainNameConfiguration>;
+    readonly mutualTlsAuthentication?: pulumi.Output<aws.types.output.apigatewayv2.DomainNameMutualTlsAuthentication>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
+}
+export interface HttpAuthorizerInputs {
+    readonly authorizerCredentialsArn?: pulumi.Input<string>;
+    readonly authorizerPayloadFormatVersion?: pulumi.Input<string>;
+    readonly authorizerResultTtlInSeconds?: pulumi.Input<number>;
+    readonly authorizerType: pulumi.Input<string>;
+    readonly authorizerUri?: pulumi.Input<string>;
+    readonly enableSimpleResponses?: pulumi.Input<boolean>;
+    readonly identitySources?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly jwtConfiguration?: pulumi.Input<aws.types.input.apigatewayv2.AuthorizerJwtConfiguration>;
+    readonly name?: pulumi.Input<string>;
+}
+export interface HttpAuthorizerOutputs {
+    readonly authorizerCredentialsArn?: pulumi.Output<string>;
+    readonly authorizerPayloadFormatVersion?: pulumi.Output<string>;
+    readonly authorizerResultTtlInSeconds?: pulumi.Output<number>;
+    readonly authorizerType: pulumi.Output<string>;
+    readonly authorizerUri?: pulumi.Output<string>;
+    readonly enableSimpleResponses?: pulumi.Output<boolean>;
+    readonly identitySources?: pulumi.Output<string[]>;
+    readonly jwtConfiguration?: pulumi.Output<aws.types.output.apigatewayv2.AuthorizerJwtConfiguration>;
+    readonly name?: pulumi.Output<string>;
+}
+export interface HttpIntegrationInputs {
+    readonly connectionId?: pulumi.Input<string>;
+    readonly connectionType?: pulumi.Input<string>;
+    readonly credentialsArn?: pulumi.Input<string>;
+    readonly description?: pulumi.Input<string>;
+    readonly integrationMethod?: pulumi.Input<string>;
+    readonly integrationSubtype?: pulumi.Input<string>;
+    readonly integrationType?: pulumi.Input<string>;
+    readonly integrationUri?: pulumi.Input<string>;
+    readonly lambdaArn?: pulumi.Input<string>;
+    readonly payloadFormatVersion?: pulumi.Input<string>;
+    readonly requestParameters?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly responseParameters?: pulumi.Input<pulumi.Input<aws.types.input.apigatewayv2.IntegrationResponseParameter>[]>;
+    readonly timeoutMilliseconds?: pulumi.Input<number>;
+    readonly tlsConfig?: pulumi.Input<aws.types.input.apigatewayv2.IntegrationTlsConfig>;
+}
+export interface HttpIntegrationOutputs {
+    readonly connectionId?: pulumi.Output<string>;
+    readonly connectionType?: pulumi.Output<string>;
+    readonly credentialsArn?: pulumi.Output<string>;
+    readonly description?: pulumi.Output<string>;
+    readonly integrationMethod?: pulumi.Output<string>;
+    readonly integrationSubtype?: pulumi.Output<string>;
+    readonly integrationType?: pulumi.Output<string>;
+    readonly integrationUri?: pulumi.Output<string>;
+    readonly lambdaArn?: pulumi.Output<string>;
+    readonly payloadFormatVersion?: pulumi.Output<string>;
+    readonly requestParameters?: pulumi.Output<Record<string, string>>;
+    readonly responseParameters?: pulumi.Output<aws.types.output.apigatewayv2.IntegrationResponseParameter[]>;
+    readonly timeoutMilliseconds?: pulumi.Output<number>;
+    readonly tlsConfig?: pulumi.Output<aws.types.output.apigatewayv2.IntegrationTlsConfig>;
+}
+export interface HttpRouteInputs {
+    readonly apiKeyRequired?: pulumi.Input<boolean>;
+    readonly authorizationScopes?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly authorizationType?: pulumi.Input<string>;
+    readonly authorizer?: HttpAuthorizerInputs;
+    readonly authorizerId?: pulumi.Input<string>;
+    readonly authorizerName?: pulumi.Input<string>;
+    readonly integration?: HttpIntegrationInputs;
+    readonly integrationName?: pulumi.Input<string>;
+    readonly operationName?: pulumi.Input<string>;
+    readonly target?: pulumi.Input<string>;
+}
+export interface HttpRouteOutputs {
+    readonly apiKeyRequired?: pulumi.Output<boolean>;
+    readonly authorizationScopes?: pulumi.Output<string[]>;
+    readonly authorizationType?: pulumi.Output<string>;
+    readonly authorizer?: HttpAuthorizerOutputs;
+    readonly authorizerId?: pulumi.Output<string>;
+    readonly authorizerName?: pulumi.Output<string>;
+    readonly integration?: HttpIntegrationOutputs;
+    readonly integrationName?: pulumi.Output<string>;
+    readonly operationName?: pulumi.Output<string>;
+    readonly target?: pulumi.Output<string>;
+}
+export interface HttpStageInputs {
+    readonly accessLogSettings?: pulumi.Input<aws.types.input.apigatewayv2.StageAccessLogSettings>;
+    readonly autoDeploy?: pulumi.Input<boolean>;
+    readonly clientCertificateId?: pulumi.Input<string>;
+    readonly defaultRouteSettings?: pulumi.Input<aws.types.input.apigatewayv2.StageDefaultRouteSettings>;
+    readonly deploymentId?: pulumi.Input<string>;
+    readonly description?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
+    readonly routeSettings?: pulumi.Input<pulumi.Input<aws.types.input.apigatewayv2.StageRouteSetting>[]>;
+    readonly stageVariables?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface HttpStageOutputs {
+    readonly accessLogSettings?: pulumi.Output<aws.types.output.apigatewayv2.StageAccessLogSettings>;
+    readonly autoDeploy?: pulumi.Output<boolean>;
+    readonly clientCertificateId?: pulumi.Output<string>;
+    readonly defaultRouteSettings?: pulumi.Output<aws.types.output.apigatewayv2.StageDefaultRouteSettings>;
+    readonly deploymentId?: pulumi.Output<string>;
+    readonly description?: pulumi.Output<string>;
+    readonly name?: pulumi.Output<string>;
+    readonly routeSettings?: pulumi.Output<aws.types.output.apigatewayv2.StageRouteSetting[]>;
+    readonly stageVariables?: pulumi.Output<Record<string, string>>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface BucketInputs {
     readonly accelerationStatus?: pulumi.Input<string>;

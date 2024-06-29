@@ -12,6 +12,7 @@ utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
 
 // Export sub-modules:
+import * as apigatewayv2 from "./apigatewayv2";
 import * as classic from "./classic";
 import * as cloudtrail from "./cloudtrail";
 import * as ec2 from "./ec2";
@@ -21,6 +22,7 @@ import * as lb from "./lb";
 import * as types from "./types";
 
 export {
+    apigatewayv2,
     classic,
     cloudtrail,
     ec2,

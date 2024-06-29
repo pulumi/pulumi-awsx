@@ -73,6 +73,281 @@
     },
     "config": {},
     "types": {
+        "awsx:apigatewayv2:DomainMapping": {
+            "description": "Manages an Amazon API Gateway Version 2 API mapping.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.ApiMapping(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    domainName: aws_apigatewayv2_domain_name.example.id,\n    stage: aws_apigatewayv2_stage.example.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.ApiMapping(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    domain_name=aws_apigatewayv2_domain_name[\"example\"][\"id\"],\n    stage=aws_apigatewayv2_stage[\"example\"][\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.ApiMapping(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        DomainName = aws_apigatewayv2_domain_name.Example.Id,\n        Stage = aws_apigatewayv2_stage.Example.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewApiMapping(ctx, \"example\", \u0026apigatewayv2.ApiMappingArgs{\n\t\t\tApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tDomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),\n\t\t\tStage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.ApiMapping;\nimport com.pulumi.aws.apigatewayv2.ApiMappingArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new ApiMapping(\"example\", ApiMappingArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .domainName(aws_apigatewayv2_domain_name.example().id())\n            .stage(aws_apigatewayv2_stage.example().id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:ApiMapping\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      domainName: ${aws_apigatewayv2_domain_name.example.id}\n      stage: ${aws_apigatewayv2_stage.example.id}\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com\n```\n ",
+            "properties": {
+                "apiMappingKey": {
+                    "type": "string",
+                    "description": "The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).\n"
+                },
+                "domainId": {
+                    "type": "string",
+                    "description": "Identifier of an existing domain. Cannot be specified together with `DomainName`."
+                },
+                "domainName": {
+                    "$ref": "#/types/awsx:apigatewayv2:DomainName",
+                    "plain": true,
+                    "description": "Configuration of the domain name to create. Cannot be specified together with `domainId`."
+                },
+                "stage": {
+                    "type": "string",
+                    "description": "API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "stage"
+            ]
+        },
+        "awsx:apigatewayv2:DomainName": {
+            "description": "Manages an Amazon API Gateway Version 2 domain name.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).\n\n\u003e **Note:** This resource establishes ownership of and the TLS settings for\na particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.DomainName(\"example\", {\n    domainName: \"ws-api.example.com\",\n    domainNameConfiguration: {\n        certificateArn: aws_acm_certificate.example.arn,\n        endpointType: \"REGIONAL\",\n        securityPolicy: \"TLS_1_2\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.DomainName(\"example\",\n    domain_name=\"ws-api.example.com\",\n    domain_name_configuration=aws.apigatewayv2.DomainNameDomainNameConfigurationArgs(\n        certificate_arn=aws_acm_certificate[\"example\"][\"arn\"],\n        endpoint_type=\"REGIONAL\",\n        security_policy=\"TLS_1_2\",\n    ))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.DomainName(\"example\", new()\n    {\n        Domain = \"ws-api.example.com\",\n        DomainNameConfiguration = new Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs\n        {\n            CertificateArn = aws_acm_certificate.Example.Arn,\n            EndpointType = \"REGIONAL\",\n            SecurityPolicy = \"TLS_1_2\",\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewDomainName(ctx, \"example\", \u0026apigatewayv2.DomainNameArgs{\n\t\t\tDomainName: pulumi.String(\"ws-api.example.com\"),\n\t\t\tDomainNameConfiguration: \u0026apigatewayv2.DomainNameDomainNameConfigurationArgs{\n\t\t\t\tCertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),\n\t\t\t\tEndpointType:   pulumi.String(\"REGIONAL\"),\n\t\t\t\tSecurityPolicy: pulumi.String(\"TLS_1_2\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.DomainName;\nimport com.pulumi.aws.apigatewayv2.DomainNameArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.DomainNameDomainNameConfigurationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new DomainName(\"example\", DomainNameArgs.builder()        \n            .domainName(\"ws-api.example.com\")\n            .domainNameConfiguration(DomainNameDomainNameConfigurationArgs.builder()\n                .certificateArn(aws_acm_certificate.example().arn())\n                .endpointType(\"REGIONAL\")\n                .securityPolicy(\"TLS_1_2\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:DomainName\n    properties:\n      domainName: ws-api.example.com\n      domainNameConfiguration:\n        certificateArn: ${aws_acm_certificate.example.arn}\n        endpointType: REGIONAL\n        securityPolicy: TLS_1_2\n```\n{{% /example %}}\n{{% example %}}\n### Associated Route 53 Resource Record\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst exampleDomainName = new aws.apigatewayv2.DomainName(\"exampleDomainName\", {\n    domainName: \"http-api.example.com\",\n    domainNameConfiguration: {\n        certificateArn: aws_acm_certificate.example.arn,\n        endpointType: \"REGIONAL\",\n        securityPolicy: \"TLS_1_2\",\n    },\n});\nconst exampleRecord = new aws.route53.Record(\"exampleRecord\", {\n    name: exampleDomainName.domainName,\n    type: \"A\",\n    zoneId: aws_route53_zone.example.zone_id,\n    aliases: [{\n        name: exampleDomainName.domainNameConfiguration.apply(domainNameConfiguration =\u003e domainNameConfiguration.targetDomainName),\n        zoneId: exampleDomainName.domainNameConfiguration.apply(domainNameConfiguration =\u003e domainNameConfiguration.hostedZoneId),\n        evaluateTargetHealth: false,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample_domain_name = aws.apigatewayv2.DomainName(\"exampleDomainName\",\n    domain_name=\"http-api.example.com\",\n    domain_name_configuration=aws.apigatewayv2.DomainNameDomainNameConfigurationArgs(\n        certificate_arn=aws_acm_certificate[\"example\"][\"arn\"],\n        endpoint_type=\"REGIONAL\",\n        security_policy=\"TLS_1_2\",\n    ))\nexample_record = aws.route53.Record(\"exampleRecord\",\n    name=example_domain_name.domain_name,\n    type=\"A\",\n    zone_id=aws_route53_zone[\"example\"][\"zone_id\"],\n    aliases=[aws.route53.RecordAliasArgs(\n        name=example_domain_name.domain_name_configuration.target_domain_name,\n        zone_id=example_domain_name.domain_name_configuration.hosted_zone_id,\n        evaluate_target_health=False,\n    )])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var exampleDomainName = new Aws.ApiGatewayV2.DomainName(\"exampleDomainName\", new()\n    {\n        Domain = \"http-api.example.com\",\n        DomainNameConfiguration = new Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs\n        {\n            CertificateArn = aws_acm_certificate.Example.Arn,\n            EndpointType = \"REGIONAL\",\n            SecurityPolicy = \"TLS_1_2\",\n        },\n    });\n\n    var exampleRecord = new Aws.Route53.Record(\"exampleRecord\", new()\n    {\n        Name = exampleDomainName.Domain,\n        Type = \"A\",\n        ZoneId = aws_route53_zone.Example.Zone_id,\n        Aliases = new[]\n        {\n            new Aws.Route53.Inputs.RecordAliasArgs\n            {\n                Name = exampleDomainName.DomainNameConfiguration.Apply(domainNameConfiguration =\u003e domainNameConfiguration.TargetDomainName),\n                ZoneId = exampleDomainName.DomainNameConfiguration.Apply(domainNameConfiguration =\u003e domainNameConfiguration.HostedZoneId),\n                EvaluateTargetHealth = false,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texampleDomainName, err := apigatewayv2.NewDomainName(ctx, \"exampleDomainName\", \u0026apigatewayv2.DomainNameArgs{\n\t\t\tDomainName: pulumi.String(\"http-api.example.com\"),\n\t\t\tDomainNameConfiguration: \u0026apigatewayv2.DomainNameDomainNameConfigurationArgs{\n\t\t\t\tCertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),\n\t\t\t\tEndpointType:   pulumi.String(\"REGIONAL\"),\n\t\t\t\tSecurityPolicy: pulumi.String(\"TLS_1_2\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = route53.NewRecord(ctx, \"exampleRecord\", \u0026route53.RecordArgs{\n\t\t\tName:   exampleDomainName.DomainName,\n\t\t\tType:   pulumi.String(\"A\"),\n\t\t\tZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),\n\t\t\tAliases: route53.RecordAliasArray{\n\t\t\t\t\u0026route53.RecordAliasArgs{\n\t\t\t\t\tName: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {\n\t\t\t\t\t\treturn \u0026domainNameConfiguration.TargetDomainName, nil\n\t\t\t\t\t}).(pulumi.StringPtrOutput),\n\t\t\t\t\tZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {\n\t\t\t\t\t\treturn \u0026domainNameConfiguration.HostedZoneId, nil\n\t\t\t\t\t}).(pulumi.StringPtrOutput),\n\t\t\t\t\tEvaluateTargetHealth: pulumi.Bool(false),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.DomainName;\nimport com.pulumi.aws.apigatewayv2.DomainNameArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.DomainNameDomainNameConfigurationArgs;\nimport com.pulumi.aws.route53.Record;\nimport com.pulumi.aws.route53.RecordArgs;\nimport com.pulumi.aws.route53.inputs.RecordAliasArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var exampleDomainName = new DomainName(\"exampleDomainName\", DomainNameArgs.builder()        \n            .domainName(\"http-api.example.com\")\n            .domainNameConfiguration(DomainNameDomainNameConfigurationArgs.builder()\n                .certificateArn(aws_acm_certificate.example().arn())\n                .endpointType(\"REGIONAL\")\n                .securityPolicy(\"TLS_1_2\")\n                .build())\n            .build());\n\n        var exampleRecord = new Record(\"exampleRecord\", RecordArgs.builder()        \n            .name(exampleDomainName.domainName())\n            .type(\"A\")\n            .zoneId(aws_route53_zone.example().zone_id())\n            .aliases(RecordAliasArgs.builder()\n                .name(exampleDomainName.domainNameConfiguration().applyValue(domainNameConfiguration -\u003e domainNameConfiguration.targetDomainName()))\n                .zoneId(exampleDomainName.domainNameConfiguration().applyValue(domainNameConfiguration -\u003e domainNameConfiguration.hostedZoneId()))\n                .evaluateTargetHealth(false)\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  exampleDomainName:\n    type: aws:apigatewayv2:DomainName\n    properties:\n      domainName: http-api.example.com\n      domainNameConfiguration:\n        certificateArn: ${aws_acm_certificate.example.arn}\n        endpointType: REGIONAL\n        securityPolicy: TLS_1_2\n  exampleRecord:\n    type: aws:route53:Record\n    properties:\n      name: ${exampleDomainName.domainName}\n      type: A\n      zoneId: ${aws_route53_zone.example.zone_id}\n      aliases:\n        - name: ${exampleDomainName.domainNameConfiguration.targetDomainName}\n          zoneId: ${exampleDomainName.domainNameConfiguration.hostedZoneId}\n          evaluateTargetHealth: false\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com\n```\n ",
+            "properties": {
+                "domainNameConfiguration": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/DomainNameDomainNameConfiguration:DomainNameDomainNameConfiguration",
+                    "description": "Domain name configuration. See below.\n"
+                },
+                "mutualTlsAuthentication": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/DomainNameMutualTlsAuthentication:DomainNameMutualTlsAuthentication",
+                    "description": "Mutual TLS authentication configuration for the domain name.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "domainNameConfiguration"
+            ]
+        },
+        "awsx:apigatewayv2:HttpAuthorizer": {
+            "description": "Manages an Amazon API Gateway Version 2 authorizer.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic WebSocket API\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Authorizer(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    authorizerType: \"REQUEST\",\n    authorizerUri: aws_lambda_function.example.invoke_arn,\n    identitySources: [\"route.request.header.Auth\"],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Authorizer(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    authorizer_type=\"REQUEST\",\n    authorizer_uri=aws_lambda_function[\"example\"][\"invoke_arn\"],\n    identity_sources=[\"route.request.header.Auth\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Authorizer(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        AuthorizerType = \"REQUEST\",\n        AuthorizerUri = aws_lambda_function.Example.Invoke_arn,\n        IdentitySources = new[]\n        {\n            \"route.request.header.Auth\",\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewAuthorizer(ctx, \"example\", \u0026apigatewayv2.AuthorizerArgs{\n\t\t\tApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tAuthorizerType: pulumi.String(\"REQUEST\"),\n\t\t\tAuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),\n\t\t\tIdentitySources: pulumi.StringArray{\n\t\t\t\tpulumi.String(\"route.request.header.Auth\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Authorizer;\nimport com.pulumi.aws.apigatewayv2.AuthorizerArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Authorizer(\"example\", AuthorizerArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .authorizerType(\"REQUEST\")\n            .authorizerUri(aws_lambda_function.example().invoke_arn())\n            .identitySources(\"route.request.header.Auth\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Authorizer\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      authorizerType: REQUEST\n      authorizerUri: ${aws_lambda_function.example.invoke_arn}\n      identitySources:\n        - route.request.header.Auth\n```\n{{% /example %}}\n{{% example %}}\n### Basic HTTP API\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Authorizer(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    authorizerType: \"REQUEST\",\n    authorizerUri: aws_lambda_function.example.invoke_arn,\n    identitySources: [\"$request.header.Authorization\"],\n    authorizerPayloadFormatVersion: \"2.0\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Authorizer(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    authorizer_type=\"REQUEST\",\n    authorizer_uri=aws_lambda_function[\"example\"][\"invoke_arn\"],\n    identity_sources=[\"$request.header.Authorization\"],\n    authorizer_payload_format_version=\"2.0\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Authorizer(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        AuthorizerType = \"REQUEST\",\n        AuthorizerUri = aws_lambda_function.Example.Invoke_arn,\n        IdentitySources = new[]\n        {\n            \"$request.header.Authorization\",\n        },\n        AuthorizerPayloadFormatVersion = \"2.0\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewAuthorizer(ctx, \"example\", \u0026apigatewayv2.AuthorizerArgs{\n\t\t\tApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tAuthorizerType: pulumi.String(\"REQUEST\"),\n\t\t\tAuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),\n\t\t\tIdentitySources: pulumi.StringArray{\n\t\t\t\tpulumi.String(\"$request.header.Authorization\"),\n\t\t\t},\n\t\t\tAuthorizerPayloadFormatVersion: pulumi.String(\"2.0\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Authorizer;\nimport com.pulumi.aws.apigatewayv2.AuthorizerArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Authorizer(\"example\", AuthorizerArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .authorizerType(\"REQUEST\")\n            .authorizerUri(aws_lambda_function.example().invoke_arn())\n            .identitySources(\"$request.header.Authorization\")\n            .authorizerPayloadFormatVersion(\"2.0\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Authorizer\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      authorizerType: REQUEST\n      authorizerUri: ${aws_lambda_function.example.invoke_arn}\n      identitySources:\n        - $request.header.Authorization\n      authorizerPayloadFormatVersion: '2.0'\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_authorizer` using the API identifier and authorizer identifier. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/authorizer:Authorizer example aabbccddee/1122334\n```\n ",
+            "properties": {
+                "authorizerCredentialsArn": {
+                    "type": "string",
+                    "description": "Required credentials as an IAM role for API Gateway to invoke the authorizer.\nSupported only for `REQUEST` authorizers.\n"
+                },
+                "authorizerPayloadFormatVersion": {
+                    "type": "string",
+                    "description": "Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.\nValid values: `1.0`, `2.0`.\n"
+                },
+                "authorizerResultTtlInSeconds": {
+                    "type": "integer",
+                    "description": "Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.\nIf it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.\nSupported only for HTTP API Lambda authorizers.\n"
+                },
+                "authorizerType": {
+                    "type": "string",
+                    "description": "Authorizer type. Valid values: `JWT`, `REQUEST`.\nSpecify `REQUEST` for a Lambda function using incoming request parameters.\nFor HTTP APIs, specify `JWT` to use JSON Web Tokens.\n"
+                },
+                "authorizerUri": {
+                    "type": "string",
+                    "description": "Authorizer's Uniform Resource Identifier (URI).\nFor `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.\nSupported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.\n"
+                },
+                "enableSimpleResponses": {
+                    "type": "boolean",
+                    "description": "Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.\nSupported only for HTTP APIs.\n"
+                },
+                "identitySources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Identity sources for which authorization is requested.\nFor `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.\nFor `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.\n"
+                },
+                "jwtConfiguration": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/AuthorizerJwtConfiguration:AuthorizerJwtConfiguration",
+                    "description": "Configuration of a JWT authorizer. Required for the `JWT` authorizer type.\nSupported only for HTTP APIs.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the authorizer. Must be between 1 and 128 characters in length.\n"
+                }
+            },
+            "type": "object",
+            "required": [
+                "authorizerType"
+            ]
+        },
+        "awsx:apigatewayv2:HttpIntegration": {
+            "description": "Manages an Amazon API Gateway Version 2 integration.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Integration(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    integrationType: \"MOCK\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Integration(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    integration_type=\"MOCK\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Integration(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        IntegrationType = \"MOCK\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewIntegration(ctx, \"example\", \u0026apigatewayv2.IntegrationArgs{\n\t\t\tApiId:           pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tIntegrationType: pulumi.String(\"MOCK\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Integration;\nimport com.pulumi.aws.apigatewayv2.IntegrationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Integration(\"example\", IntegrationArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .integrationType(\"MOCK\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Integration\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      integrationType: MOCK\n```\n{{% /example %}}\n{{% example %}}\n### Lambda Integration\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst exampleFunction = new aws.lambda.Function(\"exampleFunction\", {\n    code: new pulumi.asset.FileArchive(\"example.zip\"),\n    role: aws_iam_role.example.arn,\n    handler: \"index.handler\",\n    runtime: \"nodejs16.x\",\n});\nconst exampleIntegration = new aws.apigatewayv2.Integration(\"exampleIntegration\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    integrationType: \"AWS_PROXY\",\n    connectionType: \"INTERNET\",\n    contentHandlingStrategy: \"CONVERT_TO_TEXT\",\n    description: \"Lambda example\",\n    integrationMethod: \"POST\",\n    integrationUri: exampleFunction.invokeArn,\n    passthroughBehavior: \"WHEN_NO_MATCH\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample_function = aws.lambda_.Function(\"exampleFunction\",\n    code=pulumi.FileArchive(\"example.zip\"),\n    role=aws_iam_role[\"example\"][\"arn\"],\n    handler=\"index.handler\",\n    runtime=\"nodejs16.x\")\nexample_integration = aws.apigatewayv2.Integration(\"exampleIntegration\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    integration_type=\"AWS_PROXY\",\n    connection_type=\"INTERNET\",\n    content_handling_strategy=\"CONVERT_TO_TEXT\",\n    description=\"Lambda example\",\n    integration_method=\"POST\",\n    integration_uri=example_function.invoke_arn,\n    passthrough_behavior=\"WHEN_NO_MATCH\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var exampleFunction = new Aws.Lambda.Function(\"exampleFunction\", new()\n    {\n        Code = new FileArchive(\"example.zip\"),\n        Role = aws_iam_role.Example.Arn,\n        Handler = \"index.handler\",\n        Runtime = \"nodejs16.x\",\n    });\n\n    var exampleIntegration = new Aws.ApiGatewayV2.Integration(\"exampleIntegration\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        IntegrationType = \"AWS_PROXY\",\n        ConnectionType = \"INTERNET\",\n        ContentHandlingStrategy = \"CONVERT_TO_TEXT\",\n        Description = \"Lambda example\",\n        IntegrationMethod = \"POST\",\n        IntegrationUri = exampleFunction.InvokeArn,\n        PassthroughBehavior = \"WHEN_NO_MATCH\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texampleFunction, err := lambda.NewFunction(ctx, \"exampleFunction\", \u0026lambda.FunctionArgs{\n\t\t\tCode:    pulumi.NewFileArchive(\"example.zip\"),\n\t\t\tRole:    pulumi.Any(aws_iam_role.Example.Arn),\n\t\t\tHandler: pulumi.String(\"index.handler\"),\n\t\t\tRuntime: pulumi.String(\"nodejs16.x\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = apigatewayv2.NewIntegration(ctx, \"exampleIntegration\", \u0026apigatewayv2.IntegrationArgs{\n\t\t\tApiId:                   pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tIntegrationType:         pulumi.String(\"AWS_PROXY\"),\n\t\t\tConnectionType:          pulumi.String(\"INTERNET\"),\n\t\t\tContentHandlingStrategy: pulumi.String(\"CONVERT_TO_TEXT\"),\n\t\t\tDescription:             pulumi.String(\"Lambda example\"),\n\t\t\tIntegrationMethod:       pulumi.String(\"POST\"),\n\t\t\tIntegrationUri:          exampleFunction.InvokeArn,\n\t\t\tPassthroughBehavior:     pulumi.String(\"WHEN_NO_MATCH\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lambda.Function;\nimport com.pulumi.aws.lambda.FunctionArgs;\nimport com.pulumi.aws.apigatewayv2.Integration;\nimport com.pulumi.aws.apigatewayv2.IntegrationArgs;\nimport com.pulumi.asset.FileArchive;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var exampleFunction = new Function(\"exampleFunction\", FunctionArgs.builder()        \n            .code(new FileArchive(\"example.zip\"))\n            .role(aws_iam_role.example().arn())\n            .handler(\"index.handler\")\n            .runtime(\"nodejs16.x\")\n            .build());\n\n        var exampleIntegration = new Integration(\"exampleIntegration\", IntegrationArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .integrationType(\"AWS_PROXY\")\n            .connectionType(\"INTERNET\")\n            .contentHandlingStrategy(\"CONVERT_TO_TEXT\")\n            .description(\"Lambda example\")\n            .integrationMethod(\"POST\")\n            .integrationUri(exampleFunction.invokeArn())\n            .passthroughBehavior(\"WHEN_NO_MATCH\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  exampleFunction:\n    type: aws:lambda:Function\n    properties:\n      code:\n        fn::FileArchive: example.zip\n      role: ${aws_iam_role.example.arn}\n      handler: index.handler\n      runtime: nodejs16.x\n  exampleIntegration:\n    type: aws:apigatewayv2:Integration\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      integrationType: AWS_PROXY\n      connectionType: INTERNET\n      contentHandlingStrategy: CONVERT_TO_TEXT\n      description: Lambda example\n      integrationMethod: POST\n      integrationUri: ${exampleFunction.invokeArn}\n      passthroughBehavior: WHEN_NO_MATCH\n```\n{{% /example %}}\n{{% example %}}\n### AWS Service Integration\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Integration(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    credentialsArn: aws_iam_role.example.arn,\n    description: \"SQS example\",\n    integrationType: \"AWS_PROXY\",\n    integrationSubtype: \"SQS-SendMessage\",\n    requestParameters: {\n        QueueUrl: \"$request.header.queueUrl\",\n        MessageBody: \"$request.body.message\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Integration(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    credentials_arn=aws_iam_role[\"example\"][\"arn\"],\n    description=\"SQS example\",\n    integration_type=\"AWS_PROXY\",\n    integration_subtype=\"SQS-SendMessage\",\n    request_parameters={\n        \"QueueUrl\": \"$request.header.queueUrl\",\n        \"MessageBody\": \"$request.body.message\",\n    })\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Integration(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        CredentialsArn = aws_iam_role.Example.Arn,\n        Description = \"SQS example\",\n        IntegrationType = \"AWS_PROXY\",\n        IntegrationSubtype = \"SQS-SendMessage\",\n        RequestParameters = \n        {\n            { \"QueueUrl\", \"$request.header.queueUrl\" },\n            { \"MessageBody\", \"$request.body.message\" },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewIntegration(ctx, \"example\", \u0026apigatewayv2.IntegrationArgs{\n\t\t\tApiId:              pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tCredentialsArn:     pulumi.Any(aws_iam_role.Example.Arn),\n\t\t\tDescription:        pulumi.String(\"SQS example\"),\n\t\t\tIntegrationType:    pulumi.String(\"AWS_PROXY\"),\n\t\t\tIntegrationSubtype: pulumi.String(\"SQS-SendMessage\"),\n\t\t\tRequestParameters: pulumi.StringMap{\n\t\t\t\t\"QueueUrl\":    pulumi.String(\"$request.header.queueUrl\"),\n\t\t\t\t\"MessageBody\": pulumi.String(\"$request.body.message\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Integration;\nimport com.pulumi.aws.apigatewayv2.IntegrationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Integration(\"example\", IntegrationArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .credentialsArn(aws_iam_role.example().arn())\n            .description(\"SQS example\")\n            .integrationType(\"AWS_PROXY\")\n            .integrationSubtype(\"SQS-SendMessage\")\n            .requestParameters(Map.ofEntries(\n                Map.entry(\"QueueUrl\", \"$request.header.queueUrl\"),\n                Map.entry(\"MessageBody\", \"$request.body.message\")\n            ))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Integration\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      credentialsArn: ${aws_iam_role.example.arn}\n      description: SQS example\n      integrationType: AWS_PROXY\n      integrationSubtype: SQS-SendMessage\n      requestParameters:\n        QueueUrl: $request.header.queueUrl\n        MessageBody: $request.body.message\n```\n{{% /example %}}\n{{% example %}}\n### Private Integration\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Integration(\"example\", {\n    apiId: aws_apigatewayv2_api.example.id,\n    credentialsArn: aws_iam_role.example.arn,\n    description: \"Example with a load balancer\",\n    integrationType: \"HTTP_PROXY\",\n    integrationUri: aws_lb_listener.example.arn,\n    integrationMethod: \"ANY\",\n    connectionType: \"VPC_LINK\",\n    connectionId: aws_apigatewayv2_vpc_link.example.id,\n    tlsConfig: {\n        serverNameToVerify: \"example.com\",\n    },\n    requestParameters: {\n        \"append:header.authforintegration\": \"$context.authorizer.authorizerResponse\",\n        \"overwrite:path\": \"staticValueForIntegration\",\n    },\n    responseParameters: [\n        {\n            statusCode: \"403\",\n            mappings: {\n                \"append:header.auth\": \"$context.authorizer.authorizerResponse\",\n            },\n        },\n        {\n            statusCode: \"200\",\n            mappings: {\n                \"overwrite:statuscode\": \"204\",\n            },\n        },\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Integration(\"example\",\n    api_id=aws_apigatewayv2_api[\"example\"][\"id\"],\n    credentials_arn=aws_iam_role[\"example\"][\"arn\"],\n    description=\"Example with a load balancer\",\n    integration_type=\"HTTP_PROXY\",\n    integration_uri=aws_lb_listener[\"example\"][\"arn\"],\n    integration_method=\"ANY\",\n    connection_type=\"VPC_LINK\",\n    connection_id=aws_apigatewayv2_vpc_link[\"example\"][\"id\"],\n    tls_config=aws.apigatewayv2.IntegrationTlsConfigArgs(\n        server_name_to_verify=\"example.com\",\n    ),\n    request_parameters={\n        \"append:header.authforintegration\": \"$context.authorizer.authorizerResponse\",\n        \"overwrite:path\": \"staticValueForIntegration\",\n    },\n    response_parameters=[\n        aws.apigatewayv2.IntegrationResponseParameterArgs(\n            status_code=\"403\",\n            mappings={\n                \"append:header.auth\": \"$context.authorizer.authorizerResponse\",\n            },\n        ),\n        aws.apigatewayv2.IntegrationResponseParameterArgs(\n            status_code=\"200\",\n            mappings={\n                \"overwrite:statuscode\": \"204\",\n            },\n        ),\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Integration(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n        CredentialsArn = aws_iam_role.Example.Arn,\n        Description = \"Example with a load balancer\",\n        IntegrationType = \"HTTP_PROXY\",\n        IntegrationUri = aws_lb_listener.Example.Arn,\n        IntegrationMethod = \"ANY\",\n        ConnectionType = \"VPC_LINK\",\n        ConnectionId = aws_apigatewayv2_vpc_link.Example.Id,\n        TlsConfig = new Aws.ApiGatewayV2.Inputs.IntegrationTlsConfigArgs\n        {\n            ServerNameToVerify = \"example.com\",\n        },\n        RequestParameters = \n        {\n            { \"append:header.authforintegration\", \"$context.authorizer.authorizerResponse\" },\n            { \"overwrite:path\", \"staticValueForIntegration\" },\n        },\n        ResponseParameters = new[]\n        {\n            new Aws.ApiGatewayV2.Inputs.IntegrationResponseParameterArgs\n            {\n                StatusCode = \"403\",\n                Mappings = \n                {\n                    { \"append:header.auth\", \"$context.authorizer.authorizerResponse\" },\n                },\n            },\n            new Aws.ApiGatewayV2.Inputs.IntegrationResponseParameterArgs\n            {\n                StatusCode = \"200\",\n                Mappings = \n                {\n                    { \"overwrite:statuscode\", \"204\" },\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewIntegration(ctx, \"example\", \u0026apigatewayv2.IntegrationArgs{\n\t\t\tApiId:             pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t\tCredentialsArn:    pulumi.Any(aws_iam_role.Example.Arn),\n\t\t\tDescription:       pulumi.String(\"Example with a load balancer\"),\n\t\t\tIntegrationType:   pulumi.String(\"HTTP_PROXY\"),\n\t\t\tIntegrationUri:    pulumi.Any(aws_lb_listener.Example.Arn),\n\t\t\tIntegrationMethod: pulumi.String(\"ANY\"),\n\t\t\tConnectionType:    pulumi.String(\"VPC_LINK\"),\n\t\t\tConnectionId:      pulumi.Any(aws_apigatewayv2_vpc_link.Example.Id),\n\t\t\tTlsConfig: \u0026apigatewayv2.IntegrationTlsConfigArgs{\n\t\t\t\tServerNameToVerify: pulumi.String(\"example.com\"),\n\t\t\t},\n\t\t\tRequestParameters: pulumi.StringMap{\n\t\t\t\t\"append:header.authforintegration\": pulumi.String(\"$context.authorizer.authorizerResponse\"),\n\t\t\t\t\"overwrite:path\":                   pulumi.String(\"staticValueForIntegration\"),\n\t\t\t},\n\t\t\tResponseParameters: apigatewayv2.IntegrationResponseParameterArray{\n\t\t\t\t\u0026apigatewayv2.IntegrationResponseParameterArgs{\n\t\t\t\t\tStatusCode: pulumi.String(\"403\"),\n\t\t\t\t\tMappings: pulumi.StringMap{\n\t\t\t\t\t\t\"append:header.auth\": pulumi.String(\"$context.authorizer.authorizerResponse\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\u0026apigatewayv2.IntegrationResponseParameterArgs{\n\t\t\t\t\tStatusCode: pulumi.String(\"200\"),\n\t\t\t\t\tMappings: pulumi.StringMap{\n\t\t\t\t\t\t\"overwrite:statuscode\": pulumi.String(\"204\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Integration;\nimport com.pulumi.aws.apigatewayv2.IntegrationArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.IntegrationTlsConfigArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.IntegrationResponseParameterArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Integration(\"example\", IntegrationArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .credentialsArn(aws_iam_role.example().arn())\n            .description(\"Example with a load balancer\")\n            .integrationType(\"HTTP_PROXY\")\n            .integrationUri(aws_lb_listener.example().arn())\n            .integrationMethod(\"ANY\")\n            .connectionType(\"VPC_LINK\")\n            .connectionId(aws_apigatewayv2_vpc_link.example().id())\n            .tlsConfig(IntegrationTlsConfigArgs.builder()\n                .serverNameToVerify(\"example.com\")\n                .build())\n            .requestParameters(Map.ofEntries(\n                Map.entry(\"append:header.authforintegration\", \"$context.authorizer.authorizerResponse\"),\n                Map.entry(\"overwrite:path\", \"staticValueForIntegration\")\n            ))\n            .responseParameters(            \n                IntegrationResponseParameterArgs.builder()\n                    .statusCode(403)\n                    .mappings(Map.of(\"append:header.auth\", \"$context.authorizer.authorizerResponse\"))\n                    .build(),\n                IntegrationResponseParameterArgs.builder()\n                    .statusCode(200)\n                    .mappings(Map.of(\"overwrite:statuscode\", \"204\"))\n                    .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Integration\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n      credentialsArn: ${aws_iam_role.example.arn}\n      description: Example with a load balancer\n      integrationType: HTTP_PROXY\n      integrationUri: ${aws_lb_listener.example.arn}\n      integrationMethod: ANY\n      connectionType: VPC_LINK\n      connectionId: ${aws_apigatewayv2_vpc_link.example.id}\n      tlsConfig:\n        serverNameToVerify: example.com\n      requestParameters:\n        append:header.authforintegration: $context.authorizer.authorizerResponse\n        overwrite:path: staticValueForIntegration\n      responseParameters:\n        - statusCode: 403\n          mappings:\n            append:header.auth: $context.authorizer.authorizerResponse\n        - statusCode: 200\n          mappings:\n            overwrite:statuscode: '204'\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334\n```\n -\u003e __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.\n\n",
+            "properties": {
+                "connectionId": {
+                    "type": "string",
+                    "description": "ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.\n"
+                },
+                "connectionType": {
+                    "type": "string",
+                    "description": "Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.\n"
+                },
+                "credentialsArn": {
+                    "type": "string",
+                    "description": "Credentials required for the integration, if any.\n"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the integration.\n"
+                },
+                "integrationMethod": {
+                    "type": "string",
+                    "description": "Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.\n"
+                },
+                "integrationSubtype": {
+                    "type": "string",
+                    "description": "AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.\n",
+                    "willReplaceOnChanges": true
+                },
+                "integrationType": {
+                    "type": "string",
+                    "description": "Integration type of an integration.\nValid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.\n",
+                    "willReplaceOnChanges": true
+                },
+                "integrationUri": {
+                    "type": "string",
+                    "description": "URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.\nFor an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.\n Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified."
+                },
+                "lambdaArn": {
+                    "type": "string",
+                    "description": "The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified."
+                },
+                "payloadFormatVersion": {
+                    "type": "string",
+                    "description": "The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.\n"
+                },
+                "requestParameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.\nFor HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.\nFor HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.\nSee the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.\n"
+                },
+                "responseParameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/IntegrationResponseParameter:IntegrationResponseParameter"
+                    },
+                    "description": "Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.\n"
+                },
+                "timeoutMilliseconds": {
+                    "type": "integer",
+                    "description": "Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.\nThe default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.\nthis provider will only perform drift detection of its value when present in a configuration.\n"
+                },
+                "tlsConfig": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/IntegrationTlsConfig:IntegrationTlsConfig",
+                    "description": "TLS configuration for a private integration. Supported only for HTTP APIs.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpRoute": {
+            "description": "Manages an Amazon API Gateway Version 2 route.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst exampleApi = new aws.apigatewayv2.Api(\"exampleApi\", {\n    protocolType: \"WEBSOCKET\",\n    routeSelectionExpression: \"$request.body.action\",\n});\nconst exampleRoute = new aws.apigatewayv2.Route(\"exampleRoute\", {\n    apiId: exampleApi.id,\n    routeKey: \"$default\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample_api = aws.apigatewayv2.Api(\"exampleApi\",\n    protocol_type=\"WEBSOCKET\",\n    route_selection_expression=\"$request.body.action\")\nexample_route = aws.apigatewayv2.Route(\"exampleRoute\",\n    api_id=example_api.id,\n    route_key=\"$default\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var exampleApi = new Aws.ApiGatewayV2.Api(\"exampleApi\", new()\n    {\n        ProtocolType = \"WEBSOCKET\",\n        RouteSelectionExpression = \"$request.body.action\",\n    });\n\n    var exampleRoute = new Aws.ApiGatewayV2.Route(\"exampleRoute\", new()\n    {\n        ApiId = exampleApi.Id,\n        RouteKey = \"$default\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texampleApi, err := apigatewayv2.NewApi(ctx, \"exampleApi\", \u0026apigatewayv2.ApiArgs{\n\t\t\tProtocolType:             pulumi.String(\"WEBSOCKET\"),\n\t\t\tRouteSelectionExpression: pulumi.String(\"$request.body.action\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = apigatewayv2.NewRoute(ctx, \"exampleRoute\", \u0026apigatewayv2.RouteArgs{\n\t\t\tApiId:    exampleApi.ID(),\n\t\t\tRouteKey: pulumi.String(\"$default\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Api;\nimport com.pulumi.aws.apigatewayv2.ApiArgs;\nimport com.pulumi.aws.apigatewayv2.Route;\nimport com.pulumi.aws.apigatewayv2.RouteArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var exampleApi = new Api(\"exampleApi\", ApiArgs.builder()        \n            .protocolType(\"WEBSOCKET\")\n            .routeSelectionExpression(\"$request.body.action\")\n            .build());\n\n        var exampleRoute = new Route(\"exampleRoute\", RouteArgs.builder()        \n            .apiId(exampleApi.id())\n            .routeKey(\"$default\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  exampleApi:\n    type: aws:apigatewayv2:Api\n    properties:\n      protocolType: WEBSOCKET\n      routeSelectionExpression: $request.body.action\n  exampleRoute:\n    type: aws:apigatewayv2:Route\n    properties:\n      apiId: ${exampleApi.id}\n      routeKey: $default\n```\n{{% /example %}}\n{{% example %}}\n### HTTP Proxy Integration\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst exampleApi = new aws.apigatewayv2.Api(\"exampleApi\", {protocolType: \"HTTP\"});\nconst exampleIntegration = new aws.apigatewayv2.Integration(\"exampleIntegration\", {\n    apiId: exampleApi.id,\n    integrationType: \"HTTP_PROXY\",\n    integrationMethod: \"ANY\",\n    integrationUri: \"https://example.com/{proxy}\",\n});\nconst exampleRoute = new aws.apigatewayv2.Route(\"exampleRoute\", {\n    apiId: exampleApi.id,\n    routeKey: \"ANY /example/{proxy+}\",\n    target: pulumi.interpolate`integrations/${exampleIntegration.id}`,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample_api = aws.apigatewayv2.Api(\"exampleApi\", protocol_type=\"HTTP\")\nexample_integration = aws.apigatewayv2.Integration(\"exampleIntegration\",\n    api_id=example_api.id,\n    integration_type=\"HTTP_PROXY\",\n    integration_method=\"ANY\",\n    integration_uri=\"https://example.com/{proxy}\")\nexample_route = aws.apigatewayv2.Route(\"exampleRoute\",\n    api_id=example_api.id,\n    route_key=\"ANY /example/{proxy+}\",\n    target=example_integration.id.apply(lambda id: f\"integrations/{id}\"))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var exampleApi = new Aws.ApiGatewayV2.Api(\"exampleApi\", new()\n    {\n        ProtocolType = \"HTTP\",\n    });\n\n    var exampleIntegration = new Aws.ApiGatewayV2.Integration(\"exampleIntegration\", new()\n    {\n        ApiId = exampleApi.Id,\n        IntegrationType = \"HTTP_PROXY\",\n        IntegrationMethod = \"ANY\",\n        IntegrationUri = \"https://example.com/{proxy}\",\n    });\n\n    var exampleRoute = new Aws.ApiGatewayV2.Route(\"exampleRoute\", new()\n    {\n        ApiId = exampleApi.Id,\n        RouteKey = \"ANY /example/{proxy+}\",\n        Target = exampleIntegration.Id.Apply(id =\u003e $\"integrations/{id}\"),\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"fmt\"\n\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texampleApi, err := apigatewayv2.NewApi(ctx, \"exampleApi\", \u0026apigatewayv2.ApiArgs{\n\t\t\tProtocolType: pulumi.String(\"HTTP\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleIntegration, err := apigatewayv2.NewIntegration(ctx, \"exampleIntegration\", \u0026apigatewayv2.IntegrationArgs{\n\t\t\tApiId:             exampleApi.ID(),\n\t\t\tIntegrationType:   pulumi.String(\"HTTP_PROXY\"),\n\t\t\tIntegrationMethod: pulumi.String(\"ANY\"),\n\t\t\tIntegrationUri:    pulumi.String(\"https://example.com/{proxy}\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = apigatewayv2.NewRoute(ctx, \"exampleRoute\", \u0026apigatewayv2.RouteArgs{\n\t\t\tApiId:    exampleApi.ID(),\n\t\t\tRouteKey: pulumi.String(\"ANY /example/{proxy+}\"),\n\t\t\tTarget: exampleIntegration.ID().ApplyT(func(id string) (string, error) {\n\t\t\t\treturn fmt.Sprintf(\"integrations/%v\", id), nil\n\t\t\t}).(pulumi.StringOutput),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Api;\nimport com.pulumi.aws.apigatewayv2.ApiArgs;\nimport com.pulumi.aws.apigatewayv2.Integration;\nimport com.pulumi.aws.apigatewayv2.IntegrationArgs;\nimport com.pulumi.aws.apigatewayv2.Route;\nimport com.pulumi.aws.apigatewayv2.RouteArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var exampleApi = new Api(\"exampleApi\", ApiArgs.builder()        \n            .protocolType(\"HTTP\")\n            .build());\n\n        var exampleIntegration = new Integration(\"exampleIntegration\", IntegrationArgs.builder()        \n            .apiId(exampleApi.id())\n            .integrationType(\"HTTP_PROXY\")\n            .integrationMethod(\"ANY\")\n            .integrationUri(\"https://example.com/{proxy}\")\n            .build());\n\n        var exampleRoute = new Route(\"exampleRoute\", RouteArgs.builder()        \n            .apiId(exampleApi.id())\n            .routeKey(\"ANY /example/{proxy+}\")\n            .target(exampleIntegration.id().applyValue(id -\u003e String.format(\"integrations/%s\", id)))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  exampleApi:\n    type: aws:apigatewayv2:Api\n    properties:\n      protocolType: HTTP\n  exampleIntegration:\n    type: aws:apigatewayv2:Integration\n    properties:\n      apiId: ${exampleApi.id}\n      integrationType: HTTP_PROXY\n      integrationMethod: ANY\n      integrationUri: https://example.com/{proxy}\n  exampleRoute:\n    type: aws:apigatewayv2:Route\n    properties:\n      apiId: ${exampleApi.id}\n      routeKey: ANY /example/{proxy+}\n      target: integrations/${exampleIntegration.id}\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334\n```\n -\u003e __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.\n\n",
+            "properties": {
+                "apiKeyRequired": {
+                    "type": "boolean",
+                    "description": "Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.\n"
+                },
+                "authorizationScopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.\n"
+                },
+                "authorizationType": {
+                    "type": "string",
+                    "description": "Authorization type for the route.\nFor WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.\nFor HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.\nDefaults to `NONE`.\n"
+                },
+                "authorizer": {
+                    "$ref": "#/types/awsx:apigatewayv2:HttpAuthorizer",
+                    "plain": true,
+                    "description": "Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified."
+                },
+                "authorizerId": {
+                    "type": "string",
+                    "description": "Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.\n"
+                },
+                "authorizerName": {
+                    "type": "string",
+                    "description": "The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route."
+                },
+                "integration": {
+                    "$ref": "#/types/awsx:apigatewayv2:HttpIntegration",
+                    "plain": true,
+                    "description": "Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified."
+                },
+                "integrationName": {
+                    "type": "string",
+                    "description": "The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with \"integrations/\"."
+                },
+                "operationName": {
+                    "type": "string",
+                    "description": "Operation name for the route. Must be between 1 and 64 characters in length.\n"
+                },
+                "target": {
+                    "type": "string",
+                    "description": "Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.\n Only one of `integration`, `integrationName` or `target` can be specified."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpStage": {
+            "description": "Manages an Amazon API Gateway Version 2 stage.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.Stage(\"example\", {apiId: aws_apigatewayv2_api.example.id});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.Stage(\"example\", api_id=aws_apigatewayv2_api[\"example\"][\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.Stage(\"example\", new()\n    {\n        ApiId = aws_apigatewayv2_api.Example.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewStage(ctx, \"example\", \u0026apigatewayv2.StageArgs{\n\t\t\tApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.Stage;\nimport com.pulumi.aws.apigatewayv2.StageArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new Stage(\"example\", StageArgs.builder()        \n            .apiId(aws_apigatewayv2_api.example().id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:Stage\n    properties:\n      apiId: ${aws_apigatewayv2_api.example.id}\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage\n```\n -\u003e __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.\n\n",
+            "properties": {
+                "accessLogSettings": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/StageAccessLogSettings:StageAccessLogSettings",
+                    "description": "Settings for logging access in this stage.\nUse the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).\n"
+                },
+                "autoDeploy": {
+                    "type": "boolean",
+                    "description": "Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.\n"
+                },
+                "clientCertificateId": {
+                    "type": "string",
+                    "description": "Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.\nSupported only for WebSocket APIs.\n"
+                },
+                "defaultRouteSettings": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/StageDefaultRouteSettings:StageDefaultRouteSettings",
+                    "description": "Default route settings for the stage.\n"
+                },
+                "deploymentId": {
+                    "type": "string",
+                    "description": "Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.\n"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description for the stage. Must be less than or equal to 1024 characters in length.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the stage. Must be between 1 and 128 characters in length.\n\nThe following arguments are optional:\n",
+                    "willReplaceOnChanges": true
+                },
+                "routeSettings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/StageRouteSetting:StageRouteSetting"
+                    },
+                    "description": "Route settings for the stage.\n"
+                },
+                "stageVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map that defines the stage variables for the stage.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
         "awsx:awsx:Bucket": {
             "description": "The set of arguments for constructing a Bucket resource.",
             "properties": {
@@ -1795,6 +2070,160 @@
     },
     "provider": {},
     "resources": {
+        "awsx:apigatewayv2:HttpApi": {
+            "description": "Creates an HTTP API with associated sub-resources.",
+            "properties": {
+                "api": {
+                    "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fapi:Api",
+                    "description": "The underlying API resource."
+                },
+                "apiMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fapiMapping:ApiMapping"
+                    },
+                    "description": "The API mappings for the HTTP API."
+                },
+                "authorizers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fauthorizer:Authorizer"
+                    },
+                    "description": "The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments."
+                },
+                "deployment": {
+                    "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fdeployment:Deployment",
+                    "description": "The deployment for the HTTP API."
+                },
+                "domainNames": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fdomainName:DomainName"
+                    },
+                    "description": "The domain names for the HTTP API."
+                },
+                "integrations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fintegration:Integration"
+                    },
+                    "description": "The integrations for the HTTP API routes. This is a map from integration name to the integration arguments."
+                },
+                "routes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2froute:Route"
+                    },
+                    "description": "The routes for the HTTP API. This is a map from route key (for example `GET /pets`) to route arguments."
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fstage:Stage"
+                    },
+                    "description": "The deployment stages for the HTTP API."
+                }
+            },
+            "type": "awsx:apigatewayv2:httpApi",
+            "required": [
+                "api",
+                "routes",
+                "integrations",
+                "authorizers",
+                "stages",
+                "deployment",
+                "domainNames"
+            ],
+            "inputProperties": {
+                "apiKeySelectionExpression": {
+                    "type": "string",
+                    "description": "An [API key selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-apikey-selection-expressions).\nValid values: `$context.authorizer.usageIdentifierKey`, `$request.header.x-api-key`. Defaults to `$request.header.x-api-key`.\nApplicable for WebSocket APIs.\n"
+                },
+                "authorizers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpAuthorizer"
+                    },
+                    "plain": true,
+                    "description": "The authorizers for the HTTP API routes."
+                },
+                "body": {
+                    "type": "string",
+                    "description": "An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.\n"
+                },
+                "corsConfiguration": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/ApiCorsConfiguration:ApiCorsConfiguration",
+                    "description": "Cross-origin resource sharing (CORS) [configuration](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html). Applicable for HTTP APIs.\n"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the API. Must be less than or equal to 1024 characters in length.\n"
+                },
+                "disableExecuteApiEndpoint": {
+                    "type": "boolean",
+                    "description": "Whether clients can invoke the API by using the default `execute-api` endpoint.\nBy default, clients can invoke the API with the default `{api_id}.execute-api.{region}.amazonaws.com endpoint`.\nTo require that clients use a custom domain name to invoke the API, disable the default endpoint.\n"
+                },
+                "domainMappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:DomainMapping"
+                    },
+                    "plain": true,
+                    "description": "The domain names for the HTTP API."
+                },
+                "failOnWarnings": {
+                    "type": "boolean",
+                    "description": "Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.\n"
+                },
+                "integrations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpIntegration"
+                    },
+                    "plain": true,
+                    "description": "A map of integrations keyed by name for the HTTP API routes."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the API. Must be less than or equal to 128 characters in length.\n"
+                },
+                "routeSelectionExpression": {
+                    "type": "string",
+                    "description": "The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.\nDefaults to `$request.method $request.path`.\n"
+                },
+                "routes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpRoute"
+                    },
+                    "plain": true,
+                    "description": "The routes for the HTTP API."
+                },
+                "stages": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpStage"
+                    },
+                    "plain": true,
+                    "description": "The deployment stages for the HTTP API."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version identifier for the API. Must be between 1 and 64 characters in length.\n"
+                }
+            },
+            "requiredInputs": [
+                "routes"
+            ],
+            "isComponent": true
+        },
         "awsx:cloudtrail:Trail": {
             "properties": {
                 "bucket": {
