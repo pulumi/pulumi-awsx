@@ -2024,7 +2024,6 @@
                 "routeTables",
                 "routeTableAssociations",
                 "routes",
-                "internetGateway",
                 "natGateways",
                 "eips",
                 "subnetLayout",

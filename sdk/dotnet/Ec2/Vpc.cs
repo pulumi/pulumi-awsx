@@ -72,7 +72,7 @@ namespace Pulumi.Awsx.Ec2
         /// The Internet Gateway for the VPC.
         /// </summary>
         [Output("internetGateway")]
-        public Output<Pulumi.Aws.Ec2.InternetGateway> InternetGateway { get; private set; } = null!;
+        public Output<Pulumi.Aws.Ec2.InternetGateway?> InternetGateway { get; private set; } = null!;
 
         [Output("isolatedSubnetIds")]
         public Output<ImmutableArray<string>> IsolatedSubnetIds { get; private set; } = null!;

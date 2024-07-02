@@ -61,7 +61,7 @@ export interface DefaultVpcArgs {
 }
 export abstract class Vpc<TData = any> extends (pulumi.ComponentResource)<TData> {
     public eips!: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
-    public internetGateway!: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
+    public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
     public isolatedSubnetIds!: string[] | pulumi.Output<string[]>;
     public natGateways!: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
     public privateSubnetIds!: string[] | pulumi.Output<string[]>;

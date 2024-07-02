@@ -20,6 +20,7 @@ import com.pulumi.core.annotations.ResourceType;
 import com.pulumi.core.internal.Codegen;
 import java.lang.String;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
@@ -104,14 +105,14 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * 
      */
     @Export(name="internetGateway", refs={InternetGateway.class}, tree="[0]")
-    private Output<InternetGateway> internetGateway;
+    private Output</* @Nullable */ InternetGateway> internetGateway;
 
     /**
      * @return The Internet Gateway for the VPC.
      * 
      */
-    public Output<InternetGateway> internetGateway() {
-        return this.internetGateway;
+    public Output<Optional<InternetGateway>> internetGateway() {
+        return Codegen.optional(this.internetGateway);
     }
     @Export(name="isolatedSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> isolatedSubnetIds;

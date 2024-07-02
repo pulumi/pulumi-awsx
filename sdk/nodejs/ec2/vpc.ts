@@ -72,7 +72,7 @@ export class Vpc extends pulumi.ComponentResource {
     /**
      * The Internet Gateway for the VPC.
      */
-    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway>;
+    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
     public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[]>;
     /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.

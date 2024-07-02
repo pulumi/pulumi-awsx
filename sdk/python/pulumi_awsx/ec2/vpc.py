@@ -576,7 +576,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="internetGateway")
-    def internet_gateway(self) -> pulumi.Output['pulumi_aws.ec2.InternetGateway']:
+    def internet_gateway(self) -> pulumi.Output[Optional['pulumi_aws.ec2.InternetGateway']]:
         """
         The Internet Gateway for the VPC.
         """

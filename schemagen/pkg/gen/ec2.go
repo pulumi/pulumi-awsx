@@ -233,7 +233,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 			},
 			Required: []string{
-				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "internetGateway", "natGateways",
+				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "natGateways",
 				"eips", "subnetLayout", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
 			},
 		},
