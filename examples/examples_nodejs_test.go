@@ -19,6 +19,7 @@ package examples
 import (
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"github.com/stretchr/testify/assert"
@@ -202,19 +203,21 @@ func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
 }
 
 func TestAccEcsParallel(t *testing.T) {
-	test := getNodeJSBaseOptions(t).
-		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "ecs-parallel"),
-			EditDirs: []integration.EditDir{
-				{
-					Dir: filepath.Join(getCwd(t), "ecs-parallel", "step2"),
-					Additive: true,
+	maxDuration(15*time.Minute, t, func(t *testing.T) {
+		test := getNodeJSBaseOptions(t).
+			With(integration.ProgramTestOptions{
+				RunUpdateTest: false,
+				Dir:           filepath.Join(getCwd(t), "ecs-parallel"),
+				EditDirs: []integration.EditDir{
+					{
+						Dir:      filepath.Join(getCwd(t), "ecs-parallel", "step2"),
+						Additive: true,
+					},
 				},
-			},
-		})
+			})
 
-	integration.ProgramTest(t, &test)
+		integration.ProgramTest(t, &test)
+	})
 }
 
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
