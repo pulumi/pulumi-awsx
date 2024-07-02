@@ -2129,7 +2129,7 @@ type RoleWithPolicyArgs struct {
 	// ARN of the policy that is used to set the permissions boundary for the role.
 	PermissionsBoundary pulumi.StringPtrInput `pulumi:"permissionsBoundary"`
 	// ARNs of the policies to attach to the created role.
-	PolicyArns []string `pulumi:"policyArns"`
+	PolicyArns pulumi.StringArrayInput `pulumi:"policyArns"`
 	// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 }
