@@ -66,10 +66,10 @@ class ListenerArgs:
             protocol="HTTPS",
             ssl_policy="ELBSecurityPolicy-2016-08",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="forward",
-                target_group_arn=front_end_target_group.arn,
-            )])
+            default_actions=[{
+                "type": "forward",
+                "targetGroupArn": front_end_target_group.arn,
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -235,10 +235,10 @@ class ListenerArgs:
             protocol="TLS",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpn_policy="HTTP2Preferred",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="forward",
-                target_group_arn=front_end_aws_lb_target_group["arn"],
-            )])
+            default_actions=[{
+                "type": "forward",
+                "targetGroupArn": front_end_aws_lb_target_group["arn"],
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -382,14 +382,14 @@ class ListenerArgs:
             load_balancer_arn=front_end.arn,
             port=80,
             protocol="HTTP",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="redirect",
-                redirect=aws.lb.ListenerDefaultActionRedirectArgs(
-                    port="443",
-                    protocol="HTTPS",
-                    status_code="HTTP_301",
-                ),
-            )])
+            default_actions=[{
+                "type": "redirect",
+                "redirect": {
+                    "port": "443",
+                    "protocol": "HTTPS",
+                    "statusCode": "HTTP_301",
+                },
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -554,14 +554,14 @@ class ListenerArgs:
             load_balancer_arn=front_end.arn,
             port=80,
             protocol="HTTP",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="fixed-response",
-                fixed_response=aws.lb.ListenerDefaultActionFixedResponseArgs(
-                    content_type="text/plain",
-                    message_body="Fixed response content",
-                    status_code="200",
-                ),
-            )])
+            default_actions=[{
+                "type": "fixed-response",
+                "fixedResponse": {
+                    "contentType": "text/plain",
+                    "messageBody": "Fixed response content",
+                    "statusCode": "200",
+                },
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -741,18 +741,18 @@ class ListenerArgs:
             port=80,
             protocol="HTTP",
             default_actions=[
-                aws.lb.ListenerDefaultActionArgs(
-                    type="authenticate-cognito",
-                    authenticate_cognito=aws.lb.ListenerDefaultActionAuthenticateCognitoArgs(
-                        user_pool_arn=pool.arn,
-                        user_pool_client_id=client.id,
-                        user_pool_domain=domain.domain,
-                    ),
-                ),
-                aws.lb.ListenerDefaultActionArgs(
-                    type="forward",
-                    target_group_arn=front_end_target_group.arn,
-                ),
+                {
+                    "type": "authenticate-cognito",
+                    "authenticateCognito": {
+                        "userPoolArn": pool.arn,
+                        "userPoolClientId": client.id,
+                        "userPoolDomain": domain.domain,
+                    },
+                },
+                {
+                    "type": "forward",
+                    "targetGroupArn": front_end_target_group.arn,
+                },
             ])
         ```
         ```csharp
@@ -992,21 +992,21 @@ class ListenerArgs:
             port=80,
             protocol="HTTP",
             default_actions=[
-                aws.lb.ListenerDefaultActionArgs(
-                    type="authenticate-oidc",
-                    authenticate_oidc=aws.lb.ListenerDefaultActionAuthenticateOidcArgs(
-                        authorization_endpoint="https://example.com/authorization_endpoint",
-                        client_id="client_id",
-                        client_secret="client_secret",
-                        issuer="https://example.com",
-                        token_endpoint="https://example.com/token_endpoint",
-                        user_info_endpoint="https://example.com/user_info_endpoint",
-                    ),
-                ),
-                aws.lb.ListenerDefaultActionArgs(
-                    type="forward",
-                    target_group_arn=front_end_target_group.arn,
-                ),
+                {
+                    "type": "authenticate-oidc",
+                    "authenticateOidc": {
+                        "authorizationEndpoint": "https://example.com/authorization_endpoint",
+                        "clientId": "client_id",
+                        "clientSecret": "client_secret",
+                        "issuer": "https://example.com",
+                        "tokenEndpoint": "https://example.com/token_endpoint",
+                        "userInfoEndpoint": "https://example.com/user_info_endpoint",
+                    },
+                },
+                {
+                    "type": "forward",
+                    "targetGroupArn": front_end_target_group.arn,
+                },
             ])
         ```
         ```csharp
@@ -1220,24 +1220,24 @@ class ListenerArgs:
         example = aws.lb.LoadBalancer("example",
             load_balancer_type="gateway",
             name="example",
-            subnet_mappings=[aws.lb.LoadBalancerSubnetMappingArgs(
-                subnet_id=example_aws_subnet["id"],
-            )])
+            subnet_mappings=[{
+                "subnetId": example_aws_subnet["id"],
+            }])
         example_target_group = aws.lb.TargetGroup("example",
             name="example",
             port=6081,
             protocol="GENEVE",
             vpc_id=example_aws_vpc["id"],
-            health_check=aws.lb.TargetGroupHealthCheckArgs(
-                port="80",
-                protocol="HTTP",
-            ))
+            health_check={
+                "port": "80",
+                "protocol": "HTTP",
+            })
         example_listener = aws.lb.Listener("example",
             load_balancer_arn=example.id,
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                target_group_arn=example_target_group.id,
-                type="forward",
-            )])
+            default_actions=[{
+                "targetGroupArn": example_target_group.id,
+                "type": "forward",
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -1457,14 +1457,14 @@ class ListenerArgs:
         example_target_group = aws.lb.TargetGroup("example")
         example_listener = aws.lb.Listener("example",
             load_balancer_arn=example.id,
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                target_group_arn=example_target_group.id,
-                type="forward",
-            )],
-            mutual_authentication=aws.lb.ListenerMutualAuthenticationArgs(
-                mode="verify",
-                trust_store_arn="...",
-            ))
+            default_actions=[{
+                "targetGroupArn": example_target_group.id,
+                "type": "forward",
+            }],
+            mutual_authentication={
+                "mode": "verify",
+                "trustStoreArn": "...",
+            })
         ```
         ```csharp
         using System.Collections.Generic;
@@ -2284,9 +2284,9 @@ class TargetGroupArgs:
             port=25,
             protocol="TCP",
             vpc_id=main["id"],
-            target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
-                enable_unhealthy_connection_termination=False,
-            )])
+            target_health_states=[{
+                "enableUnhealthyConnectionTermination": False,
+            }])
         ```
         ```csharp
         using System.Collections.Generic;

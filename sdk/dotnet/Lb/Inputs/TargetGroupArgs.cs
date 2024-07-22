@@ -523,9 +523,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     port=25,
     ///     protocol="TCP",
     ///     vpc_id=main["id"],
-    ///     target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
-    ///         enable_unhealthy_connection_termination=False,
-    ///     )])
+    ///     target_health_states=[{
+    ///         "enableUnhealthyConnectionTermination": False,
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;

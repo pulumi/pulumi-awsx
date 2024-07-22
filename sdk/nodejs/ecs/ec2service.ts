@@ -75,6 +75,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
+            resourceInputs["volumeConfiguration"] = args ? args.volumeConfiguration : undefined;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;
@@ -122,11 +123,11 @@ export interface EC2ServiceArgs {
      */
     desiredCount?: pulumi.Input<number>;
     /**
-     * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+     * Whether to enable Amazon ECS managed tags for the tasks within the service.
      */
     enableEcsManagedTags?: pulumi.Input<boolean>;
     /**
-     * Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+     * Whether to enable Amazon ECS Exec for the tasks within the service.
      */
     enableExecuteCommand?: pulumi.Input<boolean>;
     /**
@@ -168,7 +169,7 @@ export interface EC2ServiceArgs {
      */
     platformVersion?: pulumi.Input<string>;
     /**
-     * Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+     * Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
      */
     propagateTags?: pulumi.Input<string>;
     /**
@@ -176,7 +177,7 @@ export interface EC2ServiceArgs {
      */
     schedulingStrategy?: pulumi.Input<string>;
     /**
-     * The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     * ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
      */
     serviceConnectConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceConnectConfiguration>;
     /**
@@ -196,7 +197,11 @@ export interface EC2ServiceArgs {
      */
     taskDefinitionArgs?: inputs.ecs.EC2ServiceTaskDefinitionArgs;
     /**
-     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
      */
     triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+     */
+    volumeConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceVolumeConfiguration>;
 }

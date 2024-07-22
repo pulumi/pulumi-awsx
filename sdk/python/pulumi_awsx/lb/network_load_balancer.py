@@ -64,7 +64,7 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
-        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         :param 'ListenerArgs' listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence['ListenerArgs'] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
@@ -344,7 +344,7 @@ class NetworkLoadBalancerArgs:
     @pulumi.getter(name="ipAddressType")
     def ip_address_type(self) -> Optional[pulumi.Input[str]]:
         """
-        Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         """
         return pulumi.get(self, "ip_address_type")
 
@@ -490,9 +490,9 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
+                 access_logs: Optional[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerAccessLogsArgs', 'pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
-                 connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
+                 connection_logs: Optional[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerConnectionLogsArgs', 'pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
@@ -515,7 +515,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
+                 subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerSubnetMappingArgs', 'pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  xff_header_processing_mode: Optional[pulumi.Input[str]] = None,
@@ -525,9 +525,9 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: Access Logs block. See below.
+        :param pulumi.Input[Union['pulumi_aws.lb.LoadBalancerAccessLogsArgs', 'pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: Access Logs block. See below.
         :param pulumi.Input[int] client_keep_alive: Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type `application`.
+        :param pulumi.Input[Union['pulumi_aws.lb.LoadBalancerConnectionLogsArgs', 'pulumi_aws.lb.LoadBalancerConnectionLogsArgs']] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[str] customer_owned_ipv4_pool: ID of the customer owned ipv4 pool to use for this load balancer.
         :param pulumi.InputType['TargetGroupArgs'] default_target_group: Options creating a default target group.
         :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
@@ -542,7 +542,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
-        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         :param pulumi.InputType['ListenerArgs'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
@@ -550,7 +550,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[bool] preserve_host_header: Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_groups: List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]] subnet_mappings: Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
+        :param pulumi.Input[Sequence[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerSubnetMappingArgs', 'pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]] subnet_mappings: Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]] subnets: A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] xff_header_processing_mode: Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
@@ -579,9 +579,9 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
+                 access_logs: Optional[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerAccessLogsArgs', 'pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
-                 connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
+                 connection_logs: Optional[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerConnectionLogsArgs', 'pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
@@ -604,7 +604,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
+                 subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[Union['pulumi_aws.lb.LoadBalancerSubnetMappingArgs', 'pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  xff_header_processing_mode: Optional[pulumi.Input[str]] = None,

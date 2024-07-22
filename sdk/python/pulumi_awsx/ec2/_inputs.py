@@ -170,6 +170,7 @@ class VpcEndpointSpecArgs:
                  private_dns_enabled: Optional[bool] = None,
                  route_table_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 subnet_configurations: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.VpcEndpointSubnetConfigurationArgs']]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  vpc_endpoint_type: Optional[pulumi.Input[str]] = None):
@@ -514,6 +515,189 @@ class VpcEndpointSpecArgs:
         ```
         <!--End PulumiCodeChooser -->
 
+        ### Interface Endpoint Type with User-Defined IP Address
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const ec2 = new aws.ec2.VpcEndpoint("ec2", {
+            vpcId: example.id,
+            serviceName: "com.amazonaws.us-west-2.ec2",
+            vpcEndpointType: "Interface",
+            subnetConfigurations: [
+                {
+                    ipv4: "10.0.1.10",
+                    subnetId: example1.id,
+                },
+                {
+                    ipv4: "10.0.2.10",
+                    subnetId: example2.id,
+                },
+            ],
+            subnetIds: [
+                example1.id,
+                example2.id,
+            ],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        ec2 = aws.ec2.VpcEndpoint("ec2",
+            vpc_id=example["id"],
+            service_name="com.amazonaws.us-west-2.ec2",
+            vpc_endpoint_type="Interface",
+            subnet_configurations=[
+                {
+                    "ipv4": "10.0.1.10",
+                    "subnetId": example1["id"],
+                },
+                {
+                    "ipv4": "10.0.2.10",
+                    "subnetId": example2["id"],
+                },
+            ],
+            subnet_ids=[
+                example1["id"],
+                example2["id"],
+            ])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new()
+            {
+                VpcId = example.Id,
+                ServiceName = "com.amazonaws.us-west-2.ec2",
+                VpcEndpointType = "Interface",
+                SubnetConfigurations = new[]
+                {
+                    new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs
+                    {
+                        Ipv4 = "10.0.1.10",
+                        SubnetId = example1.Id,
+                    },
+                    new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs
+                    {
+                        Ipv4 = "10.0.2.10",
+                        SubnetId = example2.Id,
+                    },
+                },
+                SubnetIds = new[]
+                {
+                    example1.Id,
+                    example2.Id,
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
+        			VpcId:           pulumi.Any(example.Id),
+        			ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+        			VpcEndpointType: pulumi.String("Interface"),
+        			SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
+        				&ec2.VpcEndpointSubnetConfigurationArgs{
+        					Ipv4:     pulumi.String("10.0.1.10"),
+        					SubnetId: pulumi.Any(example1.Id),
+        				},
+        				&ec2.VpcEndpointSubnetConfigurationArgs{
+        					Ipv4:     pulumi.String("10.0.2.10"),
+        					SubnetId: pulumi.Any(example2.Id),
+        				},
+        			},
+        			SubnetIds: pulumi.StringArray{
+        				example1.Id,
+        				example2.Id,
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.VpcEndpoint;
+        import com.pulumi.aws.ec2.VpcEndpointArgs;
+        import com.pulumi.aws.ec2.inputs.VpcEndpointSubnetConfigurationArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()
+                    .vpcId(example.id())
+                    .serviceName("com.amazonaws.us-west-2.ec2")
+                    .vpcEndpointType("Interface")
+                    .subnetConfigurations(            
+                        VpcEndpointSubnetConfigurationArgs.builder()
+                            .ipv4("10.0.1.10")
+                            .subnetId(example1.id())
+                            .build(),
+                        VpcEndpointSubnetConfigurationArgs.builder()
+                            .ipv4("10.0.2.10")
+                            .subnetId(example2.id())
+                            .build())
+                    .subnetIds(            
+                        example1.id(),
+                        example2.id())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          ec2:
+            type: aws:ec2:VpcEndpoint
+            properties:
+              vpcId: ${example.id}
+              serviceName: com.amazonaws.us-west-2.ec2
+              vpcEndpointType: Interface
+              subnetConfigurations:
+                - ipv4: 10.0.1.10
+                  subnetId: ${example1.id}
+                - ipv4: 10.0.2.10
+                  subnetId: ${example2.id}
+              subnetIds:
+                - ${example1.id}
+                - ${example2.id}
+        ```
+        <!--End PulumiCodeChooser -->
+
         ### Gateway Load Balancer Endpoint Type
 
         <!--Start PulumiCodeChooser -->
@@ -714,6 +898,7 @@ class VpcEndpointSpecArgs:
         :param pulumi.Input[Sequence[pulumi.Input[str]]] route_table_ids: One or more route table IDs. Applicable for endpoints of type `Gateway`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
                If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.VpcEndpointSubnetConfigurationArgs']]] subnet_configurations: Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] vpc_endpoint_type: The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
@@ -733,6 +918,8 @@ class VpcEndpointSpecArgs:
             pulumi.set(__self__, "route_table_ids", route_table_ids)
         if security_group_ids is not None:
             pulumi.set(__self__, "security_group_ids", security_group_ids)
+        if subnet_configurations is not None:
+            pulumi.set(__self__, "subnet_configurations", subnet_configurations)
         if subnet_ids is not None:
             pulumi.set(__self__, "subnet_ids", subnet_ids)
         if tags is not None:
@@ -836,6 +1023,18 @@ class VpcEndpointSpecArgs:
     @security_group_ids.setter
     def security_group_ids(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
         pulumi.set(self, "security_group_ids", value)
+
+    @property
+    @pulumi.getter(name="subnetConfigurations")
+    def subnet_configurations(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.VpcEndpointSubnetConfigurationArgs']]]]:
+        """
+        Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+        """
+        return pulumi.get(self, "subnet_configurations")
+
+    @subnet_configurations.setter
+    def subnet_configurations(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.VpcEndpointSubnetConfigurationArgs']]]]):
+        pulumi.set(self, "subnet_configurations", value)
 
     @property
     @pulumi.getter(name="subnetIds")
