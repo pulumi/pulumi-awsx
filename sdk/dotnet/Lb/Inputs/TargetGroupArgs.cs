@@ -523,9 +523,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     port=25,
     ///     protocol="TCP",
     ///     vpc_id=main["id"],
-    ///     target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
-    ///         enable_unhealthy_connection_termination=False,
-    ///     )])
+    ///     target_health_states=[{
+    ///         "enableUnhealthyConnectionTermination": False,
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -626,6 +626,177 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///       vpcId: ${main.id}
     ///       targetHealthStates:
     ///         - enableUnhealthyConnectionTermination: false
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
+    /// ### Target group with health requirements
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+    ///     name: "tf-example-lb-nlb-tg",
+    ///     port: 80,
+    ///     protocol: "TCP",
+    ///     vpcId: main.id,
+    ///     targetGroupHealth: {
+    ///         dnsFailover: {
+    ///             minimumHealthyTargetsCount: "1",
+    ///             minimumHealthyTargetsPercentage: "off",
+    ///         },
+    ///         unhealthyStateRouting: {
+    ///             minimumHealthyTargetsCount: 1,
+    ///             minimumHealthyTargetsPercentage: "off",
+    ///         },
+    ///     },
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// tcp_example = aws.lb.TargetGroup("tcp-example",
+    ///     name="tf-example-lb-nlb-tg",
+    ///     port=80,
+    ///     protocol="TCP",
+    ///     vpc_id=main["id"],
+    ///     target_group_health={
+    ///         "dnsFailover": {
+    ///             "minimumHealthyTargetsCount": "1",
+    ///             "minimumHealthyTargetsPercentage": "off",
+    ///         },
+    ///         "unhealthyStateRouting": {
+    ///             "minimumHealthyTargetsCount": 1,
+    ///             "minimumHealthyTargetsPercentage": "off",
+    ///         },
+    ///     })
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
+    ///     {
+    ///         Name = "tf-example-lb-nlb-tg",
+    ///         Port = 80,
+    ///         Protocol = "TCP",
+    ///         VpcId = main.Id,
+    ///         TargetGroupHealth = new Aws.LB.Inputs.TargetGroupTargetGroupHealthArgs
+    ///         {
+    ///             DnsFailover = new Aws.LB.Inputs.TargetGroupTargetGroupHealthDnsFailoverArgs
+    ///             {
+    ///                 MinimumHealthyTargetsCount = "1",
+    ///                 MinimumHealthyTargetsPercentage = "off",
+    ///             },
+    ///             UnhealthyStateRouting = new Aws.LB.Inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs
+    ///             {
+    ///                 MinimumHealthyTargetsCount = 1,
+    ///                 MinimumHealthyTargetsPercentage = "off",
+    ///             },
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := lb.NewTargetGroup(ctx, "tcp-example", &amp;lb.TargetGroupArgs{
+    /// 			Name:     pulumi.String("tf-example-lb-nlb-tg"),
+    /// 			Port:     pulumi.Int(80),
+    /// 			Protocol: pulumi.String("TCP"),
+    /// 			VpcId:    pulumi.Any(main.Id),
+    /// 			TargetGroupHealth: &amp;lb.TargetGroupTargetGroupHealthArgs{
+    /// 				DnsFailover: &amp;lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
+    /// 					MinimumHealthyTargetsCount:      pulumi.String("1"),
+    /// 					MinimumHealthyTargetsPercentage: pulumi.String("off"),
+    /// 				},
+    /// 				UnhealthyStateRouting: &amp;lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
+    /// 					MinimumHealthyTargetsCount:      pulumi.Int(1),
+    /// 					MinimumHealthyTargetsPercentage: pulumi.String("off"),
+    /// 				},
+    /// 			},
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.lb.TargetGroup;
+    /// import com.pulumi.aws.lb.TargetGroupArgs;
+    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthArgs;
+    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthDnsFailoverArgs;
+    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
+    ///             .name("tf-example-lb-nlb-tg")
+    ///             .port(80)
+    ///             .protocol("TCP")
+    ///             .vpcId(main.id())
+    ///             .targetGroupHealth(TargetGroupTargetGroupHealthArgs.builder()
+    ///                 .dnsFailover(TargetGroupTargetGroupHealthDnsFailoverArgs.builder()
+    ///                     .minimumHealthyTargetsCount("1")
+    ///                     .minimumHealthyTargetsPercentage("off")
+    ///                     .build())
+    ///                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
+    ///                     .minimumHealthyTargetsCount("1")
+    ///                     .minimumHealthyTargetsPercentage("off")
+    ///                     .build())
+    ///                 .build())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   tcp-example:
+    ///     type: aws:lb:TargetGroup
+    ///     properties:
+    ///       name: tf-example-lb-nlb-tg
+    ///       port: 80
+    ///       protocol: TCP
+    ///       vpcId: ${main.id}
+    ///       targetGroupHealth:
+    ///         dnsFailover:
+    ///           minimumHealthyTargetsCount: '1'
+    ///           minimumHealthyTargetsPercentage: off
+    ///         unhealthyStateRouting:
+    ///           minimumHealthyTargetsCount: '1'
+    ///           minimumHealthyTargetsPercentage: off
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
@@ -767,6 +938,12 @@ namespace Pulumi.Awsx.Lb.Inputs
             get => _targetFailovers ?? (_targetFailovers = new InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>());
             set => _targetFailovers = value;
         }
+
+        /// <summary>
+        /// Target health requirements block. See target_group_health for more information.
+        /// </summary>
+        [Input("targetGroupHealth")]
+        public Input<Pulumi.Aws.LB.Inputs.TargetGroupTargetGroupHealthArgs>? TargetGroupHealth { get; set; }
 
         [Input("targetHealthStates")]
         private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetHealthStateArgs>? _targetHealthStates;

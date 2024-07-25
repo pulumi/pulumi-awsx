@@ -6,6 +6,7 @@ package com.pulumi.awsx.lb.inputs;
 import com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupStickinessArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupTargetFailoverArgs;
+import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupTargetHealthStateArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
@@ -214,6 +215,55 @@ import javax.annotation.Nullable;
  *             .vpcId(main.id())
  *             .targetHealthStates(TargetGroupTargetHealthStateArgs.builder()
  *                 .enableUnhealthyConnectionTermination(false)
+ *                 .build())
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * ### Target group with health requirements
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.lb.TargetGroupArgs;
+ * import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthArgs;
+ * import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthDnsFailoverArgs;
+ * import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var tcp_example = new TargetGroup(&#34;tcp-example&#34;, TargetGroupArgs.builder()
+ *             .name(&#34;tf-example-lb-nlb-tg&#34;)
+ *             .port(80)
+ *             .protocol(&#34;TCP&#34;)
+ *             .vpcId(main.id())
+ *             .targetGroupHealth(TargetGroupTargetGroupHealthArgs.builder()
+ *                 .dnsFailover(TargetGroupTargetGroupHealthDnsFailoverArgs.builder()
+ *                     .minimumHealthyTargetsCount(&#34;1&#34;)
+ *                     .minimumHealthyTargetsPercentage(&#34;off&#34;)
+ *                     .build())
+ *                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
+ *                     .minimumHealthyTargetsCount(&#34;1&#34;)
+ *                     .minimumHealthyTargetsPercentage(&#34;off&#34;)
+ *                     .build())
  *                 .build())
  *             .build());
  * 
@@ -527,6 +577,21 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Target health requirements block. See target_group_health for more information.
+     * 
+     */
+    @Import(name="targetGroupHealth")
+    private @Nullable Output<TargetGroupTargetGroupHealthArgs> targetGroupHealth;
+
+    /**
+     * @return Target health requirements block. See target_group_health for more information.
+     * 
+     */
+    public Optional<Output<TargetGroupTargetGroupHealthArgs>> targetGroupHealth() {
+        return Optional.ofNullable(this.targetGroupHealth);
+    }
+
+    /**
      * Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
      * 
      */
@@ -613,6 +678,7 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         this.stickiness = $.stickiness;
         this.tags = $.tags;
         this.targetFailovers = $.targetFailovers;
+        this.targetGroupHealth = $.targetGroupHealth;
         this.targetHealthStates = $.targetHealthStates;
         this.targetType = $.targetType;
         this.vpcId = $.vpcId;
@@ -1049,6 +1115,27 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder targetFailovers(TargetGroupTargetFailoverArgs... targetFailovers) {
             return targetFailovers(List.of(targetFailovers));
+        }
+
+        /**
+         * @param targetGroupHealth Target health requirements block. See target_group_health for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetGroupHealth(@Nullable Output<TargetGroupTargetGroupHealthArgs> targetGroupHealth) {
+            $.targetGroupHealth = targetGroupHealth;
+            return this;
+        }
+
+        /**
+         * @param targetGroupHealth Target health requirements block. See target_group_health for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetGroupHealth(TargetGroupTargetGroupHealthArgs targetGroupHealth) {
+            return targetGroupHealth(Output.of(targetGroupHealth));
         }
 
         /**

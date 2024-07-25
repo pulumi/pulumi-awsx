@@ -66,10 +66,10 @@ class ListenerArgs:
             protocol="HTTPS",
             ssl_policy="ELBSecurityPolicy-2016-08",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="forward",
-                target_group_arn=front_end_target_group.arn,
-            )])
+            default_actions=[{
+                "type": "forward",
+                "targetGroupArn": front_end_target_group.arn,
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -235,10 +235,10 @@ class ListenerArgs:
             protocol="TLS",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpn_policy="HTTP2Preferred",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="forward",
-                target_group_arn=front_end_aws_lb_target_group["arn"],
-            )])
+            default_actions=[{
+                "type": "forward",
+                "targetGroupArn": front_end_aws_lb_target_group["arn"],
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -382,14 +382,14 @@ class ListenerArgs:
             load_balancer_arn=front_end.arn,
             port=80,
             protocol="HTTP",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="redirect",
-                redirect=aws.lb.ListenerDefaultActionRedirectArgs(
-                    port="443",
-                    protocol="HTTPS",
-                    status_code="HTTP_301",
-                ),
-            )])
+            default_actions=[{
+                "type": "redirect",
+                "redirect": {
+                    "port": "443",
+                    "protocol": "HTTPS",
+                    "statusCode": "HTTP_301",
+                },
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -554,14 +554,14 @@ class ListenerArgs:
             load_balancer_arn=front_end.arn,
             port=80,
             protocol="HTTP",
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                type="fixed-response",
-                fixed_response=aws.lb.ListenerDefaultActionFixedResponseArgs(
-                    content_type="text/plain",
-                    message_body="Fixed response content",
-                    status_code="200",
-                ),
-            )])
+            default_actions=[{
+                "type": "fixed-response",
+                "fixedResponse": {
+                    "contentType": "text/plain",
+                    "messageBody": "Fixed response content",
+                    "statusCode": "200",
+                },
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -741,18 +741,18 @@ class ListenerArgs:
             port=80,
             protocol="HTTP",
             default_actions=[
-                aws.lb.ListenerDefaultActionArgs(
-                    type="authenticate-cognito",
-                    authenticate_cognito=aws.lb.ListenerDefaultActionAuthenticateCognitoArgs(
-                        user_pool_arn=pool.arn,
-                        user_pool_client_id=client.id,
-                        user_pool_domain=domain.domain,
-                    ),
-                ),
-                aws.lb.ListenerDefaultActionArgs(
-                    type="forward",
-                    target_group_arn=front_end_target_group.arn,
-                ),
+                {
+                    "type": "authenticate-cognito",
+                    "authenticateCognito": {
+                        "userPoolArn": pool.arn,
+                        "userPoolClientId": client.id,
+                        "userPoolDomain": domain.domain,
+                    },
+                },
+                {
+                    "type": "forward",
+                    "targetGroupArn": front_end_target_group.arn,
+                },
             ])
         ```
         ```csharp
@@ -992,21 +992,21 @@ class ListenerArgs:
             port=80,
             protocol="HTTP",
             default_actions=[
-                aws.lb.ListenerDefaultActionArgs(
-                    type="authenticate-oidc",
-                    authenticate_oidc=aws.lb.ListenerDefaultActionAuthenticateOidcArgs(
-                        authorization_endpoint="https://example.com/authorization_endpoint",
-                        client_id="client_id",
-                        client_secret="client_secret",
-                        issuer="https://example.com",
-                        token_endpoint="https://example.com/token_endpoint",
-                        user_info_endpoint="https://example.com/user_info_endpoint",
-                    ),
-                ),
-                aws.lb.ListenerDefaultActionArgs(
-                    type="forward",
-                    target_group_arn=front_end_target_group.arn,
-                ),
+                {
+                    "type": "authenticate-oidc",
+                    "authenticateOidc": {
+                        "authorizationEndpoint": "https://example.com/authorization_endpoint",
+                        "clientId": "client_id",
+                        "clientSecret": "client_secret",
+                        "issuer": "https://example.com",
+                        "tokenEndpoint": "https://example.com/token_endpoint",
+                        "userInfoEndpoint": "https://example.com/user_info_endpoint",
+                    },
+                },
+                {
+                    "type": "forward",
+                    "targetGroupArn": front_end_target_group.arn,
+                },
             ])
         ```
         ```csharp
@@ -1220,24 +1220,24 @@ class ListenerArgs:
         example = aws.lb.LoadBalancer("example",
             load_balancer_type="gateway",
             name="example",
-            subnet_mappings=[aws.lb.LoadBalancerSubnetMappingArgs(
-                subnet_id=example_aws_subnet["id"],
-            )])
+            subnet_mappings=[{
+                "subnetId": example_aws_subnet["id"],
+            }])
         example_target_group = aws.lb.TargetGroup("example",
             name="example",
             port=6081,
             protocol="GENEVE",
             vpc_id=example_aws_vpc["id"],
-            health_check=aws.lb.TargetGroupHealthCheckArgs(
-                port="80",
-                protocol="HTTP",
-            ))
+            health_check={
+                "port": "80",
+                "protocol": "HTTP",
+            })
         example_listener = aws.lb.Listener("example",
             load_balancer_arn=example.id,
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                target_group_arn=example_target_group.id,
-                type="forward",
-            )])
+            default_actions=[{
+                "targetGroupArn": example_target_group.id,
+                "type": "forward",
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -1457,14 +1457,14 @@ class ListenerArgs:
         example_target_group = aws.lb.TargetGroup("example")
         example_listener = aws.lb.Listener("example",
             load_balancer_arn=example.id,
-            default_actions=[aws.lb.ListenerDefaultActionArgs(
-                target_group_arn=example_target_group.id,
-                type="forward",
-            )],
-            mutual_authentication=aws.lb.ListenerMutualAuthenticationArgs(
-                mode="verify",
-                trust_store_arn="...",
-            ))
+            default_actions=[{
+                "targetGroupArn": example_target_group.id,
+                "type": "forward",
+            }],
+            mutual_authentication={
+                "mode": "verify",
+                "trustStoreArn": "...",
+            })
         ```
         ```csharp
         using System.Collections.Generic;
@@ -1768,6 +1768,7 @@ class TargetGroupArgs:
                  stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
+                 target_group_health: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs']] = None,
                  target_health_states: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetHealthStateArgs']]]] = None,
                  target_type: Optional[pulumi.Input[str]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None):
@@ -2284,9 +2285,9 @@ class TargetGroupArgs:
             port=25,
             protocol="TCP",
             vpc_id=main["id"],
-            target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
-                enable_unhealthy_connection_termination=False,
-            )])
+            target_health_states=[{
+                "enableUnhealthyConnectionTermination": False,
+            }])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -2390,6 +2391,177 @@ class TargetGroupArgs:
         ```
         <!--End PulumiCodeChooser -->
 
+        ### Target group with health requirements
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+            name: "tf-example-lb-nlb-tg",
+            port: 80,
+            protocol: "TCP",
+            vpcId: main.id,
+            targetGroupHealth: {
+                dnsFailover: {
+                    minimumHealthyTargetsCount: "1",
+                    minimumHealthyTargetsPercentage: "off",
+                },
+                unhealthyStateRouting: {
+                    minimumHealthyTargetsCount: 1,
+                    minimumHealthyTargetsPercentage: "off",
+                },
+            },
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        tcp_example = aws.lb.TargetGroup("tcp-example",
+            name="tf-example-lb-nlb-tg",
+            port=80,
+            protocol="TCP",
+            vpc_id=main["id"],
+            target_group_health={
+                "dnsFailover": {
+                    "minimumHealthyTargetsCount": "1",
+                    "minimumHealthyTargetsPercentage": "off",
+                },
+                "unhealthyStateRouting": {
+                    "minimumHealthyTargetsCount": 1,
+                    "minimumHealthyTargetsPercentage": "off",
+                },
+            })
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
+            {
+                Name = "tf-example-lb-nlb-tg",
+                Port = 80,
+                Protocol = "TCP",
+                VpcId = main.Id,
+                TargetGroupHealth = new Aws.LB.Inputs.TargetGroupTargetGroupHealthArgs
+                {
+                    DnsFailover = new Aws.LB.Inputs.TargetGroupTargetGroupHealthDnsFailoverArgs
+                    {
+                        MinimumHealthyTargetsCount = "1",
+                        MinimumHealthyTargetsPercentage = "off",
+                    },
+                    UnhealthyStateRouting = new Aws.LB.Inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs
+                    {
+                        MinimumHealthyTargetsCount = 1,
+                        MinimumHealthyTargetsPercentage = "off",
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+        			Name:     pulumi.String("tf-example-lb-nlb-tg"),
+        			Port:     pulumi.Int(80),
+        			Protocol: pulumi.String("TCP"),
+        			VpcId:    pulumi.Any(main.Id),
+        			TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
+        				DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
+        					MinimumHealthyTargetsCount:      pulumi.String("1"),
+        					MinimumHealthyTargetsPercentage: pulumi.String("off"),
+        				},
+        				UnhealthyStateRouting: &lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
+        					MinimumHealthyTargetsCount:      pulumi.Int(1),
+        					MinimumHealthyTargetsPercentage: pulumi.String("off"),
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthArgs;
+        import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthDnsFailoverArgs;
+        import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
+                    .name("tf-example-lb-nlb-tg")
+                    .port(80)
+                    .protocol("TCP")
+                    .vpcId(main.id())
+                    .targetGroupHealth(TargetGroupTargetGroupHealthArgs.builder()
+                        .dnsFailover(TargetGroupTargetGroupHealthDnsFailoverArgs.builder()
+                            .minimumHealthyTargetsCount("1")
+                            .minimumHealthyTargetsPercentage("off")
+                            .build())
+                        .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
+                            .minimumHealthyTargetsCount("1")
+                            .minimumHealthyTargetsPercentage("off")
+                            .build())
+                        .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          tcp-example:
+            type: aws:lb:TargetGroup
+            properties:
+              name: tf-example-lb-nlb-tg
+              port: 80
+              protocol: TCP
+              vpcId: ${main.id}
+              targetGroupHealth:
+                dnsFailover:
+                  minimumHealthyTargetsCount: '1'
+                  minimumHealthyTargetsPercentage: off
+                unhealthyStateRouting:
+                  minimumHealthyTargetsCount: '1'
+                  minimumHealthyTargetsPercentage: off
+        ```
+        <!--End PulumiCodeChooser -->
+
         ## Import
 
         Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -2420,6 +2592,7 @@ class TargetGroupArgs:
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+        :param pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs'] target_group_health: Target health requirements block. See target_group_health for more information.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetHealthStateArgs']]] target_health_states: Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group.
                See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values.
@@ -2472,6 +2645,8 @@ class TargetGroupArgs:
             pulumi.set(__self__, "tags", tags)
         if target_failovers is not None:
             pulumi.set(__self__, "target_failovers", target_failovers)
+        if target_group_health is not None:
+            pulumi.set(__self__, "target_group_health", target_group_health)
         if target_health_states is not None:
             pulumi.set(__self__, "target_health_states", target_health_states)
         if target_type is not None:
@@ -2709,6 +2884,18 @@ class TargetGroupArgs:
     @target_failovers.setter
     def target_failovers(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]):
         pulumi.set(self, "target_failovers", value)
+
+    @property
+    @pulumi.getter(name="targetGroupHealth")
+    def target_group_health(self) -> Optional[pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs']]:
+        """
+        Target health requirements block. See target_group_health for more information.
+        """
+        return pulumi.get(self, "target_group_health")
+
+    @target_group_health.setter
+    def target_group_health(self, value: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs']]):
+        pulumi.set(self, "target_group_health", value)
 
     @property
     @pulumi.getter(name="targetHealthStates")
