@@ -71,7 +71,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     name: string;
     args: schema.VpcArgs;
     opts: pulumi.ComponentResourceOptions;
-  }) {
+  }): Promise<VpcData> {
     const { name, args } = props;
     if (args.availabilityZoneNames && args.numberOfAvailabilityZones) {
       throw new Error(
