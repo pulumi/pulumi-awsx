@@ -17,6 +17,7 @@
 package examples
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
@@ -191,7 +192,127 @@ func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
+func TestVpcIpamIpv4AutoCidrBlock(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-ipam-ipv4-auto-cidrblock"),
+			RetryFailedSteps: true,
+			Quick:            true,
+			ExtraRuntimeValidation: func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+				regionName := stack.Outputs["regionName"].(string)
+
+				assert.Equal(t, []interface{}{
+					map[string]interface{}{
+						"cidrMask": float64(27),
+						"type":     "Private",
+					},
+					map[string]interface{}{
+						"cidrMask": float64(28),
+						"type":     "Public",
+					},
+				}, stack.Outputs["subnetLayout"])
+
+				expectedSubnets := []interface{}{
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sa", regionName),
+						"cidrBlock":        "172.20.0.32/28",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sa", regionName),
+						"cidrBlock":        "172.20.0.0/27",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sb", regionName),
+						"cidrBlock":        "172.20.0.96/28",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sb", regionName),
+						"cidrBlock":        "172.20.0.64/27",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sc", regionName),
+						"cidrBlock":        "172.20.0.160/28",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sc", regionName),
+						"cidrBlock":        "172.20.0.128/27",
+					},
+				}
+
+				actualSubnets := stack.Outputs["subnets"].([]any)
+				assert.Equal(t, len(expectedSubnets), len(actualSubnets))
+				for _, expsub := range expectedSubnets {
+					assert.Contains(t, actualSubnets, expsub)
+				}
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestVpcIpamIpv4AutoCidrBlockWithSpecs(t *testing.T) {
+	dir := filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-ipam-ipv4-auto-cidrblock-with-specs")
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:              dir,
+			RetryFailedSteps: true,
+			Quick:            true,
+			ExtraRuntimeValidation: func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+				regionName := stack.Outputs["regionName"].(string)
+
+				assert.Equal(t, []interface{}{
+					map[string]interface{}{
+						"cidrMask": float64(25),
+						"size":     float64(128),
+						"name":     "private",
+						"type":     "Private",
+					},
+					map[string]interface{}{
+						"cidrMask": float64(27),
+						"size":     float64(32),
+						"name":     "public",
+						"type":     "Public",
+					},
+				}, stack.Outputs["subnetLayout"])
+
+				expectedSubnets := []interface{}{
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sa", regionName),
+						"cidrBlock":        "172.20.0.128/27",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sa", regionName),
+						"cidrBlock":        "172.20.0.0/25",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sb", regionName),
+						"cidrBlock":        "172.20.1.128/27",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sb", regionName),
+						"cidrBlock":        "172.20.1.0/25",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sc", regionName),
+						"cidrBlock":        "172.20.2.128/27",
+					},
+					map[string]interface{}{
+						"availabilityZone": fmt.Sprintf("%sc", regionName),
+						"cidrBlock":        "172.20.2.0/25",
+					},
+				}
+
+				actualSubnets := stack.Outputs["subnets"].([]any)
+				assert.Equal(t, len(expectedSubnets), len(actualSubnets))
+				for _, expsub := range expectedSubnets {
+					assert.Contains(t, actualSubnets, expsub)
+				}
+			},
+		})
+	integration.ProgramTest(t, &test)
+}
+
+func TestVpc(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest:    false,
