@@ -89,62 +89,12 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      args.subnetSpecs,
-      availabilityZones.length,
+    const { subnetSpecs, subnetLayout } = this.decideSubnetSpecs(
+      name,
+      cidrBlock,
+      availabilityZones,
+      args,
     );
-
-    const subnetStrategy = args.subnetStrategy ?? "Legacy";
-    const subnetSpecs = (() => {
-      const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
-      switch (a.allocator) {
-        case "LegacyAllocator":
-          const legacySubnetSpecs = getSubnetSpecsLegacy(
-            name,
-            cidrBlock,
-            availabilityZones,
-            parsedSpecs?.normalizedSpecs,
-          );
-          return legacySubnetSpecs;
-        case "ExplicitAllocator":
-          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
-        case "NewAllocator":
-        default:
-          return getSubnetSpecs(
-            name,
-            cidrBlock,
-            availabilityZones,
-            parsedSpecs?.normalizedSpecs,
-            args.availabilityZoneCidrMask,
-          );
-      }
-    })();
-
-    let subnetLayout = parsedSpecs?.normalizedSpecs;
-    if (subnetStrategy === "Legacy" || subnetLayout === undefined) {
-      subnetLayout = extractSubnetSpecInputFromLegacyLayout(subnetSpecs, name, availabilityZones);
-    }
-    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
-    if (
-      args.subnetStrategy === undefined &&
-      parsedSpecs !== undefined &&
-      parsedSpecs.isExplicitLayout === false
-    ) {
-      pulumi.log.warn(
-        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
-          subnetLayout,
-          undefined,
-          2,
-        )}`,
-        this,
-      );
-    }
-
-    validateSubnets(subnetSpecs, getOverlappingSubnets);
-
-    if (subnetStrategy === "Exact") {
-      validateNoGaps(cidrBlock, subnetSpecs);
-    }
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
@@ -353,6 +303,80 @@ export class Vpc extends schema.Vpc<VpcData> {
       isolatedSubnetIds,
       vpcId,
     };
+  }
+
+  private decideSubnetSpecs(
+    name: string,
+    cidrBlock: string,
+    availabilityZones: string[],
+    args: {
+      readonly subnetSpecs?: schema.SubnetSpecInputs[];
+      readonly subnetStrategy?: schema.SubnetAllocationStrategyInputs;
+      readonly availabilityZoneCidrMask?: number;
+    },
+  ): {
+    subnetSpecs: SubnetSpec[];
+    subnetLayout: schema.ResolvedSubnetSpecInputs[];
+  } {
+    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
+      args.subnetSpecs,
+      availabilityZones.length,
+    );
+
+    const subnetStrategy = args.subnetStrategy ?? "Legacy";
+    const subnetSpecs = (() => {
+      const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
+      switch (a.allocator) {
+        case "LegacyAllocator":
+          const legacySubnetSpecs = getSubnetSpecsLegacy(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+          );
+          return legacySubnetSpecs;
+        case "ExplicitAllocator":
+          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
+        case "NewAllocator":
+        default:
+          return getSubnetSpecs(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+            args.availabilityZoneCidrMask,
+          );
+      }
+    })();
+
+    let subnetLayout = parsedSpecs?.normalizedSpecs;
+    if (subnetStrategy === "Legacy" || subnetLayout === undefined) {
+      subnetLayout = extractSubnetSpecInputFromLegacyLayout(subnetSpecs, name, availabilityZones);
+    }
+
+    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
+    if (
+      args.subnetStrategy === undefined &&
+      parsedSpecs !== undefined &&
+      parsedSpecs.isExplicitLayout === false
+    ) {
+      pulumi.log.warn(
+        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
+          subnetLayout,
+          undefined,
+          2,
+        )}`,
+        this,
+      );
+    }
+
+    validateSubnets(subnetSpecs, getOverlappingSubnets);
+
+    if (subnetStrategy === "Exact") {
+      validateNoGaps(cidrBlock, subnetSpecs);
+    }
+
+    return { subnetLayout, subnetSpecs };
   }
 
   async getDefaultAzs(azCount?: number): Promise<string[]> {
