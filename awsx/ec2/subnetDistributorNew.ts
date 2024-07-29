@@ -98,7 +98,7 @@ function allocateSubnetCidrBlocks(
   vpcCidr: string,
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
-  azCidrMask?: number
+  azCidrMask?: number,
 ): Record<SubnetAllocationID, {cidrBlock: pulumi.Input<string>}> {
   const allocation: Record<string, {cidrBlock: pulumi.Input<string>}> = {};
   const vpcNetmask = new Netmask(vpcCidr);

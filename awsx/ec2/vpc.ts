@@ -91,19 +91,27 @@ export class Vpc extends schema.Vpc<VpcData> {
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
+    const subnetStrategy = args.subnetStrategy ?? "Legacy";
 
-    const decidedSpecs = this.decideSubnetSpecs(
+    const decidedSpecsAndLayout = this.decideSubnetSpecs(
       name,
       cidrBlock,
+      subnetStrategy,
       availabilityZones,
       args,
     );
 
-    let { subnetSpecs } = decidedSpecs;
+    const decidedSpecs = decidedSpecsAndLayout.subnetSpecs;
 
-    const subnetLayout = decidedSpecs.subnetLayout;
+    const subnetLayout = decidedSpecsAndLayout.subnetLayout;
 
-    subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateNatGatewayStrategy(natGatewayStrategy, ss));
+    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, subnetSpecs => {
+      validateSubnets(subnetSpecs, getOverlappingSubnets);
+      if (subnetStrategy === "Exact") {
+        validateNoGaps(cidrBlock, subnetSpecs);
+      }
+      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
+    });
 
     const sharedTags = { Name: name, ...args.tags };
 
@@ -315,6 +323,7 @@ export class Vpc extends schema.Vpc<VpcData> {
   private decideSubnetSpecs(
     name: string,
     cidrBlock: string,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
     availabilityZones: string[],
     args: {
       readonly subnetSpecs?: schema.SubnetSpecInputs[];
@@ -331,9 +340,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       availabilityZones.length,
     );
 
-    const subnetStrategy = args.subnetStrategy ?? "Legacy";
-
-    let subnetSpecs = (() => {
+    const subnetSpecs = (() => {
       const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
       switch (a.allocator) {
         case "LegacyAllocator":
@@ -382,16 +389,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
 
-    subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateSubnets(ss, getOverlappingSubnets));
-
-    if (subnetStrategy === "Exact") {
-      subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateNoGaps(cidrBlock, ss));
-    }
-
-    return {
-      subnetLayout,
-      subnetSpecs,
-    };
+    return {subnetLayout, subnetSpecs};
   }
 
   async getDefaultAzs(azCount?: number): Promise<string[]> {
