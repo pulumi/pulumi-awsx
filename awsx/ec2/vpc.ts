@@ -15,8 +15,11 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import * as vpcConverters from "./vpcConverters";
 import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
+import * as vpcConverters from "./vpcConverters";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
+import { SubnetSpec } from "./subnetSpecs";
+
 import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,

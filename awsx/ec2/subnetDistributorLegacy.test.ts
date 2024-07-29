@@ -14,7 +14,8 @@
 
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecsLegacy, SubnetSpec, validateRanges } from "./subnetDistributorLegacy";
+import { getSubnetSpecsLegacy, validateRanges } from "./subnetDistributorLegacy";
+import { SubnetSpec } from "./subnetSpecs";
 import { knownWorkingSubnets } from "./knownWorkingSubnets";
 import { extractSubnetSpecInputFromLegacyLayout } from "./vpc";
 import { getSubnetSpecs } from "./subnetDistributorNew";

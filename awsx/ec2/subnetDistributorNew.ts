@@ -18,16 +18,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { Netmask } from "netmask";
-
-export interface SubnetSpec {
-  cidrBlock: string;
-  type: SubnetTypeInputs;
-  azName: string;
-  subnetName: string;
-  tags?: pulumi.Input<{
-    [key: string]: pulumi.Input<string>;
-  }>;
-}
+import { SubnetSpec } from "./subnetSpecs";
 
 export function getSubnetSpecs(
   vpcName: string,
