@@ -489,7 +489,7 @@ class FargateService(pulumi.ComponentResource):
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
-                 task_definition_args: Optional[pulumi.InputType['FargateServiceTaskDefinitionArgs']] = None,
+                 task_definition_args: Optional[Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict']] = None,
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
@@ -525,7 +525,7 @@ class FargateService(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-        :param pulumi.InputType['FargateServiceTaskDefinitionArgs'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
+        :param Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
         """
         ...
@@ -578,7 +578,7 @@ class FargateService(pulumi.ComponentResource):
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
-                 task_definition_args: Optional[pulumi.InputType['FargateServiceTaskDefinitionArgs']] = None,
+                 task_definition_args: Optional[Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict']] = None,
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)

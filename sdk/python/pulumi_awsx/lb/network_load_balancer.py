@@ -494,7 +494,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
                  connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
-                 default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
+                 default_target_group: Optional[Union['TargetGroupArgs', 'TargetGroupArgsDict']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  dns_record_client_routing_policy: Optional[pulumi.Input[str]] = None,
@@ -508,8 +508,8 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
-                 listener: Optional[pulumi.InputType['ListenerArgs']] = None,
-                 listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
+                 listener: Optional[Union['ListenerArgs', 'ListenerArgsDict']] = None,
+                 listeners: Optional[Sequence[Union['ListenerArgs', 'ListenerArgsDict']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
@@ -529,7 +529,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] client_keep_alive: Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[str] customer_owned_ipv4_pool: ID of the customer owned ipv4 pool to use for this load balancer.
-        :param pulumi.InputType['TargetGroupArgs'] default_target_group: Options creating a default target group.
+        :param Union['TargetGroupArgs', 'TargetGroupArgsDict'] default_target_group: Options creating a default target group.
         :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
         :param pulumi.Input[str] desync_mitigation_mode: How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[str] dns_record_client_routing_policy: How traffic is distributed among the load balancer Availability Zones. Possible values are `any_availability_zone` (default), `availability_zone_affinity`, or `partial_availability_zone_affinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
@@ -543,8 +543,8 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
         :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
-        :param pulumi.InputType['ListenerArgs'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
-        :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
+        :param Union['ListenerArgs', 'ListenerArgsDict'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
+        :param Sequence[Union['ListenerArgs', 'ListenerArgsDict']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[bool] preserve_host_header: Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
@@ -583,7 +583,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
                  connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
-                 default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
+                 default_target_group: Optional[Union['TargetGroupArgs', 'TargetGroupArgsDict']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  dns_record_client_routing_policy: Optional[pulumi.Input[str]] = None,
@@ -597,8 +597,8 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
-                 listener: Optional[pulumi.InputType['ListenerArgs']] = None,
-                 listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
+                 listener: Optional[Union['ListenerArgs', 'ListenerArgsDict']] = None,
+                 listeners: Optional[Sequence[Union['ListenerArgs', 'ListenerArgsDict']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,

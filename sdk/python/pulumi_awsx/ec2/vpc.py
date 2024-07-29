@@ -362,12 +362,12 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
-                 nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
+                 nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[int] = None,
-                 subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
+                 subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
+                 vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
                  __props__=None):
         """
         The VPC component provides a VPC with configured subnets and NAT gateways.
@@ -426,12 +426,12 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[str] ipv6_cidr_block_network_border_group: By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
-        :param pulumi.InputType['NatGatewayConfigurationArgs'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+        :param Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
-        :param Sequence[pulumi.InputType['SubnetSpecArgs']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        :param Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        :param Sequence[pulumi.InputType['VpcEndpointSpecArgs']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
+        :param Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
         ...
     @overload
@@ -509,12 +509,12 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
-                 nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
+                 nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[int] = None,
-                 subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
+                 subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
+                 vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
