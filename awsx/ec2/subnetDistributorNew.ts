@@ -16,7 +16,7 @@
 // and used in accordance with MPL v2.0 license
 
 import * as pulumi from "@pulumi/pulumi";
-import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
+import { SubnetSpecInputs } from "../schema-types";
 import { Netmask } from "netmask";
 import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
 
@@ -27,6 +27,45 @@ export function getSubnetSpecs(
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
 ): SubnetSpecPartial[] {
+  const allocatedCidrBlocks = allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask);
+  const subnetSpecs = subnetInputs ?? defaultSubnetInputsBare();
+  return azNames.flatMap((azName, azIndex) => {
+    const azNum = azIndex + 1;
+    return subnetSpecs.map((subnetSpec, subnetIndex) => {
+      const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
+      const allocated = allocatedCidrBlocks[subnetAllocID];
+      return {
+        cidrBlock: allocated.cidrBlock,
+        type: subnetSpec.type,
+        azName,
+        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        tags: subnetSpec.tags,
+      };
+    });
+  });
+}
+
+type SubnetAllocationID = string;
+
+function subnetAllocationID(
+  vpcName: string,
+  subnetSpec: SubnetSpecInputs,
+  azNum: number,
+  subnetSpecIndex: number,
+): SubnetAllocationID {
+  const name = subnetName(vpcName, subnetSpec, azNum);
+  return `${name}#${subnetSpecIndex}`;
+}
+
+function allocateSubnetCidrBlocks(
+  vpcName: string,
+  vpcCidr: string,
+  azNames: string[],
+  subnetInputs: SubnetSpecInputs[] | undefined,
+  azCidrMask?: number
+): Record<SubnetAllocationID, {cidrBlock: pulumi.Input<string>}> {
+
+  const allocation: Record<string, {cidrBlock: pulumi.Input<string>}> = {};
   const vpcNetmask = new Netmask(vpcCidr);
   const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
 
@@ -51,11 +90,11 @@ export function getSubnetSpecs(
   }
 
   let currentAzNetmask = new Netmask(`${vpcNetmask.base}/${azBitmask}`);
-  const subnets: SubnetSpec[] = [];
+
   for (let azIndex = 0; azIndex < azNames.length; azIndex++) {
-    const azName = azNames[azIndex];
     const azNum = azIndex + 1;
     let currentSubnetNetmask: Netmask | undefined;
+    let subnetIndex = 0;
     for (const subnetSpec of subnetSpecs) {
       if (currentSubnetNetmask === undefined) {
         currentSubnetNetmask = new Netmask(
@@ -69,19 +108,24 @@ export function getSubnetSpecs(
         );
       }
       const subnetCidr = currentSubnetNetmask.toString();
-      subnets.push({
+      allocation[subnetName(vpcName, subnetSpec, azNum)+"#"+subnetIndex] = {
         cidrBlock: subnetCidr,
-        type: subnetSpec.type,
-        azName,
-        subnetName: subnetName(vpcName, subnetSpec, azNum),
-        tags: subnetSpec.tags,
-      });
+      };
+
+      subnetIndex++;
     }
 
     currentAzNetmask = currentAzNetmask.next();
   }
 
-  return subnets;
+  return allocation;
+}
+
+function defaultSubnetInputsBare(): SubnetSpecInputs[] {
+  return [
+    {type: "Private"},
+    {type: "Public"},
+  ];
 }
 
 export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
@@ -101,16 +145,10 @@ export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
   // Even if we've got more than /16, only use the first /16 for the default subnets.
   // Leave the rest for the user to add later if needed.
   const maxBitmask = Math.max(azBitmask, 16);
-  return [
-    {
-      type: "Private",
-      cidrMask: maxBitmask + 1,
-    },
-    {
-      type: "Public",
-      cidrMask: maxBitmask + 2,
-    },
-  ];
+  return defaultSubnetInputsBare().map((t, i) => ({
+    type: t.type,
+    cidrMask: maxBitmask + i + 1,
+  }));
 }
 
 export function nextNetmask(previous: Netmask, nextBitmask: number): Netmask {
