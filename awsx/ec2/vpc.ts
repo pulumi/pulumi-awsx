@@ -20,6 +20,7 @@ import * as vpcConverters from "./vpcConverters";
 import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
   getSubnetSpecs,
+  getSubnetSpecsWithPartialCidr,
   getSubnetSpecsExplicit,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
@@ -322,7 +323,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
   private decideSubnetSpecs(
     name: string,
-    cidrBlock: string,
+    cidrBlock: pulumi.Input<string>,
     subnetStrategy: schema.SubnetAllocationStrategyInputs,
     availabilityZones: string[],
     args: {
@@ -344,6 +345,10 @@ export class Vpc extends schema.Vpc<VpcData> {
       const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
       switch (a.allocator) {
         case "LegacyAllocator":
+          if (typeof cidrBlock !== "string") {
+            throw new Error(`Dynamically allocated cidrBlock ranges are not supported with subnetStrategy="Legacy". `+
+              `"Try using subnetStrategy="Auto"`);
+          }
           const legacySubnetSpecs = getSubnetSpecsLegacy(
             name,
             cidrBlock,
@@ -355,7 +360,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
         case "NewAllocator":
         default:
-          return getSubnetSpecs(
+          return getSubnetSpecsWithPartialCidr(
             name,
             cidrBlock,
             availabilityZones,
