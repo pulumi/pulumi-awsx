@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
+import * as vpcConverters from "./vpcConverters";
 import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
 import {
   getSubnetSpecs,
@@ -35,7 +36,7 @@ interface VpcData {
   igw: aws.ec2.InternetGateway;
   natGateways: aws.ec2.NatGateway[];
   eips: aws.ec2.Eip[];
-  subnetLayout: schema.ResolvedSubnetSpecInputs[];
+  subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   publicSubnetIds: pulumi.Output<string>[];
   privateSubnetIds: pulumi.Output<string>[];
   isolatedSubnetIds: pulumi.Output<string>[];
@@ -56,7 +57,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.internetGateway = data.igw;
     this.natGateways = data.natGateways;
     this.eips = data.eips;
-    this.subnetLayout = data.subnetLayout;
+
+    this.subnetLayout = data.subnetLayout.apply(vpcConverters.toResolvedSubnetSpecOutputs);
 
     this.privateSubnetIds = data.privateSubnetIds;
     this.publicSubnetIds = data.publicSubnetIds;
@@ -297,7 +299,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       routes,
       natGateways,
       eips,
-      subnetLayout: subnetLayout,
+      subnetLayout: pulumi.output(subnetLayout).apply(vpcConverters.toResolvedSubnetSpecOutputs),
       privateSubnetIds,
       publicSubnetIds,
       isolatedSubnetIds,
@@ -316,8 +318,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     },
   ): {
     subnetSpecs: SubnetSpec[];
-    subnetLayout: schema.ResolvedSubnetSpecInputs[];
+    subnetLayout: schema.ResolvedSubnetSpecOutputs[];
   } {
+
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
       args.subnetSpecs,
       availabilityZones.length,
@@ -376,7 +379,10 @@ export class Vpc extends schema.Vpc<VpcData> {
       validateNoGaps(cidrBlock, subnetSpecs);
     }
 
-    return { subnetLayout, subnetSpecs };
+    return {
+      subnetLayout: vpcConverters.toResolvedSubnetSpecOutputs(subnetLayout),
+      subnetSpecs,
+    };
   }
 
   async getDefaultAzs(azCount?: number): Promise<string[]> {
