@@ -91,30 +91,16 @@ export class Vpc extends schema.Vpc<VpcData> {
     const allocationIds = args.natGateways?.elasticIpAllocationIds ?? [];
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
-    const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
 
-    const decidedSpecsAndLayout = this.decideSubnetSpecs(
-      name,
-      cidrBlock,
-      subnetStrategy,
-      availabilityZones,
-      args,
-    );
-
-    const decidedSpecs = decidedSpecsAndLayout.subnetSpecs;
-
-    const subnetLayout = decidedSpecsAndLayout.subnetLayout;
-
-    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, subnetSpecs => {
-      validateSubnets(subnetSpecs, getOverlappingSubnets);
-      if (subnetStrategy === "Exact") {
-        validateNoGaps(cidrBlock, subnetSpecs);
-      }
-      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
-    });
-
     const sharedTags = { Name: name, ...args.tags };
+
+    const cidrBlock: pulumi.Input<string>|undefined =
+      (args.cidrBlock !== undefined)
+      ? args.cidrBlock
+      : ((args.ipv4NetmaskLength !== undefined)
+        ? undefined // ipv4NetmaskLength and cidrBlock inputs conflict in aws.ec2.Vpc
+        : "10.0.0.0/16");
 
     const vpc = new aws.ec2.Vpc(
       name,
@@ -126,6 +112,31 @@ export class Vpc extends schema.Vpc<VpcData> {
       { parent: this },
     );
     const vpcId = vpc.id;
+
+    // If the user did not specify cidrBlock, use the computed value allocated by the VPC.
+    const actualCidrBlock: pulumi.Input<string> = cidrBlock ?? vpc.cidrBlock;
+
+    const decidedSpecsAndLayout = this.decideSubnetSpecs(
+      name,
+      actualCidrBlock,
+      subnetStrategy,
+      availabilityZones,
+      args,
+    );
+
+    const decidedSpecs = decidedSpecsAndLayout.subnetSpecs;
+
+    const subnetLayout = decidedSpecsAndLayout.subnetLayout;
+
+    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, subnetSpecs => {
+      validateSubnets(subnetSpecs, getOverlappingSubnets);
+      // Only prompt cidrBlock is validated; probably OK as non-prompt cidrBlock implies that ipv4NetmaskLength was
+      // set to allocate the cidrBlock via IPAM.
+      if (subnetStrategy === "Exact" && typeof cidrBlock === "string") {
+        validateNoGaps(cidrBlock, subnetSpecs);
+      }
+      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
+    });
 
     // We unconditionally create the IGW (even if it's not needed because we
     // only have isolated subnets) because AWS does not charge for it, and
