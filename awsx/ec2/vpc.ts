@@ -95,12 +95,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const sharedTags = { Name: name, ...args.tags };
 
-    const cidrBlock: pulumi.Input<string>|undefined =
-      (args.cidrBlock !== undefined)
-      ? args.cidrBlock
-      : ((args.ipv4NetmaskLength !== undefined)
-        ? undefined // ipv4NetmaskLength and cidrBlock inputs conflict in aws.ec2.Vpc
-        : "10.0.0.0/16");
+    const cidrBlock = Vpc.decideCidrBlockVpcInput(args);
 
     const vpc = new aws.ec2.Vpc(
       name,
@@ -330,6 +325,23 @@ export class Vpc extends schema.Vpc<VpcData> {
       isolatedSubnetIds,
       vpcId,
     };
+  }
+
+  // Decide the cidrBlock input parameter for the underlying aws.ec2.Vpc resource.
+  private static decideCidrBlockVpcInput(args: schema.VpcArgs): pulumi.Input<string> | undefined {
+    // Respect the user-provided value, if any.
+    if (args.cidrBlock !== undefined) {
+      return args.cidrBlock;
+    }
+
+    // If the user wants to use an IPAM pool without specifying a cidrBlock, they must also define ipv4netMaskLength
+    // that instructs how the IPAM pool should allocate the cidrBlock. In this case the should not assume any defaults.
+    if (args.ipv4IpamPoolId !== undefined) {
+      return undefined;
+    }
+
+    // Historically this default was used when left unspecified.
+    return "10.0.0.0/16";
   }
 
   private decideSubnetSpecs(
