@@ -50,10 +50,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     protocol="HTTPS",
     ///     ssl_policy="ELBSecurityPolicy-2016-08",
     ///     certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         type="forward",
-    ///         target_group_arn=front_end_target_group.arn,
-    ///     )])
+    ///     default_actions=[{
+    ///         "type": "forward",
+    ///         "target_group_arn": front_end_target_group.arn,
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -219,10 +219,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     protocol="TLS",
     ///     certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
     ///     alpn_policy="HTTP2Preferred",
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         type="forward",
-    ///         target_group_arn=front_end_aws_lb_target_group["arn"],
-    ///     )])
+    ///     default_actions=[{
+    ///         "type": "forward",
+    ///         "target_group_arn": front_end_aws_lb_target_group["arn"],
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -366,14 +366,14 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     load_balancer_arn=front_end.arn,
     ///     port=80,
     ///     protocol="HTTP",
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         type="redirect",
-    ///         redirect=aws.lb.ListenerDefaultActionRedirectArgs(
-    ///             port="443",
-    ///             protocol="HTTPS",
-    ///             status_code="HTTP_301",
-    ///         ),
-    ///     )])
+    ///     default_actions=[{
+    ///         "type": "redirect",
+    ///         "redirect": {
+    ///             "port": "443",
+    ///             "protocol": "HTTPS",
+    ///             "status_code": "HTTP_301",
+    ///         },
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -538,14 +538,14 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     load_balancer_arn=front_end.arn,
     ///     port=80,
     ///     protocol="HTTP",
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         type="fixed-response",
-    ///         fixed_response=aws.lb.ListenerDefaultActionFixedResponseArgs(
-    ///             content_type="text/plain",
-    ///             message_body="Fixed response content",
-    ///             status_code="200",
-    ///         ),
-    ///     )])
+    ///     default_actions=[{
+    ///         "type": "fixed-response",
+    ///         "fixed_response": {
+    ///             "content_type": "text/plain",
+    ///             "message_body": "Fixed response content",
+    ///             "status_code": "200",
+    ///         },
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -725,18 +725,18 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     port=80,
     ///     protocol="HTTP",
     ///     default_actions=[
-    ///         aws.lb.ListenerDefaultActionArgs(
-    ///             type="authenticate-cognito",
-    ///             authenticate_cognito=aws.lb.ListenerDefaultActionAuthenticateCognitoArgs(
-    ///                 user_pool_arn=pool.arn,
-    ///                 user_pool_client_id=client.id,
-    ///                 user_pool_domain=domain.domain,
-    ///             ),
-    ///         ),
-    ///         aws.lb.ListenerDefaultActionArgs(
-    ///             type="forward",
-    ///             target_group_arn=front_end_target_group.arn,
-    ///         ),
+    ///         {
+    ///             "type": "authenticate-cognito",
+    ///             "authenticate_cognito": {
+    ///                 "user_pool_arn": pool.arn,
+    ///                 "user_pool_client_id": client.id,
+    ///                 "user_pool_domain": domain.domain,
+    ///             },
+    ///         },
+    ///         {
+    ///             "type": "forward",
+    ///             "target_group_arn": front_end_target_group.arn,
+    ///         },
     ///     ])
     /// ```
     /// ```csharp
@@ -976,21 +976,21 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     port=80,
     ///     protocol="HTTP",
     ///     default_actions=[
-    ///         aws.lb.ListenerDefaultActionArgs(
-    ///             type="authenticate-oidc",
-    ///             authenticate_oidc=aws.lb.ListenerDefaultActionAuthenticateOidcArgs(
-    ///                 authorization_endpoint="https://example.com/authorization_endpoint",
-    ///                 client_id="client_id",
-    ///                 client_secret="client_secret",
-    ///                 issuer="https://example.com",
-    ///                 token_endpoint="https://example.com/token_endpoint",
-    ///                 user_info_endpoint="https://example.com/user_info_endpoint",
-    ///             ),
-    ///         ),
-    ///         aws.lb.ListenerDefaultActionArgs(
-    ///             type="forward",
-    ///             target_group_arn=front_end_target_group.arn,
-    ///         ),
+    ///         {
+    ///             "type": "authenticate-oidc",
+    ///             "authenticate_oidc": {
+    ///                 "authorization_endpoint": "https://example.com/authorization_endpoint",
+    ///                 "client_id": "client_id",
+    ///                 "client_secret": "client_secret",
+    ///                 "issuer": "https://example.com",
+    ///                 "token_endpoint": "https://example.com/token_endpoint",
+    ///                 "user_info_endpoint": "https://example.com/user_info_endpoint",
+    ///             },
+    ///         },
+    ///         {
+    ///             "type": "forward",
+    ///             "target_group_arn": front_end_target_group.arn,
+    ///         },
     ///     ])
     /// ```
     /// ```csharp
@@ -1204,24 +1204,24 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// example = aws.lb.LoadBalancer("example",
     ///     load_balancer_type="gateway",
     ///     name="example",
-    ///     subnet_mappings=[aws.lb.LoadBalancerSubnetMappingArgs(
-    ///         subnet_id=example_aws_subnet["id"],
-    ///     )])
+    ///     subnet_mappings=[{
+    ///         "subnet_id": example_aws_subnet["id"],
+    ///     }])
     /// example_target_group = aws.lb.TargetGroup("example",
     ///     name="example",
     ///     port=6081,
     ///     protocol="GENEVE",
     ///     vpc_id=example_aws_vpc["id"],
-    ///     health_check=aws.lb.TargetGroupHealthCheckArgs(
-    ///         port="80",
-    ///         protocol="HTTP",
-    ///     ))
+    ///     health_check={
+    ///         "port": "80",
+    ///         "protocol": "HTTP",
+    ///     })
     /// example_listener = aws.lb.Listener("example",
     ///     load_balancer_arn=example.id,
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         target_group_arn=example_target_group.id,
-    ///         type="forward",
-    ///     )])
+    ///     default_actions=[{
+    ///         "target_group_arn": example_target_group.id,
+    ///         "type": "forward",
+    ///     }])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -1441,14 +1441,14 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// example_target_group = aws.lb.TargetGroup("example")
     /// example_listener = aws.lb.Listener("example",
     ///     load_balancer_arn=example.id,
-    ///     default_actions=[aws.lb.ListenerDefaultActionArgs(
-    ///         target_group_arn=example_target_group.id,
-    ///         type="forward",
-    ///     )],
-    ///     mutual_authentication=aws.lb.ListenerMutualAuthenticationArgs(
-    ///         mode="verify",
-    ///         trust_store_arn="...",
-    ///     ))
+    ///     default_actions=[{
+    ///         "target_group_arn": example_target_group.id,
+    ///         "type": "forward",
+    ///     }],
+    ///     mutual_authentication={
+    ///         "mode": "verify",
+    ///         "trust_store_arn": "...",
+    ///     })
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;

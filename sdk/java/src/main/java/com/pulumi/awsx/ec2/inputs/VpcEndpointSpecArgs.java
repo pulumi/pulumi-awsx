@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ec2.inputs;
 
 import com.pulumi.aws.ec2.inputs.VpcEndpointDnsOptionsArgs;
+import com.pulumi.aws.ec2.inputs.VpcEndpointSubnetConfigurationArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
@@ -127,6 +128,54 @@ import javax.annotation.Nullable;
  *             .vpcEndpointType(&#34;Interface&#34;)
  *             .securityGroupIds(sg1.id())
  *             .privateDnsEnabled(true)
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * ### Interface Endpoint Type with User-Defined IP Address
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import com.pulumi.aws.ec2.inputs.VpcEndpointSubnetConfigurationArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var ec2 = new VpcEndpoint(&#34;ec2&#34;, VpcEndpointArgs.builder()
+ *             .vpcId(example.id())
+ *             .serviceName(&#34;com.amazonaws.us-west-2.ec2&#34;)
+ *             .vpcEndpointType(&#34;Interface&#34;)
+ *             .subnetConfigurations(            
+ *                 VpcEndpointSubnetConfigurationArgs.builder()
+ *                     .ipv4(&#34;10.0.1.10&#34;)
+ *                     .subnetId(example1.id())
+ *                     .build(),
+ *                 VpcEndpointSubnetConfigurationArgs.builder()
+ *                     .ipv4(&#34;10.0.2.10&#34;)
+ *                     .subnetId(example2.id())
+ *                     .build())
+ *             .subnetIds(            
+ *                 example1.id(),
+ *                 example2.id())
  *             .build());
  * 
  *     }
@@ -318,6 +367,21 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
+     * Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+     * 
+     */
+    @Import(name="subnetConfigurations")
+    private @Nullable Output<List<VpcEndpointSubnetConfigurationArgs>> subnetConfigurations;
+
+    /**
+     * @return Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+     * 
+     */
+    public Optional<Output<List<VpcEndpointSubnetConfigurationArgs>>> subnetConfigurations() {
+        return Optional.ofNullable(this.subnetConfigurations);
+    }
+
+    /**
      * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
      * 
      */
@@ -373,6 +437,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         this.routeTableIds = $.routeTableIds;
         this.securityGroupIds = $.securityGroupIds;
         this.serviceName = $.serviceName;
+        this.subnetConfigurations = $.subnetConfigurations;
         this.subnetIds = $.subnetIds;
         this.tags = $.tags;
         this.vpcEndpointType = $.vpcEndpointType;
@@ -555,6 +620,37 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         public Builder serviceName(String serviceName) {
             $.serviceName = serviceName;
             return this;
+        }
+
+        /**
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetConfigurations(@Nullable Output<List<VpcEndpointSubnetConfigurationArgs>> subnetConfigurations) {
+            $.subnetConfigurations = subnetConfigurations;
+            return this;
+        }
+
+        /**
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetConfigurations(List<VpcEndpointSubnetConfigurationArgs> subnetConfigurations) {
+            return subnetConfigurations(Output.of(subnetConfigurations));
+        }
+
+        /**
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetConfigurations(VpcEndpointSubnetConfigurationArgs... subnetConfigurations) {
+            return subnetConfigurations(List.of(subnetConfigurations));
         }
 
         /**

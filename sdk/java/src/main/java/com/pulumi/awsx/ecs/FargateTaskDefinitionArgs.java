@@ -301,14 +301,14 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
     }
 
     /**
-     * Whether should track latest task definition or the one created with the resource. Default is `false`.
+     * Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
      * 
      */
     @Import(name="trackLatest")
     private @Nullable Output<Boolean> trackLatest;
 
     /**
-     * @return Whether should track latest task definition or the one created with the resource. Default is `false`.
+     * @return Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
      * 
      */
     public Optional<Output<Boolean>> trackLatest() {
@@ -710,7 +710,7 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
         }
 
         /**
-         * @param trackLatest Whether should track latest task definition or the one created with the resource. Default is `false`.
+         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
          * 
          * @return builder
          * 
@@ -721,7 +721,7 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
         }
 
         /**
-         * @param trackLatest Whether should track latest task definition or the one created with the resource. Default is `false`.
+         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
          * 
          * @return builder
          * 

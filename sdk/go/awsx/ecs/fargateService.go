@@ -58,9 +58,9 @@ type fargateServiceArgs struct {
 	DeploymentMinimumHealthyPercent *int `pulumi:"deploymentMinimumHealthyPercent"`
 	// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
 	DesiredCount *int `pulumi:"desiredCount"`
-	// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+	// Whether to enable Amazon ECS managed tags for the tasks within the service.
 	EnableEcsManagedTags *bool `pulumi:"enableEcsManagedTags"`
-	// Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+	// Whether to enable Amazon ECS Exec for the tasks within the service.
 	EnableExecuteCommand *bool `pulumi:"enableExecuteCommand"`
 	// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
 	ForceNewDeployment *bool `pulumi:"forceNewDeployment"`
@@ -80,11 +80,11 @@ type fargateServiceArgs struct {
 	PlacementConstraints []ecs.ServicePlacementConstraint `pulumi:"placementConstraints"`
 	// Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
 	PlatformVersion *string `pulumi:"platformVersion"`
-	// Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+	// Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
 	PropagateTags *string `pulumi:"propagateTags"`
 	// Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
 	SchedulingStrategy *string `pulumi:"schedulingStrategy"`
-	// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+	// ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
 	ServiceConnectConfiguration *ecs.ServiceServiceConnectConfiguration `pulumi:"serviceConnectConfiguration"`
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries *ecs.ServiceServiceRegistries `pulumi:"serviceRegistries"`
@@ -94,8 +94,10 @@ type fargateServiceArgs struct {
 	TaskDefinition *string `pulumi:"taskDefinition"`
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinitionArgs *FargateServiceTaskDefinition `pulumi:"taskDefinitionArgs"`
-	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
 	Triggers map[string]string `pulumi:"triggers"`
+	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+	VolumeConfiguration *ecs.ServiceVolumeConfiguration `pulumi:"volumeConfiguration"`
 }
 
 // The set of arguments for constructing a FargateService resource.
@@ -118,9 +120,9 @@ type FargateServiceArgs struct {
 	DeploymentMinimumHealthyPercent pulumi.IntPtrInput
 	// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
 	DesiredCount pulumi.IntPtrInput
-	// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+	// Whether to enable Amazon ECS managed tags for the tasks within the service.
 	EnableEcsManagedTags pulumi.BoolPtrInput
-	// Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+	// Whether to enable Amazon ECS Exec for the tasks within the service.
 	EnableExecuteCommand pulumi.BoolPtrInput
 	// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
 	ForceNewDeployment pulumi.BoolPtrInput
@@ -140,11 +142,11 @@ type FargateServiceArgs struct {
 	PlacementConstraints ecs.ServicePlacementConstraintArrayInput
 	// Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
 	PlatformVersion pulumi.StringPtrInput
-	// Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+	// Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
 	PropagateTags pulumi.StringPtrInput
 	// Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
 	SchedulingStrategy pulumi.StringPtrInput
-	// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+	// ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
 	ServiceConnectConfiguration ecs.ServiceServiceConnectConfigurationPtrInput
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries ecs.ServiceServiceRegistriesPtrInput
@@ -154,8 +156,10 @@ type FargateServiceArgs struct {
 	TaskDefinition pulumi.StringPtrInput
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinitionArgs *FargateServiceTaskDefinitionArgs
-	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
 	Triggers pulumi.StringMapInput
+	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+	VolumeConfiguration ecs.ServiceVolumeConfigurationPtrInput
 }
 
 func (FargateServiceArgs) ElementType() reflect.Type {

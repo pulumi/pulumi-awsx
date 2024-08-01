@@ -111,13 +111,13 @@ namespace Pulumi.Awsx.Ecs
         public Input<int>? DesiredCount { get; set; }
 
         /// <summary>
-        /// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+        /// Whether to enable Amazon ECS managed tags for the tasks within the service.
         /// </summary>
         [Input("enableEcsManagedTags")]
         public Input<bool>? EnableEcsManagedTags { get; set; }
 
         /// <summary>
-        /// Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+        /// Whether to enable Amazon ECS Exec for the tasks within the service.
         /// </summary>
         [Input("enableExecuteCommand")]
         public Input<bool>? EnableExecuteCommand { get; set; }
@@ -185,7 +185,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? PlatformVersion { get; set; }
 
         /// <summary>
-        /// Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+        /// Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         /// </summary>
         [Input("propagateTags")]
         public Input<string>? PropagateTags { get; set; }
@@ -197,7 +197,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? SchedulingStrategy { get; set; }
 
         /// <summary>
-        /// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        /// ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         /// </summary>
         [Input("serviceConnectConfiguration")]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceConnectConfigurationArgs>? ServiceConnectConfiguration { get; set; }
@@ -236,13 +236,19 @@ namespace Pulumi.Awsx.Ecs
         private InputMap<string>? _triggers;
 
         /// <summary>
-        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
         /// </summary>
         public InputMap<string> Triggers
         {
             get => _triggers ?? (_triggers = new InputMap<string>());
             set => _triggers = value;
         }
+
+        /// <summary>
+        /// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+        /// </summary>
+        [Input("volumeConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceVolumeConfigurationArgs>? VolumeConfiguration { get; set; }
 
         public FargateServiceArgs()
         {

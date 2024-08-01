@@ -499,6 +499,50 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Interface Endpoint Type with User-Defined IP Address
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
+//				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.1.10"),
+//						SubnetId: pulumi.Any(example1.Id),
+//					},
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.2.10"),
+//						SubnetId: pulumi.Any(example2.Id),
+//					},
+//				},
+//				SubnetIds: pulumi.StringArray{
+//					example1.Id,
+//					example2.Id,
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
 //
 // <!--Start PulumiCodeChooser -->
@@ -574,6 +618,8 @@ type VpcEndpointSpec struct {
 	SecurityGroupIds []string `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+	SubnetConfigurations []ec2.VpcEndpointSubnetConfiguration `pulumi:"subnetConfigurations"`
 	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
 	SubnetIds []string `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -700,6 +746,50 @@ type VpcEndpointSpecInput interface {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Interface Endpoint Type with User-Defined IP Address
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
+//				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.1.10"),
+//						SubnetId: pulumi.Any(example1.Id),
+//					},
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.2.10"),
+//						SubnetId: pulumi.Any(example2.Id),
+//					},
+//				},
+//				SubnetIds: pulumi.StringArray{
+//					example1.Id,
+//					example2.Id,
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
 //
 // <!--Start PulumiCodeChooser -->
@@ -775,6 +865,8 @@ type VpcEndpointSpecArgs struct {
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+	SubnetConfigurations ec2.VpcEndpointSubnetConfigurationArrayInput `pulumi:"subnetConfigurations"`
 	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
 	SubnetIds pulumi.StringArrayInput `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -927,6 +1019,50 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Interface Endpoint Type with User-Defined IP Address
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
+//				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.1.10"),
+//						SubnetId: pulumi.Any(example1.Id),
+//					},
+//					&ec2.VpcEndpointSubnetConfigurationArgs{
+//						Ipv4:     pulumi.String("10.0.2.10"),
+//						SubnetId: pulumi.Any(example2.Id),
+//					},
+//				},
+//				SubnetIds: pulumi.StringArray{
+//					example1.Id,
+//					example2.Id,
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
 //
 // <!--Start PulumiCodeChooser -->
@@ -1037,6 +1173,11 @@ func (o VpcEndpointSpecOutput) SecurityGroupIds() pulumi.StringArrayOutput {
 // The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 func (o VpcEndpointSpecOutput) ServiceName() pulumi.StringOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) string { return v.ServiceName }).(pulumi.StringOutput)
+}
+
+// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
+func (o VpcEndpointSpecOutput) SubnetConfigurations() ec2.VpcEndpointSubnetConfigurationArrayOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) []ec2.VpcEndpointSubnetConfiguration { return v.SubnetConfigurations }).(ec2.VpcEndpointSubnetConfigurationArrayOutput)
 }
 
 // The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
