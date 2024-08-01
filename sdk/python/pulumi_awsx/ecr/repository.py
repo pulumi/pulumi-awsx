@@ -145,7 +145,7 @@ class Repository(pulumi.ComponentResource):
                  force_delete: Optional[pulumi.Input[bool]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[str]] = None,
-                 lifecycle_policy: Optional[pulumi.InputType['LifecyclePolicyArgs']] = None,
+                 lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
@@ -161,7 +161,7 @@ class Repository(pulumi.ComponentResource):
                Defaults to `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']] image_scanning_configuration: Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
         :param pulumi.Input[str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
-        :param pulumi.InputType['LifecyclePolicyArgs'] lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+        :param Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict'] lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[str] name: Name of the repository.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
@@ -195,7 +195,7 @@ class Repository(pulumi.ComponentResource):
                  force_delete: Optional[pulumi.Input[bool]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[str]] = None,
-                 lifecycle_policy: Optional[pulumi.InputType['LifecyclePolicyArgs']] = None,
+                 lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):

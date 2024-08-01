@@ -350,15 +350,15 @@ class FargateTaskDefinition(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 container: Optional[pulumi.InputType['TaskDefinitionContainerDefinitionArgs']] = None,
-                 containers: Optional[Mapping[str, pulumi.InputType['TaskDefinitionContainerDefinitionArgs']]] = None,
+                 container: Optional[Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']] = None,
+                 containers: Optional[Mapping[str, Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']]] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
                  ephemeral_storage: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]] = None,
-                 execution_role: Optional[pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs']] = None,
+                 execution_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  family: Optional[pulumi.Input[str]] = None,
                  inference_accelerators: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionInferenceAcceleratorArgs']]]]] = None,
                  ipc_mode: Optional[pulumi.Input[str]] = None,
-                 log_group: Optional[pulumi.InputType['_awsx.DefaultLogGroupArgs']] = None,
+                 log_group: Optional[Union['_awsx.DefaultLogGroupArgs', '_awsx.DefaultLogGroupArgsDict']] = None,
                  memory: Optional[pulumi.Input[str]] = None,
                  pid_mode: Optional[pulumi.Input[str]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]] = None,
@@ -366,7 +366,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
                  runtime_platform: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]] = None,
                  skip_destroy: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 task_role: Optional[pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs']] = None,
+                 task_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  track_latest: Optional[pulumi.Input[bool]] = None,
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]] = None,
                  __props__=None):
@@ -377,22 +377,22 @@ class FargateTaskDefinition(pulumi.ComponentResource):
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.InputType['TaskDefinitionContainerDefinitionArgs'] container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+        :param Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict'] container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
                Either [container] or [containers] must be provided.
-        :param Mapping[str, pulumi.InputType['TaskDefinitionContainerDefinitionArgs']] containers: All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+        :param Mapping[str, Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']] containers: All the containers to make a TaskDefinition from.  Useful when creating a Service that will
                contain many containers within.
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
-        :param pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs'] execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+        :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
         :param pulumi.Input[str] family: An optional unique name for your task definition. If not specified, then a default will be created.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionInferenceAcceleratorArgs']]]] inference_accelerators: Configuration block(s) with Inference Accelerators settings. Detailed below.
         :param pulumi.Input[str] ipc_mode: IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
-        :param pulumi.InputType['_awsx.DefaultLogGroupArgs'] log_group: A set of volume blocks that containers in your task may use.
+        :param Union['_awsx.DefaultLogGroupArgs', '_awsx.DefaultLogGroupArgsDict'] log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
         :param pulumi.Input[str] pid_mode: Process namespace to use for the containers in the task. The valid values are `host` and `task`.
@@ -401,7 +401,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] runtime_platform: Configuration block for runtime_platform that containers in your task may use.
         :param pulumi.Input[bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        :param pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs'] task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+        :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
         :param pulumi.Input[bool] track_latest: Whether should track latest task definition or the one created with the resource. Default is `false`.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
@@ -432,15 +432,15 @@ class FargateTaskDefinition(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 container: Optional[pulumi.InputType['TaskDefinitionContainerDefinitionArgs']] = None,
-                 containers: Optional[Mapping[str, pulumi.InputType['TaskDefinitionContainerDefinitionArgs']]] = None,
+                 container: Optional[Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']] = None,
+                 containers: Optional[Mapping[str, Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']]] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
                  ephemeral_storage: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]] = None,
-                 execution_role: Optional[pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs']] = None,
+                 execution_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  family: Optional[pulumi.Input[str]] = None,
                  inference_accelerators: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionInferenceAcceleratorArgs']]]]] = None,
                  ipc_mode: Optional[pulumi.Input[str]] = None,
-                 log_group: Optional[pulumi.InputType['_awsx.DefaultLogGroupArgs']] = None,
+                 log_group: Optional[Union['_awsx.DefaultLogGroupArgs', '_awsx.DefaultLogGroupArgsDict']] = None,
                  memory: Optional[pulumi.Input[str]] = None,
                  pid_mode: Optional[pulumi.Input[str]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]] = None,
@@ -448,7 +448,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
                  runtime_platform: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]] = None,
                  skip_destroy: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 task_role: Optional[pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs']] = None,
+                 task_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  track_latest: Optional[pulumi.Input[bool]] = None,
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]] = None,
                  __props__=None):
