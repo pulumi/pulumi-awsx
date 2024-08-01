@@ -303,10 +303,9 @@ describe("picking subnet allocator", () => {
     expect(a.allocator).toBe("LegacyAllocator");
   });
 
-  // This behavior is suspect as NewAllocator supports working without any subnet specs defined.
-  it("picks legacy allocator for the auto strategy with no specs", () => {
+  it("picks NewAllocator for the auto strategy with no specs", () => {
     const a = Vpc.pickSubnetAllocator(undefined, "Auto");
-    expect(a.allocator).toBe("LegacyAllocator");
+    expect(a.allocator).toBe("NewAllocator");
   });
 
   // This behavior looks like a degenerate case perhaps marking the strategy as invalid and failing could be preferable.
