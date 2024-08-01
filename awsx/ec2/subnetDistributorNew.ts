@@ -169,16 +169,18 @@ function subnetName(vpcName: string, subnet: SubnetSpecInputs, azNum: number): s
   return `${vpcName}-${specName}-${azNum}`;
 }
 
+export type NormalizedSubnetInputs =
+  | { normalizedSpecs: SubnetSpecInputs[]; isExplicitLayout: false }
+  | { normalizedSpecs: ExplicitSubnetSpecInputs[]; isExplicitLayout: true }
+  | undefined;
+
 /* Ensure all inputs are consistent and fill in missing values with defaults
  * Ensure any specified, netmask, size or blocks are in agreement.
  */
 export function validateAndNormalizeSubnetInputs(
   subnetArgs: SubnetSpecInputs[] | undefined,
   availabilityZoneCount: number,
-):
-  | { normalizedSpecs: SubnetSpecInputs[]; isExplicitLayout: false }
-  | { normalizedSpecs: ExplicitSubnetSpecInputs[]; isExplicitLayout: true }
-  | undefined {
+): NormalizedSubnetInputs {
   if (subnetArgs === undefined) {
     return undefined;
   }
