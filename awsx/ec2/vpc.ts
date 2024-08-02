@@ -15,11 +15,9 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
-import * as vpcConverters from "./vpcConverters";
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
-import { SubnetSpec } from "./subnetSpecs";
-
+import * as vpcConverters from "./vpcConverters";
+import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,
@@ -94,14 +92,18 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const { subnetSpecs, subnetLayout } = this.decideSubnetSpecs(
+    const decidedSpecs = this.decideSubnetSpecs(
       name,
       cidrBlock,
       availabilityZones,
       args,
     );
 
-    validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
+    let { subnetSpecs } = decidedSpecs;
+
+    const subnetLayout = decidedSpecs.subnetLayout;
+
+    subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateNatGatewayStrategy(natGatewayStrategy, ss));
 
     const sharedTags = { Name: name, ...args.tags };
 
@@ -320,8 +322,8 @@ export class Vpc extends schema.Vpc<VpcData> {
       readonly availabilityZoneCidrMask?: number;
     },
   ): {
-    subnetSpecs: SubnetSpec[];
-    subnetLayout: schema.ResolvedSubnetSpecOutputs[];
+    subnetSpecs: SubnetSpecPartial[];
+    subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
 
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
@@ -330,7 +332,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     );
 
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
-    const subnetSpecs = (() => {
+
+    let subnetSpecs = (() => {
       const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
       switch (a.allocator) {
         case "LegacyAllocator":
@@ -355,10 +358,13 @@ export class Vpc extends schema.Vpc<VpcData> {
       }
     })();
 
-    let subnetLayout = parsedSpecs?.normalizedSpecs;
-    if (subnetStrategy === "Legacy" || subnetLayout === undefined) {
-      subnetLayout = extractSubnetSpecInputFromLegacyLayout(subnetSpecs, name, availabilityZones);
-    }
+    const subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]> =
+      (subnetStrategy === "Legacy" || parsedSpecs?.normalizedSpecs === undefined)
+      ? pulumi.output(subnetSpecs)
+        .apply(ss => extractSubnetSpecInputFromLegacyLayout(ss, name, availabilityZones))
+        .apply(vpcConverters.toResolvedSubnetSpecOutputs)
+      : pulumi.output(parsedSpecs?.normalizedSpecs)
+        .apply(vpcConverters.toResolvedSubnetSpecOutputs);
 
     // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
     if (
@@ -376,14 +382,14 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
 
-    validateSubnets(subnetSpecs, getOverlappingSubnets);
+    subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateSubnets(ss, getOverlappingSubnets));
 
     if (subnetStrategy === "Exact") {
-      validateNoGaps(cidrBlock, subnetSpecs);
+      subnetSpecs = validatePartialSubnetSpecs(subnetSpecs, ss => validateNoGaps(cidrBlock, ss));
     }
 
     return {
-      subnetLayout: vpcConverters.toResolvedSubnetSpecOutputs(subnetLayout),
+      subnetLayout,
       subnetSpecs,
     };
   }
@@ -425,7 +431,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
   subnetSpecs: SubnetSpec[],
   vpcName: string,
   availabilityZones: string[],
-) {
+): schema.SubnetSpecInputs[] {
   const singleAzLength = subnetSpecs.length / availabilityZones.length;
   function extractName(subnetName: string, type: schema.SubnetTypeInputs) {
     const withoutVpcPrefix = subnetName.replace(`${vpcName}-`, "");
@@ -566,7 +572,7 @@ export function shouldCreateNatGateway(
   }
 }
 
-export function compareSubnetSpecs(spec1: SubnetSpec, spec2: SubnetSpec): number {
+export function compareSubnetSpecs(spec1: Omit<SubnetSpec, "cidrBlock">, spec2: Omit<SubnetSpec, "cidrBlock">): number {
   if (spec1.type === spec2.type) {
     return 0;
   }

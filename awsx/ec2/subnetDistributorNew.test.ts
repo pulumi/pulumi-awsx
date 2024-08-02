@@ -25,6 +25,7 @@ import {
 import { Netmask } from "netmask";
 import { getOverlappingSubnets, validateNoGaps, validateSubnets } from "./vpc";
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
+import { validatePartialSubnetSpecs } from "./subnetSpecs";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
   return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
@@ -54,24 +55,24 @@ describe("default subnet layout", () => {
     it.each([16, 17, 18, 19, 20, 21, 22, 23, 24])(
       "/%i AZ creates single private & public with staggered sizes",
       (azCidrMask) => {
-        expect(getDefaultSubnetSizes(azCidrMask)).toMatchObject([
-          {
-            type: "Private",
-            cidrMask: azCidrMask + 1,
-          },
-          {
-            type: "Public",
-            cidrMask: azCidrMask + 2,
-          },
-        ]);
+        const vpcCidr = `10.0.0.0/${azCidrMask}`;
+        const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], undefined);
+
+        validatePartialSubnetSpecs(result, ss => {
+          const x = ss.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
+          expect(x).toMatchObject([
+            {
+              type: "Private",
+              cidrMask: azCidrMask + 1,
+            },
+            {
+              type: "Public",
+              cidrMask: azCidrMask + 2,
+            },
+          ]);
+        });
       },
     );
-
-    function getDefaultSubnetSizes(azSize: number) {
-      const vpcCidr = `10.0.0.0/${azSize}`;
-      const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], undefined);
-      return result.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
-    }
   });
 
   it("should have smaller subnets than the vpc", () => {
@@ -85,13 +86,14 @@ describe("default subnet layout", () => {
         ({ vpcCidrMask, azs, subnetSpecs }) => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
-          const result = getSubnetSpecs("vpcName", vpcCidr, azs, subnetSpecs);
-
-          for (const subnet of result) {
-            const subnetMask = getCidrMask(subnet.cidrBlock);
-            // Larger mask means smaller subnet
-            expect(subnetMask).toBeGreaterThan(vpcCidrMask);
-          }
+          const specs = getSubnetSpecs("vpcName", vpcCidr, azs, subnetSpecs);
+          validatePartialSubnetSpecs(specs, result => {
+            for (const subnet of result) {
+              const subnetMask = getCidrMask(subnet.cidrBlock);
+              // Larger mask means smaller subnet
+              expect(subnetMask).toBeGreaterThan(vpcCidrMask);
+            }
+          });
         },
       ),
     );
@@ -127,21 +129,23 @@ describe("default subnet layout", () => {
           ["us-east-1a"],
           [{ type: "Private" }, { type: "Public" }, { type: "Isolated" }],
         );
-        const masks = result.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
-        expect(masks).toMatchObject([
-          {
-            type: "Private",
-            cidrMask: azCidrMask + 2,
-          },
-          {
-            type: "Public",
-            cidrMask: azCidrMask + 2,
-          },
-          {
-            type: "Isolated",
-            cidrMask: azCidrMask + 2,
-          },
-        ]);
+        validatePartialSubnetSpecs(result, ss => {
+          const masks = ss.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
+          expect(masks).toMatchObject([
+            {
+              type: "Private",
+              cidrMask: azCidrMask + 2,
+            },
+            {
+              type: "Public",
+              cidrMask: azCidrMask + 2,
+            },
+            {
+              type: "Isolated",
+              cidrMask: azCidrMask + 2,
+            },
+          ]);
+        });
       },
     );
   });
@@ -170,7 +174,7 @@ describe("default subnet layout", () => {
 
           const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], subnetSpecs);
 
-          validateSubnets(result, getOverlappingSubnets);
+          validatePartialSubnetSpecs(result, ss => validateSubnets(ss, getOverlappingSubnets));
         },
       ),
     );
@@ -246,7 +250,7 @@ describe("validating exact layouts", () => {
       [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
     );
     expect(() => {
-      validateNoGaps(vpcCidr, result);
+      validatePartialSubnetSpecs(result, ss => validateNoGaps(vpcCidr, ss));
     }).toThrowError(
       "Please fix the following gaps: vpcName-isolated-1 (ending 10.0.191.254) ends before VPC ends (at 10.0.255.254})",
     );

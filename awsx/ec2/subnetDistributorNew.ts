@@ -18,7 +18,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { Netmask } from "netmask";
-import { SubnetSpec } from "./subnetSpecs";
+import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
 
 export function getSubnetSpecs(
   vpcName: string,
@@ -26,7 +26,7 @@ export function getSubnetSpecs(
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-): SubnetSpec[] {
+): SubnetSpecPartial[] {
   const vpcNetmask = new Netmask(vpcCidr);
   const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
 
