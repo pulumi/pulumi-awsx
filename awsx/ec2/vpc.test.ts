@@ -14,7 +14,11 @@
 
 import fc from "fast-check";
 import { getOverlappingSubnets } from ".";
-import { NatGatewayStrategyInputs, SubnetTypeInputs } from "../schema-types";
+import {
+  NatGatewayStrategyInputs,
+  SubnetTypeInputs,
+  SubnetAllocationStrategyInputs,
+} from "../schema-types";
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
   compareSubnetSpecs,
@@ -24,6 +28,7 @@ import {
   validateEips,
   validateNatGatewayStrategy,
   validateSubnets,
+  Vpc,
 } from "./vpc";
 import { Netmask, long2ip, ip2long } from "netmask";
 
@@ -289,5 +294,52 @@ describe("finding subnet gaps", () => {
         },
       ),
     );
+  });
+});
+
+describe("picking subnet allocator", () => {
+  it("picks legacy allocator for the legacy strategy", () => {
+    const a = Vpc.pickSubnetAllocator(undefined, "Legacy");
+    expect(a.allocator).toBe("LegacyAllocator");
+  });
+
+  // This behavior is suspect as NewAllocator supports working without any subnet specs defined.
+  it("picks legacy allocator for the auto strategy with no specs", () => {
+    const a = Vpc.pickSubnetAllocator(undefined, "Auto");
+    expect(a.allocator).toBe("LegacyAllocator");
+  });
+
+  // This behavior looks like a degenerate case perhaps marking the strategy as invalid and failing could be preferable.
+  it("picks legacy allocator for the exact strategy with no specs", () => {
+    const a = Vpc.pickSubnetAllocator(undefined, "Exact");
+    expect(a.allocator).toBe("LegacyAllocator");
+  });
+
+  it("picks explicit allocator for explicit layout unless legacy is asked for", () => {
+    const f = (strat: SubnetAllocationStrategyInputs) =>
+      Vpc.pickSubnetAllocator(
+        {
+          normalizedSpecs: [{ type: "Private", cidrBlocks: ["10.2.0.0/16"] }],
+          isExplicitLayout: true,
+        },
+        strat,
+      ).allocator;
+    expect(f("Legacy")).toBe("LegacyAllocator");
+    expect(f("Auto")).toBe("ExplicitAllocator");
+    expect(f("Exact")).toBe("ExplicitAllocator");
+  });
+
+  it("picks new allocator for non-explicit layout unless legacy is asked for", () => {
+    const f = (strat: SubnetAllocationStrategyInputs) =>
+      Vpc.pickSubnetAllocator(
+        {
+          normalizedSpecs: [{ type: "Private" }],
+          isExplicitLayout: false,
+        },
+        strat,
+      ).allocator;
+    expect(f("Legacy")).toBe("LegacyAllocator");
+    expect(f("Auto")).toBe("NewAllocator");
+    expect(f("Exact")).toBe("NewAllocator"); // this case is a bit suspect
   });
 });

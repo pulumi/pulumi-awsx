@@ -20,6 +20,8 @@ import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,
   validateAndNormalizeSubnetInputs,
+  NormalizedSubnetInputs,
+  ExplicitSubnetSpecInputs,
 } from "./subnetDistributorNew";
 import { Netmask } from "netmask";
 
@@ -87,33 +89,35 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const parsedSpecs = validateAndNormalizeSubnetInputs(
+    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
       args.subnetSpecs,
       availabilityZones.length,
     );
 
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const subnetSpecs = (() => {
-      if (parsedSpecs === undefined || subnetStrategy === "Legacy") {
-        const legacySubnetSpecs = getSubnetSpecsLegacy(
-          name,
-          cidrBlock,
-          availabilityZones,
-          parsedSpecs?.normalizedSpecs,
-        );
-        return legacySubnetSpecs;
+      const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
+      switch (a.allocator) {
+        case "LegacyAllocator":
+          const legacySubnetSpecs = getSubnetSpecsLegacy(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+          );
+          return legacySubnetSpecs;
+        case "ExplicitAllocator":
+          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
+        case "NewAllocator":
+        default:
+          return getSubnetSpecs(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+            args.availabilityZoneCidrMask,
+          );
       }
-
-      if (parsedSpecs.isExplicitLayout) {
-        return getSubnetSpecsExplicit(name, availabilityZones, parsedSpecs.normalizedSpecs);
-      }
-      return getSubnetSpecs(
-        name,
-        cidrBlock,
-        availabilityZones,
-        parsedSpecs.normalizedSpecs,
-        args.availabilityZoneCidrMask,
-      );
     })();
 
     let subnetLayout = parsedSpecs?.normalizedSpecs;
@@ -360,6 +364,22 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
     return result.names.slice(0, desiredCount);
+  }
+
+  // Internal. Exported for testing.
+  public static pickSubnetAllocator(
+    parsedSpecs: NormalizedSubnetInputs,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+  ):
+    | { allocator: "LegacyAllocator" | "NewAllocator" }
+    | { allocator: "ExplicitAllocator"; specs: ExplicitSubnetSpecInputs[] } {
+    if (parsedSpecs === undefined || subnetStrategy === "Legacy") {
+      return { allocator: "LegacyAllocator" };
+    }
+    if (parsedSpecs.isExplicitLayout) {
+      return { allocator: "ExplicitAllocator", specs: parsedSpecs.normalizedSpecs };
+    }
+    return { allocator: "NewAllocator" };
   }
 }
 
