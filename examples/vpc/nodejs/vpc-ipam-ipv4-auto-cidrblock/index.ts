@@ -35,6 +35,7 @@ const myVpc = new awsx.ec2.Vpc("myVpc", {
   ipv4IpamPoolId: myVpcIpamPool.id,
   ipv4NetmaskLength: 24,
   tags: tags,
+  subnetStrategy: "Auto",
 }, {
   dependsOn: [myVpcIpamPoolCidr],
 });
