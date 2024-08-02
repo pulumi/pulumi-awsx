@@ -58,7 +58,7 @@ describe("default subnet layout", () => {
         const vpcCidr = `10.0.0.0/${azCidrMask}`;
         const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], undefined);
 
-        validatePartialSubnetSpecs(result, ss => {
+        validatePartialSubnetSpecs(result, (ss) => {
           const x = ss.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
           expect(x).toMatchObject([
             {
@@ -87,7 +87,7 @@ describe("default subnet layout", () => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
           const specs = getSubnetSpecs("vpcName", vpcCidr, azs, subnetSpecs);
-          validatePartialSubnetSpecs(specs, result => {
+          validatePartialSubnetSpecs(specs, (result) => {
             for (const subnet of result) {
               const subnetMask = getCidrMask(subnet.cidrBlock);
               // Larger mask means smaller subnet
@@ -129,7 +129,7 @@ describe("default subnet layout", () => {
           ["us-east-1a"],
           [{ type: "Private" }, { type: "Public" }, { type: "Isolated" }],
         );
-        validatePartialSubnetSpecs(result, ss => {
+        validatePartialSubnetSpecs(result, (ss) => {
           const masks = ss.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
           expect(masks).toMatchObject([
             {
@@ -174,7 +174,7 @@ describe("default subnet layout", () => {
 
           const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], subnetSpecs);
 
-          validatePartialSubnetSpecs(result, ss => validateSubnets(ss, getOverlappingSubnets));
+          validatePartialSubnetSpecs(result, (ss) => validateSubnets(ss, getOverlappingSubnets));
         },
       ),
     );
@@ -250,7 +250,7 @@ describe("validating exact layouts", () => {
       [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
     );
     expect(() => {
-      validatePartialSubnetSpecs(result, ss => validateNoGaps(vpcCidr, ss));
+      validatePartialSubnetSpecs(result, (ss) => validateNoGaps(vpcCidr, ss));
     }).toThrowError(
       "Please fix the following gaps: vpcName-isolated-1 (ending 10.0.191.254) ends before VPC ends (at 10.0.255.254})",
     );

@@ -28,7 +28,13 @@ export function getSubnetSpecsWithPartialCidr(
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
 ): SubnetSpecPartial[] {
-  const allocatedCidrBlocks = allocateSubnetCidrBlocksInput(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask);
+  const allocatedCidrBlocks = allocateSubnetCidrBlocksInput(
+    vpcName,
+    vpcCidr,
+    azNames,
+    subnetInputs,
+    azCidrMask,
+  );
   const subnetSpecs = subnetInputs ?? defaultSubnetInputsBare();
   return azNames.flatMap((azName, azIndex) => {
     const azNum = azIndex + 1;
@@ -75,19 +81,24 @@ export function allocateSubnetCidrBlocksInput(
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-): Record<SubnetAllocationID, {cidrBlock: pulumi.Input<string>}> {
+): Record<SubnetAllocationID, { cidrBlock: pulumi.Input<string> }> {
   if (typeof vpcCidr === "string") {
     return allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask);
   }
-  const alloc = pulumi.output(vpcCidr).apply(vpcCidr =>
-    allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask));
+  const alloc = pulumi
+    .output(vpcCidr)
+    .apply((vpcCidr) =>
+      allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask),
+    );
   const subnetSpecs = subnetInputs ?? defaultSubnetInputsBare();
-  const result: Record<SubnetAllocationID, {cidrBlock: pulumi.Input<string>}> = {};
+  const result: Record<SubnetAllocationID, { cidrBlock: pulumi.Input<string> }> = {};
   azNames.forEach((_, azIndex) => {
     const azNum = azIndex + 1;
     return subnetSpecs.map((subnetSpec, subnetIndex) => {
       const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
-      result[subnetAllocID] = {cidrBlock: alloc.apply(a => pulumi.output(a[subnetAllocID].cidrBlock))};
+      result[subnetAllocID] = {
+        cidrBlock: alloc.apply((a) => pulumi.output(a[subnetAllocID].cidrBlock)),
+      };
     });
   });
   return result;
@@ -99,8 +110,8 @@ function allocateSubnetCidrBlocks(
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-): Record<SubnetAllocationID, {cidrBlock: pulumi.Input<string>}> {
-  const allocation: Record<string, {cidrBlock: pulumi.Input<string>}> = {};
+): Record<SubnetAllocationID, { cidrBlock: pulumi.Input<string> }> {
+  const allocation: Record<string, { cidrBlock: pulumi.Input<string> }> = {};
   const vpcNetmask = new Netmask(vpcCidr);
   const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
 
@@ -158,10 +169,7 @@ function allocateSubnetCidrBlocks(
 }
 
 function defaultSubnetInputsBare(): SubnetSpecInputs[] {
-  return [
-    {type: "Private"},
-    {type: "Public"},
-  ];
+  return [{ type: "Private" }, { type: "Public" }];
 }
 
 export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {

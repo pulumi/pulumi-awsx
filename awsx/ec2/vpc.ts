@@ -123,7 +123,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const subnetLayout = decidedSpecsAndLayout.subnetLayout;
 
-    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, subnetSpecs => {
+    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, (subnetSpecs) => {
       validateSubnets(subnetSpecs, getOverlappingSubnets);
       // Only prompt cidrBlock is validated; probably OK as non-prompt cidrBlock implies that ipv4NetmaskLength was
       // set to allocate the cidrBlock via IPAM.
@@ -358,7 +358,6 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
-
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
       args.subnetSpecs,
       availabilityZones.length,
@@ -369,8 +368,10 @@ export class Vpc extends schema.Vpc<VpcData> {
       switch (a.allocator) {
         case "LegacyAllocator":
           if (typeof cidrBlock !== "string") {
-            throw new Error(`Dynamically allocated cidrBlock ranges are not supported with subnetStrategy="Legacy". `+
-              `"Try using subnetStrategy="Auto"`);
+            throw new Error(
+              `Dynamically allocated cidrBlock ranges are not supported with subnetStrategy="Legacy". ` +
+                `"Try using subnetStrategy="Auto"`,
+            );
           }
           const legacySubnetSpecs = getSubnetSpecsLegacy(
             name,
@@ -394,12 +395,14 @@ export class Vpc extends schema.Vpc<VpcData> {
     })();
 
     const subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]> =
-      (subnetStrategy === "Legacy" || parsedSpecs?.normalizedSpecs === undefined)
-      ? pulumi.output(subnetSpecs)
-        .apply(ss => extractSubnetSpecInputFromLegacyLayout(ss, name, availabilityZones))
-        .apply(vpcConverters.toResolvedSubnetSpecOutputs)
-      : pulumi.output(parsedSpecs?.normalizedSpecs)
-        .apply(vpcConverters.toResolvedSubnetSpecOutputs);
+      subnetStrategy === "Legacy" || parsedSpecs?.normalizedSpecs === undefined
+        ? pulumi
+            .output(subnetSpecs)
+            .apply((ss) => extractSubnetSpecInputFromLegacyLayout(ss, name, availabilityZones))
+            .apply(vpcConverters.toResolvedSubnetSpecOutputs)
+        : pulumi
+            .output(parsedSpecs?.normalizedSpecs)
+            .apply(vpcConverters.toResolvedSubnetSpecOutputs);
 
     // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
     if (
@@ -417,7 +420,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
 
-    return {subnetLayout, subnetSpecs};
+    return { subnetLayout, subnetSpecs };
   }
 
   async getDefaultAzs(azCount?: number): Promise<string[]> {
@@ -598,7 +601,10 @@ export function shouldCreateNatGateway(
   }
 }
 
-export function compareSubnetSpecs(spec1: Omit<SubnetSpec, "cidrBlock">, spec2: Omit<SubnetSpec, "cidrBlock">): number {
+export function compareSubnetSpecs(
+  spec1: Omit<SubnetSpec, "cidrBlock">,
+  spec2: Omit<SubnetSpec, "cidrBlock">,
+): number {
   if (spec1.type === spec2.type) {
     return 0;
   }

@@ -19,11 +19,15 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 
-export function toResolvedSubnetSpecOutputs(s: schema.SubnetSpecInputs[]): schema.ResolvedSubnetSpecOutputs[] {
+export function toResolvedSubnetSpecOutputs(
+  s: schema.SubnetSpecInputs[],
+): schema.ResolvedSubnetSpecOutputs[] {
   return s.map(convSubnetSpecInputsToResolvedSubnetSpecOutputs);
 }
 
-function convSubnetSpecInputsToResolvedSubnetSpecOutputs(s: schema.SubnetSpecInputs): schema.ResolvedSubnetSpecOutputs {
+function convSubnetSpecInputsToResolvedSubnetSpecOutputs(
+  s: schema.SubnetSpecInputs,
+): schema.ResolvedSubnetSpecOutputs {
   return {
     name: s.name ? pulumi.output(s.name) : undefined,
     cidrBlocks: s.cidrBlocks ? pulumi.output(s.cidrBlocks) : undefined,
