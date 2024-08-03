@@ -243,6 +243,7 @@ func TestVpcIpam(t *testing.T) {
 			With(integration.ProgramTestOptions{
 				Dir:                    dir,
 				RetryFailedSteps:       true,
+				NoParallel:             true, // test account has N=1 limit for IPAM
 				Quick:                  true,
 				ExtraRuntimeValidation: validate,
 			})
@@ -303,6 +304,7 @@ func TestVpcIpam(t *testing.T) {
 			With(integration.ProgramTestOptions{
 				Dir:                    dir,
 				RetryFailedSteps:       true,
+				NoParallel:             true, // test account has N=1 limit for IPAM
 				Quick:                  true,
 				ExtraRuntimeValidation: validate,
 			})
