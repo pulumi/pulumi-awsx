@@ -373,7 +373,12 @@ export class Vpc extends schema.Vpc<VpcData> {
   ):
     | { allocator: "LegacyAllocator" | "NewAllocator" }
     | { allocator: "ExplicitAllocator"; specs: ExplicitSubnetSpecInputs[] } {
-    if (parsedSpecs === undefined || subnetStrategy === "Legacy") {
+    if (parsedSpecs === undefined) {
+      return subnetStrategy === "Auto"
+        ? { allocator: "NewAllocator" }
+        : { allocator: "LegacyAllocator" };
+    }
+    if (subnetStrategy === "Legacy") {
       return { allocator: "LegacyAllocator" };
     }
     if (parsedSpecs.isExplicitLayout) {
