@@ -171,6 +171,7 @@ export interface EC2ServiceArgs {
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
 }
 export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -239,6 +240,7 @@ export interface FargateServiceArgs {
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
 }
 export abstract class FargateTaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -627,6 +629,7 @@ export interface VpcEndpointSpecInputs {
     readonly routeTableIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly securityGroupIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly serviceName: string;
+    readonly subnetConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ec2.VpcEndpointSubnetConfiguration>[]>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly vpcEndpointType?: pulumi.Input<string>;
@@ -640,6 +643,7 @@ export interface VpcEndpointSpecOutputs {
     readonly routeTableIds?: pulumi.Output<string[]>;
     readonly securityGroupIds?: pulumi.Output<string[]>;
     readonly serviceName: string;
+    readonly subnetConfigurations?: pulumi.Output<aws.types.output.ec2.VpcEndpointSubnetConfiguration[]>;
     readonly subnetIds?: pulumi.Output<string[]>;
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly vpcEndpointType?: pulumi.Output<string>;
@@ -1088,6 +1092,7 @@ export interface TargetGroupInputs {
     readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly targetFailovers?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetFailover>[]>;
+    readonly targetGroupHealth?: pulumi.Input<aws.types.input.lb.TargetGroupTargetGroupHealth>;
     readonly targetHealthStates?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetHealthState>[]>;
     readonly targetType?: pulumi.Input<string>;
     readonly vpcId?: pulumi.Input<string>;
@@ -1112,6 +1117,7 @@ export interface TargetGroupOutputs {
     readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly targetFailovers?: pulumi.Output<aws.types.output.lb.TargetGroupTargetFailover[]>;
+    readonly targetGroupHealth?: pulumi.Output<aws.types.output.lb.TargetGroupTargetGroupHealth>;
     readonly targetHealthStates?: pulumi.Output<aws.types.output.lb.TargetGroupTargetHealthState[]>;
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
