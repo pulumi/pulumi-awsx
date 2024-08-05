@@ -75,6 +75,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     args: schema.VpcArgs;
     opts: pulumi.ComponentResourceOptions;
   }): Promise<VpcData> {
+    Vpc.validateVpcArgs(props.args);
+
     const { name, args } = props;
     if (args.availabilityZoneNames && args.numberOfAvailabilityZones) {
       throw new Error(
@@ -301,6 +303,20 @@ export class Vpc extends schema.Vpc<VpcData> {
       isolatedSubnetIds,
       vpcId: vpc.id,
     };
+  }
+
+  // Internal. Exported for testing.
+  public static validateVpcArgs(args: schema.VpcArgs) {
+    if (args.ipv4IpamPoolId !== undefined) {
+      if (args.cidrBlock !== undefined && args.ipv4NetmaskLength !== undefined) {
+        throw new Error("Only one of 'cidrBlock', 'ipv4NetmaskLength' is allowed.");
+      }
+      if (args.ipv4NetmaskLength === undefined && args.cidrBlock === undefined) {
+        throw new Error(
+          "If 'ipv4IpamPoolId' is specified, 'ipv4NetmaskLength' or 'cidrBlock' must also be specified.",
+        );
+      }
+    }
   }
 
   // Decide the cidrBlock input parameter for the underlying aws.ec2.Vpc resource.
