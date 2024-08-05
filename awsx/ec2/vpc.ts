@@ -19,7 +19,6 @@ import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import * as vpcConverters from "./vpcConverters";
 import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
-  getSubnetSpecs,
   getSubnetSpecsWithPartialCidr,
   getSubnetSpecsExplicit,
   validateAndNormalizeSubnetInputs,
@@ -97,41 +96,18 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = Vpc.decideCidrBlockVpcInput(args);
 
-    const vpc = new aws.ec2.Vpc(
+    const {
+      vpc,
+      subnets: { subnetSpecs, subnetLayout },
+    } = this.createInnerVpc(
       name,
-      {
-        ...args,
-        cidrBlock,
-        tags: sharedTags,
-      },
-      { parent: this },
-    );
-    const vpcId = vpc.id;
-
-    // If the user did not specify cidrBlock, use the computed value allocated by the VPC.
-    const actualCidrBlock: pulumi.Input<string> = cidrBlock ?? vpc.cidrBlock;
-
-    const decidedSpecsAndLayout = this.decideSubnetSpecs(
-      name,
-      actualCidrBlock,
       subnetStrategy,
       availabilityZones,
+      natGatewayStrategy,
       args,
+      cidrBlock,
+      sharedTags,
     );
-
-    const decidedSpecs = decidedSpecsAndLayout.subnetSpecs;
-
-    const subnetLayout = decidedSpecsAndLayout.subnetLayout;
-
-    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, (subnetSpecs) => {
-      validateSubnets(subnetSpecs, getOverlappingSubnets);
-      // Only prompt cidrBlock is validated; probably OK as non-prompt cidrBlock implies that ipv4NetmaskLength was
-      // set to allocate the cidrBlock via IPAM.
-      if (subnetStrategy === "Exact" && typeof cidrBlock === "string") {
-        validateNoGaps(cidrBlock, subnetSpecs);
-      }
-      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
-    });
 
     // We unconditionally create the IGW (even if it's not needed because we
     // only have isolated subnets) because AWS does not charge for it, and
@@ -323,12 +299,12 @@ export class Vpc extends schema.Vpc<VpcData> {
       privateSubnetIds,
       publicSubnetIds,
       isolatedSubnetIds,
-      vpcId,
+      vpcId: vpc.id,
     };
   }
 
   // Decide the cidrBlock input parameter for the underlying aws.ec2.Vpc resource.
-  private static decideCidrBlockVpcInput(args: schema.VpcArgs): pulumi.Input<string> | undefined {
+  private static decideCidrBlockVpcInput(args: schema.VpcArgs): string | undefined {
     // Respect the user-provided value, if any.
     if (args.cidrBlock !== undefined) {
       return args.cidrBlock;
@@ -342,6 +318,99 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     // Historically this default was used when left unspecified.
     return "10.0.0.0/16";
+  }
+
+  private createInnerVpc(
+    name: string,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+    availabilityZones: string[],
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    args: schema.VpcArgs,
+    cidrBlock: string | undefined,
+    sharedTags: pulumi.Input<Record<string, pulumi.Input<string>>>,
+  ): {
+    vpc: aws.ec2.Vpc;
+    subnets: {
+      subnetSpecs: SubnetSpecPartial[];
+      subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
+    };
+  } {
+    if (cidrBlock) {
+      // If cidrBlock is known because the user provided it, validations should run as early as possible. Failing
+      // validations will short-circuit trying to create the inner aws.ec2.Vpc resource.
+      const subnets = this.decideAndValidateSubnetSpecs(
+        name,
+        subnetStrategy,
+        availabilityZones,
+        natGatewayStrategy,
+        args,
+        cidrBlock,
+      );
+      const vpc = new aws.ec2.Vpc(
+        name,
+        {
+          ...args,
+          cidrBlock,
+          tags: sharedTags,
+        },
+        { parent: this },
+      );
+      return { vpc, subnets };
+    } else {
+      // If cidrBlock is not yet known, validations will run after the creation of the aws.ec2.Vpc resource and will be
+      // based on the dynamically decided cidrBlock value. If these validations fail, subnet specs and layout will have
+      // failing outputs which will short-circuit creating the subnets.
+      const vpc = new aws.ec2.Vpc(
+        name,
+        {
+          ...args,
+          cidrBlock,
+          tags: sharedTags,
+        },
+        { parent: this },
+      );
+      const subnets = this.decideAndValidateSubnetSpecs(
+        name,
+        subnetStrategy,
+        availabilityZones,
+        natGatewayStrategy,
+        args,
+        vpc.cidrBlock,
+      );
+      return { vpc, subnets };
+    }
+  }
+
+  private decideAndValidateSubnetSpecs(
+    name: string,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+    availabilityZones: string[],
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    args: schema.VpcArgs,
+    actualCidrBlock: pulumi.Input<string>,
+  ): {
+    subnetSpecs: SubnetSpecPartial[];
+    subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
+  } {
+    const { subnetSpecs: decidedSpecs, subnetLayout } = this.decideSubnetSpecs(
+      name,
+      actualCidrBlock,
+      subnetStrategy,
+      availabilityZones,
+      args,
+    );
+
+    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, (subnetSpecs) => {
+      validateSubnets(subnetSpecs, getOverlappingSubnets);
+      // Only prompt cidrBlock is validated; probably OK as non-prompt cidrBlock implies that ipv4NetmaskLength was set
+      // to allocate the cidrBlock via IPAM.
+      if (subnetStrategy === "Exact" && typeof actualCidrBlock === "string") {
+        validateNoGaps(actualCidrBlock, subnetSpecs);
+      }
+      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
+    });
+
+    return { subnetSpecs, subnetLayout };
   }
 
   private decideSubnetSpecs(
