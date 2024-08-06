@@ -27,17 +27,23 @@ export function getSubnetSpecs(
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
 ): SubnetSpecPartial[] {
-  const allocatedCidrBlocks = pulumi
-    .output(vpcCidr)
-    .apply((vpcCidr) =>
-      allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask),
-    );
+  const allocatedCidrBlocks = inputApply(
+    vpcCidr,
+    (vpcCidr) => allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask),
+    (x) => x,
+    (x) => x,
+  );
   const subnetSpecs = subnetInputs ?? defaultSubnetInputsBare();
   return azNames.flatMap((azName, azIndex) => {
     const azNum = azIndex + 1;
     return subnetSpecs.map((subnetSpec, subnetIndex) => {
       const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
-      const cidrBlock = allocatedCidrBlocks.apply((t) => pulumi.output(t[subnetAllocID].cidrBlock));
+      const cidrBlock = inputApply(
+        allocatedCidrBlocks,
+        (t) => t[subnetAllocID].cidrBlock,
+        (x) => x,
+        (x) => x,
+      );
       return {
         cidrBlock,
         type: subnetSpec.type,
@@ -315,3 +321,18 @@ export const validSubnetSizes: readonly number[] = [
   8388608, 4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048,
   1024, 512, 256, 128, 64, 32, 16, 8, 4,
 ];
+
+// This utility function is like pulumi.output(x).apply(fn) but tries to stay in the Input layer so that prompt
+// validations and test cases are not disturbed. wrap* functions are usually identity. Ideally something like this could
+// be handled in the core Pulumi Node SDK.
+function inputApply<T, U>(
+  x: pulumi.Input<T>,
+  fn: (value: T) => pulumi.Input<U>,
+  wrapT: (value: pulumi.Unwrap<T>) => T,
+  wrapU: (value: pulumi.Unwrap<U>) => U,
+): pulumi.Input<U> {
+  if (x instanceof Promise || pulumi.Output.isInstance(x)) {
+    return pulumi.output(x).apply((x) => pulumi.output(fn(wrapT(x))).apply(wrapU));
+  }
+  return fn(x);
+}
