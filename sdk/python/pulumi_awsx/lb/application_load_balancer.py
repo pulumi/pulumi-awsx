@@ -67,7 +67,7 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
-        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         :param 'ListenerArgs' listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence['ListenerArgs'] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
@@ -361,7 +361,7 @@ class ApplicationLoadBalancerArgs:
     @pulumi.getter(name="ipAddressType")
     def ip_address_type(self) -> Optional[pulumi.Input[str]]:
         """
-        Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         """
         return pulumi.get(self, "ip_address_type")
 
@@ -561,7 +561,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
-        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
         :param Union['ListenerArgs', 'ListenerArgsDict'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence[Union['ListenerArgs', 'ListenerArgsDict']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.

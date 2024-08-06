@@ -86,7 +86,7 @@ type applicationLoadBalancerArgs struct {
 	IdleTimeout *int `pulumi:"idleTimeout"`
 	// If true, the LB will be internal. Defaults to `false`.
 	Internal *bool `pulumi:"internal"`
-	// Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType *string `pulumi:"ipAddressType"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
@@ -150,7 +150,7 @@ type ApplicationLoadBalancerArgs struct {
 	IdleTimeout pulumi.IntPtrInput
 	// If true, the LB will be internal. Defaults to `false`.
 	Internal pulumi.BoolPtrInput
-	// Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType pulumi.StringPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs

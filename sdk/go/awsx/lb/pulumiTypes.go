@@ -1753,6 +1753,47 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Target group with health requirements
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
+//				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
+//					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
+//						MinimumHealthyTargetsCount:      pulumi.String("1"),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//					UnhealthyStateRouting: &lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
+//						MinimumHealthyTargetsCount:      pulumi.Int(1),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -1802,6 +1843,8 @@ type TargetGroup struct {
 	Tags map[string]string `pulumi:"tags"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
+	// Target health requirements block. See target_group_health for more information.
+	TargetGroupHealth *lb.TargetGroupTargetGroupHealth `pulumi:"targetGroupHealth"`
 	// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
 	TargetHealthStates []lb.TargetGroupTargetHealthState `pulumi:"targetHealthStates"`
 	// Type of target that you must specify when registering targets with this target group.
@@ -2011,6 +2054,47 @@ type TargetGroupInput interface {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Target group with health requirements
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
+//				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
+//					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
+//						MinimumHealthyTargetsCount:      pulumi.String("1"),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//					UnhealthyStateRouting: &lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
+//						MinimumHealthyTargetsCount:      pulumi.Int(1),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -2060,6 +2144,8 @@ type TargetGroupArgs struct {
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
+	// Target health requirements block. See target_group_health for more information.
+	TargetGroupHealth lb.TargetGroupTargetGroupHealthPtrInput `pulumi:"targetGroupHealth"`
 	// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
 	TargetHealthStates lb.TargetGroupTargetHealthStateArrayInput `pulumi:"targetHealthStates"`
 	// Type of target that you must specify when registering targets with this target group.
@@ -2311,6 +2397,47 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### Target group with health requirements
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
+//				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
+//					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
+//						MinimumHealthyTargetsCount:      pulumi.String("1"),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//					UnhealthyStateRouting: &lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
+//						MinimumHealthyTargetsCount:      pulumi.Int(1),
+//						MinimumHealthyTargetsPercentage: pulumi.String("off"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -2438,6 +2565,11 @@ func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
 // Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 func (o TargetGroupOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
 	return o.ApplyT(func(v TargetGroup) []lb.TargetGroupTargetFailover { return v.TargetFailovers }).(lb.TargetGroupTargetFailoverArrayOutput)
+}
+
+// Target health requirements block. See target_group_health for more information.
+func (o TargetGroupOutput) TargetGroupHealth() lb.TargetGroupTargetGroupHealthPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *lb.TargetGroupTargetGroupHealth { return v.TargetGroupHealth }).(lb.TargetGroupTargetGroupHealthPtrOutput)
 }
 
 // Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
@@ -2680,6 +2812,16 @@ func (o TargetGroupPtrOutput) TargetFailovers() lb.TargetGroupTargetFailoverArra
 		}
 		return v.TargetFailovers
 	}).(lb.TargetGroupTargetFailoverArrayOutput)
+}
+
+// Target health requirements block. See target_group_health for more information.
+func (o TargetGroupPtrOutput) TargetGroupHealth() lb.TargetGroupTargetGroupHealthPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *lb.TargetGroupTargetGroupHealth {
+		if v == nil {
+			return nil
+		}
+		return v.TargetGroupHealth
+	}).(lb.TargetGroupTargetGroupHealthPtrOutput)
 }
 
 // Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.

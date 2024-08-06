@@ -44,7 +44,8 @@ class EC2ServiceArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
                  task_definition_args: Optional['EC2ServiceTaskDefinitionArgs'] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 volume_configuration: Optional[pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']] = None):
         """
         The set of arguments for constructing a EC2Service resource.
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
@@ -55,8 +56,8 @@ class EC2ServiceArgs:
         :param pulumi.Input[int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
         :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
-        :param pulumi.Input[bool] enable_ecs_managed_tags: Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
-        :param pulumi.Input[bool] enable_execute_command: Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+        :param pulumi.Input[bool] enable_ecs_managed_tags: Whether to enable Amazon ECS managed tags for the tasks within the service.
+        :param pulumi.Input[bool] enable_execute_command: Whether to enable Amazon ECS Exec for the tasks within the service.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
         :param pulumi.Input[int] health_check_grace_period_seconds: Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
@@ -68,14 +69,15 @@ class EC2ServiceArgs:
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]] ordered_placement_strategies: Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServicePlacementConstraintArgs']]] placement_constraints: Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
         :param pulumi.Input[str] platform_version: Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
-        :param pulumi.Input[str] propagate_tags: Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+        :param pulumi.Input[str] propagate_tags: Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         :param pulumi.Input[str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
-        :param pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs'] service_connect_configuration: The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        :param pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs'] service_connect_configuration: ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs'] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'EC2ServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+        :param pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs'] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
         """
         if alarms is not None:
             pulumi.set(__self__, "alarms", alarms)
@@ -131,6 +133,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "task_definition_args", task_definition_args)
         if triggers is not None:
             pulumi.set(__self__, "triggers", triggers)
+        if volume_configuration is not None:
+            pulumi.set(__self__, "volume_configuration", volume_configuration)
 
     @property
     @pulumi.getter
@@ -232,7 +236,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="enableEcsManagedTags")
     def enable_ecs_managed_tags(self) -> Optional[pulumi.Input[bool]]:
         """
-        Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+        Whether to enable Amazon ECS managed tags for the tasks within the service.
         """
         return pulumi.get(self, "enable_ecs_managed_tags")
 
@@ -244,7 +248,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="enableExecuteCommand")
     def enable_execute_command(self) -> Optional[pulumi.Input[bool]]:
         """
-        Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+        Whether to enable Amazon ECS Exec for the tasks within the service.
         """
         return pulumi.get(self, "enable_execute_command")
 
@@ -366,7 +370,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="propagateTags")
     def propagate_tags(self) -> Optional[pulumi.Input[str]]:
         """
-        Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+        Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         """
         return pulumi.get(self, "propagate_tags")
 
@@ -390,7 +394,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="serviceConnectConfiguration")
     def service_connect_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]:
         """
-        The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         """
         return pulumi.get(self, "service_connect_configuration")
 
@@ -450,13 +454,25 @@ class EC2ServiceArgs:
     @pulumi.getter
     def triggers(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
-        Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+        Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
         """
         return pulumi.get(self, "triggers")
 
     @triggers.setter
     def triggers(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "triggers", value)
+
+    @property
+    @pulumi.getter(name="volumeConfiguration")
+    def volume_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]:
+        """
+        Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+        """
+        return pulumi.get(self, "volume_configuration")
+
+    @volume_configuration.setter
+    def volume_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]):
+        pulumi.set(self, "volume_configuration", value)
 
 
 class EC2Service(pulumi.ComponentResource):
@@ -491,6 +507,7 @@ class EC2Service(pulumi.ComponentResource):
                  task_definition: Optional[pulumi.Input[str]] = None,
                  task_definition_args: Optional[Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict']] = None,
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 volume_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]] = None,
                  __props__=None):
         """
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
@@ -506,8 +523,8 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
         :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
-        :param pulumi.Input[bool] enable_ecs_managed_tags: Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
-        :param pulumi.Input[bool] enable_execute_command: Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+        :param pulumi.Input[bool] enable_ecs_managed_tags: Whether to enable Amazon ECS managed tags for the tasks within the service.
+        :param pulumi.Input[bool] enable_execute_command: Whether to enable Amazon ECS Exec for the tasks within the service.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
         :param pulumi.Input[int] health_check_grace_period_seconds: Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
@@ -519,14 +536,15 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]]] ordered_placement_strategies: Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServicePlacementConstraintArgs']]]] placement_constraints: Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
         :param pulumi.Input[str] platform_version: Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
-        :param pulumi.Input[str] propagate_tags: Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+        :param pulumi.Input[str] propagate_tags: Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         :param pulumi.Input[str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] service_connect_configuration: The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] service_connect_configuration: ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
         """
         ...
     @overload
@@ -580,6 +598,7 @@ class EC2Service(pulumi.ComponentResource):
                  task_definition: Optional[pulumi.Input[str]] = None,
                  task_definition_args: Optional[Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict']] = None,
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 volume_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -618,6 +637,7 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["task_definition"] = task_definition
             __props__.__dict__["task_definition_args"] = task_definition_args
             __props__.__dict__["triggers"] = triggers
+            __props__.__dict__["volume_configuration"] = volume_configuration
             __props__.__dict__["service"] = None
         super(EC2Service, __self__).__init__(
             'awsx:ecs:EC2Service',

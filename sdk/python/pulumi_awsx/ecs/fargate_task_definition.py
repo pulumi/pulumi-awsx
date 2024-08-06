@@ -65,7 +65,7 @@ class FargateTaskDefinitionArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param '_awsx.DefaultRoleWithPolicyArgs' task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
-        :param pulumi.Input[bool] track_latest: Whether should track latest task definition or the one created with the resource. Default is `false`.
+        :param pulumi.Input[bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
         """
         if container is not None:
@@ -324,7 +324,7 @@ class FargateTaskDefinitionArgs:
     @pulumi.getter(name="trackLatest")
     def track_latest(self) -> Optional[pulumi.Input[bool]]:
         """
-        Whether should track latest task definition or the one created with the resource. Default is `false`.
+        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         """
         return pulumi.get(self, "track_latest")
 
@@ -403,7 +403,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
-        :param pulumi.Input[bool] track_latest: Whether should track latest task definition or the one created with the resource. Default is `false`.
+        :param pulumi.Input[bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
         """
         ...

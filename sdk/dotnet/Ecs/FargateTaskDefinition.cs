@@ -211,7 +211,7 @@ namespace Pulumi.Awsx.Ecs
         public Pulumi.Awsx.Awsx.Inputs.DefaultRoleWithPolicyArgs? TaskRole { get; set; }
 
         /// <summary>
-        /// Whether should track latest task definition or the one created with the resource. Default is `false`.
+        /// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         /// </summary>
         [Input("trackLatest")]
         public Input<bool>? TrackLatest { get; set; }
