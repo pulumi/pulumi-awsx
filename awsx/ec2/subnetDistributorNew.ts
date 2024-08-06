@@ -21,7 +21,7 @@ import { Netmask } from "netmask";
 import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
 
 // Like getSubnetSpecs but tolerates partially known vpcCidr.
-export function getSubnetSpecsWithPartialCidr(
+export function getSubnetSpecs(
   vpcName: string,
   vpcCidr: pulumi.Input<string>,
   azNames: string[],
@@ -62,16 +62,6 @@ function subnetAllocationID(
 ): SubnetAllocationID {
   const name = subnetName(vpcName, subnetSpec, azNum);
   return `${name}#${subnetSpecIndex}`;
-}
-
-export function getSubnetSpecs(
-  vpcName: string,
-  vpcCidr: string,
-  azNames: string[],
-  subnetInputs: SubnetSpecInputs[] | undefined,
-  azCidrMask?: number,
-): SubnetSpecPartial[] {
-  return getSubnetSpecsWithPartialCidr(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask);
 }
 
 // Like allocateSubnetCidrBlocks but accepts pulumi.Input for vpcCidr.

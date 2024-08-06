@@ -19,7 +19,7 @@ import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import * as vpcConverters from "./vpcConverters";
 import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
-  getSubnetSpecsWithPartialCidr,
+  getSubnetSpecs,
   getSubnetSpecsExplicit,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
@@ -469,7 +469,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
         case "NewAllocator":
         default:
-          return getSubnetSpecsWithPartialCidr(
+          return getSubnetSpecs(
             name,
             cidrBlock,
             availabilityZones,
