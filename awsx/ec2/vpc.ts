@@ -15,7 +15,9 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
+import * as vpcConverters from "./vpcConverters";
+import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,
@@ -35,7 +37,7 @@ interface VpcData {
   igw: aws.ec2.InternetGateway;
   natGateways: aws.ec2.NatGateway[];
   eips: aws.ec2.Eip[];
-  subnetLayout: schema.ResolvedSubnetSpecInputs[];
+  subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   publicSubnetIds: pulumi.Output<string>[];
   privateSubnetIds: pulumi.Output<string>[];
   isolatedSubnetIds: pulumi.Output<string>[];
@@ -56,7 +58,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.internetGateway = data.igw;
     this.natGateways = data.natGateways;
     this.eips = data.eips;
-    this.subnetLayout = data.subnetLayout;
+
+    this.subnetLayout = data.subnetLayout.apply(vpcConverters.toResolvedSubnetSpecOutputs);
 
     this.privateSubnetIds = data.privateSubnetIds;
     this.publicSubnetIds = data.publicSubnetIds;
@@ -71,7 +74,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     name: string;
     args: schema.VpcArgs;
     opts: pulumi.ComponentResourceOptions;
-  }) {
+  }): Promise<VpcData> {
+    Vpc.validateVpcArgs(props.args);
+
     const { name, args } = props;
     if (args.availabilityZoneNames && args.numberOfAvailabilityZones) {
       throw new Error(
@@ -87,79 +92,24 @@ export class Vpc extends schema.Vpc<VpcData> {
     const allocationIds = args.natGateways?.elasticIpAllocationIds ?? [];
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
-    const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
-
-    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      args.subnetSpecs,
-      availabilityZones.length,
-    );
-
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
-    const subnetSpecs = (() => {
-      const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
-      switch (a.allocator) {
-        case "LegacyAllocator":
-          const legacySubnetSpecs = getSubnetSpecsLegacy(
-            name,
-            cidrBlock,
-            availabilityZones,
-            parsedSpecs?.normalizedSpecs,
-          );
-          return legacySubnetSpecs;
-        case "ExplicitAllocator":
-          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
-        case "NewAllocator":
-        default:
-          return getSubnetSpecs(
-            name,
-            cidrBlock,
-            availabilityZones,
-            parsedSpecs?.normalizedSpecs,
-            args.availabilityZoneCidrMask,
-          );
-      }
-    })();
-
-    let subnetLayout = parsedSpecs?.normalizedSpecs;
-    if (subnetStrategy === "Legacy" || subnetLayout === undefined) {
-      subnetLayout = extractSubnetSpecInputFromLegacyLayout(subnetSpecs, name, availabilityZones);
-    }
-    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
-    if (
-      args.subnetStrategy === undefined &&
-      parsedSpecs !== undefined &&
-      parsedSpecs.isExplicitLayout === false
-    ) {
-      pulumi.log.warn(
-        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
-          subnetLayout,
-          undefined,
-          2,
-        )}`,
-        this,
-      );
-    }
-
-    validateSubnets(subnetSpecs, getOverlappingSubnets);
-
-    if (subnetStrategy === "Exact") {
-      validateNoGaps(cidrBlock, subnetSpecs);
-    }
-
-    validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
     const sharedTags = { Name: name, ...args.tags };
 
-    const vpc = new aws.ec2.Vpc(
+    const cidrBlock = Vpc.decideCidrBlockVpcInput(args);
+
+    const {
+      vpc,
+      subnets: { subnetSpecs, subnetLayout },
+    } = this.createInnerVpc(
       name,
-      {
-        ...args,
-        cidrBlock,
-        tags: sharedTags,
-      },
-      { parent: this },
+      subnetStrategy,
+      availabilityZones,
+      natGatewayStrategy,
+      args,
+      cidrBlock,
+      sharedTags,
     );
-    const vpcId = vpc.id;
 
     // We unconditionally create the IGW (even if it's not needed because we
     // only have isolated subnets) because AWS does not charge for it, and
@@ -347,12 +297,215 @@ export class Vpc extends schema.Vpc<VpcData> {
       routes,
       natGateways,
       eips,
-      subnetLayout: subnetLayout,
+      subnetLayout: pulumi.output(subnetLayout).apply(vpcConverters.toResolvedSubnetSpecOutputs),
       privateSubnetIds,
       publicSubnetIds,
       isolatedSubnetIds,
-      vpcId,
+      vpcId: vpc.id,
     };
+  }
+
+  // Internal. Exported for testing.
+  public static validateVpcArgs(args: schema.VpcArgs) {
+    if (args.ipv4IpamPoolId !== undefined) {
+      if (args.cidrBlock !== undefined && args.ipv4NetmaskLength !== undefined) {
+        throw new Error("Only one of 'cidrBlock', 'ipv4NetmaskLength' is allowed.");
+      }
+      if (args.ipv4NetmaskLength === undefined && args.cidrBlock === undefined) {
+        throw new Error(
+          "If 'ipv4IpamPoolId' is specified, 'ipv4NetmaskLength' or 'cidrBlock' must also be specified.",
+        );
+      }
+    }
+  }
+
+  // Decide the cidrBlock input parameter for the underlying aws.ec2.Vpc resource.
+  private static decideCidrBlockVpcInput(args: schema.VpcArgs): string | undefined {
+    // Respect the user-provided value, if any.
+    if (args.cidrBlock !== undefined) {
+      return args.cidrBlock;
+    }
+
+    // If the user wants to use an IPAM pool without specifying a cidrBlock, they must also define ipv4netMaskLength
+    // that instructs how the IPAM pool should allocate the cidrBlock. In this case the should not assume any defaults.
+    if (args.ipv4IpamPoolId !== undefined) {
+      return undefined;
+    }
+
+    // Historically this default was used when left unspecified.
+    return "10.0.0.0/16";
+  }
+
+  private createInnerVpc(
+    name: string,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+    availabilityZones: string[],
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    args: schema.VpcArgs,
+    cidrBlock: string | undefined,
+    sharedTags: pulumi.Input<Record<string, pulumi.Input<string>>>,
+  ): {
+    vpc: aws.ec2.Vpc;
+    subnets: {
+      subnetSpecs: SubnetSpecPartial[];
+      subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
+    };
+  } {
+    if (cidrBlock) {
+      // If cidrBlock is known because the user provided it, validations should run as early as possible. Failing
+      // validations will short-circuit trying to create the inner aws.ec2.Vpc resource.
+      const subnets = this.decideAndValidateSubnetSpecs(
+        name,
+        subnetStrategy,
+        availabilityZones,
+        natGatewayStrategy,
+        args,
+        cidrBlock,
+      );
+      const vpc = new aws.ec2.Vpc(
+        name,
+        {
+          ...args,
+          cidrBlock,
+          tags: sharedTags,
+        },
+        { parent: this },
+      );
+      return { vpc, subnets };
+    } else {
+      // If cidrBlock is not yet known, validations will run after the creation of the aws.ec2.Vpc resource and will be
+      // based on the dynamically decided cidrBlock value. If these validations fail, subnet specs and layout will have
+      // failing outputs which will short-circuit creating the subnets.
+      const vpc = new aws.ec2.Vpc(
+        name,
+        {
+          ...args,
+          cidrBlock,
+          tags: sharedTags,
+        },
+        { parent: this },
+      );
+      const subnets = this.decideAndValidateSubnetSpecs(
+        name,
+        subnetStrategy,
+        availabilityZones,
+        natGatewayStrategy,
+        args,
+        vpc.cidrBlock,
+      );
+      return { vpc, subnets };
+    }
+  }
+
+  private decideAndValidateSubnetSpecs(
+    name: string,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+    availabilityZones: string[],
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    args: schema.VpcArgs,
+    actualCidrBlock: pulumi.Input<string>,
+  ): {
+    subnetSpecs: SubnetSpecPartial[];
+    subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
+  } {
+    const { subnetSpecs: decidedSpecs, subnetLayout } = this.decideSubnetSpecs(
+      name,
+      actualCidrBlock,
+      subnetStrategy,
+      availabilityZones,
+      args,
+    );
+
+    const subnetSpecs = validatePartialSubnetSpecs(decidedSpecs, (subnetSpecs) => {
+      validateSubnets(subnetSpecs, getOverlappingSubnets);
+      // Only prompt cidrBlock is validated; probably OK as non-prompt cidrBlock implies that ipv4NetmaskLength was set
+      // to allocate the cidrBlock via IPAM.
+      if (subnetStrategy === "Exact" && typeof actualCidrBlock === "string") {
+        validateNoGaps(actualCidrBlock, subnetSpecs);
+      }
+      validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
+    });
+
+    return { subnetSpecs, subnetLayout };
+  }
+
+  private decideSubnetSpecs(
+    name: string,
+    cidrBlock: pulumi.Input<string>,
+    subnetStrategy: schema.SubnetAllocationStrategyInputs,
+    availabilityZones: string[],
+    args: {
+      readonly subnetSpecs?: schema.SubnetSpecInputs[];
+      readonly subnetStrategy?: schema.SubnetAllocationStrategyInputs;
+      readonly availabilityZoneCidrMask?: number;
+    },
+  ): {
+    subnetSpecs: SubnetSpecPartial[];
+    subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
+  } {
+    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
+      args.subnetSpecs,
+      availabilityZones.length,
+    );
+
+    const subnetSpecs = (() => {
+      const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
+      switch (a.allocator) {
+        case "LegacyAllocator":
+          if (typeof cidrBlock !== "string") {
+            throw new Error(
+              `Dynamically allocated cidrBlock ranges are not supported with subnetStrategy="Legacy". ` +
+                `"Try using subnetStrategy="Auto"`,
+            );
+          }
+          const legacySubnetSpecs = getSubnetSpecsLegacy(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+          );
+          return legacySubnetSpecs;
+        case "ExplicitAllocator":
+          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
+        case "NewAllocator":
+        default:
+          return getSubnetSpecs(
+            name,
+            cidrBlock,
+            availabilityZones,
+            parsedSpecs?.normalizedSpecs,
+            args.availabilityZoneCidrMask,
+          );
+      }
+    })();
+
+    const subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]> =
+      subnetStrategy === "Legacy" || parsedSpecs?.normalizedSpecs === undefined
+        ? pulumi
+            .output(subnetSpecs)
+            .apply((ss) => extractSubnetSpecInputFromLegacyLayout(ss, name, availabilityZones))
+            .apply(vpcConverters.toResolvedSubnetSpecOutputs)
+        : pulumi
+            .output(parsedSpecs?.normalizedSpecs)
+            .apply(vpcConverters.toResolvedSubnetSpecOutputs);
+
+    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
+    if (
+      args.subnetStrategy === undefined &&
+      parsedSpecs !== undefined &&
+      parsedSpecs.isExplicitLayout === false
+    ) {
+      pulumi.log.warn(
+        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
+          subnetLayout,
+          undefined,
+          2,
+        )}`,
+        this,
+      );
+    }
+
+    return { subnetLayout, subnetSpecs };
   }
 
   async getDefaultAzs(azCount?: number): Promise<string[]> {
@@ -392,7 +545,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
   subnetSpecs: SubnetSpec[],
   vpcName: string,
   availabilityZones: string[],
-) {
+): schema.SubnetSpecInputs[] {
   const singleAzLength = subnetSpecs.length / availabilityZones.length;
   function extractName(subnetName: string, type: schema.SubnetTypeInputs) {
     const withoutVpcPrefix = subnetName.replace(`${vpcName}-`, "");
@@ -533,7 +686,10 @@ export function shouldCreateNatGateway(
   }
 }
 
-export function compareSubnetSpecs(spec1: SubnetSpec, spec2: SubnetSpec): number {
+export function compareSubnetSpecs(
+  spec1: Omit<SubnetSpec, "cidrBlock">,
+  spec2: Omit<SubnetSpec, "cidrBlock">,
+): number {
   if (spec1.type === spec2.type) {
     return 0;
   }

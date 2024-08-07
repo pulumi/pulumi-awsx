@@ -587,18 +587,18 @@ export interface NatGatewayConfigurationOutputs {
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
 export interface ResolvedSubnetSpecInputs {
-    readonly cidrBlocks?: string[];
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly size?: number;
-    readonly type: SubnetTypeInputs;
+    readonly cidrBlocks?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly cidrMask?: pulumi.Input<number>;
+    readonly name?: pulumi.Input<string>;
+    readonly size?: pulumi.Input<number>;
+    readonly type: pulumi.Input<SubnetTypeInputs>;
 }
 export interface ResolvedSubnetSpecOutputs {
-    readonly cidrBlocks?: string[];
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly size?: number;
-    readonly type: SubnetTypeOutputs;
+    readonly cidrBlocks?: pulumi.Output<string[]>;
+    readonly cidrMask?: pulumi.Output<number>;
+    readonly name?: pulumi.Output<string>;
+    readonly size?: pulumi.Output<number>;
+    readonly type: pulumi.Output<SubnetTypeOutputs>;
 }
 export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
 export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";

@@ -19,16 +19,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import * as ipAddress from "ip-address";
 import { BigInteger } from "jsbn";
-
-export interface SubnetSpec {
-  cidrBlock: string;
-  type: SubnetTypeInputs;
-  azName: string;
-  subnetName: string;
-  tags?: pulumi.Input<{
-    [key: string]: pulumi.Input<string>;
-  }>;
-}
+import { SubnetSpec } from "./subnetSpecs";
 
 export function getSubnetSpecsLegacy(
   vpcName: string,
