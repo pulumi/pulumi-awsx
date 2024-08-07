@@ -156,13 +156,13 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
      * 
      */
     @Import(name="policyArns")
-    private @Nullable List<String> policyArns;
+    private @Nullable Output<List<String>> policyArns;
 
     /**
      * @return ARNs of the policies to attach to the created role.
      * 
      */
-    public Optional<List<String>> policyArns() {
+    public Optional<Output<List<String>>> policyArns() {
         return Optional.ofNullable(this.policyArns);
     }
 
@@ -412,9 +412,19 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
          * @return builder
          * 
          */
-        public Builder policyArns(@Nullable List<String> policyArns) {
+        public Builder policyArns(@Nullable Output<List<String>> policyArns) {
             $.policyArns = policyArns;
             return this;
+        }
+
+        /**
+         * @param policyArns ARNs of the policies to attach to the created role.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder policyArns(List<String> policyArns) {
+            return policyArns(Output.of(policyArns));
         }
 
         /**
