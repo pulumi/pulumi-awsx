@@ -1,3 +1,0 @@
-name: containers-fargate
-runtime: nodejs
-description: A simple containers demo.
