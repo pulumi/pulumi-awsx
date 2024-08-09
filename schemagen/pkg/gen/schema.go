@@ -37,7 +37,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 	dependencies := readPackageDependencies(packageDir)
 	awsSpec := getPackageSpec("aws", dependencies.Aws)
 	awsNativeSpec := getPackageSpec("aws-native", awsNativeTypesVersion)
-	dockerSpec := getPackageSpec("docker", dependencies.Docker)
+	dockerSpec := getPackageSpec("docker-build", dependencies.Docker)
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -67,25 +67,25 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"generateResourceContainerTypes": true,
 				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
 				"liftSingleValueMethodReturns":   true,
-				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"},
+				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild"},
 				"respectSchemaVersion":           true,
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"com.pulumi:aws":    dependencies.Aws,
-					"com.pulumi:docker": dependencies.Docker,
+					"com.pulumi:aws":          dependencies.Aws,
+					"com.pulumi:docker-build": dependencies.Docker,
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"@aws-sdk/client-ecs": "^3.405.0",
-					"@pulumi/pulumi":      "^3.0.0",
-					"@pulumi/aws":         "^" + dependencies.Aws,
-					"@pulumi/docker":      "^" + dependencies.Docker,
-					"docker-classic":      "npm:@pulumi/docker@3.6.1",
-					"@types/aws-lambda":   "^8.10.23",
-					"aws-sdk":             "^2.1450.0",
-					"mime":                "^2.0.0",
+					"@aws-sdk/client-ecs":  "^3.405.0",
+					"@pulumi/pulumi":       "^3.0.0",
+					"@pulumi/aws":          "^" + dependencies.Aws,
+					"@pulumi/docker-build": "^" + dependencies.Docker,
+					"docker-classic":       "npm:@pulumi/docker@3.6.1",
+					"@types/aws-lambda":    "^8.10.23",
+					"aws-sdk":              "^2.1450.0",
+					"mime":                 "^2.0.0",
 				},
 				"devDependencies": map[string]string{
 					"@types/node": "^18",
@@ -96,9 +96,9 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":        ">=3.91.1,<4.0.0",
-					"pulumi-aws":    ">=6.0.4,<7.0.0",
-					"pulumi-docker": fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
+					"pulumi":              ">=3.91.1,<4.0.0",
+					"pulumi-aws":          ">=6.0.4,<7.0.0",
+					"pulumi-docker-build": fmt.Sprintf(">=%s,<1.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
@@ -256,7 +256,7 @@ func rawMessage(v interface{}) schema.RawMessage {
 
 type Dependencies struct {
 	Aws    string `json:"@pulumi/aws"`
-	Docker string `json:"@pulumi/docker"`
+	Docker string `json:"@pulumi/docker-build"`
 	Pulumi string `json:"@pulumi/pulumi"`
 }
 
