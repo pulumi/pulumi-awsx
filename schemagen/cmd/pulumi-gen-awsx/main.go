@@ -158,7 +158,7 @@ func genNodejs(pkg *schema.Package, outdir string) {
 		return nil
 	})
 	localDependencies := map[string]string{}
-	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies)
+	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies, false)
 	if err != nil {
 		panic(err)
 	}
