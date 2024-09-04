@@ -145,7 +145,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           privateDnsEnabled: spec.privateDnsEnabled,
           routeTableIds: spec.routeTableIds,
           securityGroupIds: spec.securityGroupIds,
-          subnetIds: spec.subnetIds,
+          subnetIds: subnets.map(s => s.id),
           tags: spec.tags,
           vpcEndpointType: spec.vpcEndpointType,
           vpcId: vpc.id,
