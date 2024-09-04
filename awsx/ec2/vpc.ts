@@ -495,14 +495,16 @@ export class Vpc extends schema.Vpc<VpcData> {
       parsedSpecs !== undefined &&
       parsedSpecs.isExplicitLayout === false
     ) {
-      pulumi.log.warn(
-        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
-          subnetLayout,
-          undefined,
-          2,
-        )}`,
-        this,
-      );
+      subnetLayout.apply((sl) => {
+        pulumi.log.warn(
+          `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
+            sl,
+            undefined,
+            2,
+          )}`,
+          this,
+        );
+      });
     }
 
     return { subnetLayout, subnetSpecs };
