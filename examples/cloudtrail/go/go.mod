@@ -6,7 +6,7 @@ toolchain go1.21.1
 
 require (
 	github.com/pulumi/pulumi-awsx/sdk/v2 v2.4.0
-	github.com/pulumi/pulumi/sdk/v3 v3.132.0
+	github.com/pulumi/pulumi/sdk/v3 v3.133.0
 )
 
 require (
@@ -61,7 +61,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
-	github.com/pulumi/esc v0.9.2-0.20240910221656-328d3204100f // indirect
+	github.com/pulumi/esc v0.10.0 // indirect
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.9.0 // indirect
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.4.3 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
