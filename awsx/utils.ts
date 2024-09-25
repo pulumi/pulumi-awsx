@@ -83,11 +83,11 @@ export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Ou
 /** @internal */
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
   // uses the provider from the parent resource to fetch the region
-  return aws.getRegionOutput({}, { parent: res }).apply(region => region.name as aws.Region);
+  return aws.getRegionOutput({}, { parent: res }).apply((region) => region.name as aws.Region);
 }
 
 function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
-  return aws.getRegionOutput({}, { provider }).apply(region => region.name as aws.Region);
+  return aws.getRegionOutput({}, { provider }).apply((region) => region.name as aws.Region);
 }
 
 /**
