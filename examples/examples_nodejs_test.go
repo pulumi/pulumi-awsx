@@ -18,6 +18,7 @@ package examples
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -43,6 +44,23 @@ func TestAccEcsCapacityProviderService(t *testing.T) {
 			Dir:           filepath.Join(getCwd(t), "ecs", "nodejs"),
 		})
 
+	integration.ProgramTest(t, &test)
+}
+
+func TestRegress1112(t *testing.T) {
+	t.Setenv("AWS_REGION", "")
+	os.Unsetenv("AWS_REGION")
+	test := integration.ProgramTestOptions{
+		Quick:                true,
+		SkipRefresh:          true,
+	}.With(integration.ProgramTestOptions{
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		NoParallel:    true, // cannot use call t.Parallel after t.Setenv
+		RunUpdateTest: false,
+		Dir:           filepath.Join(getCwd(t), "ecs", "nodejs"),
+	})
 	integration.ProgramTest(t, &test)
 }
 
