@@ -86,7 +86,9 @@ export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
   return aws.getRegionOutput({}, { parent: res }).apply((region) => region.name as aws.Region);
 }
 
-function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
+function getRegionFromProvider(
+  provider: pulumi.ProviderResource | undefined,
+): pulumi.Output<aws.Region> {
   return aws.getRegionOutput({}, { provider }).apply((region) => region.name as aws.Region);
 }
 
