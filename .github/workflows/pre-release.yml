@@ -166,7 +166,7 @@ jobs:
           pip3 install virtualenv==20.0.23
           pip3 install pipenv
       - name: Download bin
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: bin
           path: bin
@@ -245,7 +245,7 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v2
       - name: Download provider binary
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/bin
@@ -292,21 +292,21 @@ jobs:
         with:
           gradle-version: "8.4"
       - name: Download python SDK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: python-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
       - name: Uncompress python SDK
         run: tar -zxf ${{github.workspace}}/sdk/python.tar.gz -C ${{github.workspace}}/sdk/python
       - name: Download dotnet SDK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: dotnet-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
       - name: Uncompress dotnet SDK
         run: tar -zxf ${{github.workspace}}/sdk/dotnet.tar.gz -C ${{github.workspace}}/sdk/dotnet
       - name: Download nodejs SDK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: nodejs-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
@@ -318,7 +318,7 @@ jobs:
         name: Publish SDK
         run: ./scripts/publish_packages.sh
       - name: Download java SDK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: java-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
@@ -348,7 +348,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Download Go SDK
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: go-sdk.tar.gz
           path: ${{ github.workspace }}/sdk/
