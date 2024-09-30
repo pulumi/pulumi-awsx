@@ -4,25 +4,152 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from .. import _utilities
 import pulumi_aws
 
 __all__ = [
     'BucketArgs',
+    'BucketArgsDict',
     'DefaultLogGroupArgs',
+    'DefaultLogGroupArgsDict',
     'DefaultRoleWithPolicyArgs',
+    'DefaultRoleWithPolicyArgsDict',
     'DefaultSecurityGroupArgs',
+    'DefaultSecurityGroupArgsDict',
     'ExistingBucketArgs',
+    'ExistingBucketArgsDict',
     'ExistingLogGroupArgs',
+    'ExistingLogGroupArgsDict',
     'LogGroupArgs',
+    'LogGroupArgsDict',
     'OptionalLogGroupArgs',
+    'OptionalLogGroupArgsDict',
     'RequiredBucketArgs',
+    'RequiredBucketArgsDict',
     'RoleWithPolicyArgs',
+    'RoleWithPolicyArgsDict',
     'SecurityGroupArgs',
+    'SecurityGroupArgsDict',
 ]
+
+MYPY = False
+
+if not MYPY:
+    class BucketArgsDict(TypedDict):
+        """
+        The set of arguments for constructing a Bucket resource.
+        """
+        acceleration_status: NotRequired[pulumi.Input[str]]
+        """
+        Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+        """
+        acl: NotRequired[pulumi.Input[str]]
+        """
+        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+        """
+        arn: NotRequired[pulumi.Input[str]]
+        """
+        ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+        """
+        bucket: NotRequired[pulumi.Input[str]]
+        """
+        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+        """
+        bucket_prefix: NotRequired[pulumi.Input[str]]
+        """
+        Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+        """
+        cors_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgsDict']]]]
+        """
+        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+        """
+        force_destroy: NotRequired[pulumi.Input[bool]]
+        """
+        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+        """
+        grants: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgsDict']]]]
+        """
+        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+        """
+        hosted_zone_id: NotRequired[pulumi.Input[str]]
+        """
+        [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+        """
+        lifecycle_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgsDict']]]]
+        """
+        Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+        """
+        loggings: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLoggingArgsDict']]]]
+        """
+        Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketLoggingV2` instead.
+        """
+        object_lock_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgsDict']]
+        """
+        Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
+        The provider wil only perform drift detection if a configuration value is provided.
+        Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+        """
+        policy: NotRequired[pulumi.Input[str]]
+        """
+        Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
+        The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketPolicy` instead.
+        """
+        replication_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgsDict']]
+        """
+        Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketReplicationConfig` instead.
+        """
+        request_payer: NotRequired[pulumi.Input[str]]
+        """
+        Specifies who should bear the cost of Amazon S3 data transfer.
+        Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
+        See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
+        The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+        """
+        server_side_encryption_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgsDict']]
+        """
+        Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
+        The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+        """
+        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
+        """
+        Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+
+        The following arguments are deprecated, and will be removed in a future major version:
+        """
+        versioning: NotRequired[pulumi.Input['pulumi_aws.s3.BucketVersioningArgsDict']]
+        """
+        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+        """
+        website: NotRequired[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgsDict']]
+        """
+        Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
+        Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+        """
+        website_domain: NotRequired[pulumi.Input[str]]
+        """
+        (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+        """
+        website_endpoint: NotRequired[pulumi.Input[str]]
+        """
+        (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+        """
+elif False:
+    BucketArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class BucketArgs:
@@ -402,6 +529,26 @@ class BucketArgs:
         pulumi.set(self, "website_endpoint", value)
 
 
+if not MYPY:
+    class DefaultLogGroupArgsDict(TypedDict):
+        """
+        Log group with default setup unless explicitly skipped.
+        """
+        args: NotRequired['LogGroupArgsDict']
+        """
+        Arguments to use instead of the default values during creation.
+        """
+        existing: NotRequired['ExistingLogGroupArgsDict']
+        """
+        Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+        """
+        skip: NotRequired[bool]
+        """
+        Skip creation of the log group.
+        """
+elif False:
+    DefaultLogGroupArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class DefaultLogGroupArgs:
     def __init__(__self__, *,
@@ -457,6 +604,26 @@ class DefaultLogGroupArgs:
     def skip(self, value: Optional[bool]):
         pulumi.set(self, "skip", value)
 
+
+if not MYPY:
+    class DefaultRoleWithPolicyArgsDict(TypedDict):
+        """
+        Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+        """
+        args: NotRequired['RoleWithPolicyArgsDict']
+        """
+        Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+        """
+        role_arn: NotRequired[pulumi.Input[str]]
+        """
+        ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+        """
+        skip: NotRequired[bool]
+        """
+        Skips creation of the role if set to `true`.
+        """
+elif False:
+    DefaultRoleWithPolicyArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class DefaultRoleWithPolicyArgs:
@@ -514,6 +681,26 @@ class DefaultRoleWithPolicyArgs:
         pulumi.set(self, "skip", value)
 
 
+if not MYPY:
+    class DefaultSecurityGroupArgsDict(TypedDict):
+        """
+        Security Group with default setup unless explicitly skipped or an existing security group id provided.
+        """
+        args: NotRequired['SecurityGroupArgsDict']
+        """
+        Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+        """
+        security_group_id: NotRequired[pulumi.Input[str]]
+        """
+        Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+        """
+        skip: NotRequired[bool]
+        """
+        Skips creation of the security group if set to `true`.
+        """
+elif False:
+    DefaultSecurityGroupArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class DefaultSecurityGroupArgs:
     def __init__(__self__, *,
@@ -570,6 +757,22 @@ class DefaultSecurityGroupArgs:
         pulumi.set(self, "skip", value)
 
 
+if not MYPY:
+    class ExistingBucketArgsDict(TypedDict):
+        """
+        Reference to an existing bucket.
+        """
+        arn: NotRequired[pulumi.Input[str]]
+        """
+        Arn of the bucket. Only one of [arn] or [name] can be specified.
+        """
+        name: NotRequired[pulumi.Input[str]]
+        """
+        Name of the bucket. Only one of [arn] or [name] can be specified.
+        """
+elif False:
+    ExistingBucketArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class ExistingBucketArgs:
     def __init__(__self__, *,
@@ -609,6 +812,26 @@ class ExistingBucketArgs:
     def name(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "name", value)
 
+
+if not MYPY:
+    class ExistingLogGroupArgsDict(TypedDict):
+        """
+        Reference to an existing log group.
+        """
+        arn: NotRequired[pulumi.Input[str]]
+        """
+        Arn of the log group. Only one of [arn] or [name] can be specified.
+        """
+        name: NotRequired[pulumi.Input[str]]
+        """
+        Name of the log group. Only one of [arn] or [name] can be specified.
+        """
+        region: NotRequired[pulumi.Input[str]]
+        """
+        Region of the log group. If not specified, the provider region will be used.
+        """
+elif False:
+    ExistingLogGroupArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class ExistingLogGroupArgs:
@@ -665,6 +888,46 @@ class ExistingLogGroupArgs:
     def region(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "region", value)
 
+
+if not MYPY:
+    class LogGroupArgsDict(TypedDict):
+        """
+        The set of arguments for constructing a LogGroup resource.
+        """
+        kms_key_id: NotRequired[pulumi.Input[str]]
+        """
+        The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
+        AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
+        permissions for the CMK whenever the encrypted data is requested.
+        """
+        log_group_class: NotRequired[pulumi.Input[str]]
+        """
+        Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        """
+        name: NotRequired[pulumi.Input[str]]
+        """
+        The name of the log group. If omitted, this provider will assign a random, unique name.
+        """
+        name_prefix: NotRequired[pulumi.Input[str]]
+        """
+        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        """
+        retention_in_days: NotRequired[pulumi.Input[int]]
+        """
+        Specifies the number of days
+        you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+        If you select 0, the events in the log group are always retained and never expire.
+        """
+        skip_destroy: NotRequired[pulumi.Input[bool]]
+        """
+        Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
+        """
+        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
+        """
+        A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        """
+elif False:
+    LogGroupArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class LogGroupArgs:
@@ -794,6 +1057,26 @@ class LogGroupArgs:
         pulumi.set(self, "tags", value)
 
 
+if not MYPY:
+    class OptionalLogGroupArgsDict(TypedDict):
+        """
+        Log group which is only created if enabled.
+        """
+        args: NotRequired['LogGroupArgsDict']
+        """
+        Arguments to use instead of the default values during creation.
+        """
+        enable: NotRequired[bool]
+        """
+        Enable creation of the log group.
+        """
+        existing: NotRequired['ExistingLogGroupArgsDict']
+        """
+        Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+        """
+elif False:
+    OptionalLogGroupArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class OptionalLogGroupArgs:
     def __init__(__self__, *,
@@ -850,6 +1133,22 @@ class OptionalLogGroupArgs:
         pulumi.set(self, "existing", value)
 
 
+if not MYPY:
+    class RequiredBucketArgsDict(TypedDict):
+        """
+        Bucket with default setup.
+        """
+        args: NotRequired['BucketArgsDict']
+        """
+        Arguments to use instead of the default values during creation.
+        """
+        existing: NotRequired['ExistingBucketArgsDict']
+        """
+        Identity of an existing bucket to use. Cannot be used in combination with `args`.
+        """
+elif False:
+    RequiredBucketArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class RequiredBucketArgs:
     def __init__(__self__, *,
@@ -889,6 +1188,55 @@ class RequiredBucketArgs:
     def existing(self, value: Optional['ExistingBucketArgs']):
         pulumi.set(self, "existing", value)
 
+
+if not MYPY:
+    class RoleWithPolicyArgsDict(TypedDict):
+        """
+        The set of arguments for constructing a Role resource and Policy attachments.
+        """
+        description: NotRequired[pulumi.Input[str]]
+        """
+        Description of the role.
+        """
+        force_detach_policies: NotRequired[pulumi.Input[bool]]
+        """
+        Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+        """
+        inline_policies: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgsDict']]]]
+        """
+        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+        """
+        managed_policy_arns: NotRequired[pulumi.Input[Sequence[pulumi.Input[str]]]]
+        max_session_duration: NotRequired[pulumi.Input[int]]
+        """
+        Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+        """
+        name: NotRequired[pulumi.Input[str]]
+        """
+        Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+        """
+        name_prefix: NotRequired[pulumi.Input[str]]
+        """
+        Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+        """
+        path: NotRequired[pulumi.Input[str]]
+        """
+        Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+        """
+        permissions_boundary: NotRequired[pulumi.Input[str]]
+        """
+        ARN of the policy that is used to set the permissions boundary for the role.
+        """
+        policy_arns: NotRequired[Sequence[str]]
+        """
+        ARNs of the policies to attach to the created role.
+        """
+        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
+        """
+        Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        """
+elif False:
+    RoleWithPolicyArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class RoleWithPolicyArgs:
@@ -1069,6 +1417,46 @@ class RoleWithPolicyArgs:
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
 
+
+if not MYPY:
+    class SecurityGroupArgsDict(TypedDict):
+        """
+        The set of arguments for constructing a Security Group resource.
+        """
+        description: NotRequired[pulumi.Input[str]]
+        """
+        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
+        """
+        egress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgsDict']]]]
+        """
+        Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+        """
+        ingress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgsDict']]]]
+        """
+        Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+        """
+        name: NotRequired[pulumi.Input[str]]
+        """
+        Name of the security group. If omitted, the provider will assign a random, unique name.
+        """
+        name_prefix: NotRequired[pulumi.Input[str]]
+        """
+        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        """
+        revoke_rules_on_delete: NotRequired[pulumi.Input[bool]]
+        """
+        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+        """
+        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
+        """
+        Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        """
+        vpc_id: NotRequired[pulumi.Input[str]]
+        """
+        VPC ID. Defaults to the region's default VPC.
+        """
+elif False:
+    SecurityGroupArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class SecurityGroupArgs:
