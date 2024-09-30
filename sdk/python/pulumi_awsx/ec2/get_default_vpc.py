@@ -4,9 +4,14 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from .. import _utilities
 
 __all__ = [
@@ -77,12 +82,15 @@ def get_default_vpc(opts: Optional[pulumi.InvokeOptions] = None) -> AwaitableGet
         private_subnet_ids=pulumi.get(__ret__, 'private_subnet_ids'),
         public_subnet_ids=pulumi.get(__ret__, 'public_subnet_ids'),
         vpc_id=pulumi.get(__ret__, 'vpc_id'))
-
-
-@_utilities.lift_output_func(get_default_vpc)
 def get_default_vpc_output(opts: Optional[pulumi.InvokeOptions] = None) -> pulumi.Output[GetDefaultVpcResult]:
     """
     [NOT YET IMPLEMENTED] Get the Default VPC for a region.
     """
     pulumi.log.warn("""get_default_vpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.""")
-    ...
+    __args__ = dict()
+    opts = pulumi.InvokeOptions.merge(_utilities.get_invoke_opts_defaults(), opts)
+    __ret__ = pulumi.runtime.invoke_output('awsx:ec2:getDefaultVpc', __args__, opts=opts, typ=GetDefaultVpcResult)
+    return __ret__.apply(lambda __response__: GetDefaultVpcResult(
+        private_subnet_ids=pulumi.get(__response__, 'private_subnet_ids'),
+        public_subnet_ids=pulumi.get(__response__, 'public_subnet_ids'),
+        vpc_id=pulumi.get(__response__, 'vpc_id')))
