@@ -56,7 +56,6 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
-					"Pulumi":        "3.*",
 					"Pulumi.Aws":    "6.*",
 					"Pulumi.Docker": "4.*",
 				},
@@ -79,7 +78,6 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@aws-sdk/client-ecs": "^3.405.0",
-					"@pulumi/pulumi":      "^3.0.0",
 					"@pulumi/aws":         "^" + dependencies.Aws,
 					"@pulumi/docker":      "^" + dependencies.Docker,
 					"docker-classic":      "npm:@pulumi/docker@3.6.1",
@@ -96,7 +94,6 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":        ">=3.91.1,<4.0.0",
 					"pulumi-aws":    ">=6.0.4,<7.0.0",
 					"pulumi-docker": fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
 				},
