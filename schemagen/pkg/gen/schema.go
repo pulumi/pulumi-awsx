@@ -83,7 +83,6 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"@pulumi/docker":      "^" + dependencies.Docker,
 					"docker-classic":      "npm:@pulumi/docker@3.6.1",
 					"@types/aws-lambda":   "^8.10.23",
-					"aws-sdk":             "^2.1450.0",
 					"mime":                "^2.0.0",
 				},
 				"devDependencies": map[string]string{
