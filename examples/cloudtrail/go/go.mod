@@ -6,7 +6,7 @@ toolchain go1.21.1
 
 require (
 	github.com/pulumi/pulumi-awsx/sdk/v2 v2.4.0
-	github.com/pulumi/pulumi/sdk/v3 v3.134.1
+	github.com/pulumi/pulumi/sdk/v3 v3.136.1
 )
 
 require (
