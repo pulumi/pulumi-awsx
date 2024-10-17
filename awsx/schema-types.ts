@@ -154,6 +154,7 @@ export interface EC2ServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
@@ -224,6 +225,7 @@ export interface FargateServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
