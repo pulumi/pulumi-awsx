@@ -59,6 +59,7 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["desiredCount"] = args ? args.desiredCount : undefined;
             resourceInputs["enableEcsManagedTags"] = args ? args.enableEcsManagedTags : undefined;
             resourceInputs["enableExecuteCommand"] = args ? args.enableExecuteCommand : undefined;
+            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
             resourceInputs["forceNewDeployment"] = args ? args.forceNewDeployment : undefined;
             resourceInputs["healthCheckGracePeriodSeconds"] = args ? args.healthCheckGracePeriodSeconds : undefined;
             resourceInputs["iamRole"] = args ? args.iamRole : undefined;
@@ -135,7 +136,12 @@ export interface FargateServiceArgs {
      */
     enableExecuteCommand?: pulumi.Input<boolean>;
     /**
+     * Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+     */
+    forceDelete?: pulumi.Input<boolean>;
+    /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * When using the forceNewDeployment property you also need to configure the triggers property.
      */
     forceNewDeployment?: pulumi.Input<boolean>;
     /**

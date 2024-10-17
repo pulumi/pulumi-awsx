@@ -138,7 +138,7 @@ type vpcArgs struct {
 	Ipv6CidrBlockNetworkBorderGroup *string `pulumi:"ipv6CidrBlockNetworkBorderGroup"`
 	// IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
 	Ipv6IpamPoolId *string `pulumi:"ipv6IpamPoolId"`
-	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
 	Ipv6NetmaskLength *int `pulumi:"ipv6NetmaskLength"`
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfiguration `pulumi:"natGateways"`
@@ -182,7 +182,7 @@ type VpcArgs struct {
 	Ipv6CidrBlockNetworkBorderGroup pulumi.StringPtrInput
 	// IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
 	Ipv6IpamPoolId pulumi.StringPtrInput
-	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
 	Ipv6NetmaskLength pulumi.IntPtrInput
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfigurationArgs

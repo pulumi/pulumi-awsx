@@ -201,6 +201,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     loadBalancerArn: frontEndAwsLb.arn,
     ///     port: 443,
     ///     protocol: "TLS",
+    ///     sslPolicy: "ELBSecurityPolicy-2016-08",
     ///     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
     ///     alpnPolicy: "HTTP2Preferred",
     ///     defaultActions: [{
@@ -217,6 +218,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     load_balancer_arn=front_end_aws_lb["arn"],
     ///     port=443,
     ///     protocol="TLS",
+    ///     ssl_policy="ELBSecurityPolicy-2016-08",
     ///     certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
     ///     alpn_policy="HTTP2Preferred",
     ///     default_actions=[{
@@ -237,6 +239,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///         LoadBalancerArn = frontEndAwsLb.Arn,
     ///         Port = 443,
     ///         Protocol = "TLS",
+    ///         SslPolicy = "ELBSecurityPolicy-2016-08",
     ///         CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
     ///         AlpnPolicy = "HTTP2Preferred",
     ///         DefaultActions = new[]
@@ -265,6 +268,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 			LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
     /// 			Port:            pulumi.Int(443),
     /// 			Protocol:        pulumi.String("TLS"),
+    /// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
     /// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
     /// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
     /// 			DefaultActions: lb.ListenerDefaultActionArray{
@@ -307,6 +311,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///             .loadBalancerArn(frontEndAwsLb.arn())
     ///             .port("443")
     ///             .protocol("TLS")
+    ///             .sslPolicy("ELBSecurityPolicy-2016-08")
     ///             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
     ///             .alpnPolicy("HTTP2Preferred")
     ///             .defaultActions(ListenerDefaultActionArgs.builder()
@@ -327,6 +332,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///       loadBalancerArn: ${frontEndAwsLb.arn}
     ///       port: '443'
     ///       protocol: TLS
+    ///       sslPolicy: ELBSecurityPolicy-2016-08
     ///       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
     ///       alpnPolicy: HTTP2Preferred
     ///       defaultActions:
@@ -1621,7 +1627,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         private InputList<Pulumi.Aws.LB.Inputs.ListenerDefaultActionArgs>? _defaultActions;
 
         /// <summary>
-        /// Configuration block for default actions. Detailed below.
+        /// Configuration block for default actions. See below.
         /// </summary>
         public InputList<Pulumi.Aws.LB.Inputs.ListenerDefaultActionArgs> DefaultActions
         {
@@ -1630,7 +1636,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// The mutual authentication configuration information. Detailed below.
+        /// The mutual authentication configuration information. See below.
         /// </summary>
         [Input("mutualAuthentication")]
         public Input<Pulumi.Aws.LB.Inputs.ListenerMutualAuthenticationArgs>? MutualAuthentication { get; set; }
@@ -1648,7 +1654,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? Protocol { get; set; }
 
         /// <summary>
-        /// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+        /// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
         /// </summary>
         [Input("sslPolicy")]
         public Input<string>? SslPolicy { get; set; }
@@ -1658,8 +1664,6 @@ namespace Pulumi.Awsx.Lb.Inputs
 
         /// <summary>
         /// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        /// 
-        /// &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         /// </summary>
         public InputMap<string> Tags
         {

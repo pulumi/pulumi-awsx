@@ -85,6 +85,7 @@ var _ = internal.GetEnvOrDefault
 //				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
 //				Port:            pulumi.Int(443),
 //				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
 //				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
@@ -431,19 +432,17 @@ type Listener struct {
 	AlpnPolicy *string `pulumi:"alpnPolicy"`
 	// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
 	CertificateArn *string `pulumi:"certificateArn"`
-	// Configuration block for default actions. Detailed below.
+	// Configuration block for default actions. See below.
 	DefaultActions []lb.ListenerDefaultAction `pulumi:"defaultActions"`
-	// The mutual authentication configuration information. Detailed below.
+	// The mutual authentication configuration information. See below.
 	MutualAuthentication *lb.ListenerMutualAuthentication `pulumi:"mutualAuthentication"`
 	// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 	Port *int `pulumi:"port"`
 	// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 	Protocol *string `pulumi:"protocol"`
-	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 	SslPolicy *string `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	//
-	// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 	Tags map[string]string `pulumi:"tags"`
 }
 
@@ -529,6 +528,7 @@ type ListenerInput interface {
 //				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
 //				Port:            pulumi.Int(443),
 //				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
 //				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
@@ -875,19 +875,17 @@ type ListenerArgs struct {
 	AlpnPolicy pulumi.StringPtrInput `pulumi:"alpnPolicy"`
 	// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
 	CertificateArn pulumi.StringPtrInput `pulumi:"certificateArn"`
-	// Configuration block for default actions. Detailed below.
+	// Configuration block for default actions. See below.
 	DefaultActions lb.ListenerDefaultActionArrayInput `pulumi:"defaultActions"`
-	// The mutual authentication configuration information. Detailed below.
+	// The mutual authentication configuration information. See below.
 	MutualAuthentication lb.ListenerMutualAuthenticationPtrInput `pulumi:"mutualAuthentication"`
 	// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 	Port pulumi.IntPtrInput `pulumi:"port"`
 	// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
-	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 	SslPolicy pulumi.StringPtrInput `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	//
-	// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 }
 
@@ -1040,6 +1038,7 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
 //				Port:            pulumi.Int(443),
 //				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
 //				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
@@ -1415,12 +1414,12 @@ func (o ListenerOutput) CertificateArn() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Listener) *string { return v.CertificateArn }).(pulumi.StringPtrOutput)
 }
 
-// Configuration block for default actions. Detailed below.
+// Configuration block for default actions. See below.
 func (o ListenerOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput {
 	return o.ApplyT(func(v Listener) []lb.ListenerDefaultAction { return v.DefaultActions }).(lb.ListenerDefaultActionArrayOutput)
 }
 
-// The mutual authentication configuration information. Detailed below.
+// The mutual authentication configuration information. See below.
 func (o ListenerOutput) MutualAuthentication() lb.ListenerMutualAuthenticationPtrOutput {
 	return o.ApplyT(func(v Listener) *lb.ListenerMutualAuthentication { return v.MutualAuthentication }).(lb.ListenerMutualAuthenticationPtrOutput)
 }
@@ -1435,14 +1434,12 @@ func (o ListenerOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Listener) *string { return v.Protocol }).(pulumi.StringPtrOutput)
 }
 
-// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 func (o ListenerOutput) SslPolicy() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Listener) *string { return v.SslPolicy }).(pulumi.StringPtrOutput)
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-//
-// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 func (o ListenerOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v Listener) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -1491,7 +1488,7 @@ func (o ListenerPtrOutput) CertificateArn() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration block for default actions. Detailed below.
+// Configuration block for default actions. See below.
 func (o ListenerPtrOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput {
 	return o.ApplyT(func(v *Listener) []lb.ListenerDefaultAction {
 		if v == nil {
@@ -1501,7 +1498,7 @@ func (o ListenerPtrOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput 
 	}).(lb.ListenerDefaultActionArrayOutput)
 }
 
-// The mutual authentication configuration information. Detailed below.
+// The mutual authentication configuration information. See below.
 func (o ListenerPtrOutput) MutualAuthentication() lb.ListenerMutualAuthenticationPtrOutput {
 	return o.ApplyT(func(v *Listener) *lb.ListenerMutualAuthentication {
 		if v == nil {
@@ -1531,7 +1528,7 @@ func (o ListenerPtrOutput) Protocol() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 func (o ListenerPtrOutput) SslPolicy() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Listener) *string {
 		if v == nil {
@@ -1542,8 +1539,6 @@ func (o ListenerPtrOutput) SslPolicy() pulumi.StringPtrOutput {
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-//
-// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 func (o ListenerPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *Listener) map[string]string {
 		if v == nil {

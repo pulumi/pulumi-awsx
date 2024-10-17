@@ -58,7 +58,7 @@ class VpcArgs:
         :param pulumi.Input[str] ipv6_cidr_block: IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.
         :param pulumi.Input[str] ipv6_cidr_block_network_border_group: By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
-        :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+        :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
@@ -267,7 +267,7 @@ class VpcArgs:
     @pulumi.getter(name="ipv6NetmaskLength")
     def ipv6_netmask_length(self) -> Optional[pulumi.Input[int]]:
         """
-        Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+        Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         """
         return pulumi.get(self, "ipv6_netmask_length")
 
@@ -430,7 +430,7 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[str] ipv6_cidr_block: IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.
         :param pulumi.Input[str] ipv6_cidr_block_network_border_group: By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
-        :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+        :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.

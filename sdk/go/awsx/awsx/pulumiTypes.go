@@ -2127,7 +2127,9 @@ type RoleWithPolicy struct {
 	Description *string `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies *bool `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+	//
+	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 	InlinePolicies    []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
 	ManagedPolicyArns []string               `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
@@ -2163,7 +2165,9 @@ type RoleWithPolicyArgs struct {
 	Description pulumi.StringPtrInput `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies pulumi.BoolPtrInput `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+	//
+	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 	InlinePolicies    iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
 	ManagedPolicyArns pulumi.StringArrayInput        `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
@@ -2270,7 +2274,9 @@ func (o RoleWithPolicyOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v RoleWithPolicy) *bool { return v.ForceDetachPolicies }).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+//
+// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []iam.RoleInlinePolicy { return v.InlinePolicies }).(iam.RoleInlinePolicyArrayOutput)
 }
@@ -2358,7 +2364,9 @@ func (o RoleWithPolicyPtrOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+//
+// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []iam.RoleInlinePolicy {
 		if v == nil {

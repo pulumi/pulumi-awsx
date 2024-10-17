@@ -33,6 +33,7 @@ class EC2ServiceArgs:
                  desired_count: Optional[pulumi.Input[int]] = None,
                  enable_ecs_managed_tags: Optional[pulumi.Input[bool]] = None,
                  enable_execute_command: Optional[pulumi.Input[bool]] = None,
+                 force_delete: Optional[pulumi.Input[bool]] = None,
                  force_new_deployment: Optional[pulumi.Input[bool]] = None,
                  health_check_grace_period_seconds: Optional[pulumi.Input[int]] = None,
                  iam_role: Optional[pulumi.Input[str]] = None,
@@ -63,7 +64,9 @@ class EC2ServiceArgs:
         :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
         :param pulumi.Input[bool] enable_ecs_managed_tags: Whether to enable Amazon ECS managed tags for the tasks within the service.
         :param pulumi.Input[bool] enable_execute_command: Whether to enable Amazon ECS Exec for the tasks within the service.
+        :param pulumi.Input[bool] force_delete: Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+               When using the forceNewDeployment property you also need to configure the triggers property.
         :param pulumi.Input[int] health_check_grace_period_seconds: Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceLoadBalancerArgs']]] load_balancers: Configuration block for load balancers. See below.
@@ -104,6 +107,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "enable_ecs_managed_tags", enable_ecs_managed_tags)
         if enable_execute_command is not None:
             pulumi.set(__self__, "enable_execute_command", enable_execute_command)
+        if force_delete is not None:
+            pulumi.set(__self__, "force_delete", force_delete)
         if force_new_deployment is not None:
             pulumi.set(__self__, "force_new_deployment", force_new_deployment)
         if health_check_grace_period_seconds is not None:
@@ -262,10 +267,23 @@ class EC2ServiceArgs:
         pulumi.set(self, "enable_execute_command", value)
 
     @property
+    @pulumi.getter(name="forceDelete")
+    def force_delete(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+        """
+        return pulumi.get(self, "force_delete")
+
+    @force_delete.setter
+    def force_delete(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "force_delete", value)
+
+    @property
     @pulumi.getter(name="forceNewDeployment")
     def force_new_deployment(self) -> Optional[pulumi.Input[bool]]:
         """
         Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+        When using the forceNewDeployment property you also need to configure the triggers property.
         """
         return pulumi.get(self, "force_new_deployment")
 
@@ -495,6 +513,7 @@ class EC2Service(pulumi.ComponentResource):
                  desired_count: Optional[pulumi.Input[int]] = None,
                  enable_ecs_managed_tags: Optional[pulumi.Input[bool]] = None,
                  enable_execute_command: Optional[pulumi.Input[bool]] = None,
+                 force_delete: Optional[pulumi.Input[bool]] = None,
                  force_new_deployment: Optional[pulumi.Input[bool]] = None,
                  health_check_grace_period_seconds: Optional[pulumi.Input[int]] = None,
                  iam_role: Optional[pulumi.Input[str]] = None,
@@ -530,7 +549,9 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
         :param pulumi.Input[bool] enable_ecs_managed_tags: Whether to enable Amazon ECS managed tags for the tasks within the service.
         :param pulumi.Input[bool] enable_execute_command: Whether to enable Amazon ECS Exec for the tasks within the service.
+        :param pulumi.Input[bool] force_delete: Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+               When using the forceNewDeployment property you also need to configure the triggers property.
         :param pulumi.Input[int] health_check_grace_period_seconds: Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceLoadBalancerArgs']]]] load_balancers: Configuration block for load balancers. See below.
@@ -586,6 +607,7 @@ class EC2Service(pulumi.ComponentResource):
                  desired_count: Optional[pulumi.Input[int]] = None,
                  enable_ecs_managed_tags: Optional[pulumi.Input[bool]] = None,
                  enable_execute_command: Optional[pulumi.Input[bool]] = None,
+                 force_delete: Optional[pulumi.Input[bool]] = None,
                  force_new_deployment: Optional[pulumi.Input[bool]] = None,
                  health_check_grace_period_seconds: Optional[pulumi.Input[int]] = None,
                  iam_role: Optional[pulumi.Input[str]] = None,
@@ -625,6 +647,7 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["desired_count"] = desired_count
             __props__.__dict__["enable_ecs_managed_tags"] = enable_ecs_managed_tags
             __props__.__dict__["enable_execute_command"] = enable_execute_command
+            __props__.__dict__["force_delete"] = force_delete
             __props__.__dict__["force_new_deployment"] = force_new_deployment
             __props__.__dict__["health_check_grace_period_seconds"] = health_check_grace_period_seconds
             __props__.__dict__["iam_role"] = iam_role

@@ -232,7 +232,7 @@ export interface VpcArgs {
      */
     ipv6IpamPoolId?: pulumi.Input<string>;
     /**
-     * Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+     * Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
      */
     ipv6NetmaskLength?: pulumi.Input<number>;
     /**
