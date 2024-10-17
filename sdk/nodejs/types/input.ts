@@ -295,7 +295,9 @@ export namespace awsx {
          */
         forceDetachPolicies?: pulumi.Input<boolean>;
         /**
-         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+         *
+         * @deprecated The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
          */
         inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
         managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
@@ -1031,7 +1033,7 @@ export namespace ec2 {
      *
      * func main() {
      * 	pulumi.Run(func(ctx *pulumi.Context) error {
-     * 		current, err := aws.GetCallerIdentity(ctx, nil, nil)
+     * 		current, err := aws.GetCallerIdentity(ctx, &aws.GetCallerIdentityArgs{}, nil)
      * 		if err != nil {
      * 			return err
      * 		}
@@ -1812,6 +1814,7 @@ export namespace lb {
      *     loadBalancerArn: frontEndAwsLb.arn,
      *     port: 443,
      *     protocol: "TLS",
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpnPolicy: "HTTP2Preferred",
      *     defaultActions: [{
@@ -1828,6 +1831,7 @@ export namespace lb {
      *     load_balancer_arn=front_end_aws_lb["arn"],
      *     port=443,
      *     protocol="TLS",
+     *     ssl_policy="ELBSecurityPolicy-2016-08",
      *     certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpn_policy="HTTP2Preferred",
      *     default_actions=[{
@@ -1848,6 +1852,7 @@ export namespace lb {
      *         LoadBalancerArn = frontEndAwsLb.Arn,
      *         Port = 443,
      *         Protocol = "TLS",
+     *         SslPolicy = "ELBSecurityPolicy-2016-08",
      *         CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *         AlpnPolicy = "HTTP2Preferred",
      *         DefaultActions = new[]
@@ -1876,6 +1881,7 @@ export namespace lb {
      * 			LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
      * 			Port:            pulumi.Int(443),
      * 			Protocol:        pulumi.String("TLS"),
+     * 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
      * 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
      * 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
      * 			DefaultActions: lb.ListenerDefaultActionArray{
@@ -1918,6 +1924,7 @@ export namespace lb {
      *             .loadBalancerArn(frontEndAwsLb.arn())
      *             .port("443")
      *             .protocol("TLS")
+     *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
      *             .alpnPolicy("HTTP2Preferred")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
@@ -1938,6 +1945,7 @@ export namespace lb {
      *       loadBalancerArn: ${frontEndAwsLb.arn}
      *       port: '443'
      *       protocol: TLS
+     *       sslPolicy: ELBSecurityPolicy-2016-08
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
      *       alpnPolicy: HTTP2Preferred
      *       defaultActions:
@@ -3224,11 +3232,11 @@ export namespace lb {
          */
         certificateArn?: pulumi.Input<string>;
         /**
-         * Configuration block for default actions. Detailed below.
+         * Configuration block for default actions. See below.
          */
         defaultActions?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.ListenerDefaultAction>[]>;
         /**
-         * The mutual authentication configuration information. Detailed below.
+         * The mutual authentication configuration information. See below.
          */
         mutualAuthentication?: pulumi.Input<pulumiAws.types.input.lb.ListenerMutualAuthentication>;
         /**
@@ -3240,13 +3248,11 @@ export namespace lb {
          */
         protocol?: pulumi.Input<string>;
         /**
-         * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+         * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          */
         sslPolicy?: pulumi.Input<string>;
         /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         *
-         * > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
