@@ -32,8 +32,9 @@ jobs:
           repo: pulumi/pulumictl
 
       - name: Prepare Git configuration
-        git config --local user.email 'bot@pulumi.com'
-        git config --local user.name 'pulumi-bot'
+        run: |
+          git config --local user.email 'bot@pulumi.com'
+          git config --local user.name 'pulumi-bot'
 
       - name: Upgrade pulumi-aws dependency
         id: upgrade
