@@ -14,6 +14,9 @@ on:
   # This stanza permits manual execution of the workflow.
   workflow_dispatch: {}
 
+  # Temporarily to test the workflow run it on PRs:
+  pull_request: {}
+
 jobs:
 
   upgrade-aws:
