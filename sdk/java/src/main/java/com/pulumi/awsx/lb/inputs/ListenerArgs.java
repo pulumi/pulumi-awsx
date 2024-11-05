@@ -100,6 +100,7 @@ import javax.annotation.Nullable;
  *             .loadBalancerArn(frontEndAwsLb.arn())
  *             .port(&#34;443&#34;)
  *             .protocol(&#34;TLS&#34;)
+ *             .sslPolicy(&#34;ELBSecurityPolicy-2016-08&#34;)
  *             .certificateArn(&#34;arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4&#34;)
  *             .alpnPolicy(&#34;HTTP2Preferred&#34;)
  *             .defaultActions(ListenerDefaultActionArgs.builder()
@@ -492,14 +493,14 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Configuration block for default actions. Detailed below.
+     * Configuration block for default actions. See below.
      * 
      */
     @Import(name="defaultActions")
     private @Nullable Output<List<ListenerDefaultActionArgs>> defaultActions;
 
     /**
-     * @return Configuration block for default actions. Detailed below.
+     * @return Configuration block for default actions. See below.
      * 
      */
     public Optional<Output<List<ListenerDefaultActionArgs>>> defaultActions() {
@@ -507,14 +508,14 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The mutual authentication configuration information. Detailed below.
+     * The mutual authentication configuration information. See below.
      * 
      */
     @Import(name="mutualAuthentication")
     private @Nullable Output<ListenerMutualAuthenticationArgs> mutualAuthentication;
 
     /**
-     * @return The mutual authentication configuration information. Detailed below.
+     * @return The mutual authentication configuration information. See below.
      * 
      */
     public Optional<Output<ListenerMutualAuthenticationArgs>> mutualAuthentication() {
@@ -552,14 +553,14 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+     * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
      * 
      */
     @Import(name="sslPolicy")
     private @Nullable Output<String> sslPolicy;
 
     /**
-     * @return Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+     * @return Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
      * 
      */
     public Optional<Output<String>> sslPolicy() {
@@ -569,8 +570,6 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
-     * &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
-     * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
@@ -578,11 +577,24 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
-     * &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
-     * 
      */
     public Optional<Output<Map<String,String>>> tags() {
         return Optional.ofNullable(this.tags);
+    }
+
+    /**
+     * TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+     * 
+     */
+    @Import(name="tcpIdleTimeoutSeconds")
+    private @Nullable Output<Integer> tcpIdleTimeoutSeconds;
+
+    /**
+     * @return TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+     * 
+     */
+    public Optional<Output<Integer>> tcpIdleTimeoutSeconds() {
+        return Optional.ofNullable(this.tcpIdleTimeoutSeconds);
     }
 
     private ListenerArgs() {}
@@ -596,6 +608,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         this.protocol = $.protocol;
         this.sslPolicy = $.sslPolicy;
         this.tags = $.tags;
+        this.tcpIdleTimeoutSeconds = $.tcpIdleTimeoutSeconds;
     }
 
     public static Builder builder() {
@@ -659,7 +672,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param defaultActions Configuration block for default actions. Detailed below.
+         * @param defaultActions Configuration block for default actions. See below.
          * 
          * @return builder
          * 
@@ -670,7 +683,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param defaultActions Configuration block for default actions. Detailed below.
+         * @param defaultActions Configuration block for default actions. See below.
          * 
          * @return builder
          * 
@@ -680,7 +693,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param defaultActions Configuration block for default actions. Detailed below.
+         * @param defaultActions Configuration block for default actions. See below.
          * 
          * @return builder
          * 
@@ -690,7 +703,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param mutualAuthentication The mutual authentication configuration information. Detailed below.
+         * @param mutualAuthentication The mutual authentication configuration information. See below.
          * 
          * @return builder
          * 
@@ -701,7 +714,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param mutualAuthentication The mutual authentication configuration information. Detailed below.
+         * @param mutualAuthentication The mutual authentication configuration information. See below.
          * 
          * @return builder
          * 
@@ -753,7 +766,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sslPolicy Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+         * @param sslPolicy Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          * 
          * @return builder
          * 
@@ -764,7 +777,7 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sslPolicy Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+         * @param sslPolicy Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          * 
          * @return builder
          * 
@@ -775,8 +788,6 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param tags A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         * 
-         * &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
          * 
          * @return builder
          * 
@@ -789,13 +800,32 @@ public final class ListenerArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param tags A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
-         * &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
-         * 
          * @return builder
          * 
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
+        }
+
+        /**
+         * @param tcpIdleTimeoutSeconds TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tcpIdleTimeoutSeconds(@Nullable Output<Integer> tcpIdleTimeoutSeconds) {
+            $.tcpIdleTimeoutSeconds = tcpIdleTimeoutSeconds;
+            return this;
+        }
+
+        /**
+         * @param tcpIdleTimeoutSeconds TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tcpIdleTimeoutSeconds(Integer tcpIdleTimeoutSeconds) {
+            return tcpIdleTimeoutSeconds(Output.of(tcpIdleTimeoutSeconds));
         }
 
         public ListenerArgs build() {
