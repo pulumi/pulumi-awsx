@@ -68,4 +68,4 @@ jobs:
           PULUMI_AWS_VERSION: ${{ steps.upgrade.outputs.version }}
         run: |
           title="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
-          gh pr create --title "$title" --body "$title"
+          gh pr create --title "$title" --body "$title\n\nPR prepared by `awsx-upgrade-aws.yml` workflow."
