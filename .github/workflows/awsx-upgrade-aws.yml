@@ -60,7 +60,6 @@ jobs:
           msg="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
           git add .
           git commit -m "msg"
-          git push origin "$branch"
 
       - name: Create a Pull Request
         if: steps.upgrade.outputs.changes != 0
