@@ -58,6 +58,8 @@ jobs:
         run: |
           branch="update-pulumi-aws/$PULUMI_AWS_VERSION-${{ github.run_id }}-${{ github.run_number }}"
           msg="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
+          git branch "$branch"
+          git checkout "$branch"
           git add .
           git commit -m "msg"
 
