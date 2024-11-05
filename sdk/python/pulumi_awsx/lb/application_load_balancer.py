@@ -37,6 +37,7 @@ class ApplicationLoadBalancerArgs:
                  enable_tls_version_and_cipher_suite_headers: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  enable_xff_client_port: Optional[pulumi.Input[bool]] = None,
+                 enable_zonal_shift: Optional[pulumi.Input[bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[str]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
@@ -69,6 +70,7 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[bool] enable_tls_version_and_cipher_suite_headers: Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
         :param pulumi.Input[bool] enable_waf_fail_open: Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
         :param pulumi.Input[bool] enable_xff_client_port: Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
+        :param pulumi.Input[bool] enable_zonal_shift: Whether zonal shift is enabled. Defaults to `false`.
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
@@ -115,6 +117,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "enable_waf_fail_open", enable_waf_fail_open)
         if enable_xff_client_port is not None:
             pulumi.set(__self__, "enable_xff_client_port", enable_xff_client_port)
+        if enable_zonal_shift is not None:
+            pulumi.set(__self__, "enable_zonal_shift", enable_zonal_shift)
         if enforce_security_group_inbound_rules_on_private_link_traffic is not None:
             pulumi.set(__self__, "enforce_security_group_inbound_rules_on_private_link_traffic", enforce_security_group_inbound_rules_on_private_link_traffic)
         if idle_timeout is not None:
@@ -327,6 +331,18 @@ class ApplicationLoadBalancerArgs:
         pulumi.set(self, "enable_xff_client_port", value)
 
     @property
+    @pulumi.getter(name="enableZonalShift")
+    def enable_zonal_shift(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether zonal shift is enabled. Defaults to `false`.
+        """
+        return pulumi.get(self, "enable_zonal_shift")
+
+    @enable_zonal_shift.setter
+    def enable_zonal_shift(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_zonal_shift", value)
+
+    @property
     @pulumi.getter(name="enforceSecurityGroupInboundRulesOnPrivateLinkTraffic")
     def enforce_security_group_inbound_rules_on_private_link_traffic(self) -> Optional[pulumi.Input[str]]:
         """
@@ -527,6 +543,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  enable_tls_version_and_cipher_suite_headers: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  enable_xff_client_port: Optional[pulumi.Input[bool]] = None,
+                 enable_zonal_shift: Optional[pulumi.Input[bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[str]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
@@ -563,6 +580,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[bool] enable_tls_version_and_cipher_suite_headers: Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
         :param pulumi.Input[bool] enable_waf_fail_open: Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
         :param pulumi.Input[bool] enable_xff_client_port: Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
+        :param pulumi.Input[bool] enable_zonal_shift: Whether zonal shift is enabled. Defaults to `false`.
         :param pulumi.Input[str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
@@ -618,6 +636,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  enable_tls_version_and_cipher_suite_headers: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  enable_xff_client_port: Optional[pulumi.Input[bool]] = None,
+                 enable_zonal_shift: Optional[pulumi.Input[bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[str]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
@@ -659,6 +678,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["enable_tls_version_and_cipher_suite_headers"] = enable_tls_version_and_cipher_suite_headers
             __props__.__dict__["enable_waf_fail_open"] = enable_waf_fail_open
             __props__.__dict__["enable_xff_client_port"] = enable_xff_client_port
+            __props__.__dict__["enable_zonal_shift"] = enable_zonal_shift
             __props__.__dict__["enforce_security_group_inbound_rules_on_private_link_traffic"] = enforce_security_group_inbound_rules_on_private_link_traffic
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
