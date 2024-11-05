@@ -26,6 +26,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: pulumi/pulumictl
+
       - name: Upgrade pulumi-aws dependency
         id: upgrade
         run: |
