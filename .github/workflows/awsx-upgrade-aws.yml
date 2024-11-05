@@ -69,5 +69,9 @@ jobs:
           GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
           PULUMI_AWS_VERSION: ${{ steps.upgrade.outputs.version }}
         run: |
+          branch="update-pulumi-aws/$PULUMI_AWS_VERSION-${{ github.run_id }}-${{ github.run_number }}"
           title="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
-          gh pr create --title "$title" --body "$title\n\nPR prepared by `awsx-upgrade-aws.yml` workflow."
+          gh pr create \
+              --title "$title" \
+              --body "$title\n\nPR prepared by `awsx-upgrade-aws.yml` workflow." \
+              --head "$branch"
