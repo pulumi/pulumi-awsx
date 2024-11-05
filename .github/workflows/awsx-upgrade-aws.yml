@@ -61,7 +61,7 @@ jobs:
           git branch "$branch"
           git checkout "$branch"
           git add .
-          git commit -m "msg"
+          git commit -m "$msg"
           git push origin "$branch"
 
       - name: Create a Pull Request
@@ -74,5 +74,5 @@ jobs:
           title="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
           gh pr create \
               --title "$title" \
-              --body "$title\n\nPR prepared by `awsx-upgrade-aws.yml` workflow." \
+              --body "$title" \
               --head "$branch"
