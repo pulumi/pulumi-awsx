@@ -51,8 +51,8 @@ func TestRegress1112(t *testing.T) {
 	t.Setenv("AWS_REGION", "")
 	os.Unsetenv("AWS_REGION")
 	test := integration.ProgramTestOptions{
-		Quick:                true,
-		SkipRefresh:          true,
+		Quick:       true,
+		SkipRefresh: true,
 	}.With(integration.ProgramTestOptions{
 		Dependencies: []string{
 			"@pulumi/awsx",
@@ -211,6 +211,7 @@ func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
 }
 
 func TestVpcIpam(t *testing.T) {
+	t.Skip("TODO[pulumi/pulumi-awsx#1382] skipped until test IPAM sharing is figured out")
 	t.Run("vpc-ipam-ipv4-auto-cidrblock", func(t *testing.T) {
 		dir := filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-ipam-ipv4-auto-cidrblock")
 		validate := func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
