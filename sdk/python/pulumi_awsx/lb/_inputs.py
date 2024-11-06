@@ -217,6 +217,7 @@ if not MYPY:
             loadBalancerArn: frontEndAwsLb.arn,
             port: 443,
             protocol: "TLS",
+            sslPolicy: "ELBSecurityPolicy-2016-08",
             certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpnPolicy: "HTTP2Preferred",
             defaultActions: [{
@@ -233,6 +234,7 @@ if not MYPY:
             load_balancer_arn=front_end_aws_lb["arn"],
             port=443,
             protocol="TLS",
+            ssl_policy="ELBSecurityPolicy-2016-08",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpn_policy="HTTP2Preferred",
             default_actions=[{
@@ -253,6 +255,7 @@ if not MYPY:
                 LoadBalancerArn = frontEndAwsLb.Arn,
                 Port = 443,
                 Protocol = "TLS",
+                SslPolicy = "ELBSecurityPolicy-2016-08",
                 CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
                 AlpnPolicy = "HTTP2Preferred",
                 DefaultActions = new[]
@@ -281,6 +284,7 @@ if not MYPY:
         			LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
         			Port:            pulumi.Int(443),
         			Protocol:        pulumi.String("TLS"),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
         			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
         			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
         			DefaultActions: lb.ListenerDefaultActionArray{
@@ -323,6 +327,7 @@ if not MYPY:
                     .loadBalancerArn(frontEndAwsLb.arn())
                     .port("443")
                     .protocol("TLS")
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
                     .alpnPolicy("HTTP2Preferred")
                     .defaultActions(ListenerDefaultActionArgs.builder()
@@ -343,6 +348,7 @@ if not MYPY:
               loadBalancerArn: ${frontEndAwsLb.arn}
               port: '443'
               protocol: TLS
+              sslPolicy: ELBSecurityPolicy-2016-08
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
               alpnPolicy: HTTP2Preferred
               defaultActions:
@@ -1629,11 +1635,11 @@ if not MYPY:
         """
         default_actions: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgsDict']]]]
         """
-        Configuration block for default actions. Detailed below.
+        Configuration block for default actions. See below.
         """
         mutual_authentication: NotRequired[pulumi.Input['pulumi_aws.lb.ListenerMutualAuthenticationArgsDict']]
         """
-        The mutual authentication configuration information. Detailed below.
+        The mutual authentication configuration information. See below.
         """
         port: NotRequired[pulumi.Input[int]]
         """
@@ -1645,13 +1651,15 @@ if not MYPY:
         """
         ssl_policy: NotRequired[pulumi.Input[str]]
         """
-        Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+        Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
         """
         tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[str]]]]
         """
         A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-
-        > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
+        """
+        tcp_idle_timeout_seconds: NotRequired[pulumi.Input[int]]
+        """
+        TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
         """
 elif False:
     ListenerArgsDict: TypeAlias = Mapping[str, Any]
@@ -1666,7 +1674,8 @@ class ListenerArgs:
                  port: Optional[pulumi.Input[int]] = None,
                  protocol: Optional[pulumi.Input[str]] = None,
                  ssl_policy: Optional[pulumi.Input[str]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 tcp_idle_timeout_seconds: Optional[pulumi.Input[int]] = None):
         """
         Provides a Load Balancer Listener resource.
 
@@ -1858,6 +1867,7 @@ class ListenerArgs:
             loadBalancerArn: frontEndAwsLb.arn,
             port: 443,
             protocol: "TLS",
+            sslPolicy: "ELBSecurityPolicy-2016-08",
             certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpnPolicy: "HTTP2Preferred",
             defaultActions: [{
@@ -1874,6 +1884,7 @@ class ListenerArgs:
             load_balancer_arn=front_end_aws_lb["arn"],
             port=443,
             protocol="TLS",
+            ssl_policy="ELBSecurityPolicy-2016-08",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             alpn_policy="HTTP2Preferred",
             default_actions=[{
@@ -1894,6 +1905,7 @@ class ListenerArgs:
                 LoadBalancerArn = frontEndAwsLb.Arn,
                 Port = 443,
                 Protocol = "TLS",
+                SslPolicy = "ELBSecurityPolicy-2016-08",
                 CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
                 AlpnPolicy = "HTTP2Preferred",
                 DefaultActions = new[]
@@ -1922,6 +1934,7 @@ class ListenerArgs:
         			LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
         			Port:            pulumi.Int(443),
         			Protocol:        pulumi.String("TLS"),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
         			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
         			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
         			DefaultActions: lb.ListenerDefaultActionArray{
@@ -1964,6 +1977,7 @@ class ListenerArgs:
                     .loadBalancerArn(frontEndAwsLb.arn())
                     .port("443")
                     .protocol("TLS")
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
                     .alpnPolicy("HTTP2Preferred")
                     .defaultActions(ListenerDefaultActionArgs.builder()
@@ -1984,6 +1998,7 @@ class ListenerArgs:
               loadBalancerArn: ${frontEndAwsLb.arn}
               port: '443'
               protocol: TLS
+              sslPolicy: ELBSecurityPolicy-2016-08
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
               alpnPolicy: HTTP2Preferred
               defaultActions:
@@ -3262,14 +3277,13 @@ class ListenerArgs:
 
         :param pulumi.Input[str] alpn_policy: Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
         :param pulumi.Input[str] certificate_arn: ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]] default_actions: Configuration block for default actions. Detailed below.
-        :param pulumi.Input['pulumi_aws.lb.ListenerMutualAuthenticationArgs'] mutual_authentication: The mutual authentication configuration information. Detailed below.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]] default_actions: Configuration block for default actions. See below.
+        :param pulumi.Input['pulumi_aws.lb.ListenerMutualAuthenticationArgs'] mutual_authentication: The mutual authentication configuration information. See below.
         :param pulumi.Input[int] port: Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
         :param pulumi.Input[str] protocol: Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
-        :param pulumi.Input[str] ssl_policy: Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+        :param pulumi.Input[str] ssl_policy: Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-               
-               > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
+        :param pulumi.Input[int] tcp_idle_timeout_seconds: TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
         """
         if alpn_policy is not None:
             pulumi.set(__self__, "alpn_policy", alpn_policy)
@@ -3287,6 +3301,8 @@ class ListenerArgs:
             pulumi.set(__self__, "ssl_policy", ssl_policy)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if tcp_idle_timeout_seconds is not None:
+            pulumi.set(__self__, "tcp_idle_timeout_seconds", tcp_idle_timeout_seconds)
 
     @property
     @pulumi.getter(name="alpnPolicy")
@@ -3316,7 +3332,7 @@ class ListenerArgs:
     @pulumi.getter(name="defaultActions")
     def default_actions(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]]]:
         """
-        Configuration block for default actions. Detailed below.
+        Configuration block for default actions. See below.
         """
         return pulumi.get(self, "default_actions")
 
@@ -3328,7 +3344,7 @@ class ListenerArgs:
     @pulumi.getter(name="mutualAuthentication")
     def mutual_authentication(self) -> Optional[pulumi.Input['pulumi_aws.lb.ListenerMutualAuthenticationArgs']]:
         """
-        The mutual authentication configuration information. Detailed below.
+        The mutual authentication configuration information. See below.
         """
         return pulumi.get(self, "mutual_authentication")
 
@@ -3364,7 +3380,7 @@ class ListenerArgs:
     @pulumi.getter(name="sslPolicy")
     def ssl_policy(self) -> Optional[pulumi.Input[str]]:
         """
-        Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+        Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
         """
         return pulumi.get(self, "ssl_policy")
 
@@ -3377,14 +3393,24 @@ class ListenerArgs:
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
         A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-
-        > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         """
         return pulumi.get(self, "tags")
 
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
+
+    @property
+    @pulumi.getter(name="tcpIdleTimeoutSeconds")
+    def tcp_idle_timeout_seconds(self) -> Optional[pulumi.Input[int]]:
+        """
+        TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+        """
+        return pulumi.get(self, "tcp_idle_timeout_seconds")
+
+    @tcp_idle_timeout_seconds.setter
+    def tcp_idle_timeout_seconds(self, value: Optional[pulumi.Input[int]]):
+        pulumi.set(self, "tcp_idle_timeout_seconds", value)
 
 
 if not MYPY:

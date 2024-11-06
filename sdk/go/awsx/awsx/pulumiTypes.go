@@ -18,64 +18,52 @@ var _ = internal.GetEnvOrDefault
 
 // The set of arguments for constructing a Bucket resource.
 type Bucket struct {
-	// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+	// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
 	AccelerationStatus *string `pulumi:"accelerationStatus"`
-	// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+	// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
 	Acl *string `pulumi:"acl"`
-	// ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+	// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
 	Arn *string `pulumi:"arn"`
-	// Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+	// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 	Bucket *string `pulumi:"bucket"`
 	// Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 	BucketPrefix *string `pulumi:"bucketPrefix"`
-	// Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+	// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
 	CorsRules []s3.BucketCorsRule `pulumi:"corsRules"`
-	// Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+	// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
 	ForceDestroy *bool `pulumi:"forceDestroy"`
-	// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+	// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
 	Grants []s3.BucketGrant `pulumi:"grants"`
-	// [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+	// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
 	HostedZoneId *string `pulumi:"hostedZoneId"`
-	// Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+	// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
 	LifecycleRules []s3.BucketLifecycleRule `pulumi:"lifecycleRules"`
-	// Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketLoggingV2` instead.
+	// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 	Loggings []s3.BucketLogging `pulumi:"loggings"`
-	// Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-	// The provider wil only perform drift detection if a configuration value is provided.
-	// Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+	//
+	// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 	ObjectLockConfiguration *s3.BucketObjectLockConfiguration `pulumi:"objectLockConfiguration"`
-	// Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketPolicy` instead.
+	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 	Policy *string `pulumi:"policy"`
-	// Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketReplicationConfig` instead.
+	// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
 	ReplicationConfiguration *s3.BucketReplicationConfiguration `pulumi:"replicationConfiguration"`
 	// Specifies who should bear the cost of Amazon S3 data transfer.
-	// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-	// See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+	// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+	// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+	// developer guide for more information.
 	RequestPayer *string `pulumi:"requestPayer"`
-	// Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+	// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
 	ServerSideEncryptionConfiguration *s3.BucketServerSideEncryptionConfiguration `pulumi:"serverSideEncryptionConfiguration"`
-	// Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	//
-	// The following arguments are deprecated, and will be removed in a future major version:
+	// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
-	// Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+	// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 	Versioning *s3.BucketVersioning `pulumi:"versioning"`
-	// Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// A website object (documented below).
 	Website *s3.BucketWebsite `pulumi:"website"`
-	// (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
 	WebsiteDomain *string `pulumi:"websiteDomain"`
-	// (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
 	WebsiteEndpoint *string `pulumi:"websiteEndpoint"`
 }
 
@@ -92,64 +80,52 @@ type BucketInput interface {
 
 // The set of arguments for constructing a Bucket resource.
 type BucketArgs struct {
-	// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+	// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
 	AccelerationStatus pulumi.StringPtrInput `pulumi:"accelerationStatus"`
-	// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+	// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
 	Acl pulumi.StringPtrInput `pulumi:"acl"`
-	// ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+	// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
 	Arn pulumi.StringPtrInput `pulumi:"arn"`
-	// Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+	// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 	Bucket pulumi.StringPtrInput `pulumi:"bucket"`
 	// Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 	BucketPrefix pulumi.StringPtrInput `pulumi:"bucketPrefix"`
-	// Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+	// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
 	CorsRules s3.BucketCorsRuleArrayInput `pulumi:"corsRules"`
-	// Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+	// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
 	ForceDestroy pulumi.BoolPtrInput `pulumi:"forceDestroy"`
-	// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+	// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
 	Grants s3.BucketGrantArrayInput `pulumi:"grants"`
-	// [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+	// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
 	HostedZoneId pulumi.StringPtrInput `pulumi:"hostedZoneId"`
-	// Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+	// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
 	LifecycleRules s3.BucketLifecycleRuleArrayInput `pulumi:"lifecycleRules"`
-	// Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketLoggingV2` instead.
+	// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 	Loggings s3.BucketLoggingArrayInput `pulumi:"loggings"`
-	// Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-	// The provider wil only perform drift detection if a configuration value is provided.
-	// Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+	//
+	// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 	ObjectLockConfiguration s3.BucketObjectLockConfigurationPtrInput `pulumi:"objectLockConfiguration"`
-	// Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketPolicy` instead.
+	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 	Policy pulumi.StringPtrInput `pulumi:"policy"`
-	// Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketReplicationConfig` instead.
+	// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
 	ReplicationConfiguration s3.BucketReplicationConfigurationPtrInput `pulumi:"replicationConfiguration"`
 	// Specifies who should bear the cost of Amazon S3 data transfer.
-	// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-	// See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+	// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+	// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+	// developer guide for more information.
 	RequestPayer pulumi.StringPtrInput `pulumi:"requestPayer"`
-	// Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-	// The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+	// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
 	ServerSideEncryptionConfiguration s3.BucketServerSideEncryptionConfigurationPtrInput `pulumi:"serverSideEncryptionConfiguration"`
-	// Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	//
-	// The following arguments are deprecated, and will be removed in a future major version:
+	// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
-	// Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+	// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 	Versioning s3.BucketVersioningPtrInput `pulumi:"versioning"`
-	// Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-	// Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// A website object (documented below).
 	Website s3.BucketWebsitePtrInput `pulumi:"website"`
-	// (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
 	WebsiteDomain pulumi.StringPtrInput `pulumi:"websiteDomain"`
-	// (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+	// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
 	WebsiteEndpoint pulumi.StringPtrInput `pulumi:"websiteEndpoint"`
 }
 
@@ -231,23 +207,22 @@ func (o BucketOutput) ToBucketPtrOutputWithContext(ctx context.Context) BucketPt
 	}).(BucketPtrOutput)
 }
 
-// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
 func (o BucketOutput) AccelerationStatus() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.AccelerationStatus }).(pulumi.StringPtrOutput)
 }
 
-// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
 func (o BucketOutput) Acl() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.Acl }).(pulumi.StringPtrOutput)
 }
 
-// ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
 func (o BucketOutput) Arn() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.Arn }).(pulumi.StringPtrOutput)
 }
 
-// Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 func (o BucketOutput) Bucket() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.Bucket }).(pulumi.StringPtrOutput)
 }
@@ -257,98 +232,87 @@ func (o BucketOutput) BucketPrefix() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.BucketPrefix }).(pulumi.StringPtrOutput)
 }
 
-// Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
 func (o BucketOutput) CorsRules() s3.BucketCorsRuleArrayOutput {
 	return o.ApplyT(func(v Bucket) []s3.BucketCorsRule { return v.CorsRules }).(s3.BucketCorsRuleArrayOutput)
 }
 
-// Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
 func (o BucketOutput) ForceDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v Bucket) *bool { return v.ForceDestroy }).(pulumi.BoolPtrOutput)
 }
 
-// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
 func (o BucketOutput) Grants() s3.BucketGrantArrayOutput {
 	return o.ApplyT(func(v Bucket) []s3.BucketGrant { return v.Grants }).(s3.BucketGrantArrayOutput)
 }
 
-// [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
 func (o BucketOutput) HostedZoneId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.HostedZoneId }).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
 func (o BucketOutput) LifecycleRules() s3.BucketLifecycleRuleArrayOutput {
 	return o.ApplyT(func(v Bucket) []s3.BucketLifecycleRule { return v.LifecycleRules }).(s3.BucketLifecycleRuleArrayOutput)
 }
 
-// Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketLoggingV2` instead.
+// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 func (o BucketOutput) Loggings() s3.BucketLoggingArrayOutput {
 	return o.ApplyT(func(v Bucket) []s3.BucketLogging { return v.Loggings }).(s3.BucketLoggingArrayOutput)
 }
 
-// Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-// The provider wil only perform drift detection if a configuration value is provided.
-// Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+//
+// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 func (o BucketOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketObjectLockConfiguration { return v.ObjectLockConfiguration }).(s3.BucketObjectLockConfigurationPtrOutput)
 }
 
-// Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketPolicy` instead.
+// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 func (o BucketOutput) Policy() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.Policy }).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketReplicationConfig` instead.
+// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
 func (o BucketOutput) ReplicationConfiguration() s3.BucketReplicationConfigurationPtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketReplicationConfiguration { return v.ReplicationConfiguration }).(s3.BucketReplicationConfigurationPtrOutput)
 }
 
 // Specifies who should bear the cost of Amazon S3 data transfer.
-// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-// See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+// developer guide for more information.
 func (o BucketOutput) RequestPayer() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.RequestPayer }).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
 func (o BucketOutput) ServerSideEncryptionConfiguration() s3.BucketServerSideEncryptionConfigurationPtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketServerSideEncryptionConfiguration { return v.ServerSideEncryptionConfiguration }).(s3.BucketServerSideEncryptionConfigurationPtrOutput)
 }
 
-// Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-//
-// The following arguments are deprecated, and will be removed in a future major version:
+// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o BucketOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v Bucket) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
 
-// Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 func (o BucketOutput) Versioning() s3.BucketVersioningPtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketVersioning { return v.Versioning }).(s3.BucketVersioningPtrOutput)
 }
 
-// Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// A website object (documented below).
 func (o BucketOutput) Website() s3.BucketWebsitePtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketWebsite { return v.Website }).(s3.BucketWebsitePtrOutput)
 }
 
-// (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
 func (o BucketOutput) WebsiteDomain() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.WebsiteDomain }).(pulumi.StringPtrOutput)
 }
 
-// (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
 func (o BucketOutput) WebsiteEndpoint() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Bucket) *string { return v.WebsiteEndpoint }).(pulumi.StringPtrOutput)
 }
@@ -377,8 +341,7 @@ func (o BucketPtrOutput) Elem() BucketOutput {
 	}).(BucketOutput)
 }
 
-// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
 func (o BucketPtrOutput) AccelerationStatus() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -388,7 +351,7 @@ func (o BucketPtrOutput) AccelerationStatus() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
 func (o BucketPtrOutput) Acl() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -398,7 +361,7 @@ func (o BucketPtrOutput) Acl() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
 func (o BucketPtrOutput) Arn() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -408,7 +371,7 @@ func (o BucketPtrOutput) Arn() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 func (o BucketPtrOutput) Bucket() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -428,7 +391,7 @@ func (o BucketPtrOutput) BucketPrefix() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
 func (o BucketPtrOutput) CorsRules() s3.BucketCorsRuleArrayOutput {
 	return o.ApplyT(func(v *Bucket) []s3.BucketCorsRule {
 		if v == nil {
@@ -438,7 +401,7 @@ func (o BucketPtrOutput) CorsRules() s3.BucketCorsRuleArrayOutput {
 	}).(s3.BucketCorsRuleArrayOutput)
 }
 
-// Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
 func (o BucketPtrOutput) ForceDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *Bucket) *bool {
 		if v == nil {
@@ -448,7 +411,7 @@ func (o BucketPtrOutput) ForceDestroy() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
 func (o BucketPtrOutput) Grants() s3.BucketGrantArrayOutput {
 	return o.ApplyT(func(v *Bucket) []s3.BucketGrant {
 		if v == nil {
@@ -458,7 +421,7 @@ func (o BucketPtrOutput) Grants() s3.BucketGrantArrayOutput {
 	}).(s3.BucketGrantArrayOutput)
 }
 
-// [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
 func (o BucketPtrOutput) HostedZoneId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -468,8 +431,7 @@ func (o BucketPtrOutput) HostedZoneId() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
 func (o BucketPtrOutput) LifecycleRules() s3.BucketLifecycleRuleArrayOutput {
 	return o.ApplyT(func(v *Bucket) []s3.BucketLifecycleRule {
 		if v == nil {
@@ -479,8 +441,7 @@ func (o BucketPtrOutput) LifecycleRules() s3.BucketLifecycleRuleArrayOutput {
 	}).(s3.BucketLifecycleRuleArrayOutput)
 }
 
-// Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketLoggingV2` instead.
+// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 func (o BucketPtrOutput) Loggings() s3.BucketLoggingArrayOutput {
 	return o.ApplyT(func(v *Bucket) []s3.BucketLogging {
 		if v == nil {
@@ -490,9 +451,9 @@ func (o BucketPtrOutput) Loggings() s3.BucketLoggingArrayOutput {
 	}).(s3.BucketLoggingArrayOutput)
 }
 
-// Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-// The provider wil only perform drift detection if a configuration value is provided.
-// Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+//
+// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 func (o BucketPtrOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketObjectLockConfiguration {
 		if v == nil {
@@ -502,9 +463,7 @@ func (o BucketPtrOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurat
 	}).(s3.BucketObjectLockConfigurationPtrOutput)
 }
 
-// Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketPolicy` instead.
+// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 func (o BucketPtrOutput) Policy() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -514,8 +473,7 @@ func (o BucketPtrOutput) Policy() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketReplicationConfig` instead.
+// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
 func (o BucketPtrOutput) ReplicationConfiguration() s3.BucketReplicationConfigurationPtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketReplicationConfiguration {
 		if v == nil {
@@ -526,10 +484,9 @@ func (o BucketPtrOutput) ReplicationConfiguration() s3.BucketReplicationConfigur
 }
 
 // Specifies who should bear the cost of Amazon S3 data transfer.
-// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-// See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+// developer guide for more information.
 func (o BucketPtrOutput) RequestPayer() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -539,9 +496,7 @@ func (o BucketPtrOutput) RequestPayer() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-// The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
 func (o BucketPtrOutput) ServerSideEncryptionConfiguration() s3.BucketServerSideEncryptionConfigurationPtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketServerSideEncryptionConfiguration {
 		if v == nil {
@@ -551,9 +506,7 @@ func (o BucketPtrOutput) ServerSideEncryptionConfiguration() s3.BucketServerSide
 	}).(s3.BucketServerSideEncryptionConfigurationPtrOutput)
 }
 
-// Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-//
-// The following arguments are deprecated, and will be removed in a future major version:
+// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o BucketPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *Bucket) map[string]string {
 		if v == nil {
@@ -563,7 +516,7 @@ func (o BucketPtrOutput) Tags() pulumi.StringMapOutput {
 	}).(pulumi.StringMapOutput)
 }
 
-// Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 func (o BucketPtrOutput) Versioning() s3.BucketVersioningPtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketVersioning {
 		if v == nil {
@@ -573,8 +526,7 @@ func (o BucketPtrOutput) Versioning() s3.BucketVersioningPtrOutput {
 	}).(s3.BucketVersioningPtrOutput)
 }
 
-// Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-// Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// A website object (documented below).
 func (o BucketPtrOutput) Website() s3.BucketWebsitePtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketWebsite {
 		if v == nil {
@@ -584,7 +536,7 @@ func (o BucketPtrOutput) Website() s3.BucketWebsitePtrOutput {
 	}).(s3.BucketWebsitePtrOutput)
 }
 
-// (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
 func (o BucketPtrOutput) WebsiteDomain() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -594,7 +546,7 @@ func (o BucketPtrOutput) WebsiteDomain() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
 func (o BucketPtrOutput) WebsiteEndpoint() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Bucket) *string {
 		if v == nil {
@@ -2127,9 +2079,12 @@ type RoleWithPolicy struct {
 	Description *string `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies *bool `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
-	InlinePolicies    []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
-	ManagedPolicyArns []string               `pulumi:"managedPolicyArns"`
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+	//
+	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
+	InlinePolicies []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
+	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+	ManagedPolicyArns []string `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration *int `pulumi:"maxSessionDuration"`
 	// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
@@ -2163,9 +2118,12 @@ type RoleWithPolicyArgs struct {
 	Description pulumi.StringPtrInput `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies pulumi.BoolPtrInput `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
-	InlinePolicies    iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
-	ManagedPolicyArns pulumi.StringArrayInput        `pulumi:"managedPolicyArns"`
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+	//
+	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
+	InlinePolicies iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
+	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+	ManagedPolicyArns pulumi.StringArrayInput `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration pulumi.IntPtrInput `pulumi:"maxSessionDuration"`
 	// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
@@ -2270,11 +2228,14 @@ func (o RoleWithPolicyOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v RoleWithPolicy) *bool { return v.ForceDetachPolicies }).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+//
+// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []iam.RoleInlinePolicy { return v.InlinePolicies }).(iam.RoleInlinePolicyArrayOutput)
 }
 
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
 func (o RoleWithPolicyOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []string { return v.ManagedPolicyArns }).(pulumi.StringArrayOutput)
 }
@@ -2358,7 +2319,9 @@ func (o RoleWithPolicyPtrOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+//
+// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []iam.RoleInlinePolicy {
 		if v == nil {
@@ -2368,6 +2331,7 @@ func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutpu
 	}).(iam.RoleInlinePolicyArrayOutput)
 }
 
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
 func (o RoleWithPolicyPtrOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []string {
 		if v == nil {
