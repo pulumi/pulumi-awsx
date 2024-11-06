@@ -154,6 +154,7 @@ export interface EC2ServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
@@ -224,6 +225,7 @@ export interface FargateServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
@@ -299,6 +301,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
@@ -339,6 +342,7 @@ export interface NetworkLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
@@ -1061,6 +1065,7 @@ export interface ListenerInputs {
     readonly protocol?: pulumi.Input<string>;
     readonly sslPolicy?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly tcpIdleTimeoutSeconds?: pulumi.Input<number>;
 }
 export interface ListenerOutputs {
     readonly alpnPolicy?: pulumi.Output<string>;
@@ -1071,6 +1076,7 @@ export interface ListenerOutputs {
     readonly protocol?: pulumi.Output<string>;
     readonly sslPolicy?: pulumi.Output<string>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly tcpIdleTimeoutSeconds?: pulumi.Output<number>;
 }
 export interface TargetGroupInputs {
     readonly connectionTermination?: pulumi.Input<boolean>;
