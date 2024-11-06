@@ -21,3 +21,6 @@ echo "V=$VER"
 
 # Rebulid the SDKs, which will also rebuild the schema and all other files.
 make build_sdks
+
+# Rebuild provider internals such as awsx/schema-types.ts
+make provider
