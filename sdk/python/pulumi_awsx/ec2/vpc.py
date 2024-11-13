@@ -61,7 +61,7 @@ class VpcArgs:
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
-        :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence['VpcEndpointSpecArgs'] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
@@ -303,7 +303,7 @@ class VpcArgs:
     @pulumi.getter(name="subnetSpecs")
     def subnet_specs(self) -> Optional[Sequence['SubnetSpecArgs']]:
         """
-        A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
         """
         return pulumi.get(self, "subnet_specs")
 
@@ -433,7 +433,7 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
-        :param Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        :param Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
