@@ -144,7 +144,7 @@ type vpcArgs struct {
 	NatGateways *NatGatewayConfiguration `pulumi:"natGateways"`
 	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	NumberOfAvailabilityZones *int `pulumi:"numberOfAvailabilityZones"`
-	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
 	SubnetStrategy *SubnetAllocationStrategy `pulumi:"subnetStrategy"`
@@ -188,7 +188,7 @@ type VpcArgs struct {
 	NatGateways *NatGatewayConfigurationArgs
 	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	NumberOfAvailabilityZones *int
-	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpecArgs
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
 	SubnetStrategy *SubnetAllocationStrategy
