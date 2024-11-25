@@ -2080,8 +2080,6 @@ type RoleWithPolicy struct {
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies *bool `pulumi:"forceDetachPolicies"`
 	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-	//
-	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 	InlinePolicies []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
 	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
 	ManagedPolicyArns []string `pulumi:"managedPolicyArns"`
@@ -2119,8 +2117,6 @@ type RoleWithPolicyArgs struct {
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies pulumi.BoolPtrInput `pulumi:"forceDetachPolicies"`
 	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-	//
-	// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 	InlinePolicies iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
 	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
 	ManagedPolicyArns pulumi.StringArrayInput `pulumi:"managedPolicyArns"`
@@ -2229,8 +2225,6 @@ func (o RoleWithPolicyOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 }
 
 // Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-//
-// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []iam.RoleInlinePolicy { return v.InlinePolicies }).(iam.RoleInlinePolicyArrayOutput)
 }
@@ -2320,8 +2314,6 @@ func (o RoleWithPolicyPtrOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 }
 
 // Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-//
-// Deprecated: The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
 func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []iam.RoleInlinePolicy {
 		if v == nil {
