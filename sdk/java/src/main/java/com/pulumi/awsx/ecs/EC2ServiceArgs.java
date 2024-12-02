@@ -13,6 +13,7 @@ import com.pulumi.aws.ecs.inputs.ServicePlacementConstraintArgs;
 import com.pulumi.aws.ecs.inputs.ServiceServiceConnectConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceServiceRegistriesArgs;
 import com.pulumi.aws.ecs.inputs.ServiceVolumeConfigurationArgs;
+import com.pulumi.aws.ecs.inputs.ServiceVpcLatticeConfigurationArgs;
 import com.pulumi.awsx.ecs.inputs.EC2ServiceTaskDefinitionArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
@@ -43,6 +44,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<ServiceAlarmsArgs>> alarms() {
         return Optional.ofNullable(this.alarms);
+    }
+
+    /**
+     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * 
+     */
+    @Import(name="availabilityZoneRebalancing")
+    private @Nullable Output<String> availabilityZoneRebalancing;
+
+    /**
+     * @return ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * 
+     */
+    public Optional<Output<String>> availabilityZoneRebalancing() {
+        return Optional.ofNullable(this.availabilityZoneRebalancing);
     }
 
     /**
@@ -471,10 +487,26 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.volumeConfiguration);
     }
 
+    /**
+     * The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     * 
+     */
+    @Import(name="vpcLatticeConfigurations")
+    private @Nullable Output<List<ServiceVpcLatticeConfigurationArgs>> vpcLatticeConfigurations;
+
+    /**
+     * @return The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     * 
+     */
+    public Optional<Output<List<ServiceVpcLatticeConfigurationArgs>>> vpcLatticeConfigurations() {
+        return Optional.ofNullable(this.vpcLatticeConfigurations);
+    }
+
     private EC2ServiceArgs() {}
 
     private EC2ServiceArgs(EC2ServiceArgs $) {
         this.alarms = $.alarms;
+        this.availabilityZoneRebalancing = $.availabilityZoneRebalancing;
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
@@ -503,6 +535,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.taskDefinitionArgs = $.taskDefinitionArgs;
         this.triggers = $.triggers;
         this.volumeConfiguration = $.volumeConfiguration;
+        this.vpcLatticeConfigurations = $.vpcLatticeConfigurations;
     }
 
     public static Builder builder() {
@@ -542,6 +575,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder alarms(ServiceAlarmsArgs alarms) {
             return alarms(Output.of(alarms));
+        }
+
+        /**
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneRebalancing(@Nullable Output<String> availabilityZoneRebalancing) {
+            $.availabilityZoneRebalancing = availabilityZoneRebalancing;
+            return this;
+        }
+
+        /**
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneRebalancing(String availabilityZoneRebalancing) {
+            return availabilityZoneRebalancing(Output.of(availabilityZoneRebalancing));
         }
 
         /**
@@ -1156,6 +1210,37 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder volumeConfiguration(ServiceVolumeConfigurationArgs volumeConfiguration) {
             return volumeConfiguration(Output.of(volumeConfiguration));
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(@Nullable Output<List<ServiceVpcLatticeConfigurationArgs>> vpcLatticeConfigurations) {
+            $.vpcLatticeConfigurations = vpcLatticeConfigurations;
+            return this;
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(List<ServiceVpcLatticeConfigurationArgs> vpcLatticeConfigurations) {
+            return vpcLatticeConfigurations(Output.of(vpcLatticeConfigurations));
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(ServiceVpcLatticeConfigurationArgs... vpcLatticeConfigurations) {
+            return vpcLatticeConfigurations(List.of(vpcLatticeConfigurations));
         }
 
         public EC2ServiceArgs build() {
