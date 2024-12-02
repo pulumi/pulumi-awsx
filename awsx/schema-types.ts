@@ -145,6 +145,7 @@ export abstract class EC2Service<TData = any> extends (pulumi.ComponentResource)
 }
 export interface EC2ServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
+    readonly availabilityZoneRebalancing?: pulumi.Input<string>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -173,6 +174,7 @@ export interface EC2ServiceArgs {
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
+    readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }
 export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -216,6 +218,7 @@ export abstract class FargateService<TData = any> extends (pulumi.ComponentResou
 export interface FargateServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly assignPublicIp?: pulumi.Input<boolean>;
+    readonly availabilityZoneRebalancing?: pulumi.Input<string>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -243,6 +246,7 @@ export interface FargateServiceArgs {
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
+    readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }
 export abstract class FargateTaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
