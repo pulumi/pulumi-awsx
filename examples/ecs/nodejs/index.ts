@@ -29,6 +29,8 @@ const service = new ecs.FargateService("my-service", {
         subnets: vpc.publicSubnetIds,
         assignPublicIp: true,
     },
+}, {
+    dependsOn: [lb.loadBalancer],
 });
 
 // Export the load balancer's address so that it's easy to access.
