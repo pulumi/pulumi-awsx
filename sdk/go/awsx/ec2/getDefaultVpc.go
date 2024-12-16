@@ -37,21 +37,11 @@ type GetDefaultVpcResult struct {
 }
 
 func GetDefaultVpcOutput(ctx *pulumi.Context, args GetDefaultVpcOutputArgs, opts ...pulumi.InvokeOption) GetDefaultVpcResultOutput {
-	return pulumi.ToOutputWithContext(context.Background(), args).
+	return pulumi.ToOutputWithContext(ctx.Context(), args).
 		ApplyT(func(v interface{}) (GetDefaultVpcResultOutput, error) {
 			args := v.(GetDefaultVpcArgs)
-			opts = internal.PkgInvokeDefaultOpts(opts)
-			var rv GetDefaultVpcResult
-			secret, err := ctx.InvokePackageRaw("awsx:ec2:getDefaultVpc", args, &rv, "", opts...)
-			if err != nil {
-				return GetDefaultVpcResultOutput{}, err
-			}
-
-			output := pulumi.ToOutput(rv).(GetDefaultVpcResultOutput)
-			if secret {
-				return pulumi.ToSecret(output).(GetDefaultVpcResultOutput), nil
-			}
-			return output, nil
+			options := pulumi.InvokeOutputOptions{InvokeOptions: internal.PkgInvokeDefaultOpts(opts)}
+			return ctx.InvokeOutput("awsx:ec2:getDefaultVpc", args, GetDefaultVpcResultOutput{}, options).(GetDefaultVpcResultOutput), nil
 		}).(GetDefaultVpcResultOutput)
 }
 
