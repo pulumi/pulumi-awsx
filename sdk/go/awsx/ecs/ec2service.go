@@ -42,6 +42,8 @@ func NewEC2Service(ctx *pulumi.Context,
 type ec2serviceArgs struct {
 	// Information about the CloudWatch alarms. See below.
 	Alarms *ecs.ServiceAlarms `pulumi:"alarms"`
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	AvailabilityZoneRebalancing *string `pulumi:"availabilityZoneRebalancing"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -101,12 +103,16 @@ type ec2serviceArgs struct {
 	Triggers map[string]string `pulumi:"triggers"`
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration *ecs.ServiceVolumeConfiguration `pulumi:"volumeConfiguration"`
+	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	VpcLatticeConfigurations []ecs.ServiceVpcLatticeConfiguration `pulumi:"vpcLatticeConfigurations"`
 }
 
 // The set of arguments for constructing a EC2Service resource.
 type EC2ServiceArgs struct {
 	// Information about the CloudWatch alarms. See below.
 	Alarms ecs.ServiceAlarmsPtrInput
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	AvailabilityZoneRebalancing pulumi.StringPtrInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -166,6 +172,8 @@ type EC2ServiceArgs struct {
 	Triggers pulumi.StringMapInput
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration ecs.ServiceVolumeConfigurationPtrInput
+	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	VpcLatticeConfigurations ecs.ServiceVpcLatticeConfigurationArrayInput
 }
 
 func (EC2ServiceArgs) ElementType() reflect.Type {

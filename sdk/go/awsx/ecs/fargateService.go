@@ -44,6 +44,8 @@ type fargateServiceArgs struct {
 	Alarms *ecs.ServiceAlarms `pulumi:"alarms"`
 	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
 	AssignPublicIp *bool `pulumi:"assignPublicIp"`
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	AvailabilityZoneRebalancing *string `pulumi:"availabilityZoneRebalancing"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -101,6 +103,8 @@ type fargateServiceArgs struct {
 	Triggers map[string]string `pulumi:"triggers"`
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration *ecs.ServiceVolumeConfiguration `pulumi:"volumeConfiguration"`
+	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	VpcLatticeConfigurations []ecs.ServiceVpcLatticeConfiguration `pulumi:"vpcLatticeConfigurations"`
 }
 
 // The set of arguments for constructing a FargateService resource.
@@ -109,6 +113,8 @@ type FargateServiceArgs struct {
 	Alarms ecs.ServiceAlarmsPtrInput
 	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
 	AssignPublicIp pulumi.BoolPtrInput
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	AvailabilityZoneRebalancing pulumi.StringPtrInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -166,6 +172,8 @@ type FargateServiceArgs struct {
 	Triggers pulumi.StringMapInput
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration ecs.ServiceVolumeConfigurationPtrInput
+	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	VpcLatticeConfigurations ecs.ServiceVpcLatticeConfigurationArrayInput
 }
 
 func (FargateServiceArgs) ElementType() reflect.Type {
