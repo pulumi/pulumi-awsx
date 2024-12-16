@@ -443,6 +443,8 @@ type Listener struct {
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 	SslPolicy *string `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	//
+	// > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
 	Tags map[string]string `pulumi:"tags"`
 	// TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
 	TcpIdleTimeoutSeconds *int `pulumi:"tcpIdleTimeoutSeconds"`
@@ -888,6 +890,8 @@ type ListenerArgs struct {
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
 	SslPolicy pulumi.StringPtrInput `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	//
+	// > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
 	TcpIdleTimeoutSeconds pulumi.IntPtrInput `pulumi:"tcpIdleTimeoutSeconds"`
@@ -1444,6 +1448,8 @@ func (o ListenerOutput) SslPolicy() pulumi.StringPtrOutput {
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+//
+// > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
 func (o ListenerOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v Listener) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -1548,6 +1554,8 @@ func (o ListenerPtrOutput) SslPolicy() pulumi.StringPtrOutput {
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+//
+// > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
 func (o ListenerPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *Listener) map[string]string {
 		if v == nil {

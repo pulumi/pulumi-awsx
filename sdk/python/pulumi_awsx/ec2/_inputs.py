@@ -921,8 +921,8 @@ if not MYPY:
         variables:
           current:
             fn::invoke:
-              Function: aws:getCallerIdentity
-              Arguments: {}
+              function: aws:getCallerIdentity
+              arguments: {}
         ```
         <!--End PulumiCodeChooser -->
 
@@ -1703,8 +1703,8 @@ class VpcEndpointSpecArgs:
         variables:
           current:
             fn::invoke:
-              Function: aws:getCallerIdentity
-              Arguments: {}
+              function: aws:getCallerIdentity
+              arguments: {}
         ```
         <!--End PulumiCodeChooser -->
 

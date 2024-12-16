@@ -712,8 +712,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// variables:
     ///   current:
     ///     fn::invoke:
-    ///       Function: aws:getCallerIdentity
-    ///       Arguments: {}
+    ///       function: aws:getCallerIdentity
+    ///       arguments: {}
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 

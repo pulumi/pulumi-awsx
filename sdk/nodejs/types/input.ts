@@ -284,8 +284,6 @@ export namespace awsx {
         forceDetachPolicies?: pulumi.Input<boolean>;
         /**
          * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-         *
-         * @deprecated The inline_policy argument is deprecated. Use the aws.iam.RolePolicy resource instead. If Terraform should exclusively manage all inline policy associations (the current behavior of this argument), use the aws.iam.RolePoliciesExclusive resource as well.
          */
         inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
         /**
@@ -1120,8 +1118,8 @@ export namespace ec2 {
      * variables:
      *   current:
      *     fn::invoke:
-     *       Function: aws:getCallerIdentity
-     *       Arguments: {}
+     *       function: aws:getCallerIdentity
+     *       arguments: {}
      * ```
      * <!--End PulumiCodeChooser -->
      *
@@ -3244,6 +3242,8 @@ export namespace lb {
         sslPolicy?: pulumi.Input<string>;
         /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         *
+         * > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
