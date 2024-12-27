@@ -102,7 +102,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@b374ceb6168550de27c6eba92e01c1a774040e11 # v2
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Build provider
         run: make provider
       - name: Test provider
@@ -242,7 +242,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@b374ceb6168550de27c6eba92e01c1a774040e11 # v2
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Download provider binary
         uses: actions/download-artifact@v4
         with:
