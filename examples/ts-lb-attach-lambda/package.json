@@ -4,8 +4,8 @@
     "@types/node": "^18.0.0"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.0.0",
-    "@pulumi/pulumi": "^3.0.0"
+    "@pulumi/aws": "6.66.1",
+    "@pulumi/pulumi": "3.144.1"
   },
   "peerDependencies": {
     "@pulumi/awsx": "latest"
