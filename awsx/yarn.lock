@@ -1661,12 +1661,12 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.65.0":
-  version "6.65.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.65.0.tgz#d61ea68d0ae5e7908f939cd92d29005efbbf3f5d"
-  integrity sha512-KAxyH5QJnmyr51Rz9nPWuakaAA6ssWJNaiMvHINTgm29zasfpegrt3C99Q93r/s/g7ehlQ8SUKuunAvLW1Aoww==
+"@pulumi/aws@6.66.1":
+  version "6.66.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.66.1.tgz#21789c287c5f6fb1852d7e36330b925fec38ed8e"
+  integrity sha512-/qE/cM1X4RmNn9BDhg3ypK+us4MraxXbvvwrspyqaQixJDFlbOSF2H7cprRK7HcfoCBJaNrViacfendyxQ8zBQ==
   dependencies:
-    "@pulumi/pulumi" "^3.136.0"
+    "@pulumi/pulumi" "^3.142.0"
     builtin-modules "3.0.0"
     mime "^2.0.0"
     resolve "^1.7.1"
@@ -1679,7 +1679,7 @@
     "@pulumi/pulumi" "^3.0.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@3.144.1", "@pulumi/pulumi@^3.0.0", "@pulumi/pulumi@^3.136.0", "@pulumi/pulumi@^3.142.0":
+"@pulumi/pulumi@3.144.1", "@pulumi/pulumi@^3.0.0", "@pulumi/pulumi@^3.142.0":
   version "3.144.1"
   resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.144.1.tgz#96b3c54879f7bc5857ba38ac389e2b7262e44f9e"
   integrity sha512-C3kdP/uYnZygxfK18pFzs0P6IYng/rgf/NW5LXUjHMKcCSwyHbsk6l2wpuuYQiWaJFWyqLdNwDFRVf07ZcIEsA==
