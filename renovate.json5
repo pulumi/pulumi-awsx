@@ -1,0 +1,16 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["github>pulumi/renovate-config//default.json5"],
+  packageRules: [
+    {
+      matchDatasources: ["npm", "go", "golang-version"],
+      // Dependent files need to be rebuilt when key dependencies change.
+      //
+      // https://docs.renovatebot.com/configuration-options/#postupgradetasks
+      postUpgradeTasks: {
+        commands: ["make renovate"],
+        executionMode: "branch", // Only run once.
+      },
+    },
+  ]
+}
