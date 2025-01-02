@@ -1,9 +1,11 @@
 module github.com/pulumi/pulumi-awsx/provider
 
-go 1.21.0
+go 1.23
+
+toolchain go1.23.4
 
 require (
-	github.com/pulumi/providertest v0.0.12
+	github.com/pulumi/providertest v0.1.4
 	github.com/stretchr/testify v1.9.0
 )
 
