@@ -618,6 +618,8 @@ type VpcEndpointSpec struct {
 	SecurityGroupIds []string `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+	ServiceRegion *string `pulumi:"serviceRegion"`
 	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
 	SubnetConfigurations []ec2.VpcEndpointSubnetConfiguration `pulumi:"subnetConfigurations"`
 	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
@@ -865,6 +867,8 @@ type VpcEndpointSpecArgs struct {
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+	ServiceRegion pulumi.StringPtrInput `pulumi:"serviceRegion"`
 	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
 	SubnetConfigurations ec2.VpcEndpointSubnetConfigurationArrayInput `pulumi:"subnetConfigurations"`
 	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
@@ -1173,6 +1177,11 @@ func (o VpcEndpointSpecOutput) SecurityGroupIds() pulumi.StringArrayOutput {
 // The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 func (o VpcEndpointSpecOutput) ServiceName() pulumi.StringOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) string { return v.ServiceName }).(pulumi.StringOutput)
+}
+
+// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+func (o VpcEndpointSpecOutput) ServiceRegion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.ServiceRegion }).(pulumi.StringPtrOutput)
 }
 
 // Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
