@@ -244,8 +244,12 @@ build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
 
+generate:: schema build_sdks
+
+renovate:: generate
+
 bin/gotestfmt:
 	@mkdir -p bin
 	@GOBIN="${PWD}/bin" go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@v2.5.0
 
-.PHONY: clean provider install_% dist sdk/go
+.PHONY: clean provider install_% dist sdk/go generate renovate
