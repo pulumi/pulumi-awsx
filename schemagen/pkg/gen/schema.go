@@ -79,12 +79,10 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@aws-sdk/client-ecs":  "^3.405.0",
-					"@pulumi/pulumi":       "^3.0.0",
 					"@pulumi/aws":          "^" + dependencies.Aws,
 					"@pulumi/docker-build": "^" + dependencies.Docker,
 					"docker-classic":       "npm:@pulumi/docker@3.6.1",
 					"@types/aws-lambda":    "^8.10.23",
-					"aws-sdk":              "^2.1450.0",
 					"mime":                 "^2.0.0",
 				},
 				"devDependencies": map[string]string{
@@ -96,7 +94,6 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":              ">=3.91.1,<4.0.0",
 					"pulumi-aws":          ">=6.0.4,<7.0.0",
 					"pulumi-docker-build": fmt.Sprintf(">=%s,<1.0.0", dependencies.Docker),
 				},
