@@ -49,6 +49,7 @@ export class EC2Service extends pulumi.ComponentResource {
         opts = opts || {};
         if (!opts.id) {
             resourceInputs["alarms"] = args ? args.alarms : undefined;
+            resourceInputs["availabilityZoneRebalancing"] = args ? args.availabilityZoneRebalancing : undefined;
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -58,6 +59,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["desiredCount"] = args ? args.desiredCount : undefined;
             resourceInputs["enableEcsManagedTags"] = args ? args.enableEcsManagedTags : undefined;
             resourceInputs["enableExecuteCommand"] = args ? args.enableExecuteCommand : undefined;
+            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
             resourceInputs["forceNewDeployment"] = args ? args.forceNewDeployment : undefined;
             resourceInputs["healthCheckGracePeriodSeconds"] = args ? args.healthCheckGracePeriodSeconds : undefined;
             resourceInputs["iamRole"] = args ? args.iamRole : undefined;
@@ -76,6 +78,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["volumeConfiguration"] = args ? args.volumeConfiguration : undefined;
+            resourceInputs["vpcLatticeConfigurations"] = args ? args.vpcLatticeConfigurations : undefined;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;
@@ -94,6 +97,10 @@ export interface EC2ServiceArgs {
      * Information about the CloudWatch alarms. See below.
      */
     alarms?: pulumi.Input<pulumiAws.types.input.ecs.ServiceAlarms>;
+    /**
+     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     */
+    availabilityZoneRebalancing?: pulumi.Input<string>;
     /**
      * ARN of an ECS cluster.
      */
@@ -131,7 +138,12 @@ export interface EC2ServiceArgs {
      */
     enableExecuteCommand?: pulumi.Input<boolean>;
     /**
+     * Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+     */
+    forceDelete?: pulumi.Input<boolean>;
+    /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * When using the forceNewDeployment property you also need to configure the triggers property.
      */
     forceNewDeployment?: pulumi.Input<boolean>;
     /**
@@ -204,4 +216,8 @@ export interface EC2ServiceArgs {
      * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
      */
     volumeConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceVolumeConfiguration>;
+    /**
+     * The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     */
+    vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }

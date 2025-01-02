@@ -130,7 +130,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 		subnetSpecs: {
-			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.", availabilityZoneNames),
+			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.", availabilityZoneNames),
 			TypeSpec:    plainArrayOfPlainComplexType("SubnetSpec"),
 		},
 		"vpcEndpointSpecs": {
@@ -367,28 +367,28 @@ func resolvedSubnetSpecType() schema.ComplexTypeSpec {
 			Properties: map[string]schema.PropertySpec{
 				"type": {
 					Description: "The type of subnet.",
-					TypeSpec: schema.TypeSpec{
-						Ref:   localRef("ec2", "SubnetType"),
-						Plain: true,
-					},
+					TypeSpec:    schema.TypeSpec{Ref: localRef("ec2", "SubnetType")},
 				},
 				"name": {
 					Description: "The subnet's name. Will be templated upon creation.",
-					TypeSpec:    plainString(),
+					TypeSpec:    schema.TypeSpec{Type: "string"},
 				},
 				"cidrMask": {
 					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
 					// error messages generated from the component itself.
 					Description: "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    plainInt(),
+					TypeSpec:    schema.TypeSpec{Type: "integer"},
 				},
 				"cidrBlocks": {
 					Description: "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.",
-					TypeSpec:    plainArrayOfPlainStrings(),
+					TypeSpec: schema.TypeSpec{
+						Type:  "array",
+						Items: &schema.TypeSpec{Type: "string"},
+					},
 				},
 				"size": {
 					Description: "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    plainInt(),
+					TypeSpec:    schema.TypeSpec{Type: "integer"},
 				},
 			},
 			Required: []string{

@@ -342,3 +342,24 @@ describe("picking subnet allocator", () => {
     expect(f("Exact")).toBe("NewAllocator"); // this case is a bit suspect
   });
 });
+
+describe("validating vpc args", () => {
+  it("permits ipv4IpamPoolId with cidrBlock", () => {
+    Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool", cidrBlock: "10.0.0.0/16" });
+  });
+  it("permits ipv4IpamPoolId with mask", () => {
+    Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool", ipv4NetmaskLength: 24 });
+  });
+  it("rejects ipv4IpamPoolId without mask or cidrBlock", () => {
+    expect(() => Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool" })).toThrowError();
+  });
+  it("rejects ipv4IpamPoolId with both mask and cidrBlock", () => {
+    expect(() =>
+      Vpc.validateVpcArgs({
+        ipv4IpamPoolId: "pool",
+        cidrBlock: "10.0.0.0/24",
+        ipv4NetmaskLength: 24,
+      }),
+    ).toThrowError();
+  });
+});

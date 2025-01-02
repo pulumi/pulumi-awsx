@@ -1,4 +1,4 @@
-// Copyright 2016-2022, Pulumi Corporation.
+// Copyright 2016-2024, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,26 +16,65 @@
 // and used in accordance with MPL v2.0 license
 
 import * as pulumi from "@pulumi/pulumi";
-import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
+import { SubnetSpecInputs } from "../schema-types";
 import { Netmask } from "netmask";
-
-export interface SubnetSpec {
-  cidrBlock: string;
-  type: SubnetTypeInputs;
-  azName: string;
-  subnetName: string;
-  tags?: pulumi.Input<{
-    [key: string]: pulumi.Input<string>;
-  }>;
-}
+import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
 
 export function getSubnetSpecs(
+  vpcName: string,
+  vpcCidr: pulumi.Input<string>,
+  azNames: string[],
+  subnetInputs: SubnetSpecInputs[] | undefined,
+  azCidrMask?: number,
+): SubnetSpecPartial[] {
+  const allocatedCidrBlocks = inputApply(
+    vpcCidr,
+    (vpcCidr) => allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, subnetInputs, azCidrMask),
+    (x) => x,
+    (x) => x,
+  );
+  const subnetSpecs = subnetInputs ?? defaultSubnetInputsBare();
+  return azNames.flatMap((azName, azIndex) => {
+    const azNum = azIndex + 1;
+    return subnetSpecs.map((subnetSpec, subnetIndex) => {
+      const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
+      const cidrBlock = inputApply(
+        allocatedCidrBlocks,
+        (t) => t[subnetAllocID].cidrBlock,
+        (x) => x,
+        (x) => x,
+      );
+      return {
+        cidrBlock,
+        type: subnetSpec.type,
+        azName,
+        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        tags: subnetSpec.tags,
+      };
+    });
+  });
+}
+
+type SubnetAllocationID = string;
+
+function subnetAllocationID(
+  vpcName: string,
+  subnetSpec: SubnetSpecInputs,
+  azNum: number,
+  subnetSpecIndex: number,
+): SubnetAllocationID {
+  const name = subnetName(vpcName, subnetSpec, azNum);
+  return `${name}#${subnetSpecIndex}`;
+}
+
+function allocateSubnetCidrBlocks(
   vpcName: string,
   vpcCidr: string,
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-): SubnetSpec[] {
+): Record<SubnetAllocationID, { cidrBlock: pulumi.Input<string> }> {
+  const allocation: Record<string, { cidrBlock: pulumi.Input<string> }> = {};
   const vpcNetmask = new Netmask(vpcCidr);
   const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
 
@@ -60,11 +99,11 @@ export function getSubnetSpecs(
   }
 
   let currentAzNetmask = new Netmask(`${vpcNetmask.base}/${azBitmask}`);
-  const subnets: SubnetSpec[] = [];
+
   for (let azIndex = 0; azIndex < azNames.length; azIndex++) {
-    const azName = azNames[azIndex];
     const azNum = azIndex + 1;
     let currentSubnetNetmask: Netmask | undefined;
+    let subnetIndex = 0;
     for (const subnetSpec of subnetSpecs) {
       if (currentSubnetNetmask === undefined) {
         currentSubnetNetmask = new Netmask(
@@ -78,19 +117,22 @@ export function getSubnetSpecs(
         );
       }
       const subnetCidr = currentSubnetNetmask.toString();
-      subnets.push({
+      const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
+      allocation[subnetAllocID] = {
         cidrBlock: subnetCidr,
-        type: subnetSpec.type,
-        azName,
-        subnetName: subnetName(vpcName, subnetSpec, azNum),
-        tags: subnetSpec.tags,
-      });
+      };
+
+      subnetIndex++;
     }
 
     currentAzNetmask = currentAzNetmask.next();
   }
 
-  return subnets;
+  return allocation;
+}
+
+function defaultSubnetInputsBare(): SubnetSpecInputs[] {
+  return [{ type: "Private" }, { type: "Public" }];
 }
 
 export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
@@ -110,16 +152,10 @@ export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
   // Even if we've got more than /16, only use the first /16 for the default subnets.
   // Leave the rest for the user to add later if needed.
   const maxBitmask = Math.max(azBitmask, 16);
-  return [
-    {
-      type: "Private",
-      cidrMask: maxBitmask + 1,
-    },
-    {
-      type: "Public",
-      cidrMask: maxBitmask + 2,
-    },
-  ];
+  return defaultSubnetInputsBare().map((t, i) => ({
+    type: t.type,
+    cidrMask: maxBitmask + i + 1,
+  }));
 }
 
 export function nextNetmask(previous: Netmask, nextBitmask: number): Netmask {
@@ -285,3 +321,18 @@ export const validSubnetSizes: readonly number[] = [
   8388608, 4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048,
   1024, 512, 256, 128, 64, 32, 16, 8, 4,
 ];
+
+// This utility function is like pulumi.output(x).apply(fn) but tries to stay in the Input layer so that prompt
+// validations and test cases are not disturbed. wrap* functions are usually identity. Ideally something like this could
+// be handled in the core Pulumi Node SDK.
+function inputApply<T, U>(
+  x: pulumi.Input<T>,
+  fn: (value: T) => pulumi.Input<U>,
+  wrapT: (value: pulumi.Unwrap<T>) => T,
+  wrapU: (value: pulumi.Unwrap<U>) => U,
+): pulumi.Input<U> {
+  if (x instanceof Promise || pulumi.Output.isInstance(x)) {
+    return pulumi.output(x).apply((x) => pulumi.output(fn(wrapT(x))).apply(wrapU));
+  }
+  return fn(x);
+}

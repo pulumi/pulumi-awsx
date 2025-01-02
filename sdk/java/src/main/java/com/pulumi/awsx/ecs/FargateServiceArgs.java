@@ -12,6 +12,7 @@ import com.pulumi.aws.ecs.inputs.ServicePlacementConstraintArgs;
 import com.pulumi.aws.ecs.inputs.ServiceServiceConnectConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceServiceRegistriesArgs;
 import com.pulumi.aws.ecs.inputs.ServiceVolumeConfigurationArgs;
+import com.pulumi.aws.ecs.inputs.ServiceVpcLatticeConfigurationArgs;
 import com.pulumi.awsx.ecs.inputs.FargateServiceTaskDefinitionArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
@@ -57,6 +58,21 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
      */
     public Optional<Output<Boolean>> assignPublicIp() {
         return Optional.ofNullable(this.assignPublicIp);
+    }
+
+    /**
+     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * 
+     */
+    @Import(name="availabilityZoneRebalancing")
+    private @Nullable Output<String> availabilityZoneRebalancing;
+
+    /**
+     * @return ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * 
+     */
+    public Optional<Output<String>> availabilityZoneRebalancing() {
+        return Optional.ofNullable(this.availabilityZoneRebalancing);
     }
 
     /**
@@ -195,7 +211,23 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
+     * Enable to delete a service even if it wasn&#39;t scaled down to zero tasks. It&#39;s only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+     * 
+     */
+    @Import(name="forceDelete")
+    private @Nullable Output<Boolean> forceDelete;
+
+    /**
+     * @return Enable to delete a service even if it wasn&#39;t scaled down to zero tasks. It&#39;s only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+     * 
+     */
+    public Optional<Output<Boolean>> forceDelete() {
+        return Optional.ofNullable(this.forceDelete);
+    }
+
+    /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * When using the forceNewDeployment property you also need to configure the triggers property.
      * 
      */
     @Import(name="forceNewDeployment")
@@ -203,6 +235,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
 
     /**
      * @return Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * When using the forceNewDeployment property you also need to configure the triggers property.
      * 
      */
     public Optional<Output<Boolean>> forceNewDeployment() {
@@ -453,11 +486,27 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         return Optional.ofNullable(this.volumeConfiguration);
     }
 
+    /**
+     * The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     * 
+     */
+    @Import(name="vpcLatticeConfigurations")
+    private @Nullable Output<List<ServiceVpcLatticeConfigurationArgs>> vpcLatticeConfigurations;
+
+    /**
+     * @return The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     * 
+     */
+    public Optional<Output<List<ServiceVpcLatticeConfigurationArgs>>> vpcLatticeConfigurations() {
+        return Optional.ofNullable(this.vpcLatticeConfigurations);
+    }
+
     private FargateServiceArgs() {}
 
     private FargateServiceArgs(FargateServiceArgs $) {
         this.alarms = $.alarms;
         this.assignPublicIp = $.assignPublicIp;
+        this.availabilityZoneRebalancing = $.availabilityZoneRebalancing;
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
@@ -467,6 +516,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         this.desiredCount = $.desiredCount;
         this.enableEcsManagedTags = $.enableEcsManagedTags;
         this.enableExecuteCommand = $.enableExecuteCommand;
+        this.forceDelete = $.forceDelete;
         this.forceNewDeployment = $.forceNewDeployment;
         this.healthCheckGracePeriodSeconds = $.healthCheckGracePeriodSeconds;
         this.iamRole = $.iamRole;
@@ -484,6 +534,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         this.taskDefinitionArgs = $.taskDefinitionArgs;
         this.triggers = $.triggers;
         this.volumeConfiguration = $.volumeConfiguration;
+        this.vpcLatticeConfigurations = $.vpcLatticeConfigurations;
     }
 
     public static Builder builder() {
@@ -544,6 +595,27 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder assignPublicIp(Boolean assignPublicIp) {
             return assignPublicIp(Output.of(assignPublicIp));
+        }
+
+        /**
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneRebalancing(@Nullable Output<String> availabilityZoneRebalancing) {
+            $.availabilityZoneRebalancing = availabilityZoneRebalancing;
+            return this;
+        }
+
+        /**
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneRebalancing(String availabilityZoneRebalancing) {
+            return availabilityZoneRebalancing(Output.of(availabilityZoneRebalancing));
         }
 
         /**
@@ -736,7 +808,29 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
+         * @param forceDelete Enable to delete a service even if it wasn&#39;t scaled down to zero tasks. It&#39;s only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder forceDelete(@Nullable Output<Boolean> forceDelete) {
+            $.forceDelete = forceDelete;
+            return this;
+        }
+
+        /**
+         * @param forceDelete Enable to delete a service even if it wasn&#39;t scaled down to zero tasks. It&#39;s only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder forceDelete(Boolean forceDelete) {
+            return forceDelete(Output.of(forceDelete));
+        }
+
+        /**
          * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+         * When using the forceNewDeployment property you also need to configure the triggers property.
          * 
          * @return builder
          * 
@@ -748,6 +842,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
 
         /**
          * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+         * When using the forceNewDeployment property you also need to configure the triggers property.
          * 
          * @return builder
          * 
@@ -1104,6 +1199,37 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder volumeConfiguration(ServiceVolumeConfigurationArgs volumeConfiguration) {
             return volumeConfiguration(Output.of(volumeConfiguration));
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(@Nullable Output<List<ServiceVpcLatticeConfigurationArgs>> vpcLatticeConfigurations) {
+            $.vpcLatticeConfigurations = vpcLatticeConfigurations;
+            return this;
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(List<ServiceVpcLatticeConfigurationArgs> vpcLatticeConfigurations) {
+            return vpcLatticeConfigurations(Output.of(vpcLatticeConfigurations));
+        }
+
+        /**
+         * @param vpcLatticeConfigurations The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcLatticeConfigurations(ServiceVpcLatticeConfigurationArgs... vpcLatticeConfigurations) {
+            return vpcLatticeConfigurations(List.of(vpcLatticeConfigurations));
         }
 
         public FargateServiceArgs build() {

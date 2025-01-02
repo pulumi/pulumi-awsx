@@ -616,7 +616,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		current, err := aws.GetCallerIdentity(ctx, nil, nil)
+    /// 		current, err := aws.GetCallerIdentity(ctx, &amp;aws.GetCallerIdentityArgs{}, nil)
     /// 		if err != nil {
     /// 			return err
     /// 		}
@@ -712,8 +712,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// variables:
     ///   current:
     ///     fn::invoke:
-    ///       Function: aws:getCallerIdentity
-    ///       Arguments: {}
+    ///       function: aws:getCallerIdentity
+    ///       arguments: {}
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 

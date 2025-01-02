@@ -11,7 +11,6 @@ import * as utilities from "../utilities";
 export function getDefaultVpc(args?: GetDefaultVpcArgs, opts?: pulumi.InvokeOptions): Promise<GetDefaultVpcResult> {
     pulumi.log.warn("getDefaultVpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")
     args = args || {};
-
     opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts || {});
     return pulumi.runtime.invoke("awsx:ec2:getDefaultVpc", {
     }, opts);
@@ -38,6 +37,10 @@ export interface GetDefaultVpcResult {
  * [NOT YET IMPLEMENTED] Get the Default VPC for a region.
  */
 /** @deprecated Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved. */
-export function getDefaultVpcOutput(opts?: pulumi.InvokeOptions): pulumi.Output<GetDefaultVpcResult> {
-    return pulumi.output(getDefaultVpc(opts))
+export function getDefaultVpcOutput(opts?: pulumi.InvokeOutputOptions): pulumi.Output<GetDefaultVpcResult> {
+    pulumi.log.warn("getDefaultVpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")
+    opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts || {});
+    return pulumi.runtime.invokeOutput("awsx:ec2:getDefaultVpc", {
+    }, opts);
 }
+

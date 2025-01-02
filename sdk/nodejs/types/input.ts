@@ -15,20 +15,19 @@ export namespace awsx {
      */
     export interface BucketArgs {
         /**
-         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketAccelerateConfigurationV2` instead.
+         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
          */
         accelerationStatus?: pulumi.Input<string>;
         /**
-         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
          */
         acl?: pulumi.Input<string>;
         /**
-         * ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+         * The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
          */
         arn?: pulumi.Input<string>;
         /**
-         * Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+         * The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
          */
         bucket?: pulumi.Input<string>;
         /**
@@ -36,83 +35,72 @@ export namespace awsx {
          */
         bucketPrefix?: pulumi.Input<string>;
         /**
-         * Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfigurationV2` instead.
+         * A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
          */
         corsRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketCorsRule>[]>;
         /**
-         * Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+         * A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
          */
         forceDestroy?: pulumi.Input<boolean>;
         /**
-         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAclV2` instead.
+         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
          */
         grants?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketGrant>[]>;
         /**
-         * [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+         * The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
          */
         hostedZoneId?: pulumi.Input<string>;
         /**
-         * Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketLifecycleConfigurationV2` instead.
+         * A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
          */
         lifecycleRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLifecycleRule>[]>;
         /**
-         * Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketLoggingV2` instead.
+         * A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
          */
         loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
         /**
-         * Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-         * The provider wil only perform drift detection if a configuration value is provided.
-         * Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfigurationV2` instead.
+         * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+         *
+         * > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
          */
         objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
         /**
-         * Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-         * The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketPolicy` instead.
+         * A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
          */
         policy?: pulumi.Input<string>;
         /**
-         * Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketReplicationConfig` instead.
+         * A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
          */
         replicationConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketReplicationConfiguration>;
         /**
          * Specifies who should bear the cost of Amazon S3 data transfer.
-         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-         * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-         * The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketRequestPaymentConfigurationV2` instead.
+         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+         * the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+         * developer guide for more information.
          */
         requestPayer?: pulumi.Input<string>;
         /**
-         * Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-         * The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketServerSideEncryptionConfigurationV2` instead.
+         * A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
          */
         serverSideEncryptionConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketServerSideEncryptionConfiguration>;
         /**
-         * Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         *
-         * The following arguments are deprecated, and will be removed in a future major version:
+         * A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
-         * Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioningV2` instead.
+         * A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
          */
         versioning?: pulumi.Input<pulumiAws.types.input.s3.BucketVersioning>;
         /**
-         * Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-         * Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+         * A website object (documented below).
          */
         website?: pulumi.Input<pulumiAws.types.input.s3.BucketWebsite>;
         /**
-         * (**Deprecated**) Domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+         * The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
          */
         websiteDomain?: pulumi.Input<string>;
         /**
-         * (**Deprecated**) Website endpoint, if the bucket is configured with a website. If not, this will be an empty string. Use the resource `aws.s3.BucketWebsiteConfigurationV2` instead.
+         * The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
          */
         websiteEndpoint?: pulumi.Input<string>;
     }
@@ -295,9 +283,12 @@ export namespace awsx {
          */
         forceDetachPolicies?: pulumi.Input<boolean>;
         /**
-         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
          */
         inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
+        /**
+         * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+         */
         managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
         /**
          * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
@@ -1031,7 +1022,7 @@ export namespace ec2 {
      *
      * func main() {
      * 	pulumi.Run(func(ctx *pulumi.Context) error {
-     * 		current, err := aws.GetCallerIdentity(ctx, nil, nil)
+     * 		current, err := aws.GetCallerIdentity(ctx, &aws.GetCallerIdentityArgs{}, nil)
      * 		if err != nil {
      * 			return err
      * 		}
@@ -1127,8 +1118,8 @@ export namespace ec2 {
      * variables:
      *   current:
      *     fn::invoke:
-     *       Function: aws:getCallerIdentity
-     *       Arguments: {}
+     *       function: aws:getCallerIdentity
+     *       arguments: {}
      * ```
      * <!--End PulumiCodeChooser -->
      *
@@ -1812,6 +1803,7 @@ export namespace lb {
      *     loadBalancerArn: frontEndAwsLb.arn,
      *     port: 443,
      *     protocol: "TLS",
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpnPolicy: "HTTP2Preferred",
      *     defaultActions: [{
@@ -1828,6 +1820,7 @@ export namespace lb {
      *     load_balancer_arn=front_end_aws_lb["arn"],
      *     port=443,
      *     protocol="TLS",
+     *     ssl_policy="ELBSecurityPolicy-2016-08",
      *     certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpn_policy="HTTP2Preferred",
      *     default_actions=[{
@@ -1848,6 +1841,7 @@ export namespace lb {
      *         LoadBalancerArn = frontEndAwsLb.Arn,
      *         Port = 443,
      *         Protocol = "TLS",
+     *         SslPolicy = "ELBSecurityPolicy-2016-08",
      *         CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *         AlpnPolicy = "HTTP2Preferred",
      *         DefaultActions = new[]
@@ -1876,6 +1870,7 @@ export namespace lb {
      * 			LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
      * 			Port:            pulumi.Int(443),
      * 			Protocol:        pulumi.String("TLS"),
+     * 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
      * 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
      * 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
      * 			DefaultActions: lb.ListenerDefaultActionArray{
@@ -1918,6 +1913,7 @@ export namespace lb {
      *             .loadBalancerArn(frontEndAwsLb.arn())
      *             .port("443")
      *             .protocol("TLS")
+     *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
      *             .alpnPolicy("HTTP2Preferred")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
@@ -1938,6 +1934,7 @@ export namespace lb {
      *       loadBalancerArn: ${frontEndAwsLb.arn}
      *       port: '443'
      *       protocol: TLS
+     *       sslPolicy: ELBSecurityPolicy-2016-08
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
      *       alpnPolicy: HTTP2Preferred
      *       defaultActions:
@@ -3224,11 +3221,11 @@ export namespace lb {
          */
         certificateArn?: pulumi.Input<string>;
         /**
-         * Configuration block for default actions. Detailed below.
+         * Configuration block for default actions. See below.
          */
         defaultActions?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.ListenerDefaultAction>[]>;
         /**
-         * The mutual authentication configuration information. Detailed below.
+         * The mutual authentication configuration information. See below.
          */
         mutualAuthentication?: pulumi.Input<pulumiAws.types.input.lb.ListenerMutualAuthentication>;
         /**
@@ -3240,15 +3237,19 @@ export namespace lb {
          */
         protocol?: pulumi.Input<string>;
         /**
-         * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+         * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          */
         sslPolicy?: pulumi.Input<string>;
         /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          *
-         * > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
+         * > **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+         */
+        tcpIdleTimeoutSeconds?: pulumi.Input<number>;
     }
 
     /**

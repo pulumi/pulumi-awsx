@@ -63,6 +63,12 @@ namespace Pulumi.Awsx.Ecs
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceAlarmsArgs>? Alarms { get; set; }
 
         /// <summary>
+        /// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        /// </summary>
+        [Input("availabilityZoneRebalancing")]
+        public Input<string>? AvailabilityZoneRebalancing { get; set; }
+
+        /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
         [Input("cluster")]
@@ -117,7 +123,14 @@ namespace Pulumi.Awsx.Ecs
         public Input<bool>? EnableExecuteCommand { get; set; }
 
         /// <summary>
+        /// Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+        /// </summary>
+        [Input("forceDelete")]
+        public Input<bool>? ForceDelete { get; set; }
+
+        /// <summary>
         /// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+        /// When using the forceNewDeployment property you also need to configure the triggers property.
         /// </summary>
         [Input("forceNewDeployment")]
         public Input<bool>? ForceNewDeployment { get; set; }
@@ -255,6 +268,18 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("volumeConfiguration")]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceVolumeConfigurationArgs>? VolumeConfiguration { get; set; }
+
+        [Input("vpcLatticeConfigurations")]
+        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs>? _vpcLatticeConfigurations;
+
+        /// <summary>
+        /// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        /// </summary>
+        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs> VpcLatticeConfigurations
+        {
+            get => _vpcLatticeConfigurations ?? (_vpcLatticeConfigurations = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs>());
+            set => _vpcLatticeConfigurations = value;
+        }
 
         public EC2ServiceArgs()
         {

@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { ResourceOptions } from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { getRegion, getRegionFromOpts, parseArn } from "../utils";
+import { parseArn } from "../utils";
 
 export interface BucketId {
   name: pulumi.Output<string>;

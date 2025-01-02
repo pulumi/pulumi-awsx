@@ -144,6 +144,7 @@ export abstract class EC2Service<TData = any> extends (pulumi.ComponentResource)
 }
 export interface EC2ServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
+    readonly availabilityZoneRebalancing?: pulumi.Input<string>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -153,6 +154,7 @@ export interface EC2ServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
@@ -171,6 +173,7 @@ export interface EC2ServiceArgs {
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
+    readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }
 export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -214,6 +217,7 @@ export abstract class FargateService<TData = any> extends (pulumi.ComponentResou
 export interface FargateServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly assignPublicIp?: pulumi.Input<boolean>;
+    readonly availabilityZoneRebalancing?: pulumi.Input<string>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -223,6 +227,7 @@ export interface FargateServiceArgs {
     readonly desiredCount?: pulumi.Input<number>;
     readonly enableEcsManagedTags?: pulumi.Input<boolean>;
     readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceDelete?: pulumi.Input<boolean>;
     readonly forceNewDeployment?: pulumi.Input<boolean>;
     readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
     readonly iamRole?: pulumi.Input<string>;
@@ -240,6 +245,7 @@ export interface FargateServiceArgs {
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
+    readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }
 export abstract class FargateTaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -298,6 +304,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
@@ -338,6 +345,7 @@ export interface NetworkLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
@@ -586,18 +594,18 @@ export interface NatGatewayConfigurationOutputs {
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
 export interface ResolvedSubnetSpecInputs {
-    readonly cidrBlocks?: string[];
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly size?: number;
-    readonly type: SubnetTypeInputs;
+    readonly cidrBlocks?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly cidrMask?: pulumi.Input<number>;
+    readonly name?: pulumi.Input<string>;
+    readonly size?: pulumi.Input<number>;
+    readonly type: pulumi.Input<SubnetTypeInputs>;
 }
 export interface ResolvedSubnetSpecOutputs {
-    readonly cidrBlocks?: string[];
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly size?: number;
-    readonly type: SubnetTypeOutputs;
+    readonly cidrBlocks?: pulumi.Output<string[]>;
+    readonly cidrMask?: pulumi.Output<number>;
+    readonly name?: pulumi.Output<string>;
+    readonly size?: pulumi.Output<number>;
+    readonly type: pulumi.Output<SubnetTypeOutputs>;
 }
 export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
 export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";
@@ -1060,6 +1068,7 @@ export interface ListenerInputs {
     readonly protocol?: pulumi.Input<string>;
     readonly sslPolicy?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly tcpIdleTimeoutSeconds?: pulumi.Input<number>;
 }
 export interface ListenerOutputs {
     readonly alpnPolicy?: pulumi.Output<string>;
@@ -1070,6 +1079,7 @@ export interface ListenerOutputs {
     readonly protocol?: pulumi.Output<string>;
     readonly sslPolicy?: pulumi.Output<string>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly tcpIdleTimeoutSeconds?: pulumi.Output<number>;
 }
 export interface TargetGroupInputs {
     readonly connectionTermination?: pulumi.Input<boolean>;
