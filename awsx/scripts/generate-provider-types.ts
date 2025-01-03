@@ -32,7 +32,6 @@ const externalRefs = (() => {
     };
   };
   addRef("aws");
-  addRef("docker");
   return externalRefs;
 })();
 
