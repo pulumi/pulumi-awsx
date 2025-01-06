@@ -27,7 +27,7 @@ export class RegistryImage extends schema.RegistryImage {
 
     const creds = pulumi
       .output(args.repositoryUrl)
-      .apply((url) => getDockerCredentials(url, { parent: this }));
+      .apply((url) => getDockerCredentials({ registryUrl: url }, { parent: this }));
     const provider = new docker.Provider(name, {
       registryAuth: [creds],
     });

@@ -15,6 +15,11 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+export interface CredentialArgs {
+  registryUrl: string;
+  registryId?: string;
+}
+
 export interface DockerCredentials {
   address: string;
   username: string;
@@ -22,17 +27,22 @@ export interface DockerCredentials {
 }
 
 export function getDockerCredentials(
-  registryUrl: string,
+  args: CredentialArgs,
   opts: pulumi.InvokeOutputOptions,
 ): pulumi.Output<DockerCredentials> {
   // add protocol to help parse the url
-  if (!registryUrl?.startsWith("https://")) {
-    registryUrl = "https://" + registryUrl;
-  }
 
-  // the registry id is the AWS account id. It's the first part of the hostname
-  const parsedUrl = new URL(registryUrl);
-  const registryId = parsedUrl.hostname.split(".")[0];
+  let registryId: string;
+  if (args.registryId) {
+    registryId = args.registryId;
+  } else {
+    const registryUrl = args.registryUrl?.startsWith("https://")
+      ? args.registryUrl
+      : "https://" + args.registryUrl;
+    const parsedUrl = new URL(registryUrl);
+    // the registry id is the AWS account id. It's the first part of the hostname
+    registryId = parsedUrl.hostname.split(".")[0];
+  }
 
   const ecrCredentials = aws.ecr.getCredentialsOutput({ registryId: registryId }, opts);
 

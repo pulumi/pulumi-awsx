@@ -48,7 +48,10 @@ export function computeImageFromAsset(
   // the unique image name we pushed to.  The name will change if the image changes ensuring
   // the TaskDefinition get's replaced IFF the built image changes.
 
-  const registryCredentials = getDockerCredentials(repositoryUrl, { parent });
+  const registryCredentials = getDockerCredentials(
+    { registryUrl: repositoryUrl, registryId: inputRegistryId },
+    { parent },
+  );
 
   let cacheFrom: docker.types.input.CacheFromArgs[] = [];
   if (dockerInputs.cacheFrom !== undefined) {
