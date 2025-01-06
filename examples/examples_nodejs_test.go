@@ -27,6 +27,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	ecrTypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
 	"github.com/pulumi/providertest/pulumitest"
 	"github.com/pulumi/providertest/pulumitest/optnewstack"
 	"github.com/pulumi/providertest/pulumitest/opttest"
@@ -406,20 +407,8 @@ func TestDockerUpgrade(t *testing.T) {
 
 	t.Logf("Verifying images in ECR repository %q", repoName)
 	client := createEcrClient(t)
-	describeImagesInput := &ecr.DescribeImagesInput{
-		RepositoryName: aws.String(repoName),
-	}
-
-	var describeImagesOutput *ecr.DescribeImagesOutput
-	var err error
-	for retries := 0; retries < 10; retries++ {
-		describeImagesOutput, err = client.DescribeImages(context.TODO(), describeImagesInput)
-		require.NoError(t, err, "failed to describe images")
-		if len(describeImagesOutput.ImageDetails) >= 2 {
-			break
-		}
-		time.Sleep(5 * time.Second)
-	}
+	describeImagesOutput, err := getEcrImageDetails(t, client, repoName, 2)
+	require.NoError(t, err, "failed to describe images")
 	require.NotEmpty(t, describeImagesOutput.ImageDetails, "image details should not be empty")
 	require.Len(t, describeImagesOutput.ImageDetails, 2, "should have 2 images")
 
@@ -447,6 +436,103 @@ func TestDockerUpgrade(t *testing.T) {
 
 	assert.Truef(t, foundOriginal, "original image digest %q should exist in ECR", originalDigest)
 	assert.Truef(t, foundUpdated, "updated image digest %q should exist in ECR", updatedDigest)
+}
+
+func TestEcrRegistryImage(t *testing.T) {
+	t.Parallel()
+	cwd := getCwd(t)
+	options := []opttest.Option{
+		opttest.LocalProviderPath("awsx", filepath.Join(cwd, "..", "bin")),
+		opttest.YarnLink("@pulumi/awsx"),
+	}
+	pt := pulumitest.NewPulumiTest(t, filepath.Join(cwd, "ts-ecr-registry-image"), options...)
+
+	pt.SetConfig(t, "message", "Hello Pulumi!")
+
+	t.Log("Running `pulumi preview` with message=Hello Pulumi!")
+	previewResult := pt.Preview(t)
+	t.Logf("Preview:\n%s", previewResult.StdOut)
+
+	t.Log("Running `pulumi up` with message=Hello Pulumi!")
+	upResult := pt.Up(t)
+	t.Logf("Up:\n%s", upResult.StdOut)
+
+	require.Contains(t, upResult.Outputs, "repositoryName", "repositoryName should be in the outputs")
+	repoName := upResult.Outputs["repositoryName"].Value.(string)
+	require.NotEmpty(t, repoName, "repositoryName should not be empty")
+
+	client := createEcrClient(t)
+	describeImagesOutput, err := getEcrImageDetails(t, client, repoName, 1)
+	require.NoError(t, err, "failed to describe images")
+	require.NotEmpty(t, describeImagesOutput.ImageDetails, "image details should not be empty")
+	require.Len(t, describeImagesOutput.ImageDetails, 1, "should have 1 image")
+
+	firstImage := describeImagesOutput.ImageDetails[0]
+	tags := firstImage.ImageTags
+	require.Len(t, tags, 3, "image should have 3 tags")
+	require.Contains(t, tags, "test", "test tag should be in the image tags")
+	require.Contains(t, tags, "v1.0.0", "v1.0.0 tag should be in the image tags")
+	require.Contains(t, tags, "latest", "latest tag should be in the image tags")
+
+	// This should produce a new image
+	pt.SetConfig(t, "message", "Hello Pulumi! (Again...)")
+
+	t.Log("Running `pulumi preview` with message=Hello Pulumi! (Again...)")
+	previewResult = pt.Preview(t)
+	t.Logf("Preview:\n%s", previewResult.StdOut)
+
+	t.Log("Running `pulumi up` with message=Hello Pulumi! (Again...)")
+	upResult = pt.Up(t)
+	t.Logf("Up:\n%s", upResult.StdOut)
+
+	describeImagesOutput, err = getEcrImageDetails(t, client, repoName, 2)
+	require.NoError(t, err, "failed to describe images")
+	require.NotEmpty(t, describeImagesOutput.ImageDetails, "image details should not be empty")
+	require.Len(t, describeImagesOutput.ImageDetails, 2, "should have 2 images")
+
+	var newImage *ecrTypes.ImageDetail
+	var oldImage *ecrTypes.ImageDetail
+	for _, img := range describeImagesOutput.ImageDetails {
+		if *img.ImageDigest != *firstImage.ImageDigest {
+			newImage = &img
+		} else {
+			oldImage = &img
+		}
+	}
+
+	require.NotNil(t, newImage, "new image should not be nil")
+	require.NotNil(t, oldImage, "old image should still exist after the new image was pushed")
+
+	// The tags should've been moved to the new image
+	require.Len(t, newImage.ImageTags, 3, "new image should have 3 tags")
+	require.Contains(t, newImage.ImageTags, "test", "the new image should have the test tag")
+	require.Contains(t, newImage.ImageTags, "v1.0.0", "the new image should have the v1.0.0 tag")
+	require.Contains(t, newImage.ImageTags, "latest", "the new image should have the latest tag")
+
+	require.Empty(t, oldImage.ImageTags, "old image should have no tags after the new image was pushed")
+}
+
+func getEcrImageDetails(t *testing.T, client *ecr.Client, repositoryName string, expectedImages int) (*ecr.DescribeImagesOutput, error) {
+	describeImagesInput := &ecr.DescribeImagesInput{
+		RepositoryName: aws.String(repositoryName),
+	}
+
+	var describeImagesOutput *ecr.DescribeImagesOutput
+	var err error
+	maxRetries := 4
+	for retries := 0; retries < maxRetries; retries++ {
+		err = nil
+		describeImagesOutput, err = client.DescribeImages(context.TODO(), describeImagesInput)
+		if err != nil {
+			t.Logf("failed to describe images: %v", err)
+			continue
+		}
+		if len(describeImagesOutput.ImageDetails) >= expectedImages {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	return describeImagesOutput, err
 }
 
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
