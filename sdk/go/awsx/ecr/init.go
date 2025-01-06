@@ -9,6 +9,7 @@ import (
 	"github.com/blang/semver"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	_ "github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild"
+	_ "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -24,6 +25,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 	switch typ {
 	case "awsx:ecr:Image":
 		r = &Image{}
+	case "awsx:ecr:RegistryImage":
+		r = &RegistryImage{}
 	case "awsx:ecr:Repository":
 		r = &Repository{}
 	default:
