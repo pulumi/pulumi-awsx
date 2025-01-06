@@ -33,9 +33,6 @@ export function computeImageFromAsset(
 ) {
   const { repositoryUrl, registryId: inputRegistryId, imageTag, ...dockerInputs } = args ?? {};
 
-  const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
-  const registryId = inputRegistryId ?? url.hostname.split(".")[0];
-
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
   const imageName = args.imageName
