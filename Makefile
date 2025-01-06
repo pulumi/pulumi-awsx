@@ -160,6 +160,7 @@ generate_dotnet: .make/generate_dotnet
 build_dotnet: .make/build_dotnet
 generate_java: .make/generate_java
 build_java: .make/build_java
+gen_types: .make/gen_types
 
 install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
@@ -259,7 +260,7 @@ build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
 
-generate:: schema generate_nodejs generate_python generate_go generate_dotnet generate_java
+generate:: schema generate_nodejs generate_python generate_go generate_dotnet generate_java gen_types
 
 renovate:: generate
 
@@ -267,4 +268,4 @@ bin/gotestfmt:
 	@mkdir -p bin
 	@GOBIN="${PWD}/bin" go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@v2.5.0
 
-.PHONY: clean provider install_% dist sdk/go schema generate renovate generate_nodejs generate_python generate_go generate_dotnet generate_java build_nodejs build_python build_go build_dotnet build_java
+.PHONY: clean provider install_% dist sdk/go schema generate gen_types renovate generate_nodejs generate_python generate_go generate_dotnet generate_java build_nodejs build_python build_go build_dotnet build_java
