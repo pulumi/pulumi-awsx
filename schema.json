@@ -27,7 +27,7 @@
             "generateResourceContainerTypes": true,
             "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
             "internalDependencies": [
-                "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
+                "github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild"
             ],
             "liftSingleValueMethodReturns": true,
             "respectSchemaVersion": true
@@ -35,14 +35,14 @@
         "java": {
             "dependencies": {
                 "com.pulumi:aws": "6.65.0",
-                "com.pulumi:docker": "4.5.1"
+                "com.pulumi:docker-build": "0.0.8"
             }
         },
         "nodejs": {
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
                 "@pulumi/aws": "^6.65.0",
-                "@pulumi/docker": "^4.5.1",
+                "@pulumi/docker-build": "^0.0.8",
                 "@types/aws-lambda": "^8.10.23",
                 "docker-classic": "npm:@pulumi/docker@3.6.1",
                 "mime": "^2.0.0"
@@ -62,7 +62,7 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi-aws": "\u003e=6.0.4,\u003c7.0.0",
-                "pulumi-docker": "\u003e=4.5.1,\u003c5.0.0"
+                "pulumi-docker-build": "\u003e=0.0.8,\u003c1.0.0"
             },
             "respectSchemaVersion": true,
             "usesIOClasses": true

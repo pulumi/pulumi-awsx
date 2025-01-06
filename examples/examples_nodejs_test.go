@@ -17,14 +17,22 @@
 package examples
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	"github.com/pulumi/providertest/pulumitest"
+	"github.com/pulumi/providertest/pulumitest/optnewstack"
+	"github.com/pulumi/providertest/pulumitest/opttest"
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAccTrailTs(t *testing.T) {
@@ -358,6 +366,87 @@ func TestAccEcsParallel(t *testing.T) {
 
 		integration.ProgramTest(t, &test)
 	})
+}
+
+func TestDockerUpgrade(t *testing.T) {
+	providerName := "awsx"
+	baselineVersion := "2.19.0"
+	t.Parallel()
+	cwd := getCwd(t)
+	options := []opttest.Option{
+		opttest.DownloadProviderVersion(providerName, baselineVersion),
+		opttest.NewStackOptions(optnewstack.DisableAutoDestroy()),
+	}
+	pt := pulumitest.NewPulumiTest(t, filepath.Join(cwd, "ts-ecr-simple"), options...)
+
+	t.Logf("Running `pulumi up` with v%s of the awsx provider", baselineVersion)
+	result := pt.Up(t)
+	require.Contains(t, result.Outputs, "image", "image should be in the outputs")
+	originalImageUri := result.Outputs["image"].Value.(string)
+	require.NotEmpty(t, originalImageUri, "imageUri should not be empty")
+
+	state := pt.ExportStack(t)
+	pt = pt.CopyToTempDir(t,
+		opttest.Defaults(),
+		opttest.NewStackOptions(optnewstack.EnableAutoDestroy()),
+		opttest.LocalProviderPath("awsx", filepath.Join(cwd, "..", "bin")),
+		opttest.YarnLink("@pulumi/awsx"),
+	)
+	pt.ImportStack(t, state)
+
+	t.Log("Running `pulumi up` with the latest version of the awsx provider")
+	result = pt.Up(t)
+	require.Contains(t, result.Outputs, "image", "image should be in the outputs")
+	updatedImageUri := result.Outputs["image"].Value.(string)
+	require.NotEmpty(t, updatedImageUri, "imageUri should not be empty")
+
+	require.Contains(t, result.Outputs, "repositoryName", "repositoryName should be in the outputs")
+	repoName := result.Outputs["repositoryName"].Value.(string)
+	require.NotEmpty(t, repoName, "repositoryName should not be empty")
+
+	t.Logf("Verifying images in ECR repository %q", repoName)
+	client := createEcrClient(t)
+	describeImagesInput := &ecr.DescribeImagesInput{
+		RepositoryName: aws.String(repoName),
+	}
+
+	var describeImagesOutput *ecr.DescribeImagesOutput
+	var err error
+	for retries := 0; retries < 10; retries++ {
+		describeImagesOutput, err = client.DescribeImages(context.TODO(), describeImagesInput)
+		require.NoError(t, err, "failed to describe images")
+		if len(describeImagesOutput.ImageDetails) >= 2 {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+	require.NotEmpty(t, describeImagesOutput.ImageDetails, "image details should not be empty")
+	require.Len(t, describeImagesOutput.ImageDetails, 2, "should have 2 images")
+
+	// Extract digests from URIs
+	getDigest := func(uri string) string {
+		parts := strings.Split(uri, "@sha256:")
+		require.Len(t, parts, 2, "URI should contain sha256 digest")
+		return parts[1]
+	}
+	originalDigest := getDigest(originalImageUri)
+	updatedDigest := getDigest(updatedImageUri)
+
+	// Find matching digests in ECR response
+	foundOriginal := false
+	foundUpdated := false
+	for _, img := range describeImagesOutput.ImageDetails {
+		digest := strings.TrimPrefix(*img.ImageDigest, "sha256:")
+		if digest == originalDigest {
+			foundOriginal = true
+		}
+		if digest == updatedDigest {
+			foundUpdated = true
+		}
+	}
+
+	assert.Truef(t, foundOriginal, "original image digest %q should exist in ECR", originalDigest)
+	assert.Truef(t, foundUpdated, "updated image digest %q should exist in ECR", updatedDigest)
 }
 
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
