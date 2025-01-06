@@ -17,8 +17,9 @@ CODEGEN_SRC 	:= $(shell find schemagen -type f)
 
 WORKING_DIR     := $(shell pwd)
 
-GOPATH 		 	?= ${HOME}/go
-GOBIN  		 	?= ${GOPATH}/bin
+GOPATH := $(shell go env GOPATH)
+GOBIN  		 	:= ${GOPATH}/bin
+export GOBIN=${GOPATH}/bin
 LanguageTags 	?= "all"
 LOCAL_PLAT		?= ""
 
@@ -28,7 +29,11 @@ PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 # Local & branch builds will just used this fixed default version unless specified
 PROVIDER_VERSION ?= 2.0.0-alpha.0+dev
 # Use this normalised version everywhere rather than the raw input to ensure consistency.
-VERSION_GENERIC = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
+VERSION_GENERIC ?= $(shell make VERSION_GENERIC=$(PROVIDER_VERSION) version_generic)
+# Note recursive call to Make to auto-install pulumictl needs VERSION_GENERIC seeded to avoid infinite recursion.
+PULUMICTL_VERSION := v0.0.47
+PULUMICTL_BIN := $(shell which pulumictl 2>/dev/null)
+
 
 GZIP_PREFIX     := pulumi-resource-${PACK}-v${VERSION_GENERIC}
 
@@ -111,8 +116,8 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 		gradle --console=plain build
 	@touch $@
 
-bin/pulumi-java-gen::
-	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
+bin/pulumi-java-gen: ensure-pulumictl
+	@$(PULUMICTL_BIN) download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java
 
 .make/generate_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
@@ -260,9 +265,26 @@ build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
 
-generate:: schema generate_nodejs generate_python generate_go generate_dotnet generate_java gen_types
+$(HOME)/.yarn/bin:
+	curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
 
-renovate:: generate
+echo_path:
+	echo $(PATH)
+
+renovate_generate:: PATH := $(HOME)/.yarn/bin:$(HOME)/.config/yarn/global/node_modules/.bin:$(PATH)
+renovate_generate:: echo_path schema generate_nodejs generate_python generate_go generate_dotnet generate_java gen_types
+
+renovate:: $(HOME)/.yarn/bin
+renovate:: renovate_generate
+
+ensure-pulumictl:
+ifeq ($(PULUMICTL_BIN),)
+	@if [ ! -f "$(GOPATH)/bin/pulumictl" ]; then go install "github.com/pulumi/pulumictl/cmd/pulumictl@$(PULUMICTL_VERSION)"; fi
+	@$(eval PULUMICTL_BIN=$(GOPATH)/bin/pulumictl)
+endif
+
+version_generic: ensure-pulumictl
+	@$(PULUMICTL_BIN) convert-version --language generic --version "$(PROVIDER_VERSION)"
 
 bin/gotestfmt:
 	@mkdir -p bin
