@@ -37,7 +37,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 	dependencies := readPackageDependencies(packageDir)
 	awsSpec := getPackageSpec("aws", dependencies.Aws)
 	awsNativeSpec := getPackageSpec("aws-native", awsNativeTypesVersion)
-	dockerSpec := getPackageSpec("docker-build", dependencies.Docker)
+	dockerSpec := getPackageSpec("docker", dependencies.Docker)
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -56,9 +56,10 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
-					"Pulumi":        "3.*",
-					"Pulumi.Aws":    "6.*",
-					"Pulumi.Docker": "4.*",
+					"Pulumi":             "3.*",
+					"Pulumi.Aws":         "6.*",
+					"Pulumi.Docker":      "4.*",
+					"Pulumi.DockerBuild": "0.*",
 				},
 				"liftSingleValueMethodReturns": true,
 				"respectSchemaVersion":         true,
@@ -67,20 +68,25 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"generateResourceContainerTypes": true,
 				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
 				"liftSingleValueMethodReturns":   true,
-				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild"},
-				"respectSchemaVersion":           true,
+				"internalDependencies": []string{
+					"github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild",
+					"github.com/pulumi/pulumi-docker/sdk/v4/go/docker",
+				},
+				"respectSchemaVersion": true,
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"com.pulumi:aws":          dependencies.Aws,
-					"com.pulumi:docker-build": dependencies.Docker,
+					"com.pulumi:docker":       dependencies.Docker,
+					"com.pulumi:docker-build": dependencies.DockerBuild,
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@aws-sdk/client-ecs":  "^3.405.0",
 					"@pulumi/aws":          "^" + dependencies.Aws,
-					"@pulumi/docker-build": "^" + dependencies.Docker,
+					"@pulumi/docker":       "^" + dependencies.Docker,
+					"@pulumi/docker-build": "^" + dependencies.DockerBuild,
 					"docker-classic":       "npm:@pulumi/docker@3.6.1",
 					"@types/aws-lambda":    "^8.10.23",
 					"mime":                 "^2.0.0",
@@ -95,7 +101,8 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi-aws":          ">=6.0.4,<7.0.0",
-					"pulumi-docker-build": fmt.Sprintf(">=%s,<1.0.0", dependencies.Docker),
+					"pulumi-docker":       fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
+					"pulumi-docker-build": fmt.Sprintf(">=%s,<1.0.0", dependencies.DockerBuild),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
@@ -168,6 +175,10 @@ func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.Comp
 
 func renameAwsPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
 	return renamePropertiesRefs(propertySpec, "#/types/aws:", packageRef(spec, "/types/aws:"))
+}
+
+func renameDockerPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+	return renamePropertiesRefs(propertySpec, "#/types/docker:", packageRef(spec, "/types/docker:"))
 }
 
 func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new string) map[string]schema.PropertySpec {
@@ -252,9 +263,10 @@ func rawMessage(v interface{}) schema.RawMessage {
 }
 
 type Dependencies struct {
-	Aws    string `json:"@pulumi/aws"`
-	Docker string `json:"@pulumi/docker-build"`
-	Pulumi string `json:"@pulumi/pulumi"`
+	Aws         string `json:"@pulumi/aws"`
+	Docker      string `json:"@pulumi/docker"`
+	DockerBuild string `json:"@pulumi/docker-build"`
+	Pulumi      string `json:"@pulumi/pulumi"`
 }
 
 type PackageJson struct {
