@@ -89,9 +89,11 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
-.make/build_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
+.make/generate_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_nodejs: .make/generate_nodejs
 	cd sdk/nodejs && \
 		yarn install --no-progress && \
 		yarn run tsc --version && \
@@ -99,10 +101,12 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 		cp package.json ../../README.md ../../LICENSE bin/
 	@touch $@
 
-.make/build_java: PACKAGE_VERSION := $(VERSION_GENERIC)
-.make/build_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
+.make/generate_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
 	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema schema.json --out sdk/java --build gradle-nexus
+	@touch $@
+.make/build_java: PACKAGE_VERSION := $(VERSION_GENERIC)
+.make/build_java: .make/generate_java
 	cd sdk/java && \
 		gradle --console=plain build
 	@touch $@
@@ -110,41 +114,53 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
 
-.make/build_python: bin/${CODEGEN} .make/schema README.md
+.make/generate_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python schema.json $(VERSION_GENERIC)
+	cp README.md sdk/python/
+	@touch $@
+.make/build_python: .make/generate_python
 	cd sdk/python/ && \
-		cp ../../README.md . && \
 		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
 		python3 -m venv venv && \
 		./venv/bin/python -m pip install build && \
 		cd ./bin && \
 		../venv/bin/python -m build .
 
-.make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
-.make/build_go: bin/${CODEGEN} .make/schema
+.make/generate_go: bin/${CODEGEN} .make/schema
 	rm -rf sdk/go
 	bin/${CODEGEN} go sdk/go schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
+.make/build_go: .make/generate_go
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
 	@touch $@
 
-.make/build_dotnet: bin/${CODEGEN} .make/schema
+.make/generate_dotnet: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
 	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_dotnet: .make/generate_dotnet
 	cd sdk/dotnet/ && \
 		dotnet build
 	@touch $@
 
 # Phony targets
 
+generate_nodejs: .make/generate_nodejs
 build_nodejs: .make/build_nodejs
+generate_python: .make/generate_python
 build_python: .make/build_python
+generate_go: .make/generate_go
 build_go: .make/build_go
+generate_dotnet: .make/generate_dotnet
 build_dotnet: .make/build_dotnet
+generate_java: .make/generate_java
 build_java: .make/build_java
+gen_types: .make/gen_types
 
 install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
@@ -244,7 +260,7 @@ build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
 
-generate:: schema build_sdks
+generate:: schema generate_nodejs generate_python generate_go generate_dotnet generate_java gen_types
 
 renovate:: generate
 
@@ -252,4 +268,4 @@ bin/gotestfmt:
 	@mkdir -p bin
 	@GOBIN="${PWD}/bin" go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@v2.5.0
 
-.PHONY: clean provider install_% dist sdk/go generate renovate
+.PHONY: clean provider install_% dist sdk/go schema generate gen_types renovate generate_nodejs generate_python generate_go generate_dotnet generate_java build_nodejs build_python build_go build_dotnet build_java
