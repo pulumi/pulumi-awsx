@@ -38,9 +38,7 @@ export class RegistryImage extends schema.RegistryImage {
       { name: args.sourceImage },
       { parent: this, provider },
     );
-    const tagName = args.tag
-      ? args.tag
-      : "latest";
+    const tagName = args.tag ? args.tag : "latest";
     const tag = new docker.Tag(
       name,
       {
