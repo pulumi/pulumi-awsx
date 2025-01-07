@@ -29,8 +29,8 @@ PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 # Local & branch builds will just used this fixed default version unless specified
 PROVIDER_VERSION ?= 2.0.0-alpha.0+dev
 # Use this normalised version everywhere rather than the raw input to ensure consistency.
-VERSION_GENERIC ?= $(shell make VERSION_GENERIC=$(PROVIDER_VERSION) version_generic)
 # Note recursive call to Make to auto-install pulumictl needs VERSION_GENERIC seeded to avoid infinite recursion.
+VERSION_GENERIC ?= $(shell make VERSION_GENERIC=$(PROVIDER_VERSION) version_generic)
 PULUMICTL_VERSION := v0.0.47
 PULUMICTL_BIN := $(shell which pulumictl 2>/dev/null)
 
