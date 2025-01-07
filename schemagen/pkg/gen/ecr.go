@@ -324,15 +324,13 @@ func registryImage(dockerSpec schema.PackageSpec) schema.ResourceSpec {
 
 	delete(inputProperties, "name")
 	inputProperties["sourceImage"] = schema.PropertySpec{
-		Description: "The source image to push to the registry. The image is pushed with its existing tag by default. " +
-			"If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.\n" +
-			"You can override the tag by using the `tag` input property.",
+		Description: "The source image to push to the registry.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["tag"] = schema.PropertySpec{
-		Description: "The tag to use for the pushed image. If not provided, the tag of the source image is used.",
+		Description: "The tag to use for the pushed image. If not provided, it defaults to `latest`.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},

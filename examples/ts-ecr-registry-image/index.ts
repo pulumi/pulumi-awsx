@@ -22,17 +22,10 @@ const localImage = new docker.Image("local-image", {
 
 export const imageId = localImage.repoDigest;
 
-const preTaggedImage = new awsx.ecr.RegistryImage("pre-tagged-image", {
+const latestImage = new awsx.ecr.RegistryImage("image-name", {
   repositoryUrl: repository.url,
-  // if sourceImage has a tag, it will be used for pushing to the registry
+  // if no tag is provided, the image will be pushed with the `latest` tag
   sourceImage: localImage.imageName,
-  keepRemotely: true,
-});
-
-const latestImage = new awsx.ecr.RegistryImage("latest-image", {
-  repositoryUrl: repository.url,
-  // if sourceImage has no tag, it will be pushed with the latest tag
-  sourceImage: localImage.repoDigest,
   keepRemotely: true,
 });
 
@@ -41,5 +34,13 @@ const taggedImage = new awsx.ecr.RegistryImage("tagged-image", {
   sourceImage: localImage.imageName,
   // if a tag is provided, it will be used for pushing to the registry
   tag: "v1.0.0",
+  keepRemotely: true,
+});
+
+const digestImage = new awsx.ecr.RegistryImage("digest", {
+  repositoryUrl: repository.url,
+  // you can also specify a digest instead of an image name
+  sourceImage: localImage.repoDigest,
+  tag: "test",
   keepRemotely: true,
 });

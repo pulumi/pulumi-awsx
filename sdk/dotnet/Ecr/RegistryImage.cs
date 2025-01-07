@@ -91,14 +91,13 @@ namespace Pulumi.Awsx.Ecr
         public Input<string> RepositoryUrl { get; set; } = null!;
 
         /// <summary>
-        /// The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-        /// You can override the tag by using the `tag` input property.
+        /// The source image to push to the registry.
         /// </summary>
         [Input("sourceImage", required: true)]
         public Input<string> SourceImage { get; set; } = null!;
 
         /// <summary>
-        /// The tag to use for the pushed image. If not provided, the tag of the source image is used.
+        /// The tag to use for the pushed image. If not provided, it defaults to `latest`.
         /// </summary>
         [Input("tag")]
         public Input<string>? Tag { get; set; }

@@ -85,10 +85,9 @@ type registryImageArgs struct {
 	KeepRemotely *bool `pulumi:"keepRemotely"`
 	// Url of the ECR repository.
 	RepositoryUrl string `pulumi:"repositoryUrl"`
-	// The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-	// You can override the tag by using the `tag` input property.
+	// The source image to push to the registry.
 	SourceImage string `pulumi:"sourceImage"`
-	// The tag to use for the pushed image. If not provided, the tag of the source image is used.
+	// The tag to use for the pushed image. If not provided, it defaults to `latest`.
 	Tag *string `pulumi:"tag"`
 	// A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
 	Triggers map[string]string `pulumi:"triggers"`
@@ -102,10 +101,9 @@ type RegistryImageArgs struct {
 	KeepRemotely pulumi.BoolPtrInput
 	// Url of the ECR repository.
 	RepositoryUrl pulumi.StringInput
-	// The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-	// You can override the tag by using the `tag` input property.
+	// The source image to push to the registry.
 	SourceImage pulumi.StringInput
-	// The tag to use for the pushed image. If not provided, the tag of the source image is used.
+	// The tag to use for the pushed image. If not provided, it defaults to `latest`.
 	Tag pulumi.StringPtrInput
 	// A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
 	Triggers pulumi.StringMapInput

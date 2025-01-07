@@ -29,11 +29,10 @@ class RegistryImageArgs:
         """
         The set of arguments for constructing a RegistryImage resource.
         :param pulumi.Input[str] repository_url: Url of the ECR repository.
-        :param pulumi.Input[str] source_image: The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-               You can override the tag by using the `tag` input property.
+        :param pulumi.Input[str] source_image: The source image to push to the registry.
         :param pulumi.Input[bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
-        :param pulumi.Input[str] tag: The tag to use for the pushed image. If not provided, the tag of the source image is used.
+        :param pulumi.Input[str] tag: The tag to use for the pushed image. If not provided, it defaults to `latest`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
         """
         pulumi.set(__self__, "repository_url", repository_url)
@@ -63,8 +62,7 @@ class RegistryImageArgs:
     @pulumi.getter(name="sourceImage")
     def source_image(self) -> pulumi.Input[str]:
         """
-        The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-        You can override the tag by using the `tag` input property.
+        The source image to push to the registry.
         """
         return pulumi.get(self, "source_image")
 
@@ -100,7 +98,7 @@ class RegistryImageArgs:
     @pulumi.getter
     def tag(self) -> Optional[pulumi.Input[str]]:
         """
-        The tag to use for the pushed image. If not provided, the tag of the source image is used.
+        The tag to use for the pushed image. If not provided, it defaults to `latest`.
         """
         return pulumi.get(self, "tag")
 
@@ -154,9 +152,8 @@ class RegistryImage(pulumi.ComponentResource):
         :param pulumi.Input[bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
         :param pulumi.Input[str] repository_url: Url of the ECR repository.
-        :param pulumi.Input[str] source_image: The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-               You can override the tag by using the `tag` input property.
-        :param pulumi.Input[str] tag: The tag to use for the pushed image. If not provided, the tag of the source image is used.
+        :param pulumi.Input[str] source_image: The source image to push to the registry.
+        :param pulumi.Input[str] tag: The tag to use for the pushed image. If not provided, it defaults to `latest`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
         """
         ...

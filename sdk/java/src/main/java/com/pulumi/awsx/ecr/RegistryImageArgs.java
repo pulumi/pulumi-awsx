@@ -63,16 +63,14 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-     * You can override the tag by using the `tag` input property.
+     * The source image to push to the registry.
      * 
      */
     @Import(name="sourceImage", required=true)
     private Output<String> sourceImage;
 
     /**
-     * @return The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-     * You can override the tag by using the `tag` input property.
+     * @return The source image to push to the registry.
      * 
      */
     public Output<String> sourceImage() {
@@ -80,14 +78,14 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The tag to use for the pushed image. If not provided, the tag of the source image is used.
+     * The tag to use for the pushed image. If not provided, it defaults to `latest`.
      * 
      */
     @Import(name="tag")
     private @Nullable Output<String> tag;
 
     /**
-     * @return The tag to use for the pushed image. If not provided, the tag of the source image is used.
+     * @return The tag to use for the pushed image. If not provided, it defaults to `latest`.
      * 
      */
     public Optional<Output<String>> tag() {
@@ -202,8 +200,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sourceImage The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-         * You can override the tag by using the `tag` input property.
+         * @param sourceImage The source image to push to the registry.
          * 
          * @return builder
          * 
@@ -214,8 +211,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sourceImage The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.
-         * You can override the tag by using the `tag` input property.
+         * @param sourceImage The source image to push to the registry.
          * 
          * @return builder
          * 
@@ -225,7 +221,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tag The tag to use for the pushed image. If not provided, the tag of the source image is used.
+         * @param tag The tag to use for the pushed image. If not provided, it defaults to `latest`.
          * 
          * @return builder
          * 
@@ -236,7 +232,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tag The tag to use for the pushed image. If not provided, the tag of the source image is used.
+         * @param tag The tag to use for the pushed image. If not provided, it defaults to `latest`.
          * 
          * @return builder
          * 

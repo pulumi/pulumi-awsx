@@ -2252,11 +2252,11 @@
                 },
                 "sourceImage": {
                     "type": "string",
-                    "description": "The source image to push to the registry. The image is pushed with its existing tag by default. If the source specifies an image ID without a tag, the pushed image uses the `latest` tag as the default.\nYou can override the tag by using the `tag` input property."
+                    "description": "The source image to push to the registry."
                 },
                 "tag": {
                     "type": "string",
-                    "description": "The tag to use for the pushed image. If not provided, the tag of the source image is used."
+                    "description": "The tag to use for the pushed image. If not provided, it defaults to `latest`."
                 },
                 "triggers": {
                     "type": "object",

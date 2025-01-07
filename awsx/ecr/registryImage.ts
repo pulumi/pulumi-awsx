@@ -39,8 +39,8 @@ export class RegistryImage extends schema.RegistryImage {
       { parent: this, provider },
     );
     const tagName = args.tag
-      ? pulumi.output(args.tag)
-      : pulumi.output(args.sourceImage).apply((image) => parseImageTag(image));
+      ? args.tag
+      : "latest";
     const tag = new docker.Tag(
       name,
       {
@@ -64,20 +64,4 @@ export class RegistryImage extends schema.RegistryImage {
       { parent: this, provider },
     );
   }
-}
-
-export function parseImageTag(str: string): string {
-  // Check if the string is a sha256 digest (starts with "sha256:" followed by 64 hex characters)
-  if (/^sha256:[a-f0-9]{64}$/i.test(str)) {
-    return "latest";
-  }
-
-  const parts = str.split(":");
-  if (parts.length < 2) {
-    // if there is no tag, use the latest tag
-    return "latest";
-  }
-
-  // the tag is the last part of the image, tags are not allowed to contain colons so we can just take the last part
-  return parts[parts.length - 1];
 }
