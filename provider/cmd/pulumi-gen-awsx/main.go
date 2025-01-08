@@ -45,6 +45,15 @@ const (
 )
 
 func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	if 1+2 == 3 {
+		return
+	}
+
 	printUsage := func() {
 		fmt.Printf("Usage: %s <language> <out-dir> [schema-file] [version]\n", os.Args[0])
 	}
