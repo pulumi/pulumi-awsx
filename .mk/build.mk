@@ -27,7 +27,7 @@ AWSX_SRC := $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 .make/awsx_bin: .make/awsx_node_modules .make/gen_types ${AWSX_SRC}
 	@cd awsx && \
 		yarn tsc && \
-		cp package.json ../provider/cmd/pulumi-resource-awsx/schema.json ./bin/ && \
+		cp package.json ../provider/cmd/pulumi-resource-awsx/schema-embed.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION_GENERIC)/g" ./bin/package.json
 	@touch $@
 
