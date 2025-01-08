@@ -4,6 +4,10 @@ major-version: 2
 template: generic
 shards: 10
 freeDiskSpaceBeforeTest: true # TODO: https://github.com/pulumi/pulumi/issues/17718
+
+# This is defined in .mk/build.mk instead of using the default Go builder.
+customBuildProviderCmd: true
+
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
   ALT_AWS_SECRET_ACCESS_KEY: ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }}
