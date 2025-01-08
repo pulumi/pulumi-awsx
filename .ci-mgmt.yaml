@@ -3,7 +3,6 @@ aws: true
 major-version: 2
 template: generic
 shards: 10
-freeDiskSpaceBeforeTest: true # TODO: https://github.com/pulumi/pulumi/issues/17718
 
 # This is defined in .mk/build.mk instead of using the default Go builder.
 customBuildProviderCmd: true
