@@ -17,13 +17,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
-	"github.com/pulumi/pulumi-awsx/schemagen/pkg/gen"
+	gen "github.com/pulumi/pulumi-awsx/provider/v2/pkg/schemagen"
 	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
