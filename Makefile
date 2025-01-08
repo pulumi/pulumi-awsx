@@ -251,8 +251,9 @@ bin/$(TFGEN): provider/*.go $(wildcard go.mod provider/go.mod) .make/upstream
 	(cd provider && go build $(PULUMI_PROVIDER_BUILD_PARALLELISM) -o $(WORKING_DIR)/bin/$(TFGEN) -ldflags "$(LDFLAGS_PROJ_VERSION) $(LDFLAGS_EXTRAS)" $(PROJECT)/$(PROVIDER_PATH)/cmd/$(TFGEN))
 .PHONY: tfgen schema tfgen_no_deps tfgen_build_only
 
-upstream:
+upstream: .make/upstream
 .make/upstream:
+	@touch $@
 
 bin/pulumi-java-gen: .pulumi-java-gen.version
 	pulumictl download-binary -n pulumi-language-java -v v$(shell cat .pulumi-java-gen.version) -r pulumi/pulumi-java
