@@ -1,0 +1,293 @@
+MAKEFLAGS 		:= --jobs=$(shell nproc) --warn-undefined-variables
+PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
+
+TESTPARALLELISM := 10
+
+PACK            := awsx
+PROVIDER        := pulumi-resource-${PACK}
+CODEGEN         := pulumi-gen-${PACK}
+BIN             := ${PROVIDER}
+
+JAVA_GEN 		 := pulumi-java-gen
+JAVA_GEN_VERSION := v0.9.7
+
+AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
+AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
+CODEGEN_SRC 	:= $(shell find schemagen -type f)
+
+WORKING_DIR     := $(shell pwd)
+
+GOPATH := $(shell go env GOPATH)
+GOBIN  		 	:= ${GOPATH}/bin
+export GOBIN=${GOPATH}/bin
+LanguageTags 	?= "all"
+LOCAL_PLAT		?= ""
+
+PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
+
+# Override during CI using `make [TARGET] PROVIDER_VERSION=""` or by setting a PROVIDER_VERSION environment variable
+# Local & branch builds will just used this fixed default version unless specified
+PROVIDER_VERSION ?= 2.0.0-alpha.0+dev
+# Use this normalised version everywhere rather than the raw input to ensure consistency.
+# Note recursive call to Make to auto-install pulumictl needs VERSION_GENERIC seeded to avoid infinite recursion.
+VERSION_GENERIC ?= $(shell make VERSION_GENERIC=$(PROVIDER_VERSION) version_generic)
+PULUMICTL_VERSION := v0.0.47
+PULUMICTL_BIN := $(shell which pulumictl 2>/dev/null)
+
+
+GZIP_PREFIX     := pulumi-resource-${PACK}-v${VERSION_GENERIC}
+
+# Pre-requisites: ensure these folders exist
+_ := $(shell mkdir -p .make bin dist)
+
+all:: lint lint_classic provider build_sdks test_provider
+
+bin/${CODEGEN}: ${CODEGEN_SRC}
+	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
+
+.make/schema: bin/${CODEGEN} awsx/package.json
+	bin/${CODEGEN} schema $(WORKING_DIR)
+	@touch $@
+
+.make/awsx_node_modules: awsx/package.json awsx/yarn.lock
+	yarn install --cwd awsx --no-progress
+	@touch $@
+
+.make/gen_types: .make/awsx_node_modules .make/schema
+	cd awsx && yarn gen-types
+	@touch $@
+
+.make/awsx_bin: .make/awsx_node_modules .make/gen_types ${AWSX_SRC}
+	@cd awsx && \
+		yarn tsc && \
+		cp package.json ../schema.json ./bin/ && \
+		sed -i.bak -e "s/\$${VERSION}/$(VERSION_GENERIC)/g" ./bin/package.json
+	@touch $@
+
+# Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
+ifneq ($(LOCAL_PLAT),"")
+bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
+	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
+else
+bin/${PROVIDER}: .make/awsx_bin .make/awsx_node_modules .make/gen_types
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
+endif
+
+bin/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linuxstatic-x64
+bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
+bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
+bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
+bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
+bin/provider/%:: .make/awsx_bin  .make/gen_types
+	test ${TARGET}
+	cd awsx && \
+		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
+
+dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: bin/provider/linux-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: bin/provider/linux-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: bin/provider/darwin-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: bin/provider/darwin-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: bin/provider/windows-amd64/${PROVIDER}.exe
+
+dist/${GZIP_PREFIX}-%.tar.gz::
+	@mkdir -p dist
+	@# $< is the last dependency (the binary path from above)
+	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
+
+.make/generate_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
+	rm -rf sdk/nodejs
+	bin/${CODEGEN} nodejs sdk/nodejs schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_nodejs: .make/generate_nodejs
+	cd sdk/nodejs && \
+		yarn install --no-progress && \
+		yarn run tsc --version && \
+		yarn run tsc && \
+		cp package.json ../../README.md ../../LICENSE bin/
+	@touch $@
+
+.make/generate_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
+	rm -rf sdk/java
+	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema schema.json --out sdk/java --build gradle-nexus
+	@touch $@
+.make/build_java: PACKAGE_VERSION := $(VERSION_GENERIC)
+.make/build_java: .make/generate_java
+	cd sdk/java && \
+		gradle --console=plain build
+	@touch $@
+
+bin/pulumi-java-gen: ensure-pulumictl
+	@$(PULUMICTL_BIN) download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java
+
+.make/generate_python: bin/${CODEGEN} .make/schema README.md
+	rm -rf sdk/python
+	bin/${CODEGEN} python sdk/python schema.json $(VERSION_GENERIC)
+	cp README.md sdk/python/
+	@touch $@
+.make/build_python: .make/generate_python
+	cd sdk/python/ && \
+		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
+		python3 -m venv venv && \
+		./venv/bin/python -m pip install build && \
+		cd ./bin && \
+		../venv/bin/python -m build .
+
+.make/generate_go: bin/${CODEGEN} .make/schema
+	rm -rf sdk/go
+	bin/${CODEGEN} go sdk/go schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
+.make/build_go: .make/generate_go
+	cd sdk && \
+		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
+		go mod tidy && \
+		go test -v ./... -check.vv
+	@touch $@
+
+.make/generate_dotnet: bin/${CODEGEN} .make/schema
+	rm -rf sdk/dotnet
+	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION_GENERIC)
+	@touch $@
+.make/build_dotnet: .make/generate_dotnet
+	cd sdk/dotnet/ && \
+		dotnet build
+	@touch $@
+
+# Phony targets
+
+generate_nodejs: .make/generate_nodejs
+build_nodejs: .make/build_nodejs
+generate_python: .make/generate_python
+build_python: .make/build_python
+generate_go: .make/generate_go
+build_go: .make/build_go
+generate_dotnet: .make/generate_dotnet
+build_dotnet: .make/build_dotnet
+generate_java: .make/generate_java
+build_java: .make/build_java
+gen_types: .make/gen_types
+
+install_provider: bin/${PROVIDER}
+	rm -f ${GOBIN}/${PROVIDER}
+	cp bin/${PROVIDER} ${GOBIN}/${PROVIDER}
+
+install_sdks: install_nodejs_sdk install_python_sdk install_go_sdk install_dotnet_sdk
+
+install_nodejs_sdk: .make/build_nodejs
+	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
+
+install_python_sdk: .make/build_python
+	#Intentionall empty for CI / CD templating
+
+install_go_sdk: .make/build_go
+	#Intentionally empty for CI / CD templating
+
+install_dotnet_sdk: .make/build_dotnet
+	mkdir -p $(WORKING_DIR)/nuget
+	find sdk/dotnet/bin -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
+	@if ! dotnet nuget list source | grep ${WORKING_DIR}; then \
+		dotnet nuget add source ${WORKING_DIR}/nuget --name ${WORKING_DIR} \
+	; fi\
+
+lint_classic:
+	cd awsx-classic && \
+		yarn install --no-progress && \
+		yarn lint
+
+lint:: .make/awsx_node_modules
+	cd awsx && \
+		yarn format && yarn lint
+
+test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_provider:: .make/awsx_node_modules .make/gen_types bin/${PROVIDER} bin/gotestfmt
+	cd awsx && yarn test
+	@export PATH
+	cd provider && go test -tags=yaml -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+istanbul_tests::
+	cd awsx-classic/tests && \
+		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
+
+test_nodejs:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_nodejs:: bin/${PROVIDER} install_nodejs_sdk bin/gotestfmt
+	@export PATH
+	cd provider && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test_python:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_python:: bin/${PROVIDER} bin/gotestfmt
+	@export PATH
+	cd provider && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test_java:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_java:: bin/${PROVIDER} bin/gotestfmt
+	@export PATH
+	cd provider && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd examples && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_go:: bin/${PROVIDER} bin/gotestfmt
+	@export PATH
+	cd provider && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test_dotnet:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_dotnet:: bin/${PROVIDER} install_dotnet_sdk bin/gotestfmt
+	@export PATH
+	cd provider && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test:: bin/gotestfmt
+	@export PATH
+	@if [ -z "${Test}" ]; then \
+		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt; \
+	else \
+		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=${Test} 2>&1 | tee /tmp/gotest.log; \
+	fi
+
+schemagen:: bin/${CODEGEN}
+schema: .make/schema
+provider: bin/${PROVIDER}
+dist:: dist/${GZIP_PREFIX}-linux-amd64.tar.gz
+dist:: dist/${GZIP_PREFIX}-linux-arm64.tar.gz
+dist:: dist/${GZIP_PREFIX}-darwin-amd64.tar.gz
+dist:: dist/${GZIP_PREFIX}-darwin-arm64.tar.gz
+dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
+
+clean:
+	rm -rf bin dist .make awsx/bin awsx/node_modules
+
+build_sdks: build_nodejs build_python build_go build_dotnet build_java
+
+build:: provider test_provider build_sdks
+
+dev:: lint test_provider build_nodejs
+
+$(HOME)/.yarn/bin:
+	curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+
+echo_path:
+	echo $(PATH)
+
+renovate_generate:: PATH := $(HOME)/.yarn/bin:$(HOME)/.config/yarn/global/node_modules/.bin:$(PATH)
+renovate_generate:: echo_path schema generate_nodejs generate_python generate_go generate_dotnet generate_java gen_types
+
+renovate:: $(HOME)/.yarn/bin
+renovate:: renovate_generate
+
+ensure-pulumictl:
+ifeq ($(PULUMICTL_BIN),)
+	@if [ ! -f "$(GOPATH)/bin/pulumictl" ]; then go install "github.com/pulumi/pulumictl/cmd/pulumictl@$(PULUMICTL_VERSION)"; fi
+	@$(eval PULUMICTL_BIN=$(GOPATH)/bin/pulumictl)
+endif
+
+version_generic: ensure-pulumictl
+	@$(PULUMICTL_BIN) convert-version --language generic --version "$(PROVIDER_VERSION)"
+
+bin/gotestfmt:
+	@mkdir -p bin
+	@GOBIN="${PWD}/bin" go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@v2.5.0
+
+.PHONY: clean provider install_% dist sdk/go schema generate gen_types renovate generate_nodejs generate_python generate_go generate_dotnet generate_java build_nodejs build_python build_go build_dotnet build_java
