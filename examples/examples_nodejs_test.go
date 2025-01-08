@@ -400,6 +400,10 @@ func TestDockerUpgrade(t *testing.T) {
 	updatedImageUri := result.Outputs["image"].Value.(string)
 	require.NotEmpty(t, updatedImageUri, "imageUri should not be empty")
 
+	originalImage := strings.Split(originalImageUri, "@sha256:")[0]
+	updatedImage := strings.Split(updatedImageUri, "@sha256:")[0]
+	require.Equal(t, originalImage, updatedImage, "original and updated image should be the same")
+
 	require.Contains(t, result.Outputs, "repositoryName", "repositoryName should be in the outputs")
 	repoName := result.Outputs["repositoryName"].Value.(string)
 	require.NotEmpty(t, repoName, "repositoryName should not be empty")
