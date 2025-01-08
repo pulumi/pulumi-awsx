@@ -15,27 +15,59 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+/**
+ * Arguments for fetching ECR registry credentials.
+ */
 export interface CredentialArgs {
+  /**
+   * The URL of the ECR registry to get credentials for.
+   * Can be provided with or without the https:// protocol prefix.
+   */
   registryUrl: string;
+
+  /**
+   * Optional registry ID (AWS account ID) to get credentials for.
+   * If not provided, will be parsed from the registry URL.
+   */
   registryId?: string;
 }
 
+/**
+ * Docker registry credentials for authenticating with an ECR registry.
+ */
 export interface DockerCredentials {
+  /**
+   * The address of the ECR registry.
+   */
   address: string;
+
+  /**
+   * The username to authenticate with. For ECR this is typically "AWS".
+   */
   username: string;
+
+  /**
+   * The password to authenticate with. For ECR this is a temporary token.
+   */
   password: string;
 }
 
+/**
+ * Fetches Docker registry credentials for authenticating with an ECR registry.
+ *
+ * @param args Arguments for fetching ECR registry credentials
+ * @param opts InvokeOutputOptions to use for the credential lookup
+ * @returns Docker registry credentials including address, username and password
+ */
 export function getDockerCredentials(
   args: CredentialArgs,
   opts: pulumi.InvokeOutputOptions,
 ): pulumi.Output<DockerCredentials> {
-  // add protocol to help parse the url
-
   let registryId: string;
   if (args.registryId) {
     registryId = args.registryId;
   } else {
+    // add protocol to help parse the url
     const registryUrl = args.registryUrl?.startsWith("https://")
       ? args.registryUrl
       : "https://" + args.registryUrl;
