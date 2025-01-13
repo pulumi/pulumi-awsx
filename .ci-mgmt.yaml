@@ -2,10 +2,8 @@ provider: awsx
 aws: true
 major-version: 2
 template: generic
-shards: 10
 
-# This is defined in .mk/build.mk instead of using the default Go builder.
-customBuildProviderCmd: true
+buildProviderCmd: "make PROVIDER_BIN=$(1) .make/provider"
 
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}

@@ -90,7 +90,7 @@ jobs:
           schema-tools compare -r github://api.github.com/pulumi -p awsx -o "${{ inputs.default_branch }}" -n --local-path=provider/cmd/pulumi-resource-awsx/schema.json;
           echo "$EOF";
         } >> "$GITHUB_ENV"
-    - if: inputs.is_pr && inputs.is_automated == false
+    - if: inputs.is_pr && inputs.is_automated == false && github.actor != 'dependabot[bot]'
       name: Comment on PR with Details of Schema Check
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
@@ -102,7 +102,7 @@ jobs:
 
           Maintainer note: consult the [runbook](https://github.com/pulumi/platform-providers-team/blob/main/playbooks/tf-provider-updating.md) for dealing with any breaking changes.
 
-    - name: Upload pulumi-gen-awsx
+    - name: Upload codegen binary for awsx
       uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
       with:
         name: pulumi-gen-awsx

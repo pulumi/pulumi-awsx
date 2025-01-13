@@ -2,5 +2,6 @@
 
 set -euo pipefail
 
-REF=$(cd ~/code/ci-mgmt && git rev-parse HEAD)
-go run github.com/pulumi/ci-mgmt/provider-ci@${REF} generate --skip-migrations
+(cd ~/code/ci-mgmt/provider-ci && go build)
+
+~/code/ci-mgmt/provider-ci/provider-ci generate --skip-migrations

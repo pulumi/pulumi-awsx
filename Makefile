@@ -5,7 +5,7 @@ ORG := pulumi
 PROJECT := github.com/$(ORG)/pulumi-$(PACK)
 PROVIDER_PATH := provider/v2
 VERSION_PATH := $(PROVIDER_PATH)/pkg/version.Version
-TFGEN := pulumi-gen-$(PACK)
+CODEGEN := pulumi-gen-$(PACK)
 PROVIDER := pulumi-resource-$(PACK)
 JAVA_GEN := pulumi-java-gen
 TESTPARALLELISM := 10
@@ -95,8 +95,8 @@ GEN_ENVS := PULUMI_HOME=$(GEN_PULUMI_HOME) PULUMI_CONVERT_EXAMPLES_CACHE_DIR=$(G
 generate_dotnet: .make/generate_dotnet
 build_dotnet: .make/build_dotnet
 .make/generate_dotnet: export PATH := $(WORKING_DIR)/.pulumi/bin:$(PATH)
-.make/generate_dotnet: .make/install_plugins bin/$(TFGEN)
-	$(GEN_ENVS) $(WORKING_DIR)/bin/$(TFGEN) dotnet --out sdk/dotnet/
+.make/generate_dotnet: .make/install_plugins bin/$(CODEGEN)
+	$(GEN_ENVS) $(WORKING_DIR)/bin/$(CODEGEN) dotnet --out sdk/dotnet/
 	cd sdk/dotnet/ && \
 		printf "module fake_dotnet_module // Exclude this directory from Go tools\n\ngo 1.17\n" > go.mod && \
 		echo "$(VERSION_GENERIC)" >version.txt
@@ -109,8 +109,8 @@ build_dotnet: .make/build_dotnet
 generate_go: .make/generate_go
 build_go: .make/build_go
 .make/generate_go: export PATH := $(WORKING_DIR)/.pulumi/bin:$(PATH)
-.make/generate_go: .make/install_plugins bin/$(TFGEN)
-	$(GEN_ENVS) $(WORKING_DIR)/bin/$(TFGEN) go --out sdk/go/
+.make/generate_go: .make/install_plugins bin/$(CODEGEN)
+	$(GEN_ENVS) $(WORKING_DIR)/bin/$(CODEGEN) go --out sdk/go/
 	@touch $@
 .make/build_go: .make/generate_go
 	cd sdk && go list "$$(grep -e "^module" go.mod | cut -d ' ' -f 2)/go/..." | xargs -I {} bash -c 'go build {} && go clean -i {}'
@@ -136,8 +136,8 @@ build_java: .make/build_java
 generate_nodejs: .make/generate_nodejs
 build_nodejs: .make/build_nodejs
 .make/generate_nodejs: export PATH := $(WORKING_DIR)/.pulumi/bin:$(PATH)
-.make/generate_nodejs: .make/install_plugins bin/$(TFGEN)
-	$(GEN_ENVS) $(WORKING_DIR)/bin/$(TFGEN) nodejs --out sdk/nodejs/
+.make/generate_nodejs: .make/install_plugins bin/$(CODEGEN)
+	$(GEN_ENVS) $(WORKING_DIR)/bin/$(CODEGEN) nodejs --out sdk/nodejs/
 	printf "module fake_nodejs_module // Exclude this directory from Go tools\n\ngo 1.17\n" > sdk/nodejs/go.mod
 	@touch $@
 .make/build_nodejs: .make/generate_nodejs
@@ -151,8 +151,8 @@ build_nodejs: .make/build_nodejs
 generate_python: .make/generate_python
 build_python: .make/build_python
 .make/generate_python: export PATH := $(WORKING_DIR)/.pulumi/bin:$(PATH)
-.make/generate_python: .make/install_plugins bin/$(TFGEN)
-	$(GEN_ENVS) $(WORKING_DIR)/bin/$(TFGEN) python --out sdk/python/
+.make/generate_python: .make/install_plugins bin/$(CODEGEN)
+	$(GEN_ENVS) $(WORKING_DIR)/bin/$(CODEGEN) python --out sdk/python/
 	printf "module fake_python_module // Exclude this directory from Go tools\n\ngo 1.17\n" > sdk/python/go.mod
 	cp README.md sdk/python/
 	@touch $@
@@ -193,7 +193,7 @@ install_nodejs_sdk: .make/install_nodejs_sdk
 install_python_sdk:
 .PHONY: install_dotnet_sdk install_go_sdk install_java_sdk install_nodejs_sdk install_python_sdk
 
-# Install Pulumi plugins required for TFGen to resolve references
+# Install Pulumi plugins required for CODEGEN to resolve references
 install_plugins: .make/install_plugins
 .make/install_plugins: export PULUMI_HOME := $(WORKING_DIR)/.pulumi
 .make/install_plugins: export PATH := $(WORKING_DIR)/.pulumi/bin:$(PATH)
@@ -212,6 +212,7 @@ lint_provider.fix:
 # `make provider_no_deps` builds the provider binary directly, without ensuring that
 # `cmd/pulumi-resource-awsx/schema.json` is valid and up to date.
 # To create a release ready binary, you should use `make provider`.
+build_provider_cmd = make PROVIDER_BIN=$(1) .make/provider
 provider: bin/$(PROVIDER)
 provider_no_deps:
 	$(call build_provider_cmd,$(WORKING_DIR)/bin/$(PROVIDER))
@@ -242,18 +243,19 @@ tfgen_no_deps: .make/schema
 .make/schema: export PULUMI_CONVERT_EXAMPLES_CACHE_DIR := $(WORKING_DIR)/.pulumi/examples-cache
 .make/schema: export PULUMI_DISABLE_AUTOMATIC_PLUGIN_ACQUISITION := $(PULUMI_CONVERT)
 .make/schema: export PULUMI_MISSING_DOCS_ERROR := $(PULUMI_MISSING_DOCS_ERROR)
-.make/schema: bin/$(TFGEN) .make/install_plugins .make/upstream
-	$(WORKING_DIR)/bin/$(TFGEN) schema --out provider/cmd/$(PROVIDER)
+.make/schema: bin/$(CODEGEN) .make/install_plugins .make/upstream
+	$(WORKING_DIR)/bin/$(CODEGEN) schema --out provider/cmd/$(PROVIDER)
 	(cd provider && VERSION=$(VERSION_GENERIC) go generate cmd/$(PROVIDER)/main.go)
 	@touch $@
-tfgen_build_only: bin/$(TFGEN)
-bin/$(TFGEN): provider/*.go $(wildcard go.mod provider/go.mod) .make/upstream
-	(cd provider && go build $(PULUMI_PROVIDER_BUILD_PARALLELISM) -o $(WORKING_DIR)/bin/$(TFGEN) -ldflags "$(LDFLAGS_PROJ_VERSION) $(LDFLAGS_EXTRAS)" $(PROJECT)/$(PROVIDER_PATH)/cmd/$(TFGEN))
+tfgen_build_only: bin/$(CODEGEN)
+bin/$(CODEGEN): provider/*.go provider/go.* .make/upstream
+	(cd provider && go build $(PULUMI_PROVIDER_BUILD_PARALLELISM) -o $(WORKING_DIR)/bin/$(CODEGEN) -ldflags "$(LDFLAGS_PROJ_VERSION) $(LDFLAGS_EXTRAS)" $(PROJECT)/$(PROVIDER_PATH)/cmd/$(CODEGEN))
 .PHONY: tfgen schema tfgen_no_deps tfgen_build_only
 
 upstream: .make/upstream
 .make/upstream:
 	@touch $@
+.PHONY: upstream
 
 bin/pulumi-java-gen: .pulumi-java-gen.version
 	pulumictl download-binary -n pulumi-language-java -v v$(shell cat .pulumi-java-gen.version) -r pulumi/pulumi-java
@@ -283,12 +285,12 @@ ci-mgmt: .ci-mgmt.yaml
 	fi
 
 # Compute the version of Pulumi to use by inspecting the Go dependencies of the provider.
-.pulumi/version: $(wildcard go.mod provider/go.mod)
+.pulumi/version: provider/go.mod
 	cd provider && go list -f "{{slice .Version 1}}" -m github.com/pulumi/pulumi/pkg/v3 | tee ../$@
 
 # Start debug server for tfgen
 debug_tfgen:
-	dlv  --listen=:2345 --headless=true --api-version=2  exec $(WORKING_DIR)/bin/$(TFGEN) -- schema --out provider/cmd/$(PROVIDER)
+	dlv  --listen=:2345 --headless=true --api-version=2  exec $(WORKING_DIR)/bin/$(CODEGEN) -- schema --out provider/cmd/$(PROVIDER)
 .PHONY: debug_tfgen
 
 # Provider cross-platform build & packaging
@@ -314,15 +316,16 @@ bin/windows-amd64/$(PROVIDER).exe: export GOOS := windows
 bin/windows-amd64/$(PROVIDER).exe: export GOARCH := amd64
 bin/%/$(PROVIDER) bin/%/$(PROVIDER).exe: bin/jsign-6.0.jar
 	$(call build_provider_cmd,$(WORKING_DIR)/$@)
+
 	@# Only sign windows binary if fully configured.
 	@# Test variables set by joining with | between and looking for || showing at least one variable is empty.
 	@# Move the binary to a temporary location and sign it there to avoid the target being up-to-date if signing fails.
-	set -e; \
-	if [[ "${GOOS}-${GOARCH}" = "windows-amd64" && ${SKIP_SIGNING} != "true" ]]; then \
+	@set -e; \
+	if [[ "${GOOS}-${GOARCH}" = "windows-amd64" && "${SKIP_SIGNING}" != "true" ]]; then \
 		if [[ "|${AZURE_SIGNING_CLIENT_ID}|${AZURE_SIGNING_CLIENT_SECRET}|${AZURE_SIGNING_TENANT_ID}|${AZURE_SIGNING_KEY_VAULT_URI}|" == *"||"* ]]; then \
 			echo "Can't sign windows binaries as required configuration not set: AZURE_SIGNING_CLIENT_ID, AZURE_SIGNING_CLIENT_SECRET, AZURE_SIGNING_TENANT_ID, AZURE_SIGNING_KEY_VAULT_URI"; \
 			echo "To rebuild with signing delete the unsigned $@ and rebuild with the fixed configuration"; \
-			if [[ ${CI} == "true" ]]; then exit 1; fi; \
+			if [[ "${CI}" == "true" ]]; then exit 1; fi; \
 		else \
 			mv $@ $@.unsigned; \
 			az login --service-principal \
@@ -370,13 +373,6 @@ provider_dist-darwin-arm64: bin/$(PROVIDER)-v$(VERSION_GENERIC)-darwin-arm64.tar
 provider_dist-windows-amd64: bin/$(PROVIDER)-v$(VERSION_GENERIC)-windows-amd64.tar.gz
 provider_dist: provider_dist-linux-amd64 provider_dist-linux-arm64 provider_dist-darwin-amd64 provider_dist-darwin-arm64 provider_dist-windows-amd64
 .PHONY: provider_dist-linux-amd64 provider_dist-linux-arm64 provider_dist-darwin-amd64 provider_dist-darwin-arm64 provider_dist-windows-amd64 provider_dist
-# shard computes tests to run and modifies the CI runner's environment.
-shard:
-	@(cd examples && go run github.com/pulumi/shard@6dbd62a9c3c5ef92806a9a030b18fe073228ddd2 --total $(SHARD_TOTAL) --index $(SHARD_INDEX) --output env) >> "$(GITHUB_ENV)"
 
-# test_shard runs the tests specified by a regex contained in $SHARD_TESTS for paths $SHARD_PATHS.
-test_shard:
-	cd examples && \
-		go test -tags=all -v -count=1 -coverprofile="coverage.txt" -coverpkg=./... -timeout 3h -parallel ${TESTPARALLELISM} -run "$(SHARD_TESTS)" $(SHARD_PATHS)
 # Permit providers to extend the Makefile with provider-specific Make includes.
 include $(wildcard .mk/*.mk)

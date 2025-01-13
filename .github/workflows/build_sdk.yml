@@ -67,7 +67,7 @@ jobs:
           tools: pulumictl, pulumicli, ${{ matrix.language }}
       - name: Prepare local workspace
         run: make prepare_local_workspace
-      - name: Download gen
+      - name: Download codegen
         uses: ./.github/actions/download-codegen
       - name: Update path
         run: echo "${{ github.workspace }}/bin" >> "$GITHUB_PATH"

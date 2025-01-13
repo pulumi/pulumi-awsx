@@ -1,5 +1,3 @@
-build_provider_cmd = make PROVIDER_BIN=$(1) .make/provider
-
 PROVIDER_BIN  := bin/${PROVIDER}
 PROVIDER_OS   := $(shell go env GOOS)
 PROVIDER_ARCH := $(shell go env GOARCH)
