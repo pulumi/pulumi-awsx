@@ -19,12 +19,13 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/pulumi/providertest"
 	"github.com/pulumi/providertest/optproviderupgrade"
 	"github.com/pulumi/providertest/pulumitest"
 	"github.com/pulumi/providertest/pulumitest/assertpreview"
 	"github.com/pulumi/providertest/pulumitest/opttest"
-	"github.com/stretchr/testify/require"
 )
 
 func TestReportUpgradeCoverage(t *testing.T) {
@@ -49,8 +50,8 @@ func testProviderUpgrade(t *testing.T, dir string, opts *testProviderUpgradeOpti
 	t.Parallel()
 	t.Helper()
 	var (
-		providerName    string = "awsx"
-		baselineVersion string = "1.0.6"
+		providerName    = "awsx"
+		baselineVersion = "1.0.6"
 
 		// need to supply v5.42.0 version of AWS as a dependency yeah
 	)
