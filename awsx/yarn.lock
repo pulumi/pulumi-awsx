@@ -1678,10 +1678,10 @@
   dependencies:
     "@pulumi/pulumi" "^3.136.0"
 
-"@pulumi/docker@4.5.8":
-  version "4.5.8"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.5.8.tgz#55cefdebcee55eedf0674352ab7f6b8101420c30"
-  integrity sha512-h5ZfsXTt5GaqenOmleNAJT/zXLErYXYMftgFNbTS4Z1n1gQXwBewxZ/p7nEqKZkh0JjZZuoDlRN1+lkosM5W6w==
+"@pulumi/docker@4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.6.0.tgz#127a0c69a06b47a9418dce12cc70a181ff680284"
+  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
@@ -2689,10 +2689,10 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-"docker-classic@npm:@pulumi/docker@4.5.8":
-  version "4.5.8"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.5.8.tgz#55cefdebcee55eedf0674352ab7f6b8101420c30"
-  integrity sha512-h5ZfsXTt5GaqenOmleNAJT/zXLErYXYMftgFNbTS4Z1n1gQXwBewxZ/p7nEqKZkh0JjZZuoDlRN1+lkosM5W6w==
+"docker-classic@npm:@pulumi/docker@4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.6.0.tgz#127a0c69a06b47a9418dce12cc70a181ff680284"
+  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"

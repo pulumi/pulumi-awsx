@@ -32,6 +32,7 @@ import (
 	"github.com/pulumi/providertest/pulumitest/optnewstack"
 	"github.com/pulumi/providertest/pulumitest/opttest"
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
+	"github.com/pulumi/pulumi/sdk/v3/go/auto/optpreview"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -510,6 +511,10 @@ func TestEcrRegistryImage(t *testing.T) {
 	require.Contains(t, newImage.ImageTags, "latest", "the new image should have the latest tag")
 
 	require.Empty(t, oldImage.ImageTags, "old image should have no tags after the new image was pushed")
+
+	t.Log("Re-running `pulumi preview` to verify that no changes are detected")
+	previewResult = pt.Preview(t, optpreview.ExpectNoChanges())
+	t.Logf("Preview:\n%s", previewResult.StdOut)
 }
 
 func getEcrImageDetails(t *testing.T, client *ecr.Client, repositoryName string, expectedImages int) (*ecr.DescribeImagesOutput, error) {
