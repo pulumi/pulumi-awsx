@@ -1166,6 +1166,10 @@ export namespace ec2 {
          */
         serviceName: string;
         /**
+         * The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+         */
+        serviceRegion?: pulumi.Input<string>;
+        /**
          * Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
          */
         subnetConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.VpcEndpointSubnetConfiguration>[]>;
