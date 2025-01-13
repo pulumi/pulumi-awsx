@@ -92,7 +92,9 @@ export function computeImageFromAsset(
     pulumi.log.debug(`    build complete: ${ref}`, parent);
   });
 
-  return image.ref;
+  // Return the image reference without the tag. This is necessary for backwards compatibility with earlier versions of the awsx provider
+  // that used pulumi-docker and in order to allow passing this output to Lambda functions (they expect an image URI without a tag).
+  return image.ref.apply(removeTagFromRef);
 }
 
 function createUniqueImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
@@ -112,4 +114,19 @@ function createUniqueImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>):
 
   buildSig += pulumi.getStack();
   return `${utils.sha1hash(buildSig)}-container`;
+}
+
+/**
+ * Removes the tag from the image reference.
+ * @param ref The image reference to remove the tag from.
+ * @returns The image reference without the tag.
+ */
+export function removeTagFromRef(ref: string): string {
+  // Match pattern: everything up to the tag, the tag itself, and the digest
+  // The image ref looks like this: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/REPOSITORY_NAME:TAG_NAME@sha256:1234567890123456789012345678901234567890123456789012345678901234
+  // Neither repository name nor tag name can contain a colon, so we can safely split on the colon and take the first part.
+  const pattern = /^(.*):([^@]+)(@sha256:.+)$/;
+
+  // If the pattern is found, return the image without the tag. I.e. only the image name and digest.
+  return ref.replace(pattern, "$1$3");
 }

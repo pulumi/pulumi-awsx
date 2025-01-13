@@ -93,7 +93,8 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
       run: |
-        gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
+        # See https://github.com/cli/cli/issues/6485#issuecomment-2560935183 for --head workaround
+        gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION." --head $(git branch --show-current)
     - name: Enable auto-merge
       if: steps.gomod.outputs.changes != 0 && github.event_name == 'schedule'
       env:

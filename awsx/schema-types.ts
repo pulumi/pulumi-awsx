@@ -651,6 +651,7 @@ export interface VpcEndpointSpecInputs {
     readonly routeTableIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly securityGroupIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly serviceName: string;
+    readonly serviceRegion?: pulumi.Input<string>;
     readonly subnetConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ec2.VpcEndpointSubnetConfiguration>[]>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
@@ -665,6 +666,7 @@ export interface VpcEndpointSpecOutputs {
     readonly routeTableIds?: pulumi.Output<string[]>;
     readonly securityGroupIds?: pulumi.Output<string[]>;
     readonly serviceName: string;
+    readonly serviceRegion?: pulumi.Output<string>;
     readonly subnetConfigurations?: pulumi.Output<aws.types.output.ec2.VpcEndpointSubnetConfiguration[]>;
     readonly subnetIds?: pulumi.Output<string[]>;
     readonly tags?: pulumi.Output<Record<string, string>>;
