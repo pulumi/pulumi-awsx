@@ -1,4 +1,4 @@
-// Copyright 2016-2020, Pulumi Corporation.
+// Copyright 2016-2024, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,15 +23,22 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/pulumi/pulumi-awsx/schemagen/pkg/gen"
+	"github.com/spf13/cobra"
+
 	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
+
+	gen "github.com/pulumi/pulumi-awsx/provider/v2/pkg/schemagen"
+	"github.com/pulumi/pulumi-awsx/provider/v2/pkg/version"
 )
 
-const Tool = "pulumi-gen-awsx"
+const (
+	Tool       = "pulumi-gen-awsx"
+	packageDir = "awsx"
+)
 
 // Language is the SDK language.
 type Language string
@@ -44,94 +51,121 @@ const (
 	Nodejs Language = "nodejs"
 )
 
-func main() {
-	printUsage := func() {
-		fmt.Printf("Usage: %s <language> <out-dir> [schema-file] [version]\n", os.Args[0])
-	}
-
-	args := os.Args[1:]
-	if len(args) < 2 {
-		printUsage()
-		os.Exit(1)
-	}
-
-	language, outDir := Language(args[0]), args[1]
-
-	var schemaFile string
-	var version string
-	if language != Schema {
-		if len(args) < 4 {
-			printUsage()
-			os.Exit(1)
+func parseLanguage(text string) (Language, error) {
+	switch text {
+	case "dotnet":
+		return DotNet, nil
+	case "go":
+		return Go, nil
+	case "python":
+		return Python, nil
+	case "nodejs":
+		return Nodejs, nil
+	case "schema":
+		return Schema, nil
+	default:
+		allLangs := []Language{DotNet, Go, Python, Schema, Nodejs}
+		allLangStrings := []string{}
+		for _, lang := range allLangs {
+			allLangStrings = append(allLangStrings, string(lang))
 		}
-		schemaFile, version = args[2], args[3]
+		all := strings.Join(allLangStrings, ", ")
+		return "", fmt.Errorf(`Invalid language: %q, supported values include: %s`, text, all)
 	}
+}
 
+func rootCmd() *cobra.Command {
+	var outDir string
+	cmd := &cobra.Command{
+		Use:   Tool,
+		Short: "Pulumi Package Schema and SDK generator for pulumi-awsx",
+		Args: func(_ *cobra.Command, args []string) error {
+			if len(args) != 1 {
+				return fmt.Errorf("accepts %d arg(s), received %d", 1, len(args))
+			}
+			if _, err := parseLanguage(args[0]); err != nil {
+				return err
+			}
+			return nil
+		},
+		RunE: func(_ *cobra.Command, args []string) error {
+			cwd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			lang, err := parseLanguage(args[0])
+			if err != nil {
+				return err
+			}
+			return generate(lang, cwd, outDir)
+		},
+	}
+	cmd.PersistentFlags().StringVarP(&outDir, "out", "o", "", "Emit the generated code to this directory")
+	return cmd
+}
+
+func generate(language Language, cwd, outDir string) error {
+	pkgSpec := gen.GenerateSchema(filepath.Join(cwd, packageDir))
+	if language == Schema {
+		return writePulumiSchema(pkgSpec, outDir)
+	}
+	// Following Makefile expectations from the bridged providers re-generate the schema on the fly.
+	// Once that is refactored could instead load a pre-generated schema from a file.
+	schema, err := bindSchema(pkgSpec, version.Version)
+	if err != nil {
+		return err
+	}
 	switch language {
 	case DotNet:
-		genDotNet(readSchema(schemaFile, version), outDir)
+		return genDotNet(schema, outDir)
 	case Go:
-		genGo(readSchema(schemaFile, version), outDir)
+		return genGo(schema, outDir)
 	case Python:
-		genPython(readSchema(schemaFile, version), outDir)
+		return genPython(schema, outDir)
 	case Nodejs:
-		genNodejs(readSchema(schemaFile, version), outDir)
-	case Schema:
-		pkgSpec := gen.GenerateSchema(filepath.Join(outDir, "awsx"))
-		mustWritePulumiSchema(pkgSpec, outDir)
+		return genNodejs(schema, outDir)
 	default:
-		panic(fmt.Sprintf("Unrecognized language %q", language))
+		return fmt.Errorf("Unrecognized language %q", language)
 	}
 }
 
-func readSchema(schemaPath string, version string) *schema.Package {
-	// Read in, decode, and import the schema.
-	schemaBytes, err := os.ReadFile(schemaPath)
-	if err != nil {
-		panic(err)
-	}
-
-	var pkgSpec schema.PackageSpec
-	if err = json.Unmarshal(schemaBytes, &pkgSpec); err != nil {
-		panic(err)
-	}
+func bindSchema(pkgSpec schema.PackageSpec, version string) (*schema.Package, error) {
 	pkgSpec.Version = version
-
 	pkg, err := schema.ImportSpec(pkgSpec, nil)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return pkg
+	return pkg, nil
 }
 
-func genDotNet(pkg *schema.Package, outdir string) {
+func genDotNet(pkg *schema.Package, outdir string) error {
 	files, err := dotnetgen.GeneratePackage(Tool, pkg, map[string][]byte{}, nil)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	mustWriteFiles(outdir, files)
+	return writeFiles(outdir, files)
 }
 
-func genGo(pkg *schema.Package, outdir string) {
+func genGo(pkg *schema.Package, outdir string) error {
 	files, err := gogen.GeneratePackage(Tool, pkg, nil)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	mustWriteFiles(outdir, files)
+	return writeFiles(outdir, files)
 }
 
-func genPython(pkg *schema.Package, outdir string) {
+func genPython(pkg *schema.Package, outdir string) error {
 	files, err := pygen.GeneratePackage(Tool, pkg, map[string][]byte{})
 	if err != nil {
-		panic(err)
+		return err
 	}
-	mustWriteFiles(outdir, files)
+	return writeFiles(outdir, files)
 }
 
-func genNodejs(pkg *schema.Package, outdir string) {
+func genNodejs(pkg *schema.Package, outdir string) error {
 	extraFiles := map[string][]byte{}
 	root := filepath.Join(outdir, "..", "..", "awsx-classic")
-	filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -157,36 +191,49 @@ func genNodejs(pkg *schema.Package, outdir string) {
 		extraFiles[filepath.Join("classic", rel)] = content
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	localDependencies := map[string]string{}
 	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies, false)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	mustWriteFiles(outdir, files)
+	return writeFiles(outdir, files)
 }
 
-func mustWriteFiles(rootDir string, files map[string][]byte) {
+func writeFiles(rootDir string, files map[string][]byte) error {
 	for filename, contents := range files {
-		mustWriteFile(rootDir, filename, contents)
+		if err := writeFile(rootDir, filename, contents); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func mustWriteFile(rootDir, filename string, contents []byte) {
+func writeFile(rootDir, filename string, contents []byte) error {
 	outPath := filepath.Join(rootDir, filename)
-
 	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
-		panic(err)
+		return err
 	}
 	err := os.WriteFile(outPath, contents, 0600)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func mustWritePulumiSchema(pkgSpec schema.PackageSpec, outdir string) {
+func writePulumiSchema(pkgSpec schema.PackageSpec, outdir string) error {
 	schemaJSON, err := json.MarshalIndent(pkgSpec, "", "    ")
 	if err != nil {
-		panic(errors.Wrap(err, "marshaling Pulumi schema"))
+		return errors.Wrap(err, "marshaling Pulumi schema")
 	}
-	mustWriteFile(outdir, "schema.json", schemaJSON)
+	return writeFile(outdir, "schema.json", schemaJSON)
+}
+
+func main() {
+	if err := rootCmd().Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
