@@ -51,7 +51,8 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 	// Allow passing actual subnets in
 	inputProperties["subnetIds"] = inputProperties["subnets"]
 	inputProperties["subnets"] = schema.PropertySpec{
-		Description: "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified",
+		Description: "A list of subnets to attach to the LB. Only one of [subnets], " +
+			"[subnetIds] or [subnetMappings] can be specified",
 		TypeSpec: schema.TypeSpec{
 			Type: "array",
 			Items: &schema.TypeSpec{
@@ -147,7 +148,8 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 	if isNetworkLoadBalancer {
 		description = "Provides a Network Load Balancer resource with listeners and default target group."
 	} else {
-		description = "Provides an Application Load Balancer resource with listeners, default target group and default security group."
+		description = "Provides an Application Load Balancer resource with listeners, " +
+			"default target group and default security group."
 	}
 
 	return schema.ResourceSpec{
@@ -173,25 +175,31 @@ func targetGroupAttachment(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 			},
 			"targetGroupArn": {
-				Description: "ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.",
+				Description: "ARN of the Target Group to attach to. Exactly one of " +
+					"[targetGroup] or [targetGroupArn] must be specified.",
 				TypeSpec: schema.TypeSpec{
 					Type: "string",
 				},
 			},
 			"instance": {
-				Description: "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				Description: "EC2 Instance to attach to the Target Group. Exactly 1 of " +
+					"[instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
 				TypeSpec: schema.TypeSpec{
 					Ref: packageRef(awsSpec, "/resources/aws:ec2%2finstance:Instance"),
 				},
 			},
 			"instanceId": {
-				Description: "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				Description: "ID of an EC2 Instance to attach to the Target Group. Exactly " +
+					"1 of [instance], [instanceId], [lambda] or [lambdaArn] must " +
+					"be provided.",
 				TypeSpec: schema.TypeSpec{
 					Type: "string",
 				},
 			},
 			"lambda": {
-				Description: "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				Description: "Lambda Function to attach to the Target Group. Exactly 1 of " +
+					"[instance], [instanceId], [lambda] or [lambdaArn] must be " +
+					"provided.",
 				TypeSpec: schema.TypeSpec{
 					Ref: packageRef(awsSpec, "/resources/aws:lambda%2ffunction:Function"),
 				},
@@ -202,15 +210,18 @@ func targetGroupAttachment(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 			},
 			"lambdaArn": {
-				Description: "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				Description: "ARN of a Lambda Function to attach to the Target Group. " +
+					"Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] " +
+					"must be provided.",
 				TypeSpec: schema.TypeSpec{
 					Type: "string",
 				},
 			},
 		},
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
+			Type: "object",
+			Description: "Attach an EC2 instance or Lambda to a Load Balancer. This " +
+				"will create required permissions if attaching to a Lambda Function.",
 			Properties: map[string]schema.PropertySpec{
 				"targetGroupAttachment": {
 					Description: "Underlying Target Group Attachment resource",
@@ -251,17 +262,6 @@ func lbListener(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 
 func lbTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	spec := awsSpec.Resources["aws:lb/targetGroup:TargetGroup"]
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: spec.Description,
-			Properties:  renameAwsPropertiesRefs(awsSpec, spec.InputProperties),
-		},
-	}
-}
-
-func lbTargetGroupTargetHealthState(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	spec := awsSpec.Resources["aws:lb/targetGroupTargetHealthState:TargetGroupTargetHealthState"]
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",

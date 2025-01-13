@@ -27,11 +27,12 @@ func generateIam(awsSpec schema.PackageSpec) schema.PackageSpec {
 	}
 }
 
-func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func defaultRoleWithPolicyArgs(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
+			Type: "object",
+			Description: "Role and policy attachments with default setup unless expli" +
+				"citly skipped or an existing role ARN provided.",
 			Properties: map[string]schema.PropertySpec{
 				"skip": {
 					Description: "Skips creation of the role if set to `true`.",
@@ -41,7 +42,8 @@ func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpe
 					},
 				},
 				"roleArn": {
-					Description: "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.",
+					Description: "ARN of existing role to use instead of creating a new role. " +
+						"Cannot be used in combination with `args` or `opts`.",
 					TypeSpec: schema.TypeSpec{
 						Type: "string",
 					},

@@ -15,9 +15,11 @@
 package gen
 
 import (
-	_ "embed"
 	"fmt"
 	"strings"
+
+	// revive:disable-next-line:blank-imports
+	_ "embed"
 
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
@@ -50,11 +52,12 @@ const (
 	availabilityZoneNames = "availabilityZoneNames"
 )
 
-func defaultSecurityGroupArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func defaultSecurityGroupArgs(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Security Group with default setup unless explicitly skipped or an existing security group id provided.",
+			Type: "object",
+			Description: "Security Group with default setup unless explicitly skipped " +
+				"or an existing security group id provided.",
 			Properties: map[string]schema.PropertySpec{
 				"skip": {
 					Description: "Skips creation of the security group if set to `true`.",
@@ -64,7 +67,9 @@ func defaultSecurityGroupArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec
 					},
 				},
 				"securityGroupId": {
-					Description: "Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.",
+					Description: "Id of existing security group to use instead of creating a " +
+						"new security group. Cannot be used in combination with `args` " +
+						"or `opts`.",
 					TypeSpec: schema.TypeSpec{
 						Type: "string",
 					},
@@ -100,23 +105,32 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	awsVpcResource := awsSpec.Resources["aws:ec2/vpc:Vpc"]
 	inputProperties := map[string]schema.PropertySpec{
 		availabilityZoneNames: {
-			Description: fmt.Sprintf("A list of availability zone names to which the subnets defined in %v will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetSpecs),
-			TypeSpec:    plainArrayOfPlainStrings(),
+			Description: fmt.Sprintf("A list of availability zone names to which the subnets "+
+				"defined in %v will be deployed. Optional, defaults to the first "+
+				"3 AZs in the current region.", subnetSpecs),
+			TypeSpec: plainArrayOfPlainStrings(),
 		},
 		"numberOfAvailabilityZones": {
-			Description: fmt.Sprintf("A number of availability zones to which the subnets defined in %v will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetSpecs),
-			TypeSpec:    plainInt(),
+			Description: fmt.Sprintf("A number of availability zones to which the subnets defined "+
+				"in %v will be deployed. Optional, defaults to the first 3 AZs "+
+				"in the current region.", subnetSpecs),
+			TypeSpec: plainInt(),
 		},
 		"availabilityZoneCidrMask": {
-			Description: "The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.",
-			TypeSpec:    plainInt(),
+			Description: "The netmask for each available zone to be aligned to. This " +
+				"is optional, the default value is inferred based on an even " +
+				"distribution of available space from the VPC's CIDR block after " +
+				"being divided evenly by the number of availability zones.",
+			TypeSpec: plainInt(),
 		},
 		"cidrBlock": {
 			Description: "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.",
 			TypeSpec:    plainString(),
 		},
 		"natGateways": {
-			Description: "Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.",
+			Description: "Configuration for NAT Gateways. Optional. If private and public " +
+				"subnets are both specified, defaults to one gateway per " +
+				"availability zone. Otherwise, no gateways will be created.",
 			TypeSpec: schema.TypeSpec{
 				Ref:   localRef("ec2", "NatGatewayConfiguration"),
 				Plain: true,
@@ -130,8 +144,13 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 		subnetSpecs: {
-			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.", availabilityZoneNames),
-			TypeSpec:    plainArrayOfPlainComplexType("SubnetSpec"),
+			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ "+
+				"specified in %s. Optional. Defaults to a (smaller) public subnet "+
+				"and a (larger) private subnet based on the size of the CIDR "+
+				"block for the VPC. Private subnets are allocated CIDR block "+
+				"ranges first, followed by Public subnets, and Isolated subnets "+
+				"are allocated last.", availabilityZoneNames),
+			TypeSpec: plainArrayOfPlainComplexType("SubnetSpec"),
 		},
 		"vpcEndpointSpecs": {
 			Description: "A list of VPC Endpoints specs to be deployed as part of the VPC",
@@ -156,7 +175,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Properties: map[string]schema.PropertySpec{
 				"vpc": {
 					Description: "The VPC.",
-					TypeSpec:    awsType(awsSpec, "ec2", "vpc"),
+					TypeSpec:    awsResource(awsSpec, "aws:ec2/vpc:Vpc"),
 					Language: map[string]schema.RawMessage{
 						"csharp": schema.RawMessage(`{
 									"name": "AwsVpc"
@@ -165,35 +184,37 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 				"vpcEndpoints": {
 					Description: "The VPC Endpoints that are enabled",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "vpcEndpoint"),
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/vpcEndpoint:VpcEndpoint"),
 				},
 				"subnets": {
 					Description: "The VPC's subnets.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "subnet"),
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/subnet:Subnet"),
 				},
 				"routeTables": {
 					Description: "The Route Tables for the VPC.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "routeTable"),
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/routeTable:RouteTable"),
 				},
 				"routeTableAssociations": {
 					Description: "The Route Table Associations for the VPC.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "routeTableAssociation"),
+					TypeSpec: arrayOfAwsResource(awsSpec,
+						"aws:ec2/routeTableAssociation:RouteTableAssociation"),
 				},
 				"routes": {
 					Description: "The Routes for the VPC.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "route"),
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/route:Route"),
 				},
 				"internetGateway": {
 					Description: "The Internet Gateway for the VPC.",
-					TypeSpec:    awsType(awsSpec, "ec2", "internetGateway"),
+					TypeSpec:    awsResource(awsSpec, "aws:ec2/internetGateway:InternetGateway"),
 				},
 				"natGateways": {
 					Description: "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "natGateway"),
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/natGateway:NatGateway"),
 				},
 				"eips": {
-					Description: "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
-					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "eip"),
+					Description: "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways " +
+						"are specified, this will be an empty list.",
+					TypeSpec: arrayOfAwsResource(awsSpec, "aws:ec2/eip:Eip"),
 				},
 				"subnetLayout": {
 					Description: "The resolved subnet specs layout deployed to each availability zone.",
@@ -241,33 +262,17 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
-func arrayOfAwsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase string) schema.TypeSpec {
-	awsRefInput := fmt.Sprintf(
-		"#/resources/aws:%s%s%s:%s",
-		strings.ToLower(awsNamespace),
-		"%2f",
-		resourceNameCamelCase,
-		strings.Title(resourceNameCamelCase),
-	)
-
+func arrayOfAwsResource(packageSpec schema.PackageSpec, resourceToken string) schema.TypeSpec {
+	items := awsResource(packageSpec, resourceToken)
 	return schema.TypeSpec{
-		Type: "array",
-		Items: &schema.TypeSpec{
-			Ref: packageRef(packageSpec, awsRefInput),
-		},
+		Type:  "array",
+		Items: &items,
 	}
 }
 
-func awsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase string) schema.TypeSpec {
-	awsRefInput := fmt.Sprintf(
-		"#/resources/aws:%s%s%s:%s",
-		strings.ToLower(awsNamespace),
-		"%2f",
-		resourceNameCamelCase,
-		strings.Title(resourceNameCamelCase),
-	)
+func awsResource(packageSpec schema.PackageSpec, resourceToken string) schema.TypeSpec {
 	return schema.TypeSpec{
-		Ref: packageRef(packageSpec, awsRefInput),
+		Ref: packageRef(packageSpec, "#/resources/"+strings.ReplaceAll(resourceToken, "/", "%2f")),
 	}
 }
 
@@ -278,7 +283,8 @@ func vpcEndpointSpec(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 
 	properties["serviceName"] = schema.PropertySpec{
 		Description: "The service name. For AWS services the service name is usually in the form " +
-			"`com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the " +
+			"`com.amazonaws.<region>.<service>` (the SageMaker Notebook " +
+			"service is an exception to this rule, the " +
 			"service name is in the form `aws.sagemaker.<region>.notebook`).",
 		TypeSpec: schema.TypeSpec{
 			Type:  "string",
@@ -333,16 +339,27 @@ func subnetSpecType() schema.ComplexTypeSpec {
 				"cidrMask": {
 					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
 					// error messages generated from the component itself.
-					Description: "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    plainInt(),
+					Description: "The netmask for the subnet's CIDR block. This is optional, " +
+						"the default value is inferred from the `cidrMask`, `cidrBlocks` " +
+						"or based on an even distribution of available space from " +
+						"the VPC's CIDR block after being divided evenly by availability zone.",
+					TypeSpec: plainInt(),
 				},
 				"cidrBlocks": {
-					Description: "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.",
-					TypeSpec:    plainArrayOfPlainStrings(),
+					Description: "An optional list of CIDR blocks to assign to the subnet spec " +
+						"for each AZ. If specified, the count must match the number " +
+						"of AZs being used for the VPC, and must also be specified for " +
+						"all other subnet specs.",
+					TypeSpec: plainArrayOfPlainStrings(),
 				},
 				"size": {
-					Description: "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    plainInt(),
+					Description: "Optional size of the subnet's CIDR block - the number of hosts. " +
+						"This value must be a power of 2 (e.g. 256, 512, 1024, " +
+						"etc.). This is optional, the default value is inferred from " +
+						"the `cidrMask`, `cidrBlocks` or based on an even distribution " +
+						"of available space from the VPC's CIDR block after being " +
+						"divided evenly by availability zone.",
+					TypeSpec: plainInt(),
 				},
 				"tags": {
 					TypeSpec: schema.TypeSpec{
@@ -376,19 +393,30 @@ func resolvedSubnetSpecType() schema.ComplexTypeSpec {
 				"cidrMask": {
 					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
 					// error messages generated from the component itself.
-					Description: "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    schema.TypeSpec{Type: "integer"},
+					Description: "The netmask for the subnet's CIDR block. This is optional, " +
+						"the default value is inferred from the `cidrMask`, `cidrBlocks` " +
+						"or based on an even distribution of available space from " +
+						"the VPC's CIDR block after being divided evenly by availability zone.",
+					TypeSpec: schema.TypeSpec{Type: "integer"},
 				},
 				"cidrBlocks": {
-					Description: "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.",
+					Description: "An optional list of CIDR blocks to assign to the subnet spec " +
+						"for each AZ. If specified, the count must match the number " +
+						"of AZs being used for the VPC, and must also be specified " +
+						"for all other subnet specs.",
 					TypeSpec: schema.TypeSpec{
 						Type:  "array",
 						Items: &schema.TypeSpec{Type: "string"},
 					},
 				},
 				"size": {
-					Description: "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
-					TypeSpec:    schema.TypeSpec{Type: "integer"},
+					Description: "Optional size of the subnet's CIDR block - the number of hosts. " +
+						"This value must be a power of 2 (e.g. 256, 512, 1024, etc.). " +
+						"This is optional, the default value is inferred from the " +
+						"`cidrMask`, `cidrBlocks` or based on an even distribution " +
+						"of available space from the VPC's CIDR block after being " +
+						"divided evenly by availability zone.",
+					TypeSpec: schema.TypeSpec{Type: "integer"},
 				},
 			},
 			Required: []string{
@@ -410,8 +438,10 @@ func subnetType() schema.ComplexTypeSpec {
 				Description: "A subnet whose hosts can directly communicate with the internet.",
 			},
 			{
-				Value:       "Private",
-				Description: "A subnet whose hosts can not directly communicate with the internet, but can initiate outbound network traffic via a NAT Gateway.",
+				Value: "Private",
+				Description: "A subnet whose hosts can not directly communicate with the " +
+					"internet, but can initiate outbound network traffic via a NAT " +
+					"Gateway.",
 			},
 			{
 				Value:       "Isolated",
@@ -462,8 +492,11 @@ func natGatewayConfigurationType() schema.ComplexTypeSpec {
 					},
 				},
 				"elasticIpAllocationIds": {
-					Description: "A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).",
-					TypeSpec:    plainArrayOfPulumiStrings(),
+					Description: "A list of EIP allocation IDs to assign to the NAT Gateways. " +
+						"Optional. If specified, the number of supplied values must " +
+						"match the chosen strategy (either one, or the number of " +
+						"availability zones).",
+					TypeSpec: plainArrayOfPulumiStrings(),
 				},
 			},
 			Required: []string{"strategy"},
@@ -479,26 +512,33 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 		},
 		Enum: []schema.EnumValueSpec{
 			{
-				Value:       "None",
-				Description: "Do not create any NAT Gateways. Resources in private subnets will not be able to access the internet.",
+				Value: "None",
+				Description: "Do not create any NAT Gateways. Resources in private subnets " +
+					"will not be able to access the internet.",
 			},
 			{
-				Value:       "Single",
-				Description: "Create a single NAT Gateway for the entire VPC. This configuration is not recommended for production infrastructure as it creates a single point of failure.",
+				Value: "Single",
+				Description: "Create a single NAT Gateway for the entire VPC. This " +
+					"configuration is not recommended for production infrastructure as " +
+					"it creates a single point of failure.",
 			},
 			{
-				Value:       "OnePerAz",
-				Description: "Create a NAT Gateway in each availability zone. This is the recommended configuration for production infrastructure.",
+				Value: "OnePerAz",
+				Description: "Create a NAT Gateway in each availability zone. This is the " +
+					"recommended configuration for production infrastructure.",
 			},
 		},
 	}
 }
 
-func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
+func defaultVpcResource(_ schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Description: "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
+			Description: "Pseudo resource representing the default VPC and associated " +
+				"subnets for an account and region. This does not create any " +
+				"resources. This will be replaced with `getDefaultVpc` in the " +
+				"future.",
 			Properties: map[string]schema.PropertySpec{
 				"vpcId": {
 					Description: "The VPC ID for the default VPC",
@@ -530,8 +570,9 @@ func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
 
 func defaultVpcArgs() schema.FunctionSpec {
 	spec := schema.FunctionSpec{
-		Description:        "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
-		DeprecationMessage: "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.",
+		Description: "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
+		DeprecationMessage: "Waiting for https://github.com/pulumi/pulumi/issues/7583. " +
+			"Use the DefaultVpc resource until resolved.",
 		Inputs: &schema.ObjectTypeSpec{
 			Description: "Arguments for getting the default VPC",
 			Properties:  map[string]schema.PropertySpec{},
