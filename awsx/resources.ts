@@ -15,8 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import * as ec2 from "./ec2";
-import { Repository } from "./ecr";
-import { Image } from "./ecr/image";
+import { Image, RegistryImage, Repository } from "./ecr";
 import * as ecs from "./ecs";
 import * as lb from "./lb";
 import * as schemaTypes from "./schema-types";
@@ -34,6 +33,7 @@ const resources: schemaTypes.ResourceConstructor = {
   "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
   "awsx:ecr:Repository": (...args) => new Repository(...args),
   "awsx:ecr:Image": (...args) => new Image(...args),
+  "awsx:ecr:RegistryImage": (...args) => new RegistryImage(...args),
 };
 
 export function construct(

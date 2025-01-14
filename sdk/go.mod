@@ -8,6 +8,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.66.2
 	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3
+	github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8
 	github.com/pulumi/pulumi/sdk/v3 v3.144.1
 )
 

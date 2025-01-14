@@ -10,6 +10,11 @@ export type Image = import("./image").Image;
 export const Image: typeof import("./image").Image = null as any;
 utilities.lazyLoad(exports, ["Image"], () => require("./image"));
 
+export { RegistryImageArgs } from "./registryImage";
+export type RegistryImage = import("./registryImage").RegistryImage;
+export const RegistryImage: typeof import("./registryImage").RegistryImage = null as any;
+utilities.lazyLoad(exports, ["RegistryImage"], () => require("./registryImage"));
+
 export { RepositoryArgs } from "./repository";
 export type Repository = import("./repository").Repository;
 export const Repository: typeof import("./repository").Repository = null as any;
@@ -25,6 +30,8 @@ const _module = {
         switch (type) {
             case "awsx:ecr:Image":
                 return new Image(name, <any>undefined, { urn })
+            case "awsx:ecr:RegistryImage":
+                return new RegistryImage(name, <any>undefined, { urn })
             case "awsx:ecr:Repository":
                 return new Repository(name, <any>undefined, { urn })
             default:

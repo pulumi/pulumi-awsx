@@ -10,6 +10,7 @@ export type ResourceConstructor = {
     readonly "awsx:ec2:DefaultVpc": ConstructComponent<DefaultVpc>;
     readonly "awsx:ec2:Vpc": ConstructComponent<Vpc>;
     readonly "awsx:ecr:Image": ConstructComponent<Image>;
+    readonly "awsx:ecr:RegistryImage": ConstructComponent<RegistryImage>;
     readonly "awsx:ecr:Repository": ConstructComponent<Repository>;
     readonly "awsx:ecs:EC2Service": ConstructComponent<EC2Service>;
     readonly "awsx:ecs:EC2TaskDefinition": ConstructComponent<EC2TaskDefinition>;
@@ -23,6 +24,7 @@ export type Functions = {
     "awsx:ec2:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
 };
 import * as aws from "@pulumi/aws";
+import * as docker from "@pulumi/docker";
 export abstract class Trail<TData = any> extends (pulumi.ComponentResource)<TData> {
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
@@ -117,6 +119,20 @@ export interface ImageArgs {
     readonly registryId?: pulumi.Input<string>;
     readonly repositoryUrl: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
+}
+export abstract class RegistryImage<TData = any> extends (pulumi.ComponentResource)<TData> {
+    public image!: docker.RegistryImage | pulumi.Output<docker.RegistryImage>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecr:RegistryImage", name, opts.urn ? { image: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface RegistryImageArgs {
+    readonly insecureSkipVerify?: pulumi.Input<boolean>;
+    readonly keepRemotely?: pulumi.Input<boolean>;
+    readonly repositoryUrl: pulumi.Input<string>;
+    readonly sourceImage: pulumi.Input<string>;
+    readonly tag?: pulumi.Input<string>;
+    readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class Repository<TData = any> extends (pulumi.ComponentResource)<TData> {
     public lifecyclePolicy?: aws.ecr.LifecyclePolicy | pulumi.Output<aws.ecr.LifecyclePolicy>;

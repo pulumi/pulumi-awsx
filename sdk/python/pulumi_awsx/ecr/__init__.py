@@ -7,5 +7,6 @@ import typing
 # Export this package's modules as members:
 from ._enums import *
 from .image import *
+from .registry_image import *
 from .repository import *
 from ._inputs import *
