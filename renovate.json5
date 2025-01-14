@@ -8,7 +8,7 @@
       //
       // https://docs.renovatebot.com/configuration-options/#postupgradetasks
       postUpgradeTasks: {
-        commands: ["make generate_sdks"],
+        commands: ["make renovate"],
         executionMode: "branch", // Only run once.
       },
     },
