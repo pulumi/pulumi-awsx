@@ -12,7 +12,7 @@
         "aws-sdk": "^2.1500.0",
         "@pulumi/docker": "^4.4.4",
         "@types/aws-lambda": "^8.10.23",
-        "docker-classic": "npm:@pulumi/docker@4.5.8",
+        "docker-classic": "npm:@pulumi/docker@4.6.0",
         "mime": "^2.0.0"
     },
     "devDependencies": {
