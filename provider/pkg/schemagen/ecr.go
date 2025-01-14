@@ -38,7 +38,10 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:ecr/repository:Repository"]
 	inputProperties := renameAwsPropertiesRefs(awsSpec, originalSpec.InputProperties)
 	inputProperties["lifecyclePolicy"] = schema.PropertySpec{
-		Description: "A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.",
+		Description: "A lifecycle policy consists of one or more rules that determine " +
+			"which images in a repository should be expired. If not " +
+			"provided, this will default to untagged images expiring after " +
+			"1 day.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecr:lifecyclePolicy",
 			Plain: true,
@@ -49,8 +52,13 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		IsComponent:     true,
 		InputProperties: inputProperties,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
+			Type: "object",
+			Description: "A [Repository] represents an [aws.ecr.Repository] along with " +
+				"an associated [LifecyclePolicy] controlling how images are " +
+				"retained in the repo. \n\nDocker images can be built and pushed " +
+				"to the repo using the [buildAndPushImage] method.  This " +
+				"will call into the `@pulumi/docker/buildAndPushImage` function " +
+				"using this repo as the appropriate destination registry.",
 			Properties: map[string]schema.PropertySpec{
 				"repository": {
 					Description: "Underlying Repository resource",
@@ -64,7 +72,8 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					},
 				},
 				"url": {
-					Description: "The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).\n",
+					Description: "The URL of the repository (in the form aws_account_id.dkr." +
+						"ecr.region.amazonaws.com/repositoryName).\n",
 					TypeSpec: schema.TypeSpec{
 						Type: "string",
 					},
@@ -81,14 +90,20 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
-func lifecyclePolicy(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecyclePolicy(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.",
+			Type: "object",
+			Description: "Simplified lifecycle policy model consisting of one or more " +
+				"rules that determine which images in a repository should be " +
+				"expired. See https://docs.aws.amazon.com/AmazonECR/latest/" +
+				"userguide/lifecycle_policy_examples.html for more details.",
 			Properties: map[string]schema.PropertySpec{
 				"rules": {
-					Description: "Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.",
+					Description: "Specifies the rules to determine how images should be " +
+						"retired from this repository. Rules are ordered from lowest " +
+						"priority to highest.  If there is a rule with a `selection` value " +
+						"of `any`, then it will have the highest priority.",
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
 						Items: &schema.TypeSpec{
@@ -108,7 +123,7 @@ func lifecyclePolicy(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func lifecyclePolicyRule(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecyclePolicyRule(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
@@ -121,25 +136,38 @@ func lifecyclePolicyRule(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 					},
 				},
 				"maximumNumberOfImages": {
-					Description: "The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.",
+					Description: "The maximum number of images that you want to retain in your " +
+						"repository. Either [maximumNumberOfImages] or " +
+						"[maximumAgeLimit] must be provided.",
 					TypeSpec: schema.TypeSpec{
 						Type: "number",
 					},
 				},
 				"maximumAgeLimit": {
-					Description: "The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.",
+					Description: "The maximum age limit (in days) for your images. Either " +
+						"[maximumNumberOfImages] or [maximumAgeLimit] must be provided.",
 					TypeSpec: schema.TypeSpec{
 						Type: "number",
 					},
 				},
 				"tagStatus": {
-					Description: "Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.",
+					Description: "Determines whether the lifecycle policy rule that you are " +
+						"adding specifies a tag for an image. Acceptable options are " +
+						"tagged, untagged, or any. If you specify any, then all images " +
+						"have the rule evaluated against them. If you specify tagged, " +
+						"then you must also specify a tagPrefixList value. If you " +
+						"specify untagged, then you must omit tagPrefixList.",
 					TypeSpec: schema.TypeSpec{
 						Ref: "#/types/awsx:ecr:lifecycleTagStatus",
 					},
 				},
 				"tagPrefixList": {
-					Description: "A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified \"tagStatus\": \"tagged\". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.",
+					Description: "A list of image tag prefixes on which to take action with " +
+						"your lifecycle policy. Only used if you specified \"tagStatus\": " +
+						"\"tagged\". For example, if your images are tagged as prod, prod1, " +
+						"prod2, and so on, you would use the tag prefix prod to specify " +
+						"all of them. If you specify multiple tags, only the images " +
+						"with all specified tags are selected.",
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
 						Items: &schema.TypeSpec{
@@ -153,7 +181,7 @@ func lifecyclePolicyRule(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecycleTagStatus(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type: "string",
@@ -178,7 +206,7 @@ func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func ecrImage(awsSpec schema.PackageSpec, dockerSpec schema.PackageSpec) schema.ResourceSpec {
+func ecrImage(_ schema.PackageSpec, dockerSpec schema.PackageSpec) schema.ResourceSpec {
 	inputs := dockerBuildProperties(dockerSpec)
 	inputs["repositoryUrl"] = schema.PropertySpec{
 		Description: "Url of the repository",
@@ -187,7 +215,8 @@ func ecrImage(awsSpec schema.PackageSpec, dockerSpec schema.PackageSpec) schema.
 		},
 	}
 	inputs["registryId"] = schema.PropertySpec{
-		Description: "ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)",
+		Description: "ID of the ECR registry in which to store the image.  If not " +
+			"provided, this will be inferred from the repository URL)",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
@@ -241,10 +270,13 @@ func builderVersion() schema.ComplexTypeSpec {
 	}
 }
 
-func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.PropertySpec {
+func dockerBuildProperties(_ schema.PackageSpec) map[string]schema.PropertySpec {
 	return map[string]schema.PropertySpec{
 		"args": {
-			Description: "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.",
+			Description: "An optional map of named build-time argument variables to " +
+				"set during the Docker build.  This flag allows you to pass " +
+				"built-time variables that can be accessed like environment " +
+				"variables inside the `RUN` instruction.",
 			TypeSpec: schema.TypeSpec{
 				Type: "object",
 				AdditionalProperties: &schema.TypeSpec{
@@ -269,19 +301,28 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 			},
 		},
 		"context": {
-			Description: "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.",
+			Description: "Path to a directory to use for the Docker build context, " +
+				"usually the directory in which the Dockerfile resides (although " +
+				"dockerfile may be used to choose a custom location independent " +
+				"of this choice). If not specified, the context defaults " +
+				"to the current working directory; if a relative path is used, " +
+				"it is relative to the current working directory that Pulumi " +
+				"is evaluating.",
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
 			},
 		},
 		"dockerfile": {
-			Description: "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.",
+			Description: "dockerfile may be used to override the default Dockerfile " +
+				"name and/or location.  By default, it is assumed to be a file " +
+				"named Dockerfile in the root of the build context.",
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
 			},
 		},
 		"imageName": {
-			Description: "Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used",
+			Description: "Custom name for the underlying Docker image resource. If " +
+				"omitted, the image tag assigned by the provider will be used",
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
 			},

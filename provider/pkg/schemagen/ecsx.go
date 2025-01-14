@@ -66,19 +66,26 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "launchType")
 	delete(inputProperties, "capacityProviderStrategies")
 	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{
-		Description: "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.",
+		Description: "If `true`, this provider will not wait for the service to reach " +
+			"a steady state (like [`aws ecs wait services-stable`](" +
+			"https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/" +
+			"services-stable.html)) before continuing. Default `false`.",
 		TypeSpec: schema.TypeSpec{
 			Type: "boolean",
 		},
 	}
 	inputProperties["taskDefinition"] = schema.PropertySpec{
-		Description: "Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		Description: "Family and revision (`family:revision`) or full ARN of the " +
+			"task definition that you want to run in your service. Either " +
+			"[taskDefinition] or [taskDefinitionArgs] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["taskDefinitionArgs"] = schema.PropertySpec{
-		Description: "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		Description: "The args of task definition that you want to run in your service. " +
+			"Either [taskDefinition] or [taskDefinitionArgs] must " +
+			"be provided.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecs:EC2ServiceTaskDefinition",
 			Plain: true,
@@ -88,7 +95,9 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Description: "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
+			Description: "Create an ECS Service resource for EC2 with the given unique " +
+				"name, arguments, and options.\nCreates Task definition if " +
+				"`taskDefinitionArgs` is specified.",
 			Properties: map[string]schema.PropertySpec{
 				"service": {
 					Description: "Underlying ECS Service resource",
@@ -131,26 +140,34 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 
 	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{
-		Description: "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.",
+		Description: "If `true`, this provider will not wait for the service to reach " +
+			"a steady state (like [`aws ecs wait services-stable`](" +
+			"https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/" +
+			"services-stable.html)) before continuing. Default `false`.",
 		TypeSpec: schema.TypeSpec{
 			Type: "boolean",
 		},
 	}
 	inputProperties["taskDefinition"] = schema.PropertySpec{
-		Description: "Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		Description: "Family and revision (`family:revision`) or full ARN of the " +
+			"task definition that you want to run in your service. Either " +
+			"[taskDefinition] or [taskDefinitionArgs] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["taskDefinitionArgs"] = schema.PropertySpec{
-		Description: "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		Description: "The args of task definition that you want to run in your service. " +
+			"Either [taskDefinition] or [taskDefinitionArgs] must " +
+			"be provided.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecs:FargateServiceTaskDefinition",
 			Plain: true,
 		},
 	}
 	inputProperties["assignPublicIp"] = schema.PropertySpec{
-		Description: "Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.",
+		Description: "Assign a public IP address to the ENI (Fargate launch type " +
+			"only). Valid values are `true` or `false`. Default `false`.",
 		TypeSpec: schema.TypeSpec{
 			Type: "boolean",
 		},
@@ -159,7 +176,9 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Description: "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
+			Description: "Create an ECS Service resource for Fargate with the given " +
+				"unique name, arguments, and options.\nCreates Task definition " +
+				"if `taskDefinitionArgs` is specified.",
 			Properties: map[string]schema.PropertySpec{
 				"service": {
 					Description: "Underlying ECS Service resource",
@@ -196,14 +215,19 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "requiresCompatibilities") // the requiresCompatibilities of FargateTaskDefinition is "FARGATE"
 
 	inputProperties["container"] = schema.PropertySpec{
-		Description: "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided.",
+		Description: "Single container to make a TaskDefinition from.  Useful for " +
+			"simple cases where there aren't\nmultiple containers, especially " +
+			"when creating a TaskDefinition to call [run] on.\n\n" +
+			"Either [container] or [containers] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
 			Plain: true,
 		},
 	}
 	inputProperties["containers"] = schema.PropertySpec{
-		Description: "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided.",
+		Description: "All the containers to make a TaskDefinition from.  Useful when " +
+			"creating a Service that will\ncontain many containers within." +
+			"\n\nEither [container] or [containers] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Type: "object",
 			AdditionalProperties: &schema.TypeSpec{
@@ -214,20 +238,25 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 	inputProperties["cpu"] = schema.PropertySpec{
-		Description: "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]",
+		Description: "The number of cpu units used by the task. If not provided, " +
+			"a default will be computed based on the cumulative needs specified " +
+			"by [containerDefinitions]",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["executionRole"] = schema.PropertySpec{
-		Description: "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined.",
+		Description: "The execution role that the Amazon ECS container agent and " +
+			"the Docker daemon can assume.\nWill be created automatically " +
+			"if not defined.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:awsx:DefaultRoleWithPolicy",
 			Plain: true,
 		},
 	}
 	inputProperties["family"] = schema.PropertySpec{
-		Description: "An optional unique name for your task definition. If not specified, then a default will be created.",
+		Description: "An optional unique name for your task definition. If not specified, " +
+			"then a default will be created.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
@@ -240,13 +269,17 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 	inputProperties["memory"] = schema.PropertySpec{
-		Description: "The amount (in MiB) of memory used by the task.  If not provided, a default will be computed\nbased on the cumulative needs specified by [containerDefinitions]",
+		Description: "The amount (in MiB) of memory used by the task.  If not provided, " +
+			"a default will be computed\nbased on the cumulative needs " +
+			"specified by [containerDefinitions]",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["taskRole"] = schema.PropertySpec{
-		Description: "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined.",
+		Description: "IAM role that allows your Amazon ECS container task to make " +
+			"calls to other AWS services.\nWill be created automatically " +
+			"if not defined.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:awsx:DefaultRoleWithPolicy",
 			Plain: true,
@@ -256,7 +289,10 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Description: "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task & execution roles.\nPresents required Service load balancers if target group included in port mappings.",
+			Description: "Create a TaskDefinition resource with the given unique name, " +
+				"arguments, and options.\nCreates required log-group and task " +
+				"& execution roles.\nPresents required Service load balancers " +
+				"if target group included in port mappings.",
 			Properties: map[string]schema.PropertySpec{
 				"taskDefinition": {
 					Description: "Underlying ECS Task Definition resource",
@@ -271,13 +307,15 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					},
 				},
 				"taskRole": {
-					Description: "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.",
+					Description: "Auto-created IAM role that allows your Amazon ECS container " +
+						"task to make calls to other AWS services.",
 					TypeSpec: schema.TypeSpec{
 						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"executionRole": {
-					Description: "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.",
+					Description: "Auto-created IAM task execution role that the Amazon ECS " +
+						"container agent and the Docker daemon can assume.",
 					TypeSpec: schema.TypeSpec{
 						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
@@ -313,14 +351,19 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "requiresCompatibilities") // the requiresCompatibilities of EC2TaskDefinition is "EC2"
 
 	inputProperties["container"] = schema.PropertySpec{
-		Description: "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided.",
+		Description: "Single container to make a TaskDefinition from.  Useful for " +
+			"simple cases where there aren't\nmultiple containers, especially " +
+			"when creating a TaskDefinition to call [run] on.\n\n" +
+			"Either [container] or [containers] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
 			Plain: true,
 		},
 	}
 	inputProperties["containers"] = schema.PropertySpec{
-		Description: "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided.",
+		Description: "All the containers to make a TaskDefinition from.  Useful " +
+			"when creating a Service that will\ncontain many containers " +
+			"within.\n\nEither [container] or [containers] must be provided.",
 		TypeSpec: schema.TypeSpec{
 			Type: "object",
 			AdditionalProperties: &schema.TypeSpec{
@@ -331,20 +374,25 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 	inputProperties["cpu"] = schema.PropertySpec{
-		Description: "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]",
+		Description: "The number of cpu units used by the task. If not provided, " +
+			"a default will be computed based on the cumulative needs specified " +
+			"by [containerDefinitions]",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["executionRole"] = schema.PropertySpec{
-		Description: "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined.",
+		Description: "The execution role that the Amazon ECS container agent and " +
+			"the Docker daemon can assume.\nWill be created automatically " +
+			"if not defined.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:awsx:DefaultRoleWithPolicy",
 			Plain: true,
 		},
 	}
 	inputProperties["family"] = schema.PropertySpec{
-		Description: "An optional unique name for your task definition. If not specified, then a default will be created.",
+		Description: "An optional unique name for your task definition. If not specified, " +
+			"then a default will be created.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
@@ -357,13 +405,17 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 	inputProperties["memory"] = schema.PropertySpec{
-		Description: "The amount (in MiB) of memory used by the task.  If not provided, a default will be computed\nbased on the cumulative needs specified by [containerDefinitions]",
+		Description: "The amount (in MiB) of memory used by the task.  If not provided, " +
+			"a default will be computed\nbased on the cumulative needs " +
+			"specified by [containerDefinitions]",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
 	}
 	inputProperties["taskRole"] = schema.PropertySpec{
-		Description: "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined.",
+		Description: "IAM role that allows your Amazon ECS container task to make " +
+			"calls to other AWS services.\nWill be created automatically " +
+			"if not defined.",
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:awsx:DefaultRoleWithPolicy",
 			Plain: true,
@@ -373,7 +425,10 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Description: "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task & execution roles.\nPresents required Service load balancers if target group included in port mappings.",
+			Description: "Create a TaskDefinition resource with the given unique name, " +
+				"arguments, and options.\nCreates required log-group and task " +
+				"& execution roles.\nPresents required Service load balancers " +
+				"if target group included in port mappings.",
 			Properties: map[string]schema.PropertySpec{
 				"taskDefinition": {
 					Description: "Underlying ECS Task Definition resource",
@@ -388,13 +443,15 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					},
 				},
 				"taskRole": {
-					Description: "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.",
+					Description: "Auto-created IAM role that allows your Amazon ECS container " +
+						"task to make calls to other AWS services.",
 					TypeSpec: schema.TypeSpec{
 						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"executionRole": {
-					Description: "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.",
+					Description: "Auto-created IAM task execution role that the Amazon ECS " +
+						"container agent and the Docker daemon can assume.",
 					TypeSpec: schema.TypeSpec{
 						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
@@ -446,7 +503,8 @@ func containerDefinitionTypes(awsSpec, awsNativeSpec schema.PackageSpec) map[str
 	}
 	types := map[string]schema.ComplexTypeSpec{}
 	for _, name := range names {
-		types["awsx:ecs:"+name] = renameComplexRefs(awsNativeSpec.Types["aws-native:ecs:"+name], "aws-native:ecs:", "awsx:ecs:")
+		types["awsx:ecs:"+name] = renameComplexRefs(
+			awsNativeSpec.Types["aws-native:ecs:"+name], "aws-native:ecs:", "awsx:ecs:")
 	}
 	types["awsx:ecs:TaskDefinitionPortMapping"].Properties["targetGroup"] = schema.PropertySpec{
 		TypeSpec: schema.TypeSpec{
