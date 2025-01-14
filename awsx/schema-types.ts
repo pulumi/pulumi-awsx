@@ -24,6 +24,7 @@ export type Functions = {
     "awsx:ec2:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
 };
 import * as aws from "@pulumi/aws";
+import * as docker from "@pulumi/docker";
 export abstract class Trail<TData = any> extends (pulumi.ComponentResource)<TData> {
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
@@ -120,7 +121,7 @@ export interface ImageArgs {
     readonly target?: pulumi.Input<string>;
 }
 export abstract class RegistryImage<TData = any> extends (pulumi.ComponentResource)<TData> {
-    public image!: unknown | pulumi.Output<unknown>;
+    public image!: docker.RegistryImage | pulumi.Output<docker.RegistryImage>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:ecr:RegistryImage", name, opts.urn ? { image: undefined } : { name, args, opts }, opts);
     }

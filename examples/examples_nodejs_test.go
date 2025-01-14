@@ -462,6 +462,10 @@ func TestEcrRegistryImage(t *testing.T) {
 	upResult := pt.Up(t)
 	t.Logf("Up:\n%s", upResult.StdOut)
 
+	require.Contains(t, upResult.Outputs, "latestImageDigest", "latestImageDigest should be in the outputs")
+	latestImageDigest := upResult.Outputs["latestImageDigest"].Value.(string)
+	require.NotEmpty(t, latestImageDigest, "latestImageDigest should not be empty")
+
 	require.Contains(t, upResult.Outputs, "repositoryName", "repositoryName should be in the outputs")
 	repoName := upResult.Outputs["repositoryName"].Value.(string)
 	require.NotEmpty(t, repoName, "repositoryName should not be empty")
@@ -489,6 +493,10 @@ func TestEcrRegistryImage(t *testing.T) {
 	t.Log("Running `pulumi up` with message=Hello Pulumi! (Again...)")
 	upResult = pt.Up(t)
 	t.Logf("Up:\n%s", upResult.StdOut)
+
+	require.Contains(t, upResult.Outputs, "latestImageDigest", "latestImageDigest should be in the outputs")
+	latestImageDigest = upResult.Outputs["latestImageDigest"].Value.(string)
+	require.NotEmpty(t, latestImageDigest, "latestImageDigest should not be empty")
 
 	describeImagesOutput, err = getEcrImageDetails(t, client, repoName, 2)
 	require.NoError(t, err, "failed to describe images")

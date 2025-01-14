@@ -11,10 +11,10 @@ const message = config.require("message");
 // build an image and keep it locally. You can replace this with any other local image you've already built or pulled.
 const localImage = new docker.Image("local-image", {
   build: {
-      context: "app",
-      args: {
-          message,
-      },
+    context: "app",
+    args: {
+      message,
+    },
   },
   imageName: "my-awesome-image:test",
   skipPush: true,
@@ -28,6 +28,8 @@ const latestImage = new awsx.ecr.RegistryImage("image-name", {
   sourceImage: localImage.imageName,
   keepRemotely: true,
 });
+
+export const latestImageDigest = latestImage.image.sha256Digest;
 
 const taggedImage = new awsx.ecr.RegistryImage("tagged-image", {
   repositoryUrl: repository.url,
