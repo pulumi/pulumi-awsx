@@ -5,11 +5,7 @@ go 1.23
 toolchain go1.23.3
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.32.7
-	github.com/aws/aws-sdk-go-v2/config v1.28.7
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.0
-	github.com/pulumi/providertest v0.1.4
-	github.com/pulumi/pulumi/pkg/v3 v3.145.0
+	github.com/pulumi/pulumi/pkg/v3 v3.144.1
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -37,11 +33,14 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aws/aws-sdk-go v1.50.36 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.32.7 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.28.7 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.48 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kms v1.30.1 // indirect
@@ -98,7 +97,6 @@ require (
 	github.com/hashicorp/hcl/v2 v2.22.0 // indirect
 	github.com/hashicorp/vault/api v1.12.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/iwdgo/sigintwindows v0.2.2 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -133,7 +131,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.10.0 // indirect
-	github.com/pulumi/pulumi/sdk/v3 v3.145.0 // indirect
+	github.com/pulumi/providertest v0.1.4 // indirect
+	github.com/pulumi/pulumi/sdk/v3 v3.144.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
