@@ -43,8 +43,6 @@ func TestAccEcsPython(t *testing.T) {
 }
 
 func getPythonBaseOptions(t *testing.T) integration.ProgramTestOptions {
-	t.Skip() // TODO remove
-
 	region := getEnvRegion(t)
 	base := getBaseOptions(t)
 	pyBase := base.With(integration.ProgramTestOptions{

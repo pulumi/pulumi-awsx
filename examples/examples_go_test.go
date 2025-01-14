@@ -34,7 +34,6 @@ func TestAccTrail(t *testing.T) {
 }
 
 func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
-	t.Skip() // TODO remove
 	region := getEnvRegion(t)
 	base := getBaseOptions(t)
 	goBase := base.With(integration.ProgramTestOptions{
