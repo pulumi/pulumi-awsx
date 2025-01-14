@@ -1661,10 +1661,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.66.3":
-  version "6.66.3"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.66.3.tgz#5dd81c31fa53d53f5abf2a916e848c0f901cbbd4"
-  integrity sha512-dDu9W+sdCrmVhIV+uales73gW+xTbl82YbNaD7/Du/Nt5sNDt+sB8gWRX0uUahVAmF3znhWDAZ5aOKiQd3wp/w==
+"@pulumi/aws@6.66.2":
+  version "6.66.2"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.66.2.tgz#cf140268393c3985e22131539fc2b4536724c320"
+  integrity sha512-jO5L4JcjYriqXBGYH9LVb+GjawHUJvkWvLtb5nXxIKpkykEO1LyWVZdR4ngFcT7Hlw99Tg1ms4ut7LdETPCuUw==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     mime "^2.0.0"
@@ -1676,43 +1676,7 @@
   dependencies:
     "@pulumi/pulumi" "^3.136.0"
 
-"@pulumi/pulumi@3.145.0":
-  version "3.145.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.145.0.tgz#7b0045848e4583630e2f019869785bdceeb0f9c6"
-  integrity sha512-oIKrxQ4Idlg6BNC5IKSCCr/dG5zHvAjbxJXFHcL97aUMvrWRaRU4Dc2k0AMXTxr/olMtm3b+dBF+2SpekvqR9Q==
-  dependencies:
-    "@grpc/grpc-js" "^1.10.1"
-    "@logdna/tail-file" "^2.0.6"
-    "@npmcli/arborist" "^7.3.1"
-    "@opentelemetry/api" "^1.9"
-    "@opentelemetry/exporter-zipkin" "^1.28"
-    "@opentelemetry/instrumentation" "^0.55"
-    "@opentelemetry/instrumentation-grpc" "^0.55"
-    "@opentelemetry/resources" "^1.28"
-    "@opentelemetry/sdk-trace-base" "^1.28"
-    "@opentelemetry/sdk-trace-node" "^1.28"
-    "@opentelemetry/semantic-conventions" "^1.28"
-    "@pulumi/query" "^0.3.0"
-    "@types/google-protobuf" "^3.15.5"
-    "@types/semver" "^7.5.6"
-    "@types/tmp" "^0.2.6"
-    execa "^5.1.0"
-    fdir "^6.1.1"
-    google-protobuf "^3.5.0"
-    got "^11.8.6"
-    ini "^2.0.0"
-    js-yaml "^3.14.0"
-    minimist "^1.2.6"
-    normalize-package-data "^6.0.0"
-    picomatch "^3.0.1"
-    pkg-dir "^7.0.0"
-    require-from-string "^2.0.1"
-    semver "^7.5.2"
-    source-map-support "^0.5.6"
-    tmp "^0.2.1"
-    upath "^1.1.0"
-
-"@pulumi/pulumi@^3.136.0", "@pulumi/pulumi@^3.142.0":
+"@pulumi/pulumi@3.144.1", "@pulumi/pulumi@^3.136.0", "@pulumi/pulumi@^3.142.0":
   version "3.144.1"
   resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.144.1.tgz#96b3c54879f7bc5857ba38ac389e2b7262e44f9e"
   integrity sha512-C3kdP/uYnZygxfK18pFzs0P6IYng/rgf/NW5LXUjHMKcCSwyHbsk6l2wpuuYQiWaJFWyqLdNwDFRVf07ZcIEsA==
@@ -2710,10 +2674,10 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-"docker-classic@npm:@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.6.0.tgz#127a0c69a06b47a9418dce12cc70a181ff680284"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
+"docker-classic@npm:@pulumi/docker@4.5.8":
+  version "4.5.8"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.5.8.tgz#55cefdebcee55eedf0674352ab7f6b8101420c30"
+  integrity sha512-h5ZfsXTt5GaqenOmleNAJT/zXLErYXYMftgFNbTS4Z1n1gQXwBewxZ/p7nEqKZkh0JjZZuoDlRN1+lkosM5W6w==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
