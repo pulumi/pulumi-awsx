@@ -1,2 +1,2 @@
 .PHONY: renovate
-renovate: build_sdks
+renovate: generate_sdks
