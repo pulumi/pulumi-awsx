@@ -49,7 +49,7 @@ export function computeImageFromAsset(
   // the TaskDefinition get's replaced IFF the built image changes.
 
   const registryCredentials = getDockerCredentials(
-    { registryUrl: repositoryUrl, registryId: inputRegistryId },
+    { repositoryUrl: repositoryUrl, registryId: inputRegistryId },
     { parent },
   );
 

@@ -1,4 +1,4 @@
-// Copyright 2016-2024, Pulumi Corporation.
+// Copyright 2016-2025, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ export interface CredentialArgs {
    * The URL of the ECR registry to get credentials for.
    * Can be provided with or without the https:// protocol prefix.
    */
-  registryUrl: string;
+  repositoryUrl: string;
 
   /**
    * Optional registry ID (AWS account ID) to get credentials for.
@@ -68,12 +68,30 @@ export function getDockerCredentials(
     registryId = args.registryId;
   } else {
     // add protocol to help parse the url
-    const registryUrl = args.registryUrl?.startsWith("https://")
-      ? args.registryUrl
-      : "https://" + args.registryUrl;
-    const parsedUrl = new URL(registryUrl);
+    const repositoryUrl = args.repositoryUrl?.startsWith("https://")
+      ? args.repositoryUrl
+      : "https://" + args.repositoryUrl;
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(repositoryUrl);
+    } catch (e) {
+      throw new pulumi.InputPropertyError({
+        reason: `Repository URL is not a valid URL.`,
+        propertyPath: "repositoryUrl",
+      });
+    }
+
+    const hostnameParts = parsedUrl.hostname.split(".");
+    if (hostnameParts.length < 1) {
+      throw new pulumi.InputPropertyError({
+        reason: `Could not parse registry ID from Repository URL. It should be in the format of <account-id>.dkr.ecr.<region>.amazonaws.com`,
+        propertyPath: "repositoryUrl",
+      });
+    }
+
     // the registry id is the AWS account id. It's the first part of the hostname
-    registryId = parsedUrl.hostname.split(".")[0];
+    registryId = hostnameParts[0];
   }
 
   const ecrCredentials = aws.ecr.getCredentialsOutput({ registryId: registryId }, opts);
