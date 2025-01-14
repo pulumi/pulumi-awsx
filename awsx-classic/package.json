@@ -15,10 +15,10 @@
     "dependencies": {
         "@aws-sdk/client-ecs": "^3.405.0",
         "@pulumi/aws": "^6.0.2",
-        "@pulumi/docker": "4.5.8",
+        "@pulumi/docker": "4.6.0",
         "@pulumi/pulumi": "^3.34.0",
         "aws-lambda": "^1.0.7",
-        "docker-classic": "npm:@pulumi/docker@4.5.8",
+        "docker-classic": "npm:@pulumi/docker@4.6.0",
         "mime": "^3.0.0"
     },
     "devDependencies": {
