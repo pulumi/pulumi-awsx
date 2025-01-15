@@ -89,7 +89,7 @@ export interface RegistryImageArgs {
      */
     keepRemotely?: pulumi.Input<boolean>;
     /**
-     * Url of the ECR repository.
+     * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      */
     repositoryUrl: pulumi.Input<string>;
     /**

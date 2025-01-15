@@ -48,14 +48,14 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Url of the ECR repository.
+     * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      * 
      */
     @Import(name="repositoryUrl", required=true)
     private Output<String> repositoryUrl;
 
     /**
-     * @return Url of the ECR repository.
+     * @return The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      * 
      */
     public Output<String> repositoryUrl() {
@@ -179,7 +179,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param repositoryUrl Url of the ECR repository.
+         * @param repositoryUrl The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
          * 
          * @return builder
          * 
@@ -190,7 +190,7 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param repositoryUrl Url of the ECR repository.
+         * @param repositoryUrl The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
          * 
          * @return builder
          * 

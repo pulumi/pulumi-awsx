@@ -28,7 +28,7 @@ class RegistryImageArgs:
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a RegistryImage resource.
-        :param pulumi.Input[str] repository_url: Url of the ECR repository.
+        :param pulumi.Input[str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         :param pulumi.Input[str] source_image: The source image to push to the registry.
         :param pulumi.Input[bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
@@ -50,7 +50,7 @@ class RegistryImageArgs:
     @pulumi.getter(name="repositoryUrl")
     def repository_url(self) -> pulumi.Input[str]:
         """
-        Url of the ECR repository.
+        The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         """
         return pulumi.get(self, "repository_url")
 
@@ -151,7 +151,7 @@ class RegistryImage(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
-        :param pulumi.Input[str] repository_url: Url of the ECR repository.
+        :param pulumi.Input[str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         :param pulumi.Input[str] source_image: The source image to push to the registry.
         :param pulumi.Input[str] tag: The tag to use for the pushed image. If not provided, it defaults to `latest`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image

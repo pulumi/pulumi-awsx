@@ -85,7 +85,7 @@ namespace Pulumi.Awsx.Ecr
         public Input<bool>? KeepRemotely { get; set; }
 
         /// <summary>
-        /// Url of the ECR repository.
+        /// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         /// </summary>
         [Input("repositoryUrl", required: true)]
         public Input<string> RepositoryUrl { get; set; } = null!;

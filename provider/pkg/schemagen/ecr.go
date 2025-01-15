@@ -357,7 +357,8 @@ func registryImage(dockerSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := dockerSpec.Resources["docker:index/registryImage:RegistryImage"]
 	inputProperties := renameDockerPropertiesRefs(dockerSpec, originalSpec.InputProperties)
 	inputProperties["repositoryUrl"] = schema.PropertySpec{
-		Description: "Url of the ECR repository.",
+		Description: "The URL of the repository (in the form aws_account_id.dkr." +
+						"ecr.region.amazonaws.com/repositoryName).",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},

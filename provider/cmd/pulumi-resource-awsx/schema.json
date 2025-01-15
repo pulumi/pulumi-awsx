@@ -19,7 +19,8 @@
             "packageReferences": {
                 "Pulumi": "3.*",
                 "Pulumi.Aws": "6.*",
-                "Pulumi.Docker": "4.*"
+                "Pulumi.Docker": "4.*",
+                "Pulumi.DockerBuild": "0.*"
             },
             "respectSchemaVersion": true
         },
@@ -27,7 +28,8 @@
             "generateResourceContainerTypes": true,
             "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
             "internalDependencies": [
-                "github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild"
+                "github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild",
+                "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
             ],
             "liftSingleValueMethodReturns": true,
             "respectSchemaVersion": true
@@ -35,6 +37,7 @@
         "java": {
             "dependencies": {
                 "com.pulumi:aws": "6.66.2",
+                "com.pulumi:docker": "4.6.0",
                 "com.pulumi:docker-build": "0.0.8"
             }
         },
@@ -42,6 +45,7 @@
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
                 "@pulumi/aws": "^6.66.2",
+                "@pulumi/docker": "^4.6.0",
                 "@pulumi/docker-build": "^0.0.8",
                 "@types/aws-lambda": "^8.10.23",
                 "docker-classic": "npm:@pulumi/docker@3.6.1",
@@ -62,6 +66,7 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi-aws": "\u003e=6.0.4,\u003c7.0.0",
+                "pulumi-docker": "\u003e=4.6.0,\u003c5.0.0",
                 "pulumi-docker-build": "\u003e=0.0.8,\u003c1.0.0"
             },
             "respectSchemaVersion": true,
@@ -2222,6 +2227,54 @@
             },
             "requiredInputs": [
                 "repositoryUrl"
+            ],
+            "isComponent": true
+        },
+        "awsx:ecr:RegistryImage": {
+            "description": "Manages the lifecycle of a docker image in a registry. You can upload images to a registry (= `docker push`) and also delete them again. In contrast to [`awsx.ecr.Image`](/registry/packages/awsx/api-docs/ecr/image/), this resource does not require to build the image, but can be used to push an existing image to an ECR repository. The image will be pushed whenever the source image changes or is updated.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Pushing an image to an ECR repository\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as awsx from \"@pulumi/awsx\";\n\nconst repository = new awsx.ecr.Repository(\"repository\", { forceDelete: true });\n\nconst preTaggedImage = new awsx.ecr.RegistryImage(\"registry-image\", {\n  repositoryUrl: repository.url,\n  sourceImage: \"my-awesome-image:v1.0.0\",\n});\n```\n```python\nimport pulumi\nimport pulumi_awsx as awsx\n\nrepository = awsx.ecr.Repository(\"repository\", force_delete=True)\n\nregistry_image = awsx.ecr.RegistryImage(\"registry_image\",\n    repository_url=repository.url,\n    source_image=\"my-awesome-image:v1.0.0\")\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/ecr\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\trepository, err := ecr.NewRepository(ctx, \"repository\", \u0026ecr.RepositoryArgs{\n\t\t\tForceDelete: pulumi.Bool(true),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\n\t\tregistryImage, err := ecr.NewRegistryImage(ctx, \"registryImage\", \u0026ecr.RegistryImageArgs{\n\t\t\tRepositoryUrl: repository.Url,\n\t\t\tSourceImage:   pulumi.String(\"my-awesome-image:v1.0.0\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\n\t\treturn nil\n\t})\n}\n```\n```csharp\nusing Pulumi;\nusing Pulumi.Awsx.Ecr;\n\nreturn await Pulumi.Deployment.RunAsync(() =\u003e\n{\n    var repository = new Repository(\"repository\", new RepositoryArgs\n    {\n        ForceDelete = true,\n    });\n\n    var registryImage = new RegistryImage(\"registryImage\", new RegistryImageArgs\n    {\n        RepositoryUrl = repository.Url,\n        SourceImage = \"my-awesome-image:v1.0.0\",\n    });\n\n    return new Dictionary\u003cstring, object?\u003e{};\n});\n```\n```yaml\nname: example\nruntime: yaml\nresources:\n  repository:\n    type: awsx:ecr:Repository\n    properties:\n      forceDelete: true\n  registryImage:\n    type: awsx:ecr:RegistryImage\n    properties:\n      repositoryUrl: ${repository.url}\n      sourceImage: \"my-awesome-image:v1.0.0\"\n```\n```java\nimport com.pulumi.Pulumi;\nimport com.pulumi.awsx.ecr.Repository;\nimport com.pulumi.awsx.ecr.RepositoryArgs;\nimport com.pulumi.awsx.ecr.RegistryImage;\nimport com.pulumi.awsx.ecr.RegistryImageArgs;\n\npublic class Main {\n    public static void main(String[] args) {\n        Pulumi.run(ctx -\u003e {\n            // Create an ECR repository with force delete enabled\n            var repository = new Repository(\"repository\", RepositoryArgs.builder()\n                .forceDelete(true)\n                .build());\n\n            // Create a RegistryImage based on the ECR repository URL and source image\n            var registryImage = new RegistryImage(\"registryImage\", RegistryImageArgs.builder()\n                .repositoryUrl(repository.url())\n                .sourceImage(\"my-awesome-image:v1.0.0\")\n                .build());\n        });\n    }\n}\n```\n{{% /example %}}\n{{% /examples %}}\n",
+            "properties": {
+                "image": {
+                    "$ref": "/docker/v4.6.0/schema.json#/resources/docker:index%2fregistryImage:RegistryImage",
+                    "description": "The underlying RegistryImage resource."
+                }
+            },
+            "type": "object",
+            "required": [
+                "image"
+            ],
+            "inputProperties": {
+                "insecureSkipVerify": {
+                    "type": "boolean",
+                    "description": "If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`\n"
+                },
+                "keepRemotely": {
+                    "type": "boolean",
+                    "description": "If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`\n"
+                },
+                "repositoryUrl": {
+                    "type": "string",
+                    "description": "The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName)."
+                },
+                "sourceImage": {
+                    "type": "string",
+                    "description": "The source image to push to the registry."
+                },
+                "tag": {
+                    "type": "string",
+                    "description": "The tag to use for the pushed image. If not provided, it defaults to `latest`."
+                },
+                "triggers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image\n",
+                    "willReplaceOnChanges": true
+                }
+            },
+            "requiredInputs": [
+                "repositoryUrl",
+                "sourceImage"
             ],
             "isComponent": true
         },

@@ -83,7 +83,7 @@ type registryImageArgs struct {
 	InsecureSkipVerify *bool `pulumi:"insecureSkipVerify"`
 	// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
 	KeepRemotely *bool `pulumi:"keepRemotely"`
-	// Url of the ECR repository.
+	// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
 	RepositoryUrl string `pulumi:"repositoryUrl"`
 	// The source image to push to the registry.
 	SourceImage string `pulumi:"sourceImage"`
@@ -99,7 +99,7 @@ type RegistryImageArgs struct {
 	InsecureSkipVerify pulumi.BoolPtrInput
 	// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
 	KeepRemotely pulumi.BoolPtrInput
-	// Url of the ECR repository.
+	// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
 	RepositoryUrl pulumi.StringInput
 	// The source image to push to the registry.
 	SourceImage pulumi.StringInput
