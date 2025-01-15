@@ -378,6 +378,10 @@ provider_dist-darwin-arm64: bin/$(PROVIDER)-v$(VERSION_GENERIC)-darwin-arm64.tar
 provider_dist-windows-amd64: bin/$(PROVIDER)-v$(VERSION_GENERIC)-windows-amd64.tar.gz
 provider_dist: provider_dist-linux-amd64 provider_dist-linux-arm64 provider_dist-darwin-amd64 provider_dist-darwin-arm64 provider_dist-windows-amd64
 .PHONY: provider_dist-linux-amd64 provider_dist-linux-arm64 provider_dist-darwin-amd64 provider_dist-darwin-arm64 provider_dist-windows-amd64 provider_dist
+renovate_cmd = yarn --cwd awsx dedupe-deps && make generate_sdks
+renovate:
+	$(call renovate_cmd)
+.PHONY: renovate
 
 # Permit providers to extend the Makefile with provider-specific Make includes.
 include $(wildcard .mk/*.mk)
