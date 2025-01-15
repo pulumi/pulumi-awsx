@@ -101,7 +101,7 @@ jobs:
     - name: Generate test shards
       run: |-
         cd examples
-        go run github.com/pulumi/shard@48b47318fce7d75fd2df16b5c87467368d2bf3d5 \
+        go run github.com/pulumi/shard@861c9ce4aa851e98c19f8376892bf7e47238fa1b \
             --total ${{ matrix.total-shards }} \
             --index ${{ matrix.current-shard }} \
             --output env >> "$GITHUB_ENV"
