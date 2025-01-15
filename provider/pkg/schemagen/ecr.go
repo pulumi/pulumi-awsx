@@ -15,6 +15,7 @@
 package gen
 
 import (
+	// used for embedding docs
 	_ "embed"
 
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
