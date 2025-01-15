@@ -14,6 +14,7 @@ AWSX_SRC := $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 .make/provider/darwin-arm64: TARGET := node16-macos-arm64
 .make/provider/windows-amd64: TARGET := node16-win-x64
 .make/provider/%: .make/awsx_bin .make/gen_types
+	cd awsx && yarn run check-duplicate-deps
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target "${TARGET}" --output "${PROVIDER_BIN}"
 	mkdir -p .make/provider
 	@touch $@
