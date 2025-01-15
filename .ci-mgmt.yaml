@@ -4,6 +4,7 @@ major-version: 2
 template: generic
 
 buildProviderCmd: "OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build"
+testProviderCmd: "yarn --cwd awsx test"
 
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
