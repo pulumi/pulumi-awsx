@@ -3,7 +3,7 @@ aws: true
 major-version: 2
 template: generic
 
-buildProviderCmd: "make PROVIDER_BIN=$(1) .make/provider"
+buildProviderCmd: "OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build"
 
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
