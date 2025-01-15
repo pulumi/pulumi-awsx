@@ -107,7 +107,7 @@ jobs:
             --output env >> "$GITHUB_ENV"
     - name: Run tests
       run: |
-        make GOTESTARGS="-run \"${SHARD_PATHS}\" ${SHARD_TESTS}" test
+        make GOTESTARGS="-test.run \"${SHARD_TESTS}\" ${SHARD_PATHS}" test
     strategy:
       fail-fast: false
       matrix:
