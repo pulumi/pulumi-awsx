@@ -5,6 +5,8 @@ template: generic
 
 buildProviderCmd: "make PROVIDER_BIN=$(1) .make/provider"
 
+shards: 5
+
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
   ALT_AWS_SECRET_ACCESS_KEY: ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }}
