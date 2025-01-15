@@ -16,6 +16,7 @@ package gen
 
 import (
 	_ "embed"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
@@ -358,7 +359,7 @@ func registryImage(dockerSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties := renameDockerPropertiesRefs(dockerSpec, originalSpec.InputProperties)
 	inputProperties["repositoryUrl"] = schema.PropertySpec{
 		Description: "The URL of the repository (in the form aws_account_id.dkr." +
-						"ecr.region.amazonaws.com/repositoryName).",
+			"ecr.region.amazonaws.com/repositoryName).",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
