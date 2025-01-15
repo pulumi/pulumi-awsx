@@ -98,6 +98,8 @@ jobs:
         role-duration-seconds: 7200
         role-session-name: awsx@githubActions
         role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
+    - name: Install prebuilt SDKs
+      run: make install_sdks
     - name: Generate test shards
       run: |-
         cd examples
