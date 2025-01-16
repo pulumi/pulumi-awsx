@@ -55,6 +55,7 @@ _utilities.register(
   "fqn": "pulumi_awsx.ecr",
   "classes": {
    "awsx:ecr:Image": "Image",
+   "awsx:ecr:RegistryImage": "RegistryImage",
    "awsx:ecr:Repository": "Repository"
   }
  },

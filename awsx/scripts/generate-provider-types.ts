@@ -32,6 +32,7 @@ const externalRefs = (() => {
     };
   };
   addRef("aws");
+  addRef("docker");
   return externalRefs;
 })();
 
@@ -81,6 +82,10 @@ const resolveRef = (ref: unknown, direction: Direction): ts.TypeNode => {
       const resourceName = typeParts[2];
       const path = decodeURIComponent(typeParts[1]).split("/");
       path.pop(); // Last section is same as the resource name
+      if (path.length === 1 && path[0] === "index") {
+        // this is the default module name, so we don't need to include it
+        path.pop();
+      }
       return ts.factory.createTypeReferenceNode(
         [externalRef.name, ...path, resourceName].join("."),
       );

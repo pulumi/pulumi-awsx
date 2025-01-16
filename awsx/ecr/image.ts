@@ -17,6 +17,7 @@ import * as docker from "@pulumi/docker-build";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
+import { getDockerCredentials } from "./auth";
 
 export class Image extends schema.Image {
   constructor(name: string, args: schema.ImageArgs, opts: pulumi.ComponentResourceOptions = {}) {
@@ -31,9 +32,6 @@ export function computeImageFromAsset(
   parent: pulumi.Resource,
 ) {
   const { repositoryUrl, registryId: inputRegistryId, imageTag, ...dockerInputs } = args ?? {};
-
-  const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
-  const registryId = inputRegistryId ?? url.hostname.split(".")[0];
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
@@ -50,23 +48,10 @@ export function computeImageFromAsset(
   // the unique image name we pushed to.  The name will change if the image changes ensuring
   // the TaskDefinition get's replaced IFF the built image changes.
 
-  const ecrCredentials = aws.ecr.getCredentialsOutput(
-    { registryId: registryId },
-    { parent, async: true },
+  const registryCredentials = getDockerCredentials(
+    { repositoryUrl: repositoryUrl, registryId: inputRegistryId },
+    { parent },
   );
-
-  const registryCredentials = ecrCredentials.authorizationToken.apply((authorizationToken) => {
-    const decodedCredentials = Buffer.from(authorizationToken, "base64").toString();
-    const [username, password] = decodedCredentials.split(":");
-    if (!password || !username) {
-      throw new Error("Invalid credentials");
-    }
-    return {
-      address: ecrCredentials.proxyEndpoint,
-      username: username,
-      password: password,
-    };
-  });
 
   let cacheFrom: docker.types.input.CacheFromArgs[] = [];
   if (dockerInputs.cacheFrom !== undefined) {

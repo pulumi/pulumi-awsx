@@ -14,3 +14,4 @@
 
 export * from "./repository";
 export * from "./image";
+export * from "./registryImage";

@@ -111,6 +111,7 @@
         "ec2/vpc.ts",
         "ecr/image.ts",
         "ecr/index.ts",
+        "ecr/registryImage.ts",
         "ecr/repository.ts",
         "ecs/ec2service.ts",
         "ecs/ec2taskDefinition.ts",

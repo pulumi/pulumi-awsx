@@ -15,21 +15,28 @@
 package gen
 
 import (
+	// used for embedding docs
+	_ "embed"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
+
+//go:embed docs/ecr/registry-image.md
+var registryImageDocs string
 
 func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx:ecr:Repository": repository(awsSpec),
-			"awsx:ecr:Image":      ecrImage(awsSpec, dockerSpec),
+			"awsx:ecr:Repository":    repository(awsSpec),
+			"awsx:ecr:Image":         ecrImage(),
+			"awsx:ecr:RegistryImage": registryImage(dockerSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:ecr:DockerBuild":         dockerBuild(dockerSpec),
+			"awsx:ecr:DockerBuild":         dockerBuild(),
 			"awsx:ecr:BuilderVersion":      builderVersion(),
-			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(awsSpec),
-			"awsx:ecr:lifecyclePolicyRule": lifecyclePolicyRule(awsSpec),
-			"awsx:ecr:lifecycleTagStatus":  lifecycleTagStatus(awsSpec),
+			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(),
+			"awsx:ecr:lifecyclePolicyRule": lifecyclePolicyRule(),
+			"awsx:ecr:lifecycleTagStatus":  lifecycleTagStatus(),
 		},
 	}
 }
@@ -90,7 +97,7 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
-func lifecyclePolicy(_ schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecyclePolicy() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type: "object",
@@ -123,7 +130,7 @@ func lifecyclePolicy(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func lifecyclePolicyRule(_ schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecyclePolicyRule() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
@@ -181,7 +188,7 @@ func lifecyclePolicyRule(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func lifecycleTagStatus(_ schema.PackageSpec) schema.ComplexTypeSpec {
+func lifecycleTagStatus() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type: "string",
@@ -206,8 +213,8 @@ func lifecycleTagStatus(_ schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func ecrImage(_ schema.PackageSpec, dockerSpec schema.PackageSpec) schema.ResourceSpec {
-	inputs := dockerBuildProperties(dockerSpec)
+func ecrImage() schema.ResourceSpec {
+	inputs := dockerBuildProperties()
 	inputs["repositoryUrl"] = schema.PropertySpec{
 		Description: "Url of the repository",
 		TypeSpec: schema.TypeSpec{
@@ -241,12 +248,12 @@ func ecrImage(_ schema.PackageSpec, dockerSpec schema.PackageSpec) schema.Resour
 	}
 }
 
-func dockerBuild(dockerSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func dockerBuild() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: "Arguments for building a docker image",
-			Properties:  dockerBuildProperties(dockerSpec),
+			Properties:  dockerBuildProperties(),
 		},
 	}
 }
@@ -270,7 +277,7 @@ func builderVersion() schema.ComplexTypeSpec {
 	}
 }
 
-func dockerBuildProperties(_ schema.PackageSpec) map[string]schema.PropertySpec {
+func dockerBuildProperties() map[string]schema.PropertySpec {
 	return map[string]schema.PropertySpec{
 		"args": {
 			Description: "An optional map of named build-time argument variables to " +
@@ -344,6 +351,51 @@ func dockerBuildProperties(_ schema.PackageSpec) map[string]schema.PropertySpec 
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
 			},
+		},
+	}
+}
+
+func registryImage(dockerSpec schema.PackageSpec) schema.ResourceSpec {
+	originalSpec := dockerSpec.Resources["docker:index/registryImage:RegistryImage"]
+	inputProperties := renameDockerPropertiesRefs(dockerSpec, originalSpec.InputProperties)
+	inputProperties["repositoryUrl"] = schema.PropertySpec{
+		Description: "The URL of the repository (in the form aws_account_id.dkr." +
+			"ecr.region.amazonaws.com/repositoryName).",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+
+	delete(inputProperties, "name")
+	inputProperties["sourceImage"] = schema.PropertySpec{
+		Description: "The source image to push to the registry.",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+	inputProperties["tag"] = schema.PropertySpec{
+		Description: "The tag to use for the pushed image. If not provided, it defaults to `latest`.",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+
+	return schema.ResourceSpec{
+		IsComponent:     true,
+		InputProperties: inputProperties,
+		RequiredInputs:  []string{"repositoryUrl", "sourceImage"},
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: registryImageDocs,
+			Properties: map[string]schema.PropertySpec{
+				"image": {
+					Description: "The underlying RegistryImage resource.",
+					TypeSpec: schema.TypeSpec{
+						Ref: packageRef(dockerSpec, "/resources/docker:index%2fregistryImage:RegistryImage"),
+					},
+				},
+			},
+			Required: []string{"image"},
 		},
 	}
 }
