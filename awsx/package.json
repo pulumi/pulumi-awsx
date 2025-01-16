@@ -14,6 +14,7 @@
   "scripts": {
     "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
     "gen-types": "ts-node scripts/generate-provider-types.ts",
+    "build": "SCHEMA=../provider/cmd/pulumi-resource-awsx/schema-embed.json ./scripts/build.sh",
     "format": "prettier --list-different --write .",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest",
