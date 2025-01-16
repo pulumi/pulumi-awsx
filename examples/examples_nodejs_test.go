@@ -350,8 +350,9 @@ func TestVpc(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+// Verifies that ECS services are created/updated in parallel. This took 1+ hours to run before fixing pulumi/pulumi#7629
 func TestAccEcsParallel(t *testing.T) {
-	maxDuration(15*time.Minute, t, func(t *testing.T) {
+	maxDuration(30*time.Minute, t, func(t *testing.T) {
 		test := getNodeJSBaseOptions(t).
 			With(integration.ProgramTestOptions{
 				RunUpdateTest: false,
