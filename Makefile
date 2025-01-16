@@ -214,8 +214,6 @@ lint_provider: provider
 lint_provider.fix:
 	cd provider && golangci-lint run --path-prefix provider -c ../.golangci.yml --fix
 .PHONY: lint_provider lint_provider.fix
-
-build_provider_cmd_default = cd provider && GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build $(PULUMI_PROVIDER_BUILD_PARALLELISM) -o "$(3)" -ldflags "$(LDFLAGS)" $(PROJECT)/$(PROVIDER_PATH)/cmd/$(PROVIDER)
 build_provider_cmd = OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build
 
 provider: bin/$(PROVIDER)
