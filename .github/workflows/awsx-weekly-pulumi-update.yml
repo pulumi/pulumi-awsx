@@ -75,11 +75,15 @@ jobs:
     - name: Install Pulumi CLI
       if: steps.gomod.outputs.changes != 0
       uses: pulumi/action-install-pulumi-cli@v2
-    - name: Build Provider
+    - name: Update dependent files
       if: steps.gomod.outputs.changes != 0
       run: |
-        make build
-        make lint
+        # Reusing the make renovate command here temporarily. This command will make sure that generated files are
+        # up-to-date with respect to dependency changes just made.
+        #
+        # In the future Renovate bot should be able to update pulumi dependencies by itself. Care should be taken that
+        # these are done as separate changes from regular dependencies as they are sensitive.
+        make renovate
     - name: Commit changes
       if: steps.gomod.outputs.changes != 0
       run: |
