@@ -3241,6 +3241,82 @@ export namespace lb {
          */
         protocol?: pulumi.Input<string>;
         /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Issuer` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertIssuerHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Leaf` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertLeafHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Serial-Number` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Subject` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSubjectHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Validity` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertValidityHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Cipher-Suite` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsCipherSuiteHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Version` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsVersionHeaderName?: pulumi.Input<string>;
+        /**
+         * Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.
+         */
+        routingHttpResponseAccessControlAllowCredentialsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which headers can be used during the request. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Accept`, `Accept-Language`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`. Dependent on your use-case other headers can be exposed and then set as a value consult the Access-Control-Allow-Headers documentation.
+         */
+        routingHttpResponseAccessControlAllowHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Set which HTTP methods are allowed when accessing the server from a different origin. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `GET`, `HEAD`, `POST`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE` or `PATCH`.
+         */
+        routingHttpResponseAccessControlAllowMethodsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which origins are allowed to access the server. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. A valid value is a URI, eg: `https://example.com`.
+         */
+        routingHttpResponseAccessControlAllowOriginHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies whether the browser should include credentials such as cookies or authentication when making requests. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, or `Pragma`. Dependent on your use-case other headers can be exposed, consult the Access-Control-Expose-Headers documentation.
+         */
+        routingHttpResponseAccessControlExposeHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.
+         */
+        routingHttpResponseAccessControlMaxAgeHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies restrictions enforced by the browser to help minimize the risk of certain types of security threats. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Values for this are extensive, and can be impactful when set, consult Content-Security-Policy documentation.
+         */
+        routingHttpResponseContentSecurityPolicyHeaderValue?: pulumi.Input<string>;
+        /**
+         * Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.
+         */
+        routingHttpResponseServerEnabled?: pulumi.Input<boolean>;
+        /**
+         * Informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. Default values are `max-age=31536000; includeSubDomains; preload` consult the Strict-Transport-Security documentation for further details.
+         */
+        routingHttpResponseStrictTransportSecurityHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.
+         */
+        routingHttpResponseXContentTypeOptionsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the browser is allowed to render a page in a frame, iframe, embed or object. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid values are `DENY`, `SAMEORIGIN`, or `ALLOW-FROM https://example.com`.
+         */
+        routingHttpResponseXFrameOptionsHeaderValue?: pulumi.Input<string>;
+        /**
          * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          */
         sslPolicy?: pulumi.Input<string>;
