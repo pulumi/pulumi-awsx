@@ -48,7 +48,14 @@ jobs:
     with:
       version: ${{ needs.prerequisites.outputs.version }}
 
-  
+  post_build:
+    name: post_build
+    needs: prerequisites
+    uses: ./.github/workflows/main-post-build.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.prerequisites.outputs.version }}
+
   lint:
     name: lint
     uses: ./.github/workflows/lint.yml
