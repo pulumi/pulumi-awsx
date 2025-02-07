@@ -307,6 +307,15 @@ func dockerBuildProperties() map[string]schema.PropertySpec {
 				},
 			},
 		},
+		"cacheTo": {
+			Description: "ECR repo where to store docker build cache",
+			TypeSpec: schema.TypeSpec{
+				Type: "array",
+				Items: &schema.TypeSpec{
+					Type: "string",
+				},
+			},
+		},
 		"context": {
 			Description: "Path to a directory to use for the Docker build context, " +
 				"usually the directory in which the Dockerfile resides (although " +

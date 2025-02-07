@@ -46,6 +46,8 @@ type imageArgs struct {
 	BuilderVersion *BuilderVersion `pulumi:"builderVersion"`
 	// Images to consider as cache sources
 	CacheFrom []string `pulumi:"cacheFrom"`
+	// ECR repo where to store docker build cache
+	CacheTo []string `pulumi:"cacheTo"`
 	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
 	Context *string `pulumi:"context"`
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
@@ -72,6 +74,8 @@ type ImageArgs struct {
 	BuilderVersion *BuilderVersion
 	// Images to consider as cache sources
 	CacheFrom pulumi.StringArrayInput
+	// ECR repo where to store docker build cache
+	CacheTo pulumi.StringArrayInput
 	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
 	Context pulumi.StringPtrInput
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.

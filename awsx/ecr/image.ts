@@ -53,6 +53,7 @@ export function computeImageFromAsset(
     { parent },
   );
 
+  // CacheFrom setup
   let cacheFrom: docker.types.input.CacheFromArgs[] = [];
   if (dockerInputs.cacheFrom !== undefined) {
     cacheFrom = dockerInputs.cacheFrom.map((c) => {
@@ -68,6 +69,27 @@ export function computeImageFromAsset(
     cacheFrom.push({ registry: { ref: canonicalImageName } });
   }
 
+  // CacheTo setup
+  let cacheTo: docker.types.input.CacheToArgs[] = [];
+  if (dockerInputs.cacheTo !== undefined) {
+    cacheTo = dockerInputs.cacheTo.map((c) => {
+      return {
+        registry: {
+          ref: c,
+          compression: docker.CompressionType.Zstd,
+          ignoreError: true,
+          imageManifest: true,
+          ociMediaTypes: true,
+          mode: docker.CacheMode.Max,
+        },
+      };
+    });
+  }
+  // Set inline cache by default.
+  if (cacheTo.length === 0) {
+    cacheTo.push({ inline: {} });
+  }
+
   let context = ".";
   if (dockerInputs.context !== undefined) {
     context = dockerInputs.context;
@@ -77,7 +99,7 @@ export function computeImageFromAsset(
     tags: [canonicalImageName],
     buildArgs: dockerInputs.args,
     cacheFrom: cacheFrom,
-    cacheTo: [{ inline: {} }],
+    cacheTo: cacheTo,
     context: { location: context },
     dockerfile: { location: dockerInputs.dockerfile },
     platforms: dockerInputs.platform ? [dockerInputs.platform as docker.Platform] : [],

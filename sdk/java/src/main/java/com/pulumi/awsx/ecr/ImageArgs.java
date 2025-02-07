@@ -64,6 +64,21 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * ECR repo where to store docker build cache
+     * 
+     */
+    @Import(name="cacheTo")
+    private @Nullable Output<List<String>> cacheTo;
+
+    /**
+     * @return ECR repo where to store docker build cache
+     * 
+     */
+    public Optional<Output<List<String>>> cacheTo() {
+        return Optional.ofNullable(this.cacheTo);
+    }
+
+    /**
      * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
      * 
      */
@@ -189,6 +204,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         this.args = $.args;
         this.builderVersion = $.builderVersion;
         this.cacheFrom = $.cacheFrom;
+        this.cacheTo = $.cacheTo;
         this.context = $.context;
         this.dockerfile = $.dockerfile;
         this.imageName = $.imageName;
@@ -278,6 +294,37 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder cacheFrom(String... cacheFrom) {
             return cacheFrom(List.of(cacheFrom));
+        }
+
+        /**
+         * @param cacheTo ECR repo where to store docker build cache
+         * 
+         * @return builder
+         * 
+         */
+        public Builder cacheTo(@Nullable Output<List<String>> cacheTo) {
+            $.cacheTo = cacheTo;
+            return this;
+        }
+
+        /**
+         * @param cacheTo ECR repo where to store docker build cache
+         * 
+         * @return builder
+         * 
+         */
+        public Builder cacheTo(List<String> cacheTo) {
+            return cacheTo(Output.of(cacheTo));
+        }
+
+        /**
+         * @param cacheTo ECR repo where to store docker build cache
+         * 
+         * @return builder
+         * 
+         */
+        public Builder cacheTo(String... cacheTo) {
+            return cacheTo(List.of(cacheTo));
         }
 
         /**

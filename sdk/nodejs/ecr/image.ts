@@ -47,6 +47,7 @@ export class Image extends pulumi.ComponentResource {
             resourceInputs["args"] = args ? args.args : undefined;
             resourceInputs["builderVersion"] = args ? args.builderVersion : undefined;
             resourceInputs["cacheFrom"] = args ? args.cacheFrom : undefined;
+            resourceInputs["cacheTo"] = args ? args.cacheTo : undefined;
             resourceInputs["context"] = args ? args.context : undefined;
             resourceInputs["dockerfile"] = args ? args.dockerfile : undefined;
             resourceInputs["imageName"] = args ? args.imageName : undefined;
@@ -80,6 +81,10 @@ export interface ImageArgs {
      * Images to consider as cache sources
      */
     cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * ECR repo where to store docker build cache
+     */
+    cacheTo?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
      */

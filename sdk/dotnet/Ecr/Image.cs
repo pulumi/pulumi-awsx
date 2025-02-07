@@ -79,6 +79,18 @@ namespace Pulumi.Awsx.Ecr
             set => _cacheFrom = value;
         }
 
+        [Input("cacheTo")]
+        private InputList<string>? _cacheTo;
+
+        /// <summary>
+        /// ECR repo where to store docker build cache
+        /// </summary>
+        public InputList<string> CacheTo
+        {
+            get => _cacheTo ?? (_cacheTo = new InputList<string>());
+            set => _cacheTo = value;
+        }
+
         /// <summary>
         /// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         /// </summary>
