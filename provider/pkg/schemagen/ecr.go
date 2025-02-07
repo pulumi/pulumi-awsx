@@ -308,7 +308,7 @@ func dockerBuildProperties() map[string]schema.PropertySpec {
 			},
 		},
 		"cacheTo": {
-			Description: "ECR repo where to store docker build cache",
+			Description: "ECR registries where to store docker build cache",
 			TypeSpec: schema.TypeSpec{
 				Type: "array",
 				Items: &schema.TypeSpec{

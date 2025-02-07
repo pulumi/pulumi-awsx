@@ -83,7 +83,7 @@ namespace Pulumi.Awsx.Ecr
         private InputList<string>? _cacheTo;
 
         /// <summary>
-        /// ECR repo where to store docker build cache
+        /// ECR registries where to store docker build cache
         /// </summary>
         public InputList<string> CacheTo
         {

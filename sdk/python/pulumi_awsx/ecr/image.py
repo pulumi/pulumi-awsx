@@ -38,7 +38,7 @@ class ImageArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
         :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_to: ECR repo where to store docker build cache
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_to: ECR registries where to store docker build cache
         :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         :param pulumi.Input[str] image_name: Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
@@ -123,7 +123,7 @@ class ImageArgs:
     @pulumi.getter(name="cacheTo")
     def cache_to(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
         """
-        ECR repo where to store docker build cache
+        ECR registries where to store docker build cache
         """
         return pulumi.get(self, "cache_to")
 
@@ -242,7 +242,7 @@ class Image(pulumi.ComponentResource):
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
         :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_to: ECR repo where to store docker build cache
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_to: ECR registries where to store docker build cache
         :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         :param pulumi.Input[str] image_name: Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used

@@ -82,7 +82,7 @@ export interface ImageArgs {
      */
     cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
     /**
-     * ECR repo where to store docker build cache
+     * ECR registries where to store docker build cache
      */
     cacheTo?: pulumi.Input<pulumi.Input<string>[]>;
     /**

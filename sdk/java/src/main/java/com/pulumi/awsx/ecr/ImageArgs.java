@@ -64,14 +64,14 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * ECR repo where to store docker build cache
+     * ECR registries where to store docker build cache
      * 
      */
     @Import(name="cacheTo")
     private @Nullable Output<List<String>> cacheTo;
 
     /**
-     * @return ECR repo where to store docker build cache
+     * @return ECR registries where to store docker build cache
      * 
      */
     public Optional<Output<List<String>>> cacheTo() {
@@ -297,7 +297,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param cacheTo ECR repo where to store docker build cache
+         * @param cacheTo ECR registries where to store docker build cache
          * 
          * @return builder
          * 
@@ -308,7 +308,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param cacheTo ECR repo where to store docker build cache
+         * @param cacheTo ECR registries where to store docker build cache
          * 
          * @return builder
          * 
@@ -318,7 +318,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param cacheTo ECR repo where to store docker build cache
+         * @param cacheTo ECR registries where to store docker build cache
          * 
          * @return builder
          * 

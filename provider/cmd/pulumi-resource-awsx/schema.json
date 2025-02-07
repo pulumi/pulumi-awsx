@@ -817,7 +817,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "ECR repo where to store docker build cache"
+                    "description": "ECR registries where to store docker build cache"
                 },
                 "context": {
                     "type": "string",
@@ -2204,7 +2204,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "ECR repo where to store docker build cache"
+                    "description": "ECR registries where to store docker build cache"
                 },
                 "context": {
                     "type": "string",
