@@ -58,6 +58,7 @@ jobs:
     - uses: pulumi/provider-version-action@f96d032a2758fdda7939e5728eff6c0d980ae894 # v1.6.0
       id: provider-version
       with:
+        major-version: 2
         set-env: 'PROVIDER_VERSION'
     - name: Cache examples generation
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
