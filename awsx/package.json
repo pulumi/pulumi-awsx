@@ -25,7 +25,7 @@
   },
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
-    "@pulumi/aws": "6.66.3",
+    "@pulumi/aws": "6.70.0",
     "@pulumi/docker": "4.6.0",
     "@pulumi/docker-build": "0.0.8",
     "@pulumi/pulumi": "3.144.1",

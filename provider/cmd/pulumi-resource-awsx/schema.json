@@ -36,7 +36,7 @@
         },
         "java": {
             "dependencies": {
-                "com.pulumi:aws": "6.66.3",
+                "com.pulumi:aws": "6.70.0",
                 "com.pulumi:docker": "4.6.0",
                 "com.pulumi:docker-build": "0.0.8"
             }
@@ -44,7 +44,7 @@
         "nodejs": {
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
-                "@pulumi/aws": "^6.66.3",
+                "@pulumi/aws": "^6.70.0",
                 "@pulumi/docker": "^4.6.0",
                 "@pulumi/docker-build": "^0.0.8",
                 "@types/aws-lambda": "^8.10.23",
@@ -108,7 +108,7 @@
                 "corsRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
                     },
                     "description": "A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).\n"
                 },
@@ -119,7 +119,7 @@
                 "grants": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
                     },
                     "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.\n"
                 },
@@ -130,19 +130,19 @@
                 "lifecycleRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
                     },
                     "description": "A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).\n"
                 },
                 "loggings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketLogging:BucketLogging"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketLogging:BucketLogging"
                     },
                     "description": "A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).\n"
                 },
                 "objectLockConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
                     "description": "A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)\n\n\u003e **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`\n"
                 },
                 "policy": {
@@ -150,7 +150,7 @@
                     "description": "A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.\n"
                 },
                 "replicationConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
                     "description": "A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).\n"
                 },
                 "requestPayer": {
@@ -158,7 +158,7 @@
                     "description": "Specifies who should bear the cost of Amazon S3 data transfer.\nCan be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur\nthe costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)\ndeveloper guide for more information.\n"
                 },
                 "serverSideEncryptionConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
                     "description": "A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)\n"
                 },
                 "tags": {
@@ -169,11 +169,11 @@
                     "description": "A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
                 },
                 "versioning": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
                     "description": "A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)\n"
                 },
                 "website": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
                     "description": "A website object (documented below).\n"
                 },
                 "websiteDomain": {
@@ -408,7 +408,7 @@
                 "inlinePolicies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
                     },
                     "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.\n"
                 },
@@ -473,14 +473,14 @@
                 "egress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
                     },
                     "description": "Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
                 "ingress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
                     },
                     "description": "Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
@@ -696,7 +696,7 @@
             ]
         },
         "awsx:ec2:VpcEndpointSpec": {
-            "description": "Provides a VPC Endpoint resource.\n\n\u003e **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for\nRoute Tables - (an association between a VPC endpoint and a single `route_table_id`),\nSecurity Groups - (an association between a VPC endpoint and a single `security_group_id`),\nand Subnets - (an association between a VPC endpoint and a single `subnet_id`) and\na VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.\nDo not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.\nDoing so will cause a conflict of associations and will overwrite the association.\n\n## Example Usage\n\n### Basic\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst s3 = new aws.ec2.VpcEndpoint(\"s3\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.s3\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ns3 = aws.ec2.VpcEndpoint(\"s3\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.s3\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var s3 = new Aws.Ec2.VpcEndpoint(\"s3\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.s3\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"s3\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:       pulumi.Any(main.Id),\n\t\t\tServiceName: pulumi.String(\"com.amazonaws.us-west-2.s3\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var s3 = new VpcEndpoint(\"s3\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.s3\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  s3:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.s3\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Basic w/ Tags\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst s3 = new aws.ec2.VpcEndpoint(\"s3\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.s3\",\n    tags: {\n        Environment: \"test\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ns3 = aws.ec2.VpcEndpoint(\"s3\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.s3\",\n    tags={\n        \"Environment\": \"test\",\n    })\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var s3 = new Aws.Ec2.VpcEndpoint(\"s3\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.s3\",\n        Tags = \n        {\n            { \"Environment\", \"test\" },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"s3\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:       pulumi.Any(main.Id),\n\t\t\tServiceName: pulumi.String(\"com.amazonaws.us-west-2.s3\"),\n\t\t\tTags: pulumi.StringMap{\n\t\t\t\t\"Environment\": pulumi.String(\"test\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var s3 = new VpcEndpoint(\"s3\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.s3\")\n            .tags(Map.of(\"Environment\", \"test\"))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  s3:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.s3\n      tags:\n        Environment: test\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Interface Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst ec2 = new aws.ec2.VpcEndpoint(\"ec2\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.ec2\",\n    vpcEndpointType: \"Interface\",\n    securityGroupIds: [sg1.id],\n    privateDnsEnabled: true,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nec2 = aws.ec2.VpcEndpoint(\"ec2\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.ec2\",\n    vpc_endpoint_type=\"Interface\",\n    security_group_ids=[sg1[\"id\"]],\n    private_dns_enabled=True)\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var ec2 = new Aws.Ec2.VpcEndpoint(\"ec2\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.ec2\",\n        VpcEndpointType = \"Interface\",\n        SecurityGroupIds = new[]\n        {\n            sg1.Id,\n        },\n        PrivateDnsEnabled = true,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"ec2\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:           pulumi.Any(main.Id),\n\t\t\tServiceName:     pulumi.String(\"com.amazonaws.us-west-2.ec2\"),\n\t\t\tVpcEndpointType: pulumi.String(\"Interface\"),\n\t\t\tSecurityGroupIds: pulumi.StringArray{\n\t\t\t\tsg1.Id,\n\t\t\t},\n\t\t\tPrivateDnsEnabled: pulumi.Bool(true),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var ec2 = new VpcEndpoint(\"ec2\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.ec2\")\n            .vpcEndpointType(\"Interface\")\n            .securityGroupIds(sg1.id())\n            .privateDnsEnabled(true)\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  ec2:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.ec2\n      vpcEndpointType: Interface\n      securityGroupIds:\n        - ${sg1.id}\n      privateDnsEnabled: true\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Interface Endpoint Type with User-Defined IP Address\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst ec2 = new aws.ec2.VpcEndpoint(\"ec2\", {\n    vpcId: example.id,\n    serviceName: \"com.amazonaws.us-west-2.ec2\",\n    vpcEndpointType: \"Interface\",\n    subnetConfigurations: [\n        {\n            ipv4: \"10.0.1.10\",\n            subnetId: example1.id,\n        },\n        {\n            ipv4: \"10.0.2.10\",\n            subnetId: example2.id,\n        },\n    ],\n    subnetIds: [\n        example1.id,\n        example2.id,\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nec2 = aws.ec2.VpcEndpoint(\"ec2\",\n    vpc_id=example[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.ec2\",\n    vpc_endpoint_type=\"Interface\",\n    subnet_configurations=[\n        {\n            \"ipv4\": \"10.0.1.10\",\n            \"subnet_id\": example1[\"id\"],\n        },\n        {\n            \"ipv4\": \"10.0.2.10\",\n            \"subnet_id\": example2[\"id\"],\n        },\n    ],\n    subnet_ids=[\n        example1[\"id\"],\n        example2[\"id\"],\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var ec2 = new Aws.Ec2.VpcEndpoint(\"ec2\", new()\n    {\n        VpcId = example.Id,\n        ServiceName = \"com.amazonaws.us-west-2.ec2\",\n        VpcEndpointType = \"Interface\",\n        SubnetConfigurations = new[]\n        {\n            new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs\n            {\n                Ipv4 = \"10.0.1.10\",\n                SubnetId = example1.Id,\n            },\n            new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs\n            {\n                Ipv4 = \"10.0.2.10\",\n                SubnetId = example2.Id,\n            },\n        },\n        SubnetIds = new[]\n        {\n            example1.Id,\n            example2.Id,\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"ec2\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:           pulumi.Any(example.Id),\n\t\t\tServiceName:     pulumi.String(\"com.amazonaws.us-west-2.ec2\"),\n\t\t\tVpcEndpointType: pulumi.String(\"Interface\"),\n\t\t\tSubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{\n\t\t\t\t\u0026ec2.VpcEndpointSubnetConfigurationArgs{\n\t\t\t\t\tIpv4:     pulumi.String(\"10.0.1.10\"),\n\t\t\t\t\tSubnetId: pulumi.Any(example1.Id),\n\t\t\t\t},\n\t\t\t\t\u0026ec2.VpcEndpointSubnetConfigurationArgs{\n\t\t\t\t\tIpv4:     pulumi.String(\"10.0.2.10\"),\n\t\t\t\t\tSubnetId: pulumi.Any(example2.Id),\n\t\t\t\t},\n\t\t\t},\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texample1.Id,\n\t\t\t\texample2.Id,\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport com.pulumi.aws.ec2.inputs.VpcEndpointSubnetConfigurationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var ec2 = new VpcEndpoint(\"ec2\", VpcEndpointArgs.builder()\n            .vpcId(example.id())\n            .serviceName(\"com.amazonaws.us-west-2.ec2\")\n            .vpcEndpointType(\"Interface\")\n            .subnetConfigurations(            \n                VpcEndpointSubnetConfigurationArgs.builder()\n                    .ipv4(\"10.0.1.10\")\n                    .subnetId(example1.id())\n                    .build(),\n                VpcEndpointSubnetConfigurationArgs.builder()\n                    .ipv4(\"10.0.2.10\")\n                    .subnetId(example2.id())\n                    .build())\n            .subnetIds(            \n                example1.id(),\n                example2.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  ec2:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${example.id}\n      serviceName: com.amazonaws.us-west-2.ec2\n      vpcEndpointType: Interface\n      subnetConfigurations:\n        - ipv4: 10.0.1.10\n          subnetId: ${example1.id}\n        - ipv4: 10.0.2.10\n          subnetId: ${example2.id}\n      subnetIds:\n        - ${example1.id}\n        - ${example2.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Gateway Load Balancer Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst current = aws.getCallerIdentity({});\nconst example = new aws.ec2.VpcEndpointService(\"example\", {\n    acceptanceRequired: false,\n    allowedPrincipals: [current.then(current =\u003e current.arn)],\n    gatewayLoadBalancerArns: [exampleAwsLb.arn],\n});\nconst exampleVpcEndpoint = new aws.ec2.VpcEndpoint(\"example\", {\n    serviceName: example.serviceName,\n    subnetIds: [exampleAwsSubnet.id],\n    vpcEndpointType: example.serviceType,\n    vpcId: exampleAwsVpc.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ncurrent = aws.get_caller_identity()\nexample = aws.ec2.VpcEndpointService(\"example\",\n    acceptance_required=False,\n    allowed_principals=[current.arn],\n    gateway_load_balancer_arns=[example_aws_lb[\"arn\"]])\nexample_vpc_endpoint = aws.ec2.VpcEndpoint(\"example\",\n    service_name=example.service_name,\n    subnet_ids=[example_aws_subnet[\"id\"]],\n    vpc_endpoint_type=example.service_type,\n    vpc_id=example_aws_vpc[\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var current = Aws.GetCallerIdentity.Invoke();\n\n    var example = new Aws.Ec2.VpcEndpointService(\"example\", new()\n    {\n        AcceptanceRequired = false,\n        AllowedPrincipals = new[]\n        {\n            current.Apply(getCallerIdentityResult =\u003e getCallerIdentityResult.Arn),\n        },\n        GatewayLoadBalancerArns = new[]\n        {\n            exampleAwsLb.Arn,\n        },\n    });\n\n    var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint(\"example\", new()\n    {\n        ServiceName = example.ServiceName,\n        SubnetIds = new[]\n        {\n            exampleAwsSubnet.Id,\n        },\n        VpcEndpointType = example.ServiceType,\n        VpcId = exampleAwsVpc.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tcurrent, err := aws.GetCallerIdentity(ctx, \u0026aws.GetCallerIdentityArgs{}, nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texample, err := ec2.NewVpcEndpointService(ctx, \"example\", \u0026ec2.VpcEndpointServiceArgs{\n\t\t\tAcceptanceRequired: pulumi.Bool(false),\n\t\t\tAllowedPrincipals: pulumi.StringArray{\n\t\t\t\tpulumi.String(current.Arn),\n\t\t\t},\n\t\t\tGatewayLoadBalancerArns: pulumi.StringArray{\n\t\t\t\texampleAwsLb.Arn,\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = ec2.NewVpcEndpoint(ctx, \"example\", \u0026ec2.VpcEndpointArgs{\n\t\t\tServiceName: example.ServiceName,\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texampleAwsSubnet.Id,\n\t\t\t},\n\t\t\tVpcEndpointType: example.ServiceType,\n\t\t\tVpcId:           pulumi.Any(exampleAwsVpc.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.AwsFunctions;\nimport com.pulumi.aws.inputs.GetCallerIdentityArgs;\nimport com.pulumi.aws.ec2.VpcEndpointService;\nimport com.pulumi.aws.ec2.VpcEndpointServiceArgs;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        final var current = AwsFunctions.getCallerIdentity();\n\n        var example = new VpcEndpointService(\"example\", VpcEndpointServiceArgs.builder()\n            .acceptanceRequired(false)\n            .allowedPrincipals(current.applyValue(getCallerIdentityResult -\u003e getCallerIdentityResult.arn()))\n            .gatewayLoadBalancerArns(exampleAwsLb.arn())\n            .build());\n\n        var exampleVpcEndpoint = new VpcEndpoint(\"exampleVpcEndpoint\", VpcEndpointArgs.builder()\n            .serviceName(example.serviceName())\n            .subnetIds(exampleAwsSubnet.id())\n            .vpcEndpointType(example.serviceType())\n            .vpcId(exampleAwsVpc.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:ec2:VpcEndpointService\n    properties:\n      acceptanceRequired: false\n      allowedPrincipals:\n        - ${current.arn}\n      gatewayLoadBalancerArns:\n        - ${exampleAwsLb.arn}\n  exampleVpcEndpoint:\n    type: aws:ec2:VpcEndpoint\n    name: example\n    properties:\n      serviceName: ${example.serviceName}\n      subnetIds:\n        - ${exampleAwsSubnet.id}\n      vpcEndpointType: ${example.serviceType}\n      vpcId: ${exampleAwsVpc.id}\nvariables:\n  current:\n    fn::invoke:\n      function: aws:getCallerIdentity\n      arguments: {}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n## Import\n\nUsing `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:\n\n```sh\n$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57\n```\n",
+            "description": "Provides a VPC Endpoint resource.\n\n\u003e **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for\nRoute Tables - (an association between a VPC endpoint and a single `route_table_id`),\nSecurity Groups - (an association between a VPC endpoint and a single `security_group_id`),\nand Subnets - (an association between a VPC endpoint and a single `subnet_id`) and\na VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.\nDo not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.\nDoing so will cause a conflict of associations and will overwrite the association.\n\n## Example Usage\n\n### Basic\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst s3 = new aws.ec2.VpcEndpoint(\"s3\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.s3\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ns3 = aws.ec2.VpcEndpoint(\"s3\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.s3\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var s3 = new Aws.Ec2.VpcEndpoint(\"s3\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.s3\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"s3\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:       pulumi.Any(main.Id),\n\t\t\tServiceName: pulumi.String(\"com.amazonaws.us-west-2.s3\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var s3 = new VpcEndpoint(\"s3\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.s3\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  s3:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.s3\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Basic w/ Tags\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst s3 = new aws.ec2.VpcEndpoint(\"s3\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.s3\",\n    tags: {\n        Environment: \"test\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ns3 = aws.ec2.VpcEndpoint(\"s3\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.s3\",\n    tags={\n        \"Environment\": \"test\",\n    })\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var s3 = new Aws.Ec2.VpcEndpoint(\"s3\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.s3\",\n        Tags = \n        {\n            { \"Environment\", \"test\" },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"s3\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:       pulumi.Any(main.Id),\n\t\t\tServiceName: pulumi.String(\"com.amazonaws.us-west-2.s3\"),\n\t\t\tTags: pulumi.StringMap{\n\t\t\t\t\"Environment\": pulumi.String(\"test\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var s3 = new VpcEndpoint(\"s3\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.s3\")\n            .tags(Map.of(\"Environment\", \"test\"))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  s3:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.s3\n      tags:\n        Environment: test\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Interface Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst ec2 = new aws.ec2.VpcEndpoint(\"ec2\", {\n    vpcId: main.id,\n    serviceName: \"com.amazonaws.us-west-2.ec2\",\n    vpcEndpointType: \"Interface\",\n    securityGroupIds: [sg1.id],\n    privateDnsEnabled: true,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nec2 = aws.ec2.VpcEndpoint(\"ec2\",\n    vpc_id=main[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.ec2\",\n    vpc_endpoint_type=\"Interface\",\n    security_group_ids=[sg1[\"id\"]],\n    private_dns_enabled=True)\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var ec2 = new Aws.Ec2.VpcEndpoint(\"ec2\", new()\n    {\n        VpcId = main.Id,\n        ServiceName = \"com.amazonaws.us-west-2.ec2\",\n        VpcEndpointType = \"Interface\",\n        SecurityGroupIds = new[]\n        {\n            sg1.Id,\n        },\n        PrivateDnsEnabled = true,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"ec2\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:           pulumi.Any(main.Id),\n\t\t\tServiceName:     pulumi.String(\"com.amazonaws.us-west-2.ec2\"),\n\t\t\tVpcEndpointType: pulumi.String(\"Interface\"),\n\t\t\tSecurityGroupIds: pulumi.StringArray{\n\t\t\t\tsg1.Id,\n\t\t\t},\n\t\t\tPrivateDnsEnabled: pulumi.Bool(true),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var ec2 = new VpcEndpoint(\"ec2\", VpcEndpointArgs.builder()\n            .vpcId(main.id())\n            .serviceName(\"com.amazonaws.us-west-2.ec2\")\n            .vpcEndpointType(\"Interface\")\n            .securityGroupIds(sg1.id())\n            .privateDnsEnabled(true)\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  ec2:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${main.id}\n      serviceName: com.amazonaws.us-west-2.ec2\n      vpcEndpointType: Interface\n      securityGroupIds:\n        - ${sg1.id}\n      privateDnsEnabled: true\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Interface Endpoint Type with User-Defined IP Address\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst ec2 = new aws.ec2.VpcEndpoint(\"ec2\", {\n    vpcId: example.id,\n    serviceName: \"com.amazonaws.us-west-2.ec2\",\n    vpcEndpointType: \"Interface\",\n    subnetConfigurations: [\n        {\n            ipv4: \"10.0.1.10\",\n            subnetId: example1.id,\n        },\n        {\n            ipv4: \"10.0.2.10\",\n            subnetId: example2.id,\n        },\n    ],\n    subnetIds: [\n        example1.id,\n        example2.id,\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nec2 = aws.ec2.VpcEndpoint(\"ec2\",\n    vpc_id=example[\"id\"],\n    service_name=\"com.amazonaws.us-west-2.ec2\",\n    vpc_endpoint_type=\"Interface\",\n    subnet_configurations=[\n        {\n            \"ipv4\": \"10.0.1.10\",\n            \"subnet_id\": example1[\"id\"],\n        },\n        {\n            \"ipv4\": \"10.0.2.10\",\n            \"subnet_id\": example2[\"id\"],\n        },\n    ],\n    subnet_ids=[\n        example1[\"id\"],\n        example2[\"id\"],\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var ec2 = new Aws.Ec2.VpcEndpoint(\"ec2\", new()\n    {\n        VpcId = example.Id,\n        ServiceName = \"com.amazonaws.us-west-2.ec2\",\n        VpcEndpointType = \"Interface\",\n        SubnetConfigurations = new[]\n        {\n            new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs\n            {\n                Ipv4 = \"10.0.1.10\",\n                SubnetId = example1.Id,\n            },\n            new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs\n            {\n                Ipv4 = \"10.0.2.10\",\n                SubnetId = example2.Id,\n            },\n        },\n        SubnetIds = new[]\n        {\n            example1.Id,\n            example2.Id,\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"ec2\", \u0026ec2.VpcEndpointArgs{\n\t\t\tVpcId:           pulumi.Any(example.Id),\n\t\t\tServiceName:     pulumi.String(\"com.amazonaws.us-west-2.ec2\"),\n\t\t\tVpcEndpointType: pulumi.String(\"Interface\"),\n\t\t\tSubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{\n\t\t\t\t\u0026ec2.VpcEndpointSubnetConfigurationArgs{\n\t\t\t\t\tIpv4:     pulumi.String(\"10.0.1.10\"),\n\t\t\t\t\tSubnetId: pulumi.Any(example1.Id),\n\t\t\t\t},\n\t\t\t\t\u0026ec2.VpcEndpointSubnetConfigurationArgs{\n\t\t\t\t\tIpv4:     pulumi.String(\"10.0.2.10\"),\n\t\t\t\t\tSubnetId: pulumi.Any(example2.Id),\n\t\t\t\t},\n\t\t\t},\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texample1.Id,\n\t\t\t\texample2.Id,\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport com.pulumi.aws.ec2.inputs.VpcEndpointSubnetConfigurationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var ec2 = new VpcEndpoint(\"ec2\", VpcEndpointArgs.builder()\n            .vpcId(example.id())\n            .serviceName(\"com.amazonaws.us-west-2.ec2\")\n            .vpcEndpointType(\"Interface\")\n            .subnetConfigurations(            \n                VpcEndpointSubnetConfigurationArgs.builder()\n                    .ipv4(\"10.0.1.10\")\n                    .subnetId(example1.id())\n                    .build(),\n                VpcEndpointSubnetConfigurationArgs.builder()\n                    .ipv4(\"10.0.2.10\")\n                    .subnetId(example2.id())\n                    .build())\n            .subnetIds(            \n                example1.id(),\n                example2.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  ec2:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      vpcId: ${example.id}\n      serviceName: com.amazonaws.us-west-2.ec2\n      vpcEndpointType: Interface\n      subnetConfigurations:\n        - ipv4: 10.0.1.10\n          subnetId: ${example1.id}\n        - ipv4: 10.0.2.10\n          subnetId: ${example2.id}\n      subnetIds:\n        - ${example1.id}\n        - ${example2.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Gateway Load Balancer Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst current = aws.getCallerIdentity({});\nconst example = new aws.ec2.VpcEndpointService(\"example\", {\n    acceptanceRequired: false,\n    allowedPrincipals: [current.then(current =\u003e current.arn)],\n    gatewayLoadBalancerArns: [exampleAwsLb.arn],\n});\nconst exampleVpcEndpoint = new aws.ec2.VpcEndpoint(\"example\", {\n    serviceName: example.serviceName,\n    subnetIds: [exampleAwsSubnet.id],\n    vpcEndpointType: example.serviceType,\n    vpcId: exampleAwsVpc.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ncurrent = aws.get_caller_identity()\nexample = aws.ec2.VpcEndpointService(\"example\",\n    acceptance_required=False,\n    allowed_principals=[current.arn],\n    gateway_load_balancer_arns=[example_aws_lb[\"arn\"]])\nexample_vpc_endpoint = aws.ec2.VpcEndpoint(\"example\",\n    service_name=example.service_name,\n    subnet_ids=[example_aws_subnet[\"id\"]],\n    vpc_endpoint_type=example.service_type,\n    vpc_id=example_aws_vpc[\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var current = Aws.GetCallerIdentity.Invoke();\n\n    var example = new Aws.Ec2.VpcEndpointService(\"example\", new()\n    {\n        AcceptanceRequired = false,\n        AllowedPrincipals = new[]\n        {\n            current.Apply(getCallerIdentityResult =\u003e getCallerIdentityResult.Arn),\n        },\n        GatewayLoadBalancerArns = new[]\n        {\n            exampleAwsLb.Arn,\n        },\n    });\n\n    var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint(\"example\", new()\n    {\n        ServiceName = example.ServiceName,\n        SubnetIds = new[]\n        {\n            exampleAwsSubnet.Id,\n        },\n        VpcEndpointType = example.ServiceType,\n        VpcId = exampleAwsVpc.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tcurrent, err := aws.GetCallerIdentity(ctx, \u0026aws.GetCallerIdentityArgs{}, nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texample, err := ec2.NewVpcEndpointService(ctx, \"example\", \u0026ec2.VpcEndpointServiceArgs{\n\t\t\tAcceptanceRequired: pulumi.Bool(false),\n\t\t\tAllowedPrincipals: pulumi.StringArray{\n\t\t\t\tpulumi.String(current.Arn),\n\t\t\t},\n\t\t\tGatewayLoadBalancerArns: pulumi.StringArray{\n\t\t\t\texampleAwsLb.Arn,\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = ec2.NewVpcEndpoint(ctx, \"example\", \u0026ec2.VpcEndpointArgs{\n\t\t\tServiceName: example.ServiceName,\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texampleAwsSubnet.Id,\n\t\t\t},\n\t\t\tVpcEndpointType: example.ServiceType,\n\t\t\tVpcId:           pulumi.Any(exampleAwsVpc.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.AwsFunctions;\nimport com.pulumi.aws.inputs.GetCallerIdentityArgs;\nimport com.pulumi.aws.ec2.VpcEndpointService;\nimport com.pulumi.aws.ec2.VpcEndpointServiceArgs;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        final var current = AwsFunctions.getCallerIdentity();\n\n        var example = new VpcEndpointService(\"example\", VpcEndpointServiceArgs.builder()\n            .acceptanceRequired(false)\n            .allowedPrincipals(current.applyValue(getCallerIdentityResult -\u003e getCallerIdentityResult.arn()))\n            .gatewayLoadBalancerArns(exampleAwsLb.arn())\n            .build());\n\n        var exampleVpcEndpoint = new VpcEndpoint(\"exampleVpcEndpoint\", VpcEndpointArgs.builder()\n            .serviceName(example.serviceName())\n            .subnetIds(exampleAwsSubnet.id())\n            .vpcEndpointType(example.serviceType())\n            .vpcId(exampleAwsVpc.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:ec2:VpcEndpointService\n    properties:\n      acceptanceRequired: false\n      allowedPrincipals:\n        - ${current.arn}\n      gatewayLoadBalancerArns:\n        - ${exampleAwsLb.arn}\n  exampleVpcEndpoint:\n    type: aws:ec2:VpcEndpoint\n    name: example\n    properties:\n      serviceName: ${example.serviceName}\n      subnetIds:\n        - ${exampleAwsSubnet.id}\n      vpcEndpointType: ${example.serviceType}\n      vpcId: ${exampleAwsVpc.id}\nvariables:\n  current:\n    fn::invoke:\n      function: aws:getCallerIdentity\n      arguments: {}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### VPC Lattice Resource Configuration Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.ec2.VpcEndpoint(\"example\", {\n    resourceConfigurationArn: exampleAwsVpclatticeResourceConfiguration.arn,\n    subnetIds: [exampleAwsSubnet.id],\n    vpcEndpointType: \"Resource\",\n    vpcId: exampleAwsVpc.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.ec2.VpcEndpoint(\"example\",\n    resource_configuration_arn=example_aws_vpclattice_resource_configuration[\"arn\"],\n    subnet_ids=[example_aws_subnet[\"id\"]],\n    vpc_endpoint_type=\"Resource\",\n    vpc_id=example_aws_vpc[\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.Ec2.VpcEndpoint(\"example\", new()\n    {\n        ResourceConfigurationArn = exampleAwsVpclatticeResourceConfiguration.Arn,\n        SubnetIds = new[]\n        {\n            exampleAwsSubnet.Id,\n        },\n        VpcEndpointType = \"Resource\",\n        VpcId = exampleAwsVpc.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"example\", \u0026ec2.VpcEndpointArgs{\n\t\t\tResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texampleAwsSubnet.Id,\n\t\t\t},\n\t\t\tVpcEndpointType: pulumi.String(\"Resource\"),\n\t\t\tVpcId:           pulumi.Any(exampleAwsVpc.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new VpcEndpoint(\"example\", VpcEndpointArgs.builder()\n            .resourceConfigurationArn(exampleAwsVpclatticeResourceConfiguration.arn())\n            .subnetIds(exampleAwsSubnet.id())\n            .vpcEndpointType(\"Resource\")\n            .vpcId(exampleAwsVpc.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      resourceConfigurationArn: ${exampleAwsVpclatticeResourceConfiguration.arn}\n      subnetIds:\n        - ${exampleAwsSubnet.id}\n      vpcEndpointType: Resource\n      vpcId: ${exampleAwsVpc.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### VPC Lattice Service Network Endpoint Type\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.ec2.VpcEndpoint(\"example\", {\n    serviceNetworkArn: exampleAwsVpclatticeServiceNetwork.arn,\n    subnetIds: [exampleAwsSubnet.id],\n    vpcEndpointType: \"ServiceNetwork\",\n    vpcId: exampleAwsVpc.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.ec2.VpcEndpoint(\"example\",\n    service_network_arn=example_aws_vpclattice_service_network[\"arn\"],\n    subnet_ids=[example_aws_subnet[\"id\"]],\n    vpc_endpoint_type=\"ServiceNetwork\",\n    vpc_id=example_aws_vpc[\"id\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.Ec2.VpcEndpoint(\"example\", new()\n    {\n        ServiceNetworkArn = exampleAwsVpclatticeServiceNetwork.Arn,\n        SubnetIds = new[]\n        {\n            exampleAwsSubnet.Id,\n        },\n        VpcEndpointType = \"ServiceNetwork\",\n        VpcId = exampleAwsVpc.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := ec2.NewVpcEndpoint(ctx, \"example\", \u0026ec2.VpcEndpointArgs{\n\t\t\tServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),\n\t\t\tSubnetIds: pulumi.StringArray{\n\t\t\t\texampleAwsSubnet.Id,\n\t\t\t},\n\t\t\tVpcEndpointType: pulumi.String(\"ServiceNetwork\"),\n\t\t\tVpcId:           pulumi.Any(exampleAwsVpc.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.ec2.VpcEndpoint;\nimport com.pulumi.aws.ec2.VpcEndpointArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new VpcEndpoint(\"example\", VpcEndpointArgs.builder()\n            .serviceNetworkArn(exampleAwsVpclatticeServiceNetwork.arn())\n            .subnetIds(exampleAwsSubnet.id())\n            .vpcEndpointType(\"ServiceNetwork\")\n            .vpcId(exampleAwsVpc.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:ec2:VpcEndpoint\n    properties:\n      serviceNetworkArn: ${exampleAwsVpclatticeServiceNetwork.arn}\n      subnetIds:\n        - ${exampleAwsSubnet.id}\n      vpcEndpointType: ServiceNetwork\n      vpcId: ${exampleAwsVpc.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n## Import\n\nUsing `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:\n\n```sh\n$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57\n```\n",
             "properties": {
                 "autoAccept": {
                     "type": "boolean",
@@ -704,7 +704,7 @@
                     "description": "Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account)."
                 },
                 "dnsOptions": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
                     "description": "The DNS options for the endpoint. See dns_options below.\n"
                 },
                 "ipAddressType": {
@@ -719,6 +719,11 @@
                     "type": "boolean",
                     "plain": true,
                     "description": "Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`."
+                },
+                "resourceConfigurationArn": {
+                    "type": "string",
+                    "description": "The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.\n",
+                    "willReplaceOnChanges": true
                 },
                 "routeTableIds": {
                     "type": "array",
@@ -739,6 +744,11 @@
                     "plain": true,
                     "description": "The service name. For AWS services the service name is usually in the form `com.amazonaws.\u003cregion\u003e.\u003cservice\u003e` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.\u003cregion\u003e.notebook`)."
                 },
+                "serviceNetworkArn": {
+                    "type": "string",
+                    "description": "The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.\n",
+                    "willReplaceOnChanges": true
+                },
                 "serviceRegion": {
                     "type": "string",
                     "description": "The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.\n",
@@ -747,7 +757,7 @@
                 "subnetConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
                     },
                     "description": "Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.\n"
                 },
@@ -767,7 +777,7 @@
                 },
                 "vpcEndpointType": {
                     "type": "string",
-                    "description": "The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.\n",
+                    "description": "The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.\n",
                     "willReplaceOnChanges": true
                 }
             },
@@ -930,8 +940,13 @@
                     "type": "string",
                     "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
                 },
+                "enableFaultInjection": {
+                    "type": "boolean",
+                    "description": "Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.\n\n**Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
+                    "willReplaceOnChanges": true
+                },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -947,7 +962,7 @@
                 "inferenceAccelerators": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
                     "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -979,18 +994,18 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1017,7 +1032,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -1046,8 +1061,13 @@
                     "type": "string",
                     "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
                 },
+                "enableFaultInjection": {
+                    "type": "boolean",
+                    "description": "Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.\n\n**Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
+                    "willReplaceOnChanges": true
+                },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1063,7 +1083,7 @@
                 "inferenceAccelerators": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
                     "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -1090,18 +1110,18 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1128,7 +1148,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -1525,7 +1545,7 @@
                     "type": "string"
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
                 }
             },
             "type": "object"
@@ -1660,12 +1680,12 @@
                 "defaultActions": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
                     },
                     "description": "Configuration block for default actions. See below.\n"
                 },
                 "mutualAuthentication": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
                     "description": "The mutual authentication configuration information. See below.\n"
                 },
                 "port": {
@@ -1675,6 +1695,82 @@
                 "protocol": {
                     "type": "string",
                     "description": "Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertIssuerHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Issuer` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertLeafHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Leaf` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Serial-Number` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertSubjectHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Subject` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznMtlsClientcertValidityHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Validity` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznTlsCipherSuiteHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Tls-Cipher-Suite` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpRequestXAmznTlsVersionHeaderName": {
+                    "type": "string",
+                    "description": "Enables you to modify the header name of the `X-Amzn-Tls-Version` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.\n"
+                },
+                "routingHttpResponseAccessControlAllowCredentialsHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.\n"
+                },
+                "routingHttpResponseAccessControlAllowHeadersHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies which headers can be used during the request. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Accept`, `Accept-Language`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`. Dependent on your use-case other headers can be exposed and then set as a value consult the Access-Control-Allow-Headers documentation.\n"
+                },
+                "routingHttpResponseAccessControlAllowMethodsHeaderValue": {
+                    "type": "string",
+                    "description": "Set which HTTP methods are allowed when accessing the server from a different origin. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `GET`, `HEAD`, `POST`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE` or `PATCH`.\n"
+                },
+                "routingHttpResponseAccessControlAllowOriginHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies which origins are allowed to access the server. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. A valid value is a URI, eg: `https://example.com`.\n"
+                },
+                "routingHttpResponseAccessControlExposeHeadersHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies whether the browser should include credentials such as cookies or authentication when making requests. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, or `Pragma`. Dependent on your use-case other headers can be exposed, consult the Access-Control-Expose-Headers documentation.\n"
+                },
+                "routingHttpResponseAccessControlMaxAgeHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.\n"
+                },
+                "routingHttpResponseContentSecurityPolicyHeaderValue": {
+                    "type": "string",
+                    "description": "Specifies restrictions enforced by the browser to help minimize the risk of certain types of security threats. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Values for this are extensive, and can be impactful when set, consult Content-Security-Policy documentation.\n"
+                },
+                "routingHttpResponseServerEnabled": {
+                    "type": "boolean",
+                    "description": "Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.\n"
+                },
+                "routingHttpResponseStrictTransportSecurityHeaderValue": {
+                    "type": "string",
+                    "description": "Informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. Default values are `max-age=31536000; includeSubDomains; preload` consult the Strict-Transport-Security documentation for further details.\n"
+                },
+                "routingHttpResponseXContentTypeOptionsHeaderValue": {
+                    "type": "string",
+                    "description": "Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.\n"
+                },
+                "routingHttpResponseXFrameOptionsHeaderValue": {
+                    "type": "string",
+                    "description": "Indicates whether the browser is allowed to render a page in a frame, iframe, embed or object. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid values are `DENY`, `SAMEORIGIN`, or `ALLOW-FROM https://example.com`.\n"
                 },
                 "sslPolicy": {
                     "type": "string",
@@ -1706,7 +1802,7 @@
                     "description": "Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.\n"
                 },
                 "healthCheck": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
                     "description": "Health Check configuration block. Detailed below.\n"
                 },
                 "ipAddressType": {
@@ -1768,7 +1864,7 @@
                     "description": "Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.\n"
                 },
                 "stickiness": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
                     "description": "Stickiness configuration block. Detailed below.\n"
                 },
                 "tags": {
@@ -1781,18 +1877,18 @@
                 "targetFailovers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
                     },
                     "description": "Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.\n"
                 },
                 "targetGroupHealth": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
                     "description": "Target health requirements block. See target_group_health for more information.\n"
                 },
                 "targetHealthStates": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
                     },
                     "description": "Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.\n"
                 },
@@ -1815,15 +1911,15 @@
         "awsx:cloudtrail:Trail": {
             "properties": {
                 "bucket": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:s3%2Fbucket:Bucket",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:s3%2Fbucket:Bucket",
                     "description": "The managed S3 Bucket where the Trail will place its logs."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "The managed Cloudwatch Log Group."
                 },
                 "trail": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
                     "description": "The CloudTrail Trail.",
                     "language": {
                         "csharp": {
@@ -1839,7 +1935,7 @@
                 "advancedEventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
                     },
                     "description": "Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.\n"
                 },
@@ -1859,7 +1955,7 @@
                 "eventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
                     },
                     "description": "Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.\n"
                 },
@@ -1870,7 +1966,7 @@
                 "insightSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
                     },
                     "description": "Configuration block for identifying unusual operational activity. See details below.\n"
                 },
@@ -1902,7 +1998,7 @@
                 },
                 "snsTopicName": {
                     "type": "string",
-                    "description": "Name of the Amazon SNS topic defined for notification of log file delivery.\n"
+                    "description": "Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.\n"
                 },
                 "tags": {
                     "type": "object",
@@ -1947,12 +2043,12 @@
                 "eips": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2feip:Eip"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2feip:Eip"
                     },
                     "description": "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
                 "internetGateway": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
                     "description": "The Internet Gateway for the VPC."
                 },
                 "isolatedSubnetIds": {
@@ -1964,7 +2060,7 @@
                 "natGateways": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
                     },
                     "description": "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
@@ -1983,21 +2079,21 @@
                 "routeTableAssociations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
                     },
                     "description": "The Route Table Associations for the VPC."
                 },
                 "routeTables": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
                     },
                     "description": "The Route Tables for the VPC."
                 },
                 "routes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2froute:Route"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2froute:Route"
                     },
                     "description": "The Routes for the VPC."
                 },
@@ -2011,12 +2107,12 @@
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's subnets."
                 },
                 "vpc": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fvpc:Vpc",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fvpc:Vpc",
                     "description": "The VPC.",
                     "language": {
                         "csharp": {
@@ -2027,7 +2123,7 @@
                 "vpcEndpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
                     },
                     "description": "The VPC Endpoints that are enabled"
                 },
@@ -2282,11 +2378,11 @@
             "description": "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
             "properties": {
                 "lifecyclePolicy": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
                     "description": "Underlying repository lifecycle policy"
                 },
                 "repository": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecr%2frepository:Repository",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecr%2frepository:Repository",
                     "description": "Underlying Repository resource",
                     "language": {
                         "csharp": {
@@ -2308,7 +2404,7 @@
                 "encryptionConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
                     },
                     "description": "Encryption configuration for the repository. See below for schema.\n",
                     "willReplaceOnChanges": true
@@ -2318,7 +2414,7 @@
                     "description": "If `true`, will delete the repository even if it contains images.\nDefaults to `false`.\n"
                 },
                 "imageScanningConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
                     "description": "Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.\n"
                 },
                 "imageTagMutability": {
@@ -2349,11 +2445,11 @@
             "description": "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying EC2 Task definition component resource if created from args"
                 }
             },
@@ -2362,7 +2458,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "availabilityZoneRebalancing": {
@@ -2379,11 +2475,11 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
                 "deploymentController": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2426,7 +2522,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2436,20 +2532,20 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "orderedPlacementStrategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
                     },
                     "description": "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.\n"
                 },
@@ -2467,11 +2563,11 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.\n"
                 },
                 "tags": {
@@ -2498,13 +2594,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2515,26 +2611,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -2561,8 +2657,13 @@
                     "type": "string",
                     "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
                 },
+                "enableFaultInjection": {
+                    "type": "boolean",
+                    "description": "Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.\n\n**Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
+                    "willReplaceOnChanges": true
+                },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2578,7 +2679,7 @@
                 "inferenceAccelerators": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
                     "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -2610,18 +2711,18 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2648,7 +2749,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -2660,11 +2761,11 @@
             "description": "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying Fargate component resource if created from args"
                 }
             },
@@ -2673,7 +2774,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "assignPublicIp": {
@@ -2694,11 +2795,11 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
                 "deploymentController": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2741,7 +2842,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2751,13 +2852,13 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.\n"
                 },
@@ -2775,11 +2876,11 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.\n"
                 },
                 "tags": {
@@ -2806,13 +2907,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2823,26 +2924,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -2869,8 +2970,13 @@
                     "type": "string",
                     "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
                 },
+                "enableFaultInjection": {
+                    "type": "boolean",
+                    "description": "Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.\n\n**Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
+                    "willReplaceOnChanges": true
+                },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2886,7 +2992,7 @@
                 "inferenceAccelerators": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
                     "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -2913,18 +3019,18 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2951,7 +3057,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
                     "willReplaceOnChanges": true
@@ -2963,22 +3069,22 @@
             "description": "Provides an Application Load Balancer resource with listeners, default target group and default security group.",
             "properties": {
                 "defaultSecurityGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
                     "description": "Default security group, if auto-created"
                 },
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -2993,7 +3099,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3001,7 +3107,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type `application`.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3121,14 +3227,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3150,18 +3256,18 @@
             "description": "Provides a Network Load Balancer resource with listeners and default target group.",
             "properties": {
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -3176,7 +3282,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3184,7 +3290,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type `application`.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3299,14 +3405,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v6.70.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3328,11 +3434,11 @@
             "description": "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
             "properties": {
                 "lambdaPermission": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lambda%2fpermission:Permission",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
                     "description": "Auto-created Lambda permission, if targeting a Lambda function"
                 },
                 "targetGroupAttachment": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
                     "description": "Underlying Target Group Attachment resource",
                     "language": {
                         "csharp": {
@@ -3347,7 +3453,7 @@
             ],
             "inputProperties": {
                 "instance": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:ec2%2finstance:Instance",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:ec2%2finstance:Instance",
                     "description": "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "instanceId": {
@@ -3355,7 +3461,7 @@
                     "description": "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "lambda": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lambda%2ffunction:Function",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lambda%2ffunction:Function",
                     "description": "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
                     "language": {
                         "python": {
@@ -3368,7 +3474,7 @@
                     "description": "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v6.66.3/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v6.70.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified."
                 },
                 "targetGroupArn": {

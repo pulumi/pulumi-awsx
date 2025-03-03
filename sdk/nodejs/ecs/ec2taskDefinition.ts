@@ -64,6 +64,7 @@ export class EC2TaskDefinition extends pulumi.ComponentResource {
             resourceInputs["container"] = args ? args.container : undefined;
             resourceInputs["containers"] = args ? args.containers : undefined;
             resourceInputs["cpu"] = args ? args.cpu : undefined;
+            resourceInputs["enableFaultInjection"] = args ? args.enableFaultInjection : undefined;
             resourceInputs["ephemeralStorage"] = args ? args.ephemeralStorage : undefined;
             resourceInputs["executionRole"] = args ? args.executionRole : undefined;
             resourceInputs["family"] = args ? args.family : undefined;
@@ -117,6 +118,12 @@ export interface EC2TaskDefinitionArgs {
      * The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
      */
     cpu?: pulumi.Input<string>;
+    /**
+     * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+     *
+     * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+     */
+    enableFaultInjection?: pulumi.Input<boolean>;
     /**
      * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      */

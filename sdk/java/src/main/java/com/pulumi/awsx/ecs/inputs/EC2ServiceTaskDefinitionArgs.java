@@ -91,6 +91,25 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
+     * Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * 
+     * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+     * 
+     */
+    @Import(name="enableFaultInjection")
+    private @Nullable Output<Boolean> enableFaultInjection;
+
+    /**
+     * @return Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * 
+     * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+     * 
+     */
+    public Optional<Output<Boolean>> enableFaultInjection() {
+        return Optional.ofNullable(this.enableFaultInjection);
+    }
+
+    /**
      * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      * 
      */
@@ -357,6 +376,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         this.container = $.container;
         this.containers = $.containers;
         this.cpu = $.cpu;
+        this.enableFaultInjection = $.enableFaultInjection;
         this.ephemeralStorage = $.ephemeralStorage;
         this.executionRole = $.executionRole;
         this.family = $.family;
@@ -441,6 +461,31 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
          */
         public Builder cpu(String cpu) {
             return cpu(Output.of(cpu));
+        }
+
+        /**
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * 
+         * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableFaultInjection(@Nullable Output<Boolean> enableFaultInjection) {
+            $.enableFaultInjection = enableFaultInjection;
+            return this;
+        }
+
+        /**
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * 
+         * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableFaultInjection(Boolean enableFaultInjection) {
+            return enableFaultInjection(Output.of(enableFaultInjection));
         }
 
         /**
