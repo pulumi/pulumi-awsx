@@ -9,6 +9,19 @@ on:
         required: true
         type: string
         description: Version of the provider to build
+      matrix:
+        required: false
+        type: string
+        default: |
+          {
+            "platform": [
+              {"os": "linux",   "arch": "amd64"},
+              {"os": "linux",   "arch": "arm64"},
+              {"os": "darwin",  "arch": "amd64"},
+              {"os": "darwin",  "arch": "arm64"},
+              {"os": "windows", "arch": "amd64"}
+            ]
+          }
 
 jobs:
   build_provider:
@@ -19,18 +32,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: true
-      matrix:
-        platform:
-          - os: linux
-            arch: amd64
-          - os: linux
-            arch: arm64
-          - os: darwin
-            arch: amd64
-          - os: darwin
-            arch: arm64
-          - os: windows
-            arch: amd64
+      matrix: ${{ fromJSON(inputs.matrix) }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
