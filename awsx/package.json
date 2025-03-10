@@ -28,7 +28,7 @@
     "@pulumi/aws": "6.66.3",
     "@pulumi/docker": "4.6.0",
     "@pulumi/docker-build": "0.0.8",
-    "@pulumi/pulumi": "3.144.1",
+    "@pulumi/pulumi": "3.154.0",
     "@types/aws-lambda": "^8.10.23",
     "docker-classic": "npm:@pulumi/docker@4.6.0",
     "ip-address": "^8.1.0",
