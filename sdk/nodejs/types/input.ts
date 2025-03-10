@@ -1123,6 +1123,234 @@ export namespace ec2 {
      * ```
      * <!--End PulumiCodeChooser -->
      *
+     * ### VPC Lattice Resource Configuration Endpoint Type
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const example = new aws.ec2.VpcEndpoint("example", {
+     *     resourceConfigurationArn: exampleAwsVpclatticeResourceConfiguration.arn,
+     *     subnetIds: [exampleAwsSubnet.id],
+     *     vpcEndpointType: "Resource",
+     *     vpcId: exampleAwsVpc.id,
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * example = aws.ec2.VpcEndpoint("example",
+     *     resource_configuration_arn=example_aws_vpclattice_resource_configuration["arn"],
+     *     subnet_ids=[example_aws_subnet["id"]],
+     *     vpc_endpoint_type="Resource",
+     *     vpc_id=example_aws_vpc["id"])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var example = new Aws.Ec2.VpcEndpoint("example", new()
+     *     {
+     *         ResourceConfigurationArn = exampleAwsVpclatticeResourceConfiguration.Arn,
+     *         SubnetIds = new[]
+     *         {
+     *             exampleAwsSubnet.Id,
+     *         },
+     *         VpcEndpointType = "Resource",
+     *         VpcId = exampleAwsVpc.Id,
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+     * 			ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+     * 			SubnetIds: pulumi.StringArray{
+     * 				exampleAwsSubnet.Id,
+     * 			},
+     * 			VpcEndpointType: pulumi.String("Resource"),
+     * 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+     *             .resourceConfigurationArn(exampleAwsVpclatticeResourceConfiguration.arn())
+     *             .subnetIds(exampleAwsSubnet.id())
+     *             .vpcEndpointType("Resource")
+     *             .vpcId(exampleAwsVpc.id())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   example:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       resourceConfigurationArn: ${exampleAwsVpclatticeResourceConfiguration.arn}
+     *       subnetIds:
+     *         - ${exampleAwsSubnet.id}
+     *       vpcEndpointType: Resource
+     *       vpcId: ${exampleAwsVpc.id}
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
+     * ### VPC Lattice Service Network Endpoint Type
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const example = new aws.ec2.VpcEndpoint("example", {
+     *     serviceNetworkArn: exampleAwsVpclatticeServiceNetwork.arn,
+     *     subnetIds: [exampleAwsSubnet.id],
+     *     vpcEndpointType: "ServiceNetwork",
+     *     vpcId: exampleAwsVpc.id,
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * example = aws.ec2.VpcEndpoint("example",
+     *     service_network_arn=example_aws_vpclattice_service_network["arn"],
+     *     subnet_ids=[example_aws_subnet["id"]],
+     *     vpc_endpoint_type="ServiceNetwork",
+     *     vpc_id=example_aws_vpc["id"])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var example = new Aws.Ec2.VpcEndpoint("example", new()
+     *     {
+     *         ServiceNetworkArn = exampleAwsVpclatticeServiceNetwork.Arn,
+     *         SubnetIds = new[]
+     *         {
+     *             exampleAwsSubnet.Id,
+     *         },
+     *         VpcEndpointType = "ServiceNetwork",
+     *         VpcId = exampleAwsVpc.Id,
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+     * 			ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+     * 			SubnetIds: pulumi.StringArray{
+     * 				exampleAwsSubnet.Id,
+     * 			},
+     * 			VpcEndpointType: pulumi.String("ServiceNetwork"),
+     * 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+     *             .serviceNetworkArn(exampleAwsVpclatticeServiceNetwork.arn())
+     *             .subnetIds(exampleAwsSubnet.id())
+     *             .vpcEndpointType("ServiceNetwork")
+     *             .vpcId(exampleAwsVpc.id())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   example:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       serviceNetworkArn: ${exampleAwsVpclatticeServiceNetwork.arn}
+     *       subnetIds:
+     *         - ${exampleAwsSubnet.id}
+     *       vpcEndpointType: ServiceNetwork
+     *       vpcId: ${exampleAwsVpc.id}
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
      * ## Import
      *
      * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
@@ -1153,6 +1381,10 @@ export namespace ec2 {
          */
         privateDnsEnabled?: boolean;
         /**
+         * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         */
+        resourceConfigurationArn?: pulumi.Input<string>;
+        /**
          * One or more route table IDs. Applicable for endpoints of type `Gateway`.
          */
         routeTableIds?: pulumi.Input<pulumi.Input<string>[]>;
@@ -1165,6 +1397,10 @@ export namespace ec2 {
          * The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
          */
         serviceName: string;
+        /**
+         * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         */
+        serviceNetworkArn?: pulumi.Input<string>;
         /**
          * The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
          */
@@ -1182,7 +1418,7 @@ export namespace ec2 {
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
-         * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+         * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
          */
         vpcEndpointType?: pulumi.Input<string>;
     }
@@ -1255,6 +1491,12 @@ export namespace ecs {
          * The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
          */
         cpu?: pulumi.Input<string>;
+        /**
+         * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+         *
+         * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+         */
+        enableFaultInjection?: pulumi.Input<boolean>;
         /**
          * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          */
@@ -1352,6 +1594,12 @@ export namespace ecs {
          * The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
          */
         cpu?: pulumi.Input<string>;
+        /**
+         * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+         *
+         * **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+         */
+        enableFaultInjection?: pulumi.Input<boolean>;
         /**
          * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          */
@@ -3240,6 +3488,82 @@ export namespace lb {
          * Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
          */
         protocol?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Issuer` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertIssuerHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Leaf` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertLeafHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Serial-Number` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Subject` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSubjectHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Validity` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertValidityHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Cipher-Suite` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsCipherSuiteHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Version` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsVersionHeaderName?: pulumi.Input<string>;
+        /**
+         * Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.
+         */
+        routingHttpResponseAccessControlAllowCredentialsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which headers can be used during the request. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Accept`, `Accept-Language`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`. Dependent on your use-case other headers can be exposed and then set as a value consult the Access-Control-Allow-Headers documentation.
+         */
+        routingHttpResponseAccessControlAllowHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Set which HTTP methods are allowed when accessing the server from a different origin. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `GET`, `HEAD`, `POST`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE` or `PATCH`.
+         */
+        routingHttpResponseAccessControlAllowMethodsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which origins are allowed to access the server. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. A valid value is a URI, eg: `https://example.com`.
+         */
+        routingHttpResponseAccessControlAllowOriginHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies whether the browser should include credentials such as cookies or authentication when making requests. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, or `Pragma`. Dependent on your use-case other headers can be exposed, consult the Access-Control-Expose-Headers documentation.
+         */
+        routingHttpResponseAccessControlExposeHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.
+         */
+        routingHttpResponseAccessControlMaxAgeHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies restrictions enforced by the browser to help minimize the risk of certain types of security threats. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Values for this are extensive, and can be impactful when set, consult Content-Security-Policy documentation.
+         */
+        routingHttpResponseContentSecurityPolicyHeaderValue?: pulumi.Input<string>;
+        /**
+         * Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.
+         */
+        routingHttpResponseServerEnabled?: pulumi.Input<boolean>;
+        /**
+         * Informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. Default values are `max-age=31536000; includeSubDomains; preload` consult the Strict-Transport-Security documentation for further details.
+         */
+        routingHttpResponseStrictTransportSecurityHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.
+         */
+        routingHttpResponseXContentTypeOptionsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the browser is allowed to render a page in a frame, iframe, embed or object. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid values are `DENY`, `SAMEORIGIN`, or `ALLOW-FROM https://example.com`.
+         */
+        routingHttpResponseXFrameOptionsHeaderValue?: pulumi.Input<string>;
         /**
          * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          */
