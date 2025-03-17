@@ -26,6 +26,7 @@ class EC2TaskDefinitionArgs:
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
+                 enable_fault_injection: Optional[pulumi.Input[bool]] = None,
                  ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
                  family: Optional[pulumi.Input[str]] = None,
@@ -54,6 +55,9 @@ class EC2TaskDefinitionArgs:
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+               
+               **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
@@ -81,6 +85,8 @@ class EC2TaskDefinitionArgs:
             pulumi.set(__self__, "containers", containers)
         if cpu is not None:
             pulumi.set(__self__, "cpu", cpu)
+        if enable_fault_injection is not None:
+            pulumi.set(__self__, "enable_fault_injection", enable_fault_injection)
         if ephemeral_storage is not None:
             pulumi.set(__self__, "ephemeral_storage", ephemeral_storage)
         if execution_role is not None:
@@ -157,6 +163,20 @@ class EC2TaskDefinitionArgs:
     @cpu.setter
     def cpu(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "cpu", value)
+
+    @property
+    @pulumi.getter(name="enableFaultInjection")
+    def enable_fault_injection(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+
+        **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        """
+        return pulumi.get(self, "enable_fault_injection")
+
+    @enable_fault_injection.setter
+    def enable_fault_injection(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_fault_injection", value)
 
     @property
     @pulumi.getter(name="ephemeralStorage")
@@ -374,6 +394,7 @@ class EC2TaskDefinition(pulumi.ComponentResource):
                  container: Optional[Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']] = None,
                  containers: Optional[Mapping[str, Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']]] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
+                 enable_fault_injection: Optional[pulumi.Input[bool]] = None,
                  ephemeral_storage: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]] = None,
                  execution_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  family: Optional[pulumi.Input[str]] = None,
@@ -408,6 +429,9 @@ class EC2TaskDefinition(pulumi.ComponentResource):
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+               
+               **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
@@ -458,6 +482,7 @@ class EC2TaskDefinition(pulumi.ComponentResource):
                  container: Optional[Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']] = None,
                  containers: Optional[Mapping[str, Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict']]] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
+                 enable_fault_injection: Optional[pulumi.Input[bool]] = None,
                  ephemeral_storage: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]] = None,
                  execution_role: Optional[Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict']] = None,
                  family: Optional[pulumi.Input[str]] = None,
@@ -489,6 +514,7 @@ class EC2TaskDefinition(pulumi.ComponentResource):
             __props__.__dict__["container"] = container
             __props__.__dict__["containers"] = containers
             __props__.__dict__["cpu"] = cpu
+            __props__.__dict__["enable_fault_injection"] = enable_fault_injection
             __props__.__dict__["ephemeral_storage"] = ephemeral_storage
             __props__.__dict__["execution_role"] = execution_role
             __props__.__dict__["family"] = family
