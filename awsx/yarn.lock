@@ -1598,7 +1598,7 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.27.0.tgz#1a857dcc95a5ab30122e04417148211e6f945e6c"
   integrity sha512-sAay1RrB+ONOem0OZanAR1ZI/k7yDpnOQSQmTMuGImUQb2y8EbSaCJ94FQluM74xoU03vlb2d2U90hZluL6nQg==
 
-"@opentelemetry/semantic-conventions@1.28.0", "@opentelemetry/semantic-conventions@^1.28":
+"@opentelemetry/semantic-conventions@1.28.0":
   version "1.28.0"
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.28.0.tgz#337fb2bca0453d0726696e745f50064411f646d6"
   integrity sha512-lp4qAiMTD4sNWW4DbKLBkfiMZ4jbAboJIGOQr5DvciMRI494OapieI9qiODpOt0XBr1LjIDy1xAGAnVs5supTA==
@@ -1684,10 +1684,10 @@
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@3.154.0", "@pulumi/pulumi@^3.136.0", "@pulumi/pulumi@^3.142.0":
-  version "3.154.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.154.0.tgz#22088f5c2e39072a4e9097c49423c9049d94f93b"
-  integrity sha512-FT2jHqxV0dtUK1gQy6drL8SzigygBmAc+gi0jBt+AOxWCEjAIBSYY6cmBIzi5HyuAHASiT//L6/+AWBQfpT6aA==
+"@pulumi/pulumi@3.156.0", "@pulumi/pulumi@^3.136.0", "@pulumi/pulumi@^3.142.0":
+  version "3.156.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.156.0.tgz#b2a624b044f56563246a059fba0be99e60374930"
+  integrity sha512-QRMrL8wQDjPqT/7y7uz94wCahxIbZ7Zb14YFaUW7M6+6VsnHr79hqCj99euwk+QQeCe25nVUnVVfQlrjJBHLnw==
   dependencies:
     "@grpc/grpc-js" "^1.10.1"
     "@logdna/tail-file" "^2.0.6"
