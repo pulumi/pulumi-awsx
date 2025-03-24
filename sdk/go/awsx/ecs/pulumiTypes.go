@@ -32,6 +32,10 @@ type EC2ServiceTaskDefinition struct {
 	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu *string `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -98,6 +102,10 @@ type EC2ServiceTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinitionArgs `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection pulumi.BoolPtrInput `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -236,6 +244,13 @@ func (o EC2ServiceTaskDefinitionOutput) Containers() TaskDefinitionContainerDefi
 // The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 func (o EC2ServiceTaskDefinitionOutput) Cpu() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *string { return v.Cpu }).(pulumi.StringPtrOutput)
+}
+
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+//
+// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+func (o EC2ServiceTaskDefinitionOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v EC2ServiceTaskDefinition) *bool { return v.EnableFaultInjection }).(pulumi.BoolPtrOutput)
 }
 
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
@@ -388,6 +403,18 @@ func (o EC2ServiceTaskDefinitionPtrOutput) Cpu() pulumi.StringPtrOutput {
 		}
 		return v.Cpu
 	}).(pulumi.StringPtrOutput)
+}
+
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+//
+// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+func (o EC2ServiceTaskDefinitionPtrOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableFaultInjection
+	}).(pulumi.BoolPtrOutput)
 }
 
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
@@ -579,6 +606,10 @@ type FargateServiceTaskDefinition struct {
 	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu *string `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -643,6 +674,10 @@ type FargateServiceTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinitionArgs `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection pulumi.BoolPtrInput `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -779,6 +814,13 @@ func (o FargateServiceTaskDefinitionOutput) Containers() TaskDefinitionContainer
 // The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 func (o FargateServiceTaskDefinitionOutput) Cpu() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *string { return v.Cpu }).(pulumi.StringPtrOutput)
+}
+
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+//
+// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+func (o FargateServiceTaskDefinitionOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v FargateServiceTaskDefinition) *bool { return v.EnableFaultInjection }).(pulumi.BoolPtrOutput)
 }
 
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
@@ -928,6 +970,18 @@ func (o FargateServiceTaskDefinitionPtrOutput) Cpu() pulumi.StringPtrOutput {
 		}
 		return v.Cpu
 	}).(pulumi.StringPtrOutput)
+}
+
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+//
+// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+func (o FargateServiceTaskDefinitionPtrOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *FargateServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableFaultInjection
+	}).(pulumi.BoolPtrOutput)
 }
 
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
