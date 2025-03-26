@@ -67,6 +67,9 @@ func TestRegress1112(t *testing.T) {
 		Dependencies: []string{
 			"@pulumi/awsx",
 		},
+		Config: map[string]string{
+			"aws:region": "us-west-2",
+		},
 		NoParallel:    true, // cannot use call t.Parallel after t.Setenv
 		RunUpdateTest: false,
 		Dir:           filepath.Join(getCwd(t), "ecs", "nodejs"),
