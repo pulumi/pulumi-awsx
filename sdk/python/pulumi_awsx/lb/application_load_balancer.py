@@ -42,6 +42,7 @@ class ApplicationLoadBalancerArgs:
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 ipam_pools: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']] = None,
                  listener: Optional['ListenerArgs'] = None,
                  listeners: Optional[Sequence['ListenerArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
@@ -75,6 +76,7 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
         :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
+        :param pulumi.Input['pulumi_aws.lb.LoadBalancerIpamPoolsArgs'] ipam_pools: . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
         :param 'ListenerArgs' listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence['ListenerArgs'] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
@@ -127,6 +129,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "internal", internal)
         if ip_address_type is not None:
             pulumi.set(__self__, "ip_address_type", ip_address_type)
+        if ipam_pools is not None:
+            pulumi.set(__self__, "ipam_pools", ipam_pools)
         if listener is not None:
             pulumi.set(__self__, "listener", listener)
         if listeners is not None:
@@ -391,6 +395,18 @@ class ApplicationLoadBalancerArgs:
         pulumi.set(self, "ip_address_type", value)
 
     @property
+    @pulumi.getter(name="ipamPools")
+    def ipam_pools(self) -> Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']]:
+        """
+        . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+        """
+        return pulumi.get(self, "ipam_pools")
+
+    @ipam_pools.setter
+    def ipam_pools(self, value: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']]):
+        pulumi.set(self, "ipam_pools", value)
+
+    @property
     @pulumi.getter
     def listener(self) -> Optional['ListenerArgs']:
         """
@@ -548,6 +564,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 ipam_pools: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']]] = None,
                  listener: Optional[Union['ListenerArgs', 'ListenerArgsDict']] = None,
                  listeners: Optional[Sequence[Union['ListenerArgs', 'ListenerArgsDict']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
@@ -585,6 +602,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
         :param pulumi.Input[str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']] ipam_pools: . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
         :param Union['ListenerArgs', 'ListenerArgsDict'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence[Union['ListenerArgs', 'ListenerArgsDict']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
@@ -641,6 +659,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 ipam_pools: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerIpamPoolsArgs']]] = None,
                  listener: Optional[Union['ListenerArgs', 'ListenerArgsDict']] = None,
                  listeners: Optional[Sequence[Union['ListenerArgs', 'ListenerArgsDict']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
@@ -683,6 +702,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
             __props__.__dict__["ip_address_type"] = ip_address_type
+            __props__.__dict__["ipam_pools"] = ipam_pools
             __props__.__dict__["listener"] = listener
             __props__.__dict__["listeners"] = listeners
             __props__.__dict__["name"] = name
