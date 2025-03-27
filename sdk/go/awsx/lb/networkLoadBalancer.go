@@ -82,6 +82,8 @@ type networkLoadBalancerArgs struct {
 	Internal *bool `pulumi:"internal"`
 	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType *string `pulumi:"ipAddressType"`
+	// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+	IpamPools *lb.LoadBalancerIpamPools `pulumi:"ipamPools"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
 	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
@@ -146,6 +148,8 @@ type NetworkLoadBalancerArgs struct {
 	Internal pulumi.BoolPtrInput
 	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType pulumi.StringPtrInput
+	// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+	IpamPools lb.LoadBalancerIpamPoolsPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs
 	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
