@@ -31,6 +31,9 @@ import {
   Vpc,
 } from "./vpc";
 import { Netmask, long2ip, ip2long } from "netmask";
+import * as runtime from "@pulumi/pulumi/runtime";
+import * as pulumiAws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
 describe("validateEips", () => {
   it("should not throw an exception if NAT Gateway strategy is Single and no EIPs are supplied", () => {
@@ -361,5 +364,116 @@ describe("validating vpc args", () => {
         ipv4NetmaskLength: 24,
       }),
     ).toThrowError();
+  });
+});
+
+describe("child resource api", () => {
+  function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
+    return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
+  }
+
+  beforeAll(async () => {
+    await runtime.setMocks({
+      call(args) {
+        switch (args.token) {
+          case "aws:index/getAvailabilityZones:getAvailabilityZones":
+            const result: pulumiAws.GetAvailabilityZonesResult = {
+              id: "mocked-az-result",
+              zoneIds: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
+              names: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
+              groupNames: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
+            };
+            return result;
+          default:
+            throw new Error(`Mock not implemented: ${args.token}`);
+        }
+      },
+      newResource(args) {
+        return {
+          id: `mocked::${args.type}::${args.name}-id`,
+          state: args.inputs,
+        };
+      },
+    });
+  });
+
+  let vpc: Vpc;
+  beforeEach(() => {
+    vpc = new Vpc("test", {
+      tags: {
+        share1: "parent",
+        share2: "parent",
+      },
+      vpcEndpointSpecs: [{ serviceName: "test", tags: { share2: "override" } }],
+      subnetStrategy: "Auto",
+      subnetSpecs: [
+        { type: "Public", tags: { share2: "override" } },
+        { type: "Private", tags: { share2: "override" } },
+      ],
+    });
+  });
+
+  it("internetGateway", async () => {
+    const vpc = new Vpc("test", {
+      tags: {
+        share1: "parent",
+        share2: "parent",
+      },
+      vpcEndpointSpecs: [{ serviceName: "test" }],
+    });
+    const igw = await unwrap(vpc.internetGateway);
+    const igwTags = await unwrap(igw.tags);
+    expect(igwTags?.share1).toBe("parent");
+    expect(igwTags?.share2).toBe("parent");
+  });
+
+  it("natGateway", async () => {
+    const ngs = await unwrap(vpc.natGateways);
+    expect(ngs).toHaveLength(3);
+    for (const ng of ngs) {
+      const ngTags = await unwrap(ng.tags);
+      expect(ngTags?.share1).toBe("parent");
+      expect(ngTags?.share2).toBe("parent");
+    }
+  });
+
+  it("vpcEndpoints", async () => {
+    const endpoints = await unwrap(vpc.vpcEndpoints);
+    expect(endpoints).toHaveLength(1);
+    for (const endpoint of endpoints) {
+      const tags = await unwrap(endpoint.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("override");
+    }
+  });
+
+  it("subnets", async () => {
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(6);
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("override");
+    }
+  });
+
+  it("eips", async () => {
+    const eips = await unwrap(vpc.eips);
+    expect(eips).toHaveLength(3);
+    for (const eip of eips) {
+      const tags = await unwrap(eip.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("parent");
+    }
+  });
+
+  it("routeTables", async () => {
+    const routeTables = await unwrap(vpc.routeTables);
+    expect(routeTables).toHaveLength(6);
+    for (const routeTable of routeTables) {
+      const tags = await unwrap(routeTable.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("parent");
+    }
   });
 });
