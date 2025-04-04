@@ -64,7 +64,6 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "taskDefinition")
 	delete(inputProperties, "waitForSteadyState")
 	delete(inputProperties, "launchType")
-	delete(inputProperties, "capacityProviderStrategies")
 	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{
 		Description: "If `true`, this provider will not wait for the service to reach " +
 			"a steady state (like [`aws ecs wait services-stable`](" +
