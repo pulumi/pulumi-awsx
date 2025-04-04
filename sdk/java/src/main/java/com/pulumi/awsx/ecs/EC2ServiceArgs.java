@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ecs;
 
 import com.pulumi.aws.ecs.inputs.ServiceAlarmsArgs;
+import com.pulumi.aws.ecs.inputs.ServiceCapacityProviderStrategyArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentCircuitBreakerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentControllerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceLoadBalancerArgs;
@@ -59,6 +60,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<String>> availabilityZoneRebalancing() {
         return Optional.ofNullable(this.availabilityZoneRebalancing);
+    }
+
+    /**
+     * Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+     * 
+     */
+    @Import(name="capacityProviderStrategies")
+    private @Nullable Output<List<ServiceCapacityProviderStrategyArgs>> capacityProviderStrategies;
+
+    /**
+     * @return Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+     * 
+     */
+    public Optional<Output<List<ServiceCapacityProviderStrategyArgs>>> capacityProviderStrategies() {
+        return Optional.ofNullable(this.capacityProviderStrategies);
     }
 
     /**
@@ -507,6 +523,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     private EC2ServiceArgs(EC2ServiceArgs $) {
         this.alarms = $.alarms;
         this.availabilityZoneRebalancing = $.availabilityZoneRebalancing;
+        this.capacityProviderStrategies = $.capacityProviderStrategies;
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
@@ -596,6 +613,37 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder availabilityZoneRebalancing(String availabilityZoneRebalancing) {
             return availabilityZoneRebalancing(Output.of(availabilityZoneRebalancing));
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(@Nullable Output<List<ServiceCapacityProviderStrategyArgs>> capacityProviderStrategies) {
+            $.capacityProviderStrategies = capacityProviderStrategies;
+            return this;
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(List<ServiceCapacityProviderStrategyArgs> capacityProviderStrategies) {
+            return capacityProviderStrategies(Output.of(capacityProviderStrategies));
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(ServiceCapacityProviderStrategyArgs... capacityProviderStrategies) {
+            return capacityProviderStrategies(List.of(capacityProviderStrategies));
         }
 
         /**

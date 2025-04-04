@@ -161,6 +161,7 @@ export abstract class EC2Service<TData = any> extends (pulumi.ComponentResource)
 export interface EC2ServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly availabilityZoneRebalancing?: pulumi.Input<string>;
+    readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
