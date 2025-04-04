@@ -25,6 +25,7 @@ class EC2ServiceArgs:
     def __init__(__self__, *,
                  alarms: Optional[pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs']] = None,
                  availability_zone_rebalancing: Optional[pulumi.Input[str]] = None,
+                 capacity_provider_strategies: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] = None,
@@ -58,6 +59,7 @@ class EC2ServiceArgs:
         The set of arguments for constructing a EC2Service resource.
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -95,6 +97,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "alarms", alarms)
         if availability_zone_rebalancing is not None:
             pulumi.set(__self__, "availability_zone_rebalancing", availability_zone_rebalancing)
+        if capacity_provider_strategies is not None:
+            pulumi.set(__self__, "capacity_provider_strategies", capacity_provider_strategies)
         if cluster is not None:
             pulumi.set(__self__, "cluster", cluster)
         if continue_before_steady_state is not None:
@@ -177,6 +181,18 @@ class EC2ServiceArgs:
     @availability_zone_rebalancing.setter
     def availability_zone_rebalancing(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "availability_zone_rebalancing", value)
+
+    @property
+    @pulumi.getter(name="capacityProviderStrategies")
+    def capacity_provider_strategies(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]:
+        """
+        Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+        """
+        return pulumi.get(self, "capacity_provider_strategies")
+
+    @capacity_provider_strategies.setter
+    def capacity_provider_strategies(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]):
+        pulumi.set(self, "capacity_provider_strategies", value)
 
     @property
     @pulumi.getter
@@ -537,6 +553,7 @@ class EC2Service(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  alarms: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']]] = None,
                  availability_zone_rebalancing: Optional[pulumi.Input[str]] = None,
+                 capacity_provider_strategies: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -575,6 +592,7 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -635,6 +653,7 @@ class EC2Service(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  alarms: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']]] = None,
                  availability_zone_rebalancing: Optional[pulumi.Input[str]] = None,
+                 capacity_provider_strategies: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -677,6 +696,7 @@ class EC2Service(pulumi.ComponentResource):
 
             __props__.__dict__["alarms"] = alarms
             __props__.__dict__["availability_zone_rebalancing"] = availability_zone_rebalancing
+            __props__.__dict__["capacity_provider_strategies"] = capacity_provider_strategies
             __props__.__dict__["cluster"] = cluster
             __props__.__dict__["continue_before_steady_state"] = continue_before_steady_state
             __props__.__dict__["deployment_circuit_breaker"] = deployment_circuit_breaker

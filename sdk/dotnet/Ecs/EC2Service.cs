@@ -68,6 +68,18 @@ namespace Pulumi.Awsx.Ecs
         [Input("availabilityZoneRebalancing")]
         public Input<string>? AvailabilityZoneRebalancing { get; set; }
 
+        [Input("capacityProviderStrategies")]
+        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>? _capacityProviderStrategies;
+
+        /// <summary>
+        /// Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+        /// </summary>
+        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs> CapacityProviderStrategies
+        {
+            get => _capacityProviderStrategies ?? (_capacityProviderStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>());
+            set => _capacityProviderStrategies = value;
+        }
+
         /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
