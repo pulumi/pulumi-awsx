@@ -146,7 +146,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           routeTableIds: spec.routeTableIds,
           securityGroupIds: spec.securityGroupIds,
           subnetIds: spec.subnetIds,
-          tags: spec.tags,
+          tags: { ...sharedTags, ...spec.tags },
           vpcEndpointType: spec.vpcEndpointType,
           vpcId: vpc.id,
           serviceName: spec.serviceName,
@@ -156,6 +156,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           dependsOn: [vpc],
         },
       );
+      vpcEndpoints.push(vpcEndpoint);
     });
 
     for (let i = 0; i < availabilityZones.length; i++) {
