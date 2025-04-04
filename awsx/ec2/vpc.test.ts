@@ -414,13 +414,6 @@ describe("child resource api", () => {
   });
 
   it("internetGateway", async () => {
-    const vpc = new Vpc("test", {
-      tags: {
-        share1: "parent",
-        share2: "parent",
-      },
-      vpcEndpointSpecs: [{ serviceName: "test" }],
-    });
     const igw = await unwrap(vpc.internetGateway);
     const igwTags = await unwrap(igw.tags);
     expect(igwTags?.share1).toBe("parent");
