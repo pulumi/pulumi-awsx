@@ -62,6 +62,10 @@ type fargateTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu *string `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -113,6 +117,10 @@ type FargateTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinitionArgs
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	//
+	// **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+	EnableFaultInjection pulumi.BoolPtrInput
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
