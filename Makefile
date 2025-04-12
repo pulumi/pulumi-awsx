@@ -197,11 +197,11 @@ install_nodejs_sdk: .make/install_nodejs_sdk
 install_python_sdk:
 .PHONY: install_dotnet_sdk install_go_sdk install_java_sdk install_nodejs_sdk install_python_sdk
 
-lint_provider: provider
+lint_provider: upstream
 	cd provider && golangci-lint run --path-prefix provider -c ../.golangci.yml
 # `lint_provider.fix` is a utility target meant to be run manually
 # that will run the linter and fix errors when possible.
-lint_provider.fix:
+lint_provider.fix: upstream
 	cd provider && golangci-lint run --path-prefix provider -c ../.golangci.yml --fix
 .PHONY: lint_provider lint_provider.fix
 build_provider_cmd = OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build
