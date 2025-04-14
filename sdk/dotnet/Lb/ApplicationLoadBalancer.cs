@@ -194,6 +194,12 @@ namespace Pulumi.Awsx.Lb
         public Input<string>? IpAddressType { get; set; }
 
         /// <summary>
+        /// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+        /// </summary>
+        [Input("ipamPools")]
+        public Input<Pulumi.Aws.LB.Inputs.LoadBalancerIpamPoolsArgs>? IpamPools { get; set; }
+
+        /// <summary>
         /// A listener to create. Only one of [listener] and [listeners] can be specified.
         /// </summary>
         [Input("listener")]
