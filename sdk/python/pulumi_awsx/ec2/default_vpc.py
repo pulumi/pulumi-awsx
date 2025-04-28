@@ -27,6 +27,9 @@ class DefaultVpcArgs:
 
 
 class DefaultVpc(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ec2:DefaultVpc"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

@@ -155,7 +155,7 @@ func genGo(pkg *schema.Package, outdir string) error {
 }
 
 func genPython(pkg *schema.Package, outdir string) error {
-	files, err := pygen.GeneratePackage(Tool, pkg, map[string][]byte{})
+	files, err := pygen.GeneratePackage(Tool, pkg, map[string][]byte{}, nil)
 	if err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func genNodejs(pkg *schema.Package, outdir string) error {
 		return err
 	}
 	localDependencies := map[string]string{}
-	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies, false)
+	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies, false, nil)
 	if err != nil {
 		return err
 	}
