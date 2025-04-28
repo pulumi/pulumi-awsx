@@ -352,6 +352,9 @@ class FargateTaskDefinitionArgs:
 
 
 class FargateTaskDefinition(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ecs:FargateTaskDefinition"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

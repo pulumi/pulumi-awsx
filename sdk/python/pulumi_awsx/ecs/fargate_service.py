@@ -532,6 +532,9 @@ class FargateServiceArgs:
 
 
 class FargateService(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ecs:FargateService"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

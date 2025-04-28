@@ -508,6 +508,9 @@ class NetworkLoadBalancerArgs:
 
 
 class NetworkLoadBalancer(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:lb:NetworkLoadBalancer"
+
     @overload
     def __init__(__self__,
                  resource_name: str,
