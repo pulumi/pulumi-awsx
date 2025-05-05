@@ -397,7 +397,7 @@ export class LogWidget extends SimpleWidget {
     protected computeType(): wjson.LogWidgetJson["type"] {
         return "log";
     }
-    protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "timeSeries";
+    protected computeView = (): wjson.LogWidgetPropertiesJson["view"] => "timeSeries";
     protected computedStacked = () => false;
 
     protected computeProperties(region: pulumi.Output<aws.Region>): wjson.LogWidgetJson["properties"] {

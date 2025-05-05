@@ -17,6 +17,9 @@ import * as wjson from "./widgets_json";
 
 import { MetricWidget, MetricWidgetArgs } from "./widgets_simple";
 
+type DeepRequired<T> = {
+    [K in keyof T]: Required<DeepRequired<T[K]>>
+}
 // Contains all the classes for easily making graph widgets in a dashboard.
 
 export interface GraphMetricWidgetArgs extends MetricWidgetArgs {
@@ -26,6 +29,14 @@ export interface GraphMetricWidgetArgs extends MetricWidgetArgs {
      */
     yAxis?: pulumi.Input<YAxis>;
 }
+
+export interface GaugeMetricWidgetArgs extends MetricWidgetArgs {
+    /**
+     * Limits for the minimums and maximums of the y-axis. Needed for Gauge Widget.
+     */
+    yAxis: pulumi.Input<DeepRequired<YAxis>>;
+}
+
 
 export interface YAxis {
     /** Optional min and max settings for the left Y-axis.  */
@@ -91,4 +102,17 @@ export class SingleNumberMetricWidget extends MetricWidget {
     protected computedStacked = () => false;
     protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "singleValue";
     protected computeYAxis = (): wjson.MetricWidgetPropertiesJson["yAxis"] => undefined;
+}
+
+/**
+ * Displays a set of metrics as a gauge number.
+ */
+export class GaugeMetricWidget extends MetricWidget {
+    constructor(private readonly gaugeArgs: GaugeMetricWidgetArgs) {
+        super(gaugeArgs);
+    }
+
+    protected computedStacked = () => false;
+    protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "gauge";
+    protected computeYAxis = (): wjson.MetricWidgetPropertiesJson["yAxis"] => this.gaugeArgs.yAxis;
 }
