@@ -524,10 +524,8 @@ class ApplicationLoadBalancerArgs:
         pulumi.set(self, "xff_header_processing_mode", value)
 
 
+@pulumi.type_token("awsx:lb:ApplicationLoadBalancer")
 class ApplicationLoadBalancer(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:lb:ApplicationLoadBalancer"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

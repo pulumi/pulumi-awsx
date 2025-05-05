@@ -7,8 +7,8 @@ toolchain go1.23.3
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/pulumi/providertest v0.1.4
-	github.com/pulumi/pulumi/pkg/v3 v3.165.0
-	github.com/pulumi/pulumi/sdk/v3 v3.165.0
+	github.com/pulumi/pulumi/pkg/v3 v3.167.0
+	github.com/pulumi/pulumi/sdk/v3 v3.167.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.10.0
 )

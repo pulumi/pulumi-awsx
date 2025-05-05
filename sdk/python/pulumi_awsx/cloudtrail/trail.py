@@ -267,10 +267,8 @@ class TrailArgs:
         pulumi.set(self, "tags", value)
 
 
+@pulumi.type_token("awsx:cloudtrail:Trail")
 class Trail(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:cloudtrail:Trail"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

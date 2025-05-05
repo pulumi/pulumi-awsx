@@ -122,10 +122,8 @@ class TargetGroupAttachmentArgs:
         pulumi.set(self, "target_group_arn", value)
 
 
+@pulumi.type_token("awsx:lb:TargetGroupAttachment")
 class TargetGroupAttachment(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:lb:TargetGroupAttachment"
-
     @overload
     def __init__(__self__,
                  resource_name: str,
