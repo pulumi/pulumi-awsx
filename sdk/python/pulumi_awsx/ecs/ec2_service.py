@@ -548,6 +548,9 @@ class EC2ServiceArgs:
 
 
 class EC2Service(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ecs:EC2Service"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

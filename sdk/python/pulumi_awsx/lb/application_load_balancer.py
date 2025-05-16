@@ -541,6 +541,9 @@ class ApplicationLoadBalancerArgs:
 
 
 class ApplicationLoadBalancer(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:lb:ApplicationLoadBalancer"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

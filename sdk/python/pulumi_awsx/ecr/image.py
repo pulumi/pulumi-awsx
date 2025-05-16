@@ -202,6 +202,9 @@ class ImageArgs:
 
 
 class Image(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ecr:Image"
+
     @overload
     def __init__(__self__,
                  resource_name: str,

@@ -388,6 +388,9 @@ class EC2TaskDefinitionArgs:
 
 
 class EC2TaskDefinition(pulumi.ComponentResource):
+
+    pulumi_type = "awsx:ecs:EC2TaskDefinition"
+
     @overload
     def __init__(__self__,
                  resource_name: str,
