@@ -672,11 +672,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         final var current = AwsFunctions.getCallerIdentity();
+    ///         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+    ///             .build());
     /// 
     ///         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
     ///             .acceptanceRequired(false)
-    ///             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
+    ///             .allowedPrincipals(current.arn())
     ///             .gatewayLoadBalancerArns(exampleAwsLb.arn())
     ///             .build());
     /// 

@@ -3,7 +3,7 @@
 # *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import builtins
-import builtins
+import pulumi
 from enum import Enum
 
 __all__ = [
@@ -13,6 +13,7 @@ __all__ = [
 ]
 
 
+@pulumi.type_token("awsx:ec2:NatGatewayStrategy")
 class NatGatewayStrategy(builtins.str, Enum):
     """
     A strategy for creating NAT Gateways for private subnets within a VPC.
@@ -31,6 +32,7 @@ class NatGatewayStrategy(builtins.str, Enum):
     """
 
 
+@pulumi.type_token("awsx:ec2:SubnetAllocationStrategy")
 class SubnetAllocationStrategy(builtins.str, Enum):
     """
     Strategy for calculating subnet ranges from the subnet specifications.
@@ -49,6 +51,7 @@ class SubnetAllocationStrategy(builtins.str, Enum):
     """
 
 
+@pulumi.type_token("awsx:ec2:SubnetType")
 class SubnetType(builtins.str, Enum):
     """
     A type of subnet within a VPC.

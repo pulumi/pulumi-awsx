@@ -772,7 +772,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///                     .minimumHealthyTargetsPercentage("off")
     ///                     .build())
     ///                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-    ///                     .minimumHealthyTargetsCount("1")
+    ///                     .minimumHealthyTargetsCount(1)
     ///                     .minimumHealthyTargetsPercentage("off")
     ///                     .build())
     ///                 .build())

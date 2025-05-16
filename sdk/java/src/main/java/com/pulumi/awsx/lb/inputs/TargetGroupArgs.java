@@ -261,7 +261,7 @@ import javax.annotation.Nullable;
  *                     .minimumHealthyTargetsPercentage(&#34;off&#34;)
  *                     .build())
  *                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
- *                     .minimumHealthyTargetsCount(&#34;1&#34;)
+ *                     .minimumHealthyTargetsCount(1)
  *                     .minimumHealthyTargetsPercentage(&#34;off&#34;)
  *                     .build())
  *                 .build())

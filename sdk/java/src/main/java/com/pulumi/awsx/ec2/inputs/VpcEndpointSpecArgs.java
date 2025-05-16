@@ -211,11 +211,12 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         final var current = AwsFunctions.getCallerIdentity();
+ *         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+ *             .build());
  * 
  *         var example = new VpcEndpointService(&#34;example&#34;, VpcEndpointServiceArgs.builder()
  *             .acceptanceRequired(false)
- *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
+ *             .allowedPrincipals(current.arn())
  *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
  *             .build());
  * 

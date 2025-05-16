@@ -120,10 +120,8 @@ class RegistryImageArgs:
         pulumi.set(self, "triggers", value)
 
 
+@pulumi.type_token("awsx:ecr:RegistryImage")
 class RegistryImage(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ecr:RegistryImage"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

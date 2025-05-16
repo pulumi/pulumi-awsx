@@ -882,11 +882,12 @@ if not MYPY:
             }
 
             public static void stack(Context ctx) {
-                final var current = AwsFunctions.getCallerIdentity();
+                final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+                    .build());
 
                 var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
                     .acceptanceRequired(false)
-                    .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+                    .allowedPrincipals(current.arn())
                     .gatewayLoadBalancerArns(exampleAwsLb.arn())
                     .build());
 
@@ -1907,11 +1908,12 @@ class VpcEndpointSpecArgs:
             }
 
             public static void stack(Context ctx) {
-                final var current = AwsFunctions.getCallerIdentity();
+                final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+                    .build());
 
                 var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
                     .acceptanceRequired(false)
-                    .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+                    .allowedPrincipals(current.arn())
                     .gatewayLoadBalancerArns(exampleAwsLb.arn())
                     .build());
 

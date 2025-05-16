@@ -171,7 +171,7 @@ if not MYPY:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("443")
+                    .port(443)
                     .protocol("HTTPS")
                     .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -326,7 +326,7 @@ if not MYPY:
             public static void stack(Context ctx) {
                 var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
                     .loadBalancerArn(frontEndAwsLb.arn())
-                    .port("443")
+                    .port(443)
                     .protocol("TLS")
                     .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -494,7 +494,7 @@ if not MYPY:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("redirect")
@@ -666,7 +666,7 @@ if not MYPY:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("fixed-response")
@@ -904,7 +904,7 @@ if not MYPY:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(            
                         ListenerDefaultActionArgs.builder()
@@ -1136,7 +1136,7 @@ if not MYPY:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(            
                         ListenerDefaultActionArgs.builder()
@@ -1388,7 +1388,7 @@ if not MYPY:
                     .protocol("GENEVE")
                     .vpcId(exampleAwsVpc.id())
                     .healthCheck(TargetGroupHealthCheckArgs.builder()
-                        .port(80)
+                        .port("80")
                         .protocol("HTTP")
                         .build())
                     .build());
@@ -1918,7 +1918,7 @@ class ListenerArgs:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("443")
+                    .port(443)
                     .protocol("HTTPS")
                     .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -2073,7 +2073,7 @@ class ListenerArgs:
             public static void stack(Context ctx) {
                 var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
                     .loadBalancerArn(frontEndAwsLb.arn())
-                    .port("443")
+                    .port(443)
                     .protocol("TLS")
                     .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -2241,7 +2241,7 @@ class ListenerArgs:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("redirect")
@@ -2413,7 +2413,7 @@ class ListenerArgs:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("fixed-response")
@@ -2651,7 +2651,7 @@ class ListenerArgs:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(            
                         ListenerDefaultActionArgs.builder()
@@ -2883,7 +2883,7 @@ class ListenerArgs:
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
-                    .port("80")
+                    .port(80)
                     .protocol("HTTP")
                     .defaultActions(            
                         ListenerDefaultActionArgs.builder()
@@ -3135,7 +3135,7 @@ class ListenerArgs:
                     .protocol("GENEVE")
                     .vpcId(exampleAwsVpc.id())
                     .healthCheck(TargetGroupHealthCheckArgs.builder()
-                        .port(80)
+                        .port("80")
                         .protocol("HTTP")
                         .build())
                     .build());
@@ -4564,7 +4564,7 @@ if not MYPY:
                             .minimumHealthyTargetsPercentage("off")
                             .build())
                         .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-                            .minimumHealthyTargetsCount("1")
+                            .minimumHealthyTargetsCount(1)
                             .minimumHealthyTargetsPercentage("off")
                             .build())
                         .build())
@@ -5496,7 +5496,7 @@ class TargetGroupArgs:
                             .minimumHealthyTargetsPercentage("off")
                             .build())
                         .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-                            .minimumHealthyTargetsCount("1")
+                            .minimumHealthyTargetsCount(1)
                             .minimumHealthyTargetsPercentage("off")
                             .build())
                         .build())

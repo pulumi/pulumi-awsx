@@ -154,7 +154,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("443")
+    ///             .port(443)
     ///             .protocol("HTTPS")
     ///             .sslPolicy("ELBSecurityPolicy-2016-08")
     ///             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -309,7 +309,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     public static void stack(Context ctx) {
     ///         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEndAwsLb.arn())
-    ///             .port("443")
+    ///             .port(443)
     ///             .protocol("TLS")
     ///             .sslPolicy("ELBSecurityPolicy-2016-08")
     ///             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -477,7 +477,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(ListenerDefaultActionArgs.builder()
     ///                 .type("redirect")
@@ -649,7 +649,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(ListenerDefaultActionArgs.builder()
     ///                 .type("fixed-response")
@@ -887,7 +887,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(            
     ///                 ListenerDefaultActionArgs.builder()
@@ -1119,7 +1119,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(            
     ///                 ListenerDefaultActionArgs.builder()
@@ -1371,7 +1371,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///             .protocol("GENEVE")
     ///             .vpcId(exampleAwsVpc.id())
     ///             .healthCheck(TargetGroupHealthCheckArgs.builder()
-    ///                 .port(80)
+    ///                 .port("80")
     ///                 .protocol("HTTP")
     ///                 .build())
     ///             .build());

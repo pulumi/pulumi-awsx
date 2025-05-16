@@ -57,7 +57,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
- *             .port(&#34;443&#34;)
+ *             .port(443)
  *             .protocol(&#34;HTTPS&#34;)
  *             .sslPolicy(&#34;ELBSecurityPolicy-2016-08&#34;)
  *             .certificateArn(&#34;arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4&#34;)
@@ -99,7 +99,7 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         var frontEnd = new Listener(&#34;frontEnd&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEndAwsLb.arn())
- *             .port(&#34;443&#34;)
+ *             .port(443)
  *             .protocol(&#34;TLS&#34;)
  *             .sslPolicy(&#34;ELBSecurityPolicy-2016-08&#34;)
  *             .certificateArn(&#34;arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4&#34;)
@@ -146,7 +146,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
- *             .port(&#34;80&#34;)
+ *             .port(80)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;redirect&#34;)
@@ -194,7 +194,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
- *             .port(&#34;80&#34;)
+ *             .port(80)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;fixed-response&#34;)
@@ -254,7 +254,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
- *             .port(&#34;80&#34;)
+ *             .port(80)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(            
  *                 ListenerDefaultActionArgs.builder()
@@ -310,7 +310,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
- *             .port(&#34;80&#34;)
+ *             .port(80)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(            
  *                 ListenerDefaultActionArgs.builder()
@@ -380,7 +380,7 @@ import javax.annotation.Nullable;
  *             .protocol(&#34;GENEVE&#34;)
  *             .vpcId(exampleAwsVpc.id())
  *             .healthCheck(TargetGroupHealthCheckArgs.builder()
- *                 .port(80)
+ *                 .port(&#34;80&#34;)
  *                 .protocol(&#34;HTTP&#34;)
  *                 .build())
  *             .build());

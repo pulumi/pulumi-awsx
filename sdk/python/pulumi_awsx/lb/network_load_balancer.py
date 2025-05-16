@@ -523,10 +523,8 @@ class NetworkLoadBalancerArgs:
         pulumi.set(self, "xff_header_processing_mode", value)
 
 
+@pulumi.type_token("awsx:lb:NetworkLoadBalancer")
 class NetworkLoadBalancer(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:lb:NetworkLoadBalancer"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

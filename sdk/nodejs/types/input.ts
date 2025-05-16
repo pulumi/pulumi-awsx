@@ -1078,11 +1078,12 @@ export namespace ec2 {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         final var current = AwsFunctions.getCallerIdentity();
+     *         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+     *             .build());
      *
      *         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
      *             .acceptanceRequired(false)
-     *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+     *             .allowedPrincipals(current.arn())
      *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
      *             .build());
      *
@@ -2008,7 +2009,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("443")
+     *             .port(443)
      *             .protocol("HTTPS")
      *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -2163,7 +2164,7 @@ export namespace lb {
      *     public static void stack(Context ctx) {
      *         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
      *             .loadBalancerArn(frontEndAwsLb.arn())
-     *             .port("443")
+     *             .port(443)
      *             .protocol("TLS")
      *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -2331,7 +2332,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .type("redirect")
@@ -2503,7 +2504,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .type("fixed-response")
@@ -2741,7 +2742,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(            
      *                 ListenerDefaultActionArgs.builder()
@@ -2973,7 +2974,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(            
      *                 ListenerDefaultActionArgs.builder()
@@ -3225,7 +3226,7 @@ export namespace lb {
      *             .protocol("GENEVE")
      *             .vpcId(exampleAwsVpc.id())
      *             .healthCheck(TargetGroupHealthCheckArgs.builder()
-     *                 .port(80)
+     *                 .port("80")
      *                 .protocol("HTTP")
      *                 .build())
      *             .build());
@@ -4342,7 +4343,7 @@ export namespace lb {
      *                     .minimumHealthyTargetsPercentage("off")
      *                     .build())
      *                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-     *                     .minimumHealthyTargetsCount("1")
+     *                     .minimumHealthyTargetsCount(1)
      *                     .minimumHealthyTargetsPercentage("off")
      *                     .build())
      *                 .build())
