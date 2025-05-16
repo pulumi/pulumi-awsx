@@ -201,10 +201,8 @@ class ImageArgs:
         pulumi.set(self, "target", value)
 
 
+@pulumi.type_token("awsx:ecr:Image")
 class Image(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ecr:Image"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

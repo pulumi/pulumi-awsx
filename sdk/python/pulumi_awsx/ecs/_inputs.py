@@ -92,6 +92,12 @@ if not MYPY:
         """
         The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         """
+        enable_fault_injection: NotRequired[pulumi.Input[builtins.bool]]
+        """
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+
+        **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        """
         ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
         """
         The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
@@ -172,6 +178,7 @@ class EC2ServiceTaskDefinitionArgs:
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
                  cpu: Optional[pulumi.Input[builtins.str]] = None,
+                 enable_fault_injection: Optional[pulumi.Input[builtins.bool]] = None,
                  ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
                  family: Optional[pulumi.Input[builtins.str]] = None,
@@ -202,6 +209,9 @@ class EC2ServiceTaskDefinitionArgs:
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+               
+               **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
@@ -229,6 +239,8 @@ class EC2ServiceTaskDefinitionArgs:
             pulumi.set(__self__, "containers", containers)
         if cpu is not None:
             pulumi.set(__self__, "cpu", cpu)
+        if enable_fault_injection is not None:
+            pulumi.set(__self__, "enable_fault_injection", enable_fault_injection)
         if ephemeral_storage is not None:
             pulumi.set(__self__, "ephemeral_storage", ephemeral_storage)
         if execution_role is not None:
@@ -305,6 +317,20 @@ class EC2ServiceTaskDefinitionArgs:
     @cpu.setter
     def cpu(self, value: Optional[pulumi.Input[builtins.str]]):
         pulumi.set(self, "cpu", value)
+
+    @property
+    @pulumi.getter(name="enableFaultInjection")
+    def enable_fault_injection(self) -> Optional[pulumi.Input[builtins.bool]]:
+        """
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+
+        **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        """
+        return pulumi.get(self, "enable_fault_injection")
+
+    @enable_fault_injection.setter
+    def enable_fault_injection(self, value: Optional[pulumi.Input[builtins.bool]]):
+        pulumi.set(self, "enable_fault_injection", value)
 
     @property
     @pulumi.getter(name="ephemeralStorage")
@@ -539,6 +565,12 @@ if not MYPY:
         """
         The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         """
+        enable_fault_injection: NotRequired[pulumi.Input[builtins.bool]]
+        """
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+
+        **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        """
         ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
         """
         The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
@@ -615,6 +647,7 @@ class FargateServiceTaskDefinitionArgs:
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
                  cpu: Optional[pulumi.Input[builtins.str]] = None,
+                 enable_fault_injection: Optional[pulumi.Input[builtins.bool]] = None,
                  ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
                  family: Optional[pulumi.Input[builtins.str]] = None,
@@ -644,6 +677,9 @@ class FargateServiceTaskDefinitionArgs:
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+               
+               **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
@@ -670,6 +706,8 @@ class FargateServiceTaskDefinitionArgs:
             pulumi.set(__self__, "containers", containers)
         if cpu is not None:
             pulumi.set(__self__, "cpu", cpu)
+        if enable_fault_injection is not None:
+            pulumi.set(__self__, "enable_fault_injection", enable_fault_injection)
         if ephemeral_storage is not None:
             pulumi.set(__self__, "ephemeral_storage", ephemeral_storage)
         if execution_role is not None:
@@ -744,6 +782,20 @@ class FargateServiceTaskDefinitionArgs:
     @cpu.setter
     def cpu(self, value: Optional[pulumi.Input[builtins.str]]):
         pulumi.set(self, "cpu", value)
+
+    @property
+    @pulumi.getter(name="enableFaultInjection")
+    def enable_fault_injection(self) -> Optional[pulumi.Input[builtins.bool]]:
+        """
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+
+        **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        """
+        return pulumi.get(self, "enable_fault_injection")
+
+    @enable_fault_injection.setter
+    def enable_fault_injection(self, value: Optional[pulumi.Input[builtins.bool]]):
+        pulumi.set(self, "enable_fault_injection", value)
 
     @property
     @pulumi.getter(name="ephemeralStorage")
