@@ -19,87 +19,82 @@ import { BucketId, requiredBucket } from "../s3/bucket";
 import * as schema from "../schema-types";
 
 export class Trail extends schema.Trail {
-    constructor(
-        name: string,
-        args: schema.TrailArgs,
-        opts?: pulumi.CustomResourceOptions,
-    ) {
-        const { s3Bucket, cloudWatchLogsGroup, ...trailCustomArgs } = args;
-        const aliasOpts = pulumi.mergeOptions(opts, {
-            aliases: [{ type: "aws:cloudtrail:x:Trail" }],
-        });
-        super(name, {}, aliasOpts);
+  constructor(name: string, args: schema.TrailArgs, opts?: pulumi.CustomResourceOptions) {
+    const { s3Bucket, cloudWatchLogsGroup, ...trailCustomArgs } = args;
+    const aliasOpts = pulumi.mergeOptions(opts, {
+      aliases: [{ type: "aws:cloudtrail:x:Trail" }],
+    });
+    super(name, {}, aliasOpts);
 
-        const { bucket, bucketId } = requiredBucket(
-            name,
-            s3Bucket,
-            {},
-            { parent: this },
-        );
-        this.bucket = bucket;
-        createBucketCloudtrailPolicy(name, bucketId, this);
+    const { bucket, bucketId } = requiredBucket(name, s3Bucket, {}, { parent: this });
+    this.bucket = bucket;
+    const policy = createBucketCloudtrailPolicy(name, bucketId, bucket, this);
 
-        const { logGroup, logGroupId } = optionalLogGroup(
-            name,
-            cloudWatchLogsGroup,
-            {},
-            { parent: this },
-        );
-        this.logGroup = logGroup;
+    const { logGroup, logGroupId } = optionalLogGroup(
+      name,
+      cloudWatchLogsGroup,
+      {},
+      { parent: this },
+    );
+    this.logGroup = logGroup;
 
-        const trailArgs = {
-            ...trailCustomArgs,
-            s3BucketName: bucketId.name,
-            cloudWatchLogGroupArn: logGroupId?.apply((arn) => arn + ":*"),
-        };
+    const trailArgs = {
+      ...trailCustomArgs,
+      s3BucketName: bucketId.name,
+      cloudWatchLogGroupArn: logGroupId?.apply((arn) => arn + ":*"),
+    };
 
-        this.trail = new aws.cloudtrail.Trail(name, trailArgs, {
-            parent: this,
-        });
-        this.registerOutputs();
-    }
+    this.trail = new aws.cloudtrail.Trail(name, trailArgs, {
+      parent: this,
+      dependsOn: [policy],
+    });
+    this.registerOutputs();
+  }
 }
 
 function createBucketCloudtrailPolicy(
-    name: string,
-    bucketId: BucketId,
-    parent: pulumi.Resource | undefined,
+  name: string,
+  bucketId: BucketId,
+  bucket: aws.s3.Bucket | undefined,
+  parent: pulumi.Resource | undefined,
 ) {
-    return new aws.s3.BucketPolicy(
-        name,
-        {
-            bucket: bucketId.name,
-            policy: defaultCloudTrailPolicy(bucketId.arn),
-        },
-        { parent: parent },
-    );
+  const opts: pulumi.ResourceOptions = { parent: parent };
+  if (bucket !== undefined) {
+    opts.dependsOn = [bucket];
+  }
+  return new aws.s3.BucketPolicy(
+    name,
+    {
+      bucket: bucketId.name,
+      policy: bucketId.arn.apply(defaultCloudTrailPolicy),
+    },
+    opts,
+  );
 }
 
-function defaultCloudTrailPolicy(
-    bucketArn: pulumi.Input<string>,
-): pulumi.Input<string | aws.iam.PolicyDocument> {
-    return {
-        Version: "2012-10-17",
-        Statement: [
-            {
-                Sid: "AWSCloudTrailAclCheck",
-                Effect: "Allow",
-                Principal: aws.iam.Principals.CloudtrailPrincipal,
-                Action: ["s3:GetBucketAcl"],
-                Resource: [bucketArn],
-            },
-            {
-                Sid: "AWSCloudTrailWrite",
-                Effect: "Allow",
-                Principal: { Service: "cloudtrail.amazonaws.com" },
-                Action: ["s3:PutObject"],
-                Resource: [pulumi.interpolate`${bucketArn}/*`],
-                Condition: {
-                    StringEquals: {
-                        "s3:x-amz-acl": "bucket-owner-full-control",
-                    },
-                },
-            },
-        ],
-    };
+function defaultCloudTrailPolicy(bucketArn: string): aws.iam.PolicyDocument {
+  return {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Sid: "AWSCloudTrailAclCheck",
+        Effect: "Allow",
+        Principal: aws.iam.Principals.CloudtrailPrincipal,
+        Action: ["s3:GetBucketAcl"],
+        Resource: [bucketArn],
+      },
+      {
+        Sid: "AWSCloudTrailWrite",
+        Effect: "Allow",
+        Principal: { Service: "cloudtrail.amazonaws.com" },
+        Action: ["s3:PutObject"],
+        Resource: [`${bucketArn}/*`],
+        Condition: {
+          StringEquals: {
+            "s3:x-amz-acl": "bucket-owner-full-control",
+          },
+        },
+      },
+    ],
+  };
 }

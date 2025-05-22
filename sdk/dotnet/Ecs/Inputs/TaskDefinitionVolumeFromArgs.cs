@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionVolumeFromArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionVolumeFromArgs : global::Pulumi.ResourceArgs
     {
         [Input("readOnly")]
         public Input<bool>? ReadOnly { get; set; }
@@ -21,5 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionVolumeFromArgs()
         {
         }
+        public static new TaskDefinitionVolumeFromArgs Empty => new TaskDefinitionVolumeFromArgs();
     }
 }

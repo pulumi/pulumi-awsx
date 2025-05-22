@@ -14,7 +14,7 @@ namespace Pulumi.Awsx.Ecs
     /// Creates Task definition if `taskDefinitionArgs` is specified.
     /// </summary>
     [AwsxResourceType("awsx:ecs:FargateService")]
-    public partial class FargateService : Pulumi.ComponentResource
+    public partial class FargateService : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying ECS Service resource
@@ -36,7 +36,7 @@ namespace Pulumi.Awsx.Ecs
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public FargateService(string name, FargateServiceArgs args, ComponentResourceOptions? options = null)
+        public FargateService(string name, FargateServiceArgs? args = null, ComponentResourceOptions? options = null)
             : base("awsx:ecs:FargateService", name, args ?? new FargateServiceArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
@@ -54,19 +54,25 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class FargateServiceArgs : Pulumi.ResourceArgs
+    public sealed class FargateServiceArgs : global::Pulumi.ResourceArgs
     {
-        [Input("capacityProviderStrategies")]
-        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>? _capacityProviderStrategies;
+        /// <summary>
+        /// Information about the CloudWatch alarms. See below.
+        /// </summary>
+        [Input("alarms")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceAlarmsArgs>? Alarms { get; set; }
 
         /// <summary>
-        /// Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below.
+        /// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         /// </summary>
-        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs> CapacityProviderStrategies
-        {
-            get => _capacityProviderStrategies ?? (_capacityProviderStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>());
-            set => _capacityProviderStrategies = value;
-        }
+        [Input("assignPublicIp")]
+        public Input<bool>? AssignPublicIp { get; set; }
+
+        /// <summary>
+        /// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        /// </summary>
+        [Input("availabilityZoneRebalancing")]
+        public Input<string>? AvailabilityZoneRebalancing { get; set; }
 
         /// <summary>
         /// ARN of an ECS cluster.
@@ -105,25 +111,32 @@ namespace Pulumi.Awsx.Ecs
         public Input<int>? DeploymentMinimumHealthyPercent { get; set; }
 
         /// <summary>
-        /// Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+        /// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
         /// </summary>
         [Input("desiredCount")]
         public Input<int>? DesiredCount { get; set; }
 
         /// <summary>
-        /// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+        /// Whether to enable Amazon ECS managed tags for the tasks within the service.
         /// </summary>
         [Input("enableEcsManagedTags")]
         public Input<bool>? EnableEcsManagedTags { get; set; }
 
         /// <summary>
-        /// Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+        /// Whether to enable Amazon ECS Exec for the tasks within the service.
         /// </summary>
         [Input("enableExecuteCommand")]
         public Input<bool>? EnableExecuteCommand { get; set; }
 
         /// <summary>
+        /// Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+        /// </summary>
+        [Input("forceDelete")]
+        public Input<bool>? ForceDelete { get; set; }
+
+        /// <summary>
         /// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+        /// When using the forceNewDeployment property you also need to configure the triggers property.
         /// </summary>
         [Input("forceNewDeployment")]
         public Input<bool>? ForceNewDeployment { get; set; }
@@ -154,6 +167,8 @@ namespace Pulumi.Awsx.Ecs
 
         /// <summary>
         /// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+        /// 
+        /// The following arguments are optional:
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -161,20 +176,8 @@ namespace Pulumi.Awsx.Ecs
         /// <summary>
         /// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         /// </summary>
-        [Input("networkConfiguration", required: true)]
-        public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs> NetworkConfiguration { get; set; } = null!;
-
-        [Input("orderedPlacementStrategies")]
-        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>? _orderedPlacementStrategies;
-
-        /// <summary>
-        /// Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
-        /// </summary>
-        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs> OrderedPlacementStrategies
-        {
-            get => _orderedPlacementStrategies ?? (_orderedPlacementStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>());
-            set => _orderedPlacementStrategies = value;
-        }
+        [Input("networkConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs>? NetworkConfiguration { get; set; }
 
         [Input("placementConstraints")]
         private InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs>? _placementConstraints;
@@ -195,7 +198,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? PlatformVersion { get; set; }
 
         /// <summary>
-        /// Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+        /// Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         /// </summary>
         [Input("propagateTags")]
         public Input<string>? PropagateTags { get; set; }
@@ -205,6 +208,12 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("schedulingStrategy")]
         public Input<string>? SchedulingStrategy { get; set; }
+
+        /// <summary>
+        /// ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        /// </summary>
+        [Input("serviceConnectConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceConnectConfigurationArgs>? ServiceConnectConfiguration { get; set; }
 
         /// <summary>
         /// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
@@ -236,8 +245,39 @@ namespace Pulumi.Awsx.Ecs
         [Input("taskDefinitionArgs")]
         public Inputs.FargateServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
 
+        [Input("triggers")]
+        private InputMap<string>? _triggers;
+
+        /// <summary>
+        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+        /// </summary>
+        public InputMap<string> Triggers
+        {
+            get => _triggers ?? (_triggers = new InputMap<string>());
+            set => _triggers = value;
+        }
+
+        /// <summary>
+        /// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+        /// </summary>
+        [Input("volumeConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceVolumeConfigurationArgs>? VolumeConfiguration { get; set; }
+
+        [Input("vpcLatticeConfigurations")]
+        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs>? _vpcLatticeConfigurations;
+
+        /// <summary>
+        /// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        /// </summary>
+        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs> VpcLatticeConfigurations
+        {
+            get => _vpcLatticeConfigurations ?? (_vpcLatticeConfigurations = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs>());
+            set => _vpcLatticeConfigurations = value;
+        }
+
         public FargateServiceArgs()
         {
         }
+        public static new FargateServiceArgs Empty => new FargateServiceArgs();
     }
 }

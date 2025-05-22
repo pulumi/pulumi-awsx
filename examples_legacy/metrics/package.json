@@ -2,14 +2,12 @@
     "name": "metrics",
     "version": "0.0.1",
     "license": "Apache-2.0",
-    "main": "bin/index.js",
-    "typings": "bin/index.d.ts",
     "scripts": {
         "build": "tsc"
     },
     "dependencies": {
         "@pulumi/pulumi": "^3.0.0",
-        "@pulumi/aws": "^4.0.0",
+        "@pulumi/aws": "^6.0.0",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {

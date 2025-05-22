@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionUlimitArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionUlimitArgs : global::Pulumi.ResourceArgs
     {
         [Input("hardLimit", required: true)]
         public Input<int> HardLimit { get; set; } = null!;
@@ -24,5 +24,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionUlimitArgs()
         {
         }
+        public static new TaskDefinitionUlimitArgs Empty => new TaskDefinitionUlimitArgs();
     }
 }

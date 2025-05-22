@@ -1,0 +1,75 @@
+name: awsx-upgrade-aws
+
+description: |
+  This weekly workflow creates Pull Requests to upgrade pulumi-aws dependency.
+
+  This dependency is a critical part of the AWSX project and should be kept up-to-date to inherit all the fixes and
+  improvements done upstream.
+
+on:
+  schedule:
+    # Every Monday at 11AM UTC
+    - cron: 0 11 * * 1
+
+  # This stanza permits manual execution of the workflow.
+  workflow_dispatch: {}
+
+jobs:
+
+  upgrade-aws:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: pulumi/pulumictl
+
+      - name: Prepare Git configuration
+        run: |
+          git config --local user.email 'bot@pulumi.com'
+          git config --local user.name 'pulumi-bot'
+
+      - name: Upgrade pulumi-aws dependency
+        id: upgrade
+        run: |
+          VERSION=$(./scripts/get-latest-aws-version.sh)
+          echo "Upgrading pulumi-aws to $VERSION"
+          ./scripts/upgrade-aws.sh "$VERSION"
+          echo "Upgraded pulumi-aws to $VERSION"
+
+          if ! git diff-files --quiet; then
+            echo changes=1        >> "$GITHUB_OUTPUT"
+            echo version=$VERSION >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes detected. Exiting."
+          fi
+
+      - name: Commit changes
+        if: steps.upgrade.outputs.changes != 0
+        env:
+          PULUMI_AWS_VERSION: ${{ steps.upgrade.outputs.version }}
+        run: |
+          branch="update-pulumi-aws/$PULUMI_AWS_VERSION-${{ github.run_id }}-${{ github.run_number }}"
+          msg="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
+          git branch "$branch"
+          git checkout "$branch"
+          git add .
+          git commit -m "$msg"
+          git push origin "$branch"
+
+      - name: Create a Pull Request
+        if: steps.upgrade.outputs.changes != 0
+        env:
+          GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+          PULUMI_AWS_VERSION: ${{ steps.upgrade.outputs.version }}
+        run: |
+          branch="update-pulumi-aws/$PULUMI_AWS_VERSION-${{ github.run_id }}-${{ github.run_number }}"
+          title="Update pulumi/pulumi-aws version to $PULUMI_AWS_VERSION"
+          gh pr create \
+              --title "$title" \
+              --body "$title" \
+              --head "$branch"

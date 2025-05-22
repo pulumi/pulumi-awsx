@@ -49,7 +49,7 @@ export class NatGateway
             // communicate with the internet.
 
             this.elasticIP = new aws.ec2.Eip(name, {
-                vpc: true,
+                domain: "vpc",
                 tags: { Name: name },
             }, { parent: this });
 

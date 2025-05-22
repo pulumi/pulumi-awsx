@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// Creates required log-group and task &amp; execution roles.
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
-    public sealed class FargateServiceTaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class FargateServiceTaskDefinitionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -98,12 +98,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<string>? Memory { get; set; }
 
         /// <summary>
-        /// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-        /// </summary>
-        [Input("networkMode")]
-        public Input<string>? NetworkMode { get; set; }
-
-        /// <summary>
         /// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         /// </summary>
         [Input("pidMode")]
@@ -127,24 +121,15 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("proxyConfiguration")]
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionProxyConfigurationArgs>? ProxyConfiguration { get; set; }
 
-        [Input("requiresCompatibilities")]
-        private InputList<string>? _requiresCompatibilities;
-
-        /// <summary>
-        /// Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-        /// </summary>
-        public InputList<string> RequiresCompatibilities
-        {
-            get => _requiresCompatibilities ?? (_requiresCompatibilities = new InputList<string>());
-            set => _requiresCompatibilities = value;
-        }
-
         /// <summary>
         /// Configuration block for runtime_platform that containers in your task may use.
         /// </summary>
         [Input("runtimePlatform")]
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionRuntimePlatformArgs>? RuntimePlatform { get; set; }
 
+        /// <summary>
+        /// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        /// </summary>
         [Input("skipDestroy")]
         public Input<bool>? SkipDestroy { get; set; }
 
@@ -152,7 +137,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Key-value map of resource tags.
+        /// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -166,6 +151,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// </summary>
         [Input("taskRole")]
         public Pulumi.Awsx.Awsx.Inputs.DefaultRoleWithPolicyArgs? TaskRole { get; set; }
+
+        /// <summary>
+        /// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+        /// </summary>
+        [Input("trackLatest")]
+        public Input<bool>? TrackLatest { get; set; }
 
         [Input("volumes")]
         private InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionVolumeArgs>? _volumes;
@@ -182,5 +173,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public FargateServiceTaskDefinitionArgs()
         {
         }
+        public static new FargateServiceTaskDefinitionArgs Empty => new FargateServiceTaskDefinitionArgs();
     }
 }

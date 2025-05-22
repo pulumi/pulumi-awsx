@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Pulumi Corp.</Authors>
-    <Company>Pulumi Corp.</Company>
+    <Authors>Pulumi</Authors>
+    <Company>Pulumi</Company>
     <Description>Pulumi Amazon Web Services (AWS) AWSX Components.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://pulumi.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pulumi/pulumi-awsx</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
+    <Version>2.0.0-alpha.0+dev</Version>
 
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseSharedCompilation>false</UseSharedCompilation>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,14 +39,16 @@
     <None Include="version.txt" Pack="True" PackagePath="content" />
   </ItemGroup>
 
-   <ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="pulumi-plugin.json" />
     <None Include="pulumi-plugin.json" Pack="True" PackagePath="content" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Pulumi" Version="3.*" />
-    <PackageReference Include="Pulumi.Aws" Version="4.*" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Pulumi.Aws" Version="6.*" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Pulumi.Docker" Version="4.*" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Pulumi.DockerBuild" Version="0.*" ExcludeAssets="contentFiles" />
   </ItemGroup>
 
   <ItemGroup>

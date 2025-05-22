@@ -26,10 +26,7 @@
         "jsdoc-format": false,
         "label-position": true,
         "member-access": false,
-        "member-ordering": [
-            true,
-            "variables-before-functions"
-        ],
+        "member-ordering": false,
         "no-any": false,
         "no-arg": true,
         "no-bitwise": false,
@@ -65,7 +62,7 @@
             "check-open-brace",
             "check-whitespace"
         ],
-        "ordered-imports": true,
+        "ordered-imports": false,
         "prefer-const": true,
         "quotemark": [
             true,

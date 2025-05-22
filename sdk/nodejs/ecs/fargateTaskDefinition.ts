@@ -2,7 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs } from "../types";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -69,15 +71,14 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             resourceInputs["ipcMode"] = args ? args.ipcMode : undefined;
             resourceInputs["logGroup"] = args ? args.logGroup : undefined;
             resourceInputs["memory"] = args ? args.memory : undefined;
-            resourceInputs["networkMode"] = args ? args.networkMode : undefined;
             resourceInputs["pidMode"] = args ? args.pidMode : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["proxyConfiguration"] = args ? args.proxyConfiguration : undefined;
-            resourceInputs["requiresCompatibilities"] = args ? args.requiresCompatibilities : undefined;
             resourceInputs["runtimePlatform"] = args ? args.runtimePlatform : undefined;
             resourceInputs["skipDestroy"] = args ? args.skipDestroy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskRole"] = args ? args.taskRole : undefined;
+            resourceInputs["trackLatest"] = args ? args.trackLatest : undefined;
             resourceInputs["volumes"] = args ? args.volumes : undefined;
             resourceInputs["loadBalancers"] = undefined /*out*/;
             resourceInputs["taskDefinition"] = undefined /*out*/;
@@ -146,10 +147,6 @@ export interface FargateTaskDefinitionArgs {
      */
     memory?: pulumi.Input<string>;
     /**
-     * Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-     */
-    networkMode?: pulumi.Input<string>;
-    /**
      * Process namespace to use for the containers in the task. The valid values are `host` and `task`.
      */
     pidMode?: pulumi.Input<string>;
@@ -162,16 +159,15 @@ export interface FargateTaskDefinitionArgs {
      */
     proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
     /**
-     * Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-     */
-    requiresCompatibilities?: pulumi.Input<pulumi.Input<string>[]>;
-    /**
      * Configuration block for runtime_platform that containers in your task may use.
      */
     runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
+    /**
+     * Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     */
     skipDestroy?: pulumi.Input<boolean>;
     /**
-     * Key-value map of resource tags.
+     * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
@@ -179,6 +175,10 @@ export interface FargateTaskDefinitionArgs {
      * Will be created automatically if not defined.
      */
     taskRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
+    /**
+     * Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+     */
+    trackLatest?: pulumi.Input<boolean>;
     /**
      * Configuration block for volumes that containers in your task may use. Detailed below.
      */

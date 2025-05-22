@@ -17,7 +17,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as awslambda from "aws-lambda";
+import type * as awslambda from "aws-lambda";
 import { CognitoAuthorizer } from "./cognitoAuthorizer";
 
 import * as utils from "../utils";

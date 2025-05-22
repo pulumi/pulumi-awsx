@@ -19,123 +19,116 @@ import * as schema from "../schema-types";
 import { getRegion, getRegionFromOpts, parseArn } from "../utils";
 
 export interface LogGroupId {
-    logGroupName: string;
-    logGroupRegion: string;
-    arn: string;
+  logGroupName: string;
+  logGroupRegion: string;
+  arn: string;
 }
 
 export function defaultLogGroup(
-    name: string,
-    inputs: schema.DefaultLogGroupInputs | undefined,
-    defaults: aws.cloudwatch.LogGroupArgs,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.DefaultLogGroupInputs | undefined,
+  defaults: aws.cloudwatch.LogGroupArgs,
+  opts: ResourceOptions,
 ): {
-    logGroup?: aws.cloudwatch.LogGroup;
-    logGroupId?: pulumi.Output<LogGroupId>;
+  logGroup?: aws.cloudwatch.LogGroup;
+  logGroupId?: pulumi.Output<LogGroupId>;
 } {
-    if (inputs?.skip) {
-        return {};
-    }
-    return requiredLogGroup(name, inputs, defaults, opts);
+  if (inputs?.skip) {
+    return {};
+  }
+  return requiredLogGroup(name, inputs, defaults, opts);
 }
 
 export function optionalLogGroup(
-    name: string,
-    inputs: schema.OptionalLogGroupInputs | undefined,
-    defaults: aws.cloudwatch.LogGroupArgs,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.OptionalLogGroupInputs | undefined,
+  defaults: aws.cloudwatch.LogGroupArgs,
+  opts: ResourceOptions,
 ): {
-    logGroup?: aws.cloudwatch.LogGroup;
-    logGroupId?: pulumi.Output<LogGroupId>;
+  logGroup?: aws.cloudwatch.LogGroup;
+  logGroupId?: pulumi.Output<LogGroupId>;
 } {
-    if (!inputs?.enable) {
-        return {};
-    }
-    return requiredLogGroup(name, inputs, defaults, opts);
+  if (!inputs?.enable) {
+    return {};
+  }
+  return requiredLogGroup(name, inputs, defaults, opts);
 }
 
 export function requiredLogGroup(
-    name: string,
-    inputs: schema.RequiredLogGroupInputs | undefined,
-    defaults: aws.cloudwatch.LogGroupArgs,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.RequiredLogGroupInputs | undefined,
+  defaults: aws.cloudwatch.LogGroupArgs,
+  opts: ResourceOptions,
 ): {
-    logGroup?: aws.cloudwatch.LogGroup;
-    logGroupId?: pulumi.Output<LogGroupId>;
+  logGroup?: aws.cloudwatch.LogGroup;
+  logGroupId?: pulumi.Output<LogGroupId>;
 } {
-    if (inputs?.existing !== undefined && inputs.args !== undefined) {
-        throw new Error(
-            "Can't define log group args if specifying an existing log group name",
-        );
+  if (inputs?.existing !== undefined && inputs.args !== undefined) {
+    throw new Error("Can't define log group args if specifying an existing log group name");
+  }
+  const existing = inputs?.existing;
+  if (existing !== undefined) {
+    if (existing.arn) {
+      return { logGroupId: makeLogGroupId({ arn: existing.arn }, opts) };
+    } else if (existing.name) {
+      const region = existing.region ? pulumi.output(existing.region) : getRegionFromOpts(opts);
+      return {
+        logGroupId: makeLogGroupId({ name: existing.name, region }, opts),
+      };
+    } else {
+      throw new Error("One of an existing log group name or ARN must be specified");
     }
-    const existing = inputs?.existing;
-    if (existing !== undefined) {
-        if (existing.arn) {
-            return { logGroupId: makeLogGroupId({ arn: existing.arn }) };
-        } else if (existing.name) {
-            const region = existing.region
-                ? pulumi.output(existing.region)
-                : getRegionFromOpts(opts);
-            return {
-                logGroupId: makeLogGroupId({ name: existing.name, region }),
-            };
-        } else {
-            throw new Error(
-                "One of an existing log group name or ARN must be specified",
-            );
-        }
-    }
-    const args = { ...defaults, ...inputs?.args };
-    const logGroupOpts = opts;
-    const logGroup = new aws.cloudwatch.LogGroup(name, args, logGroupOpts);
-    const region = getRegion(logGroup);
-    return {
-        logGroup,
-        logGroupId: makeLogGroupId({ name: logGroup.name, region }),
-    };
+  }
+  const args = { ...defaults, ...inputs?.args };
+  const logGroupOpts = opts;
+  const logGroup = new aws.cloudwatch.LogGroup(name, args, logGroupOpts);
+  const region = getRegion(logGroup);
+  return {
+    logGroup,
+    logGroupId: makeLogGroupId({ name: logGroup.name, region }, opts),
+  };
 }
 
 function idFromArn(arn: string): LogGroupId {
-    const { region, service, resourceType, resourceId } = parseArn(arn);
-    if (service !== "logs" || resourceType !== "log-group") {
-        throw new Error("Invalid log group ARN");
-    }
-    return {
-        arn,
-        logGroupName: resourceId,
-        logGroupRegion: region,
-    };
+  const { region, service, resourceType, resourceId } = parseArn(arn);
+  if (service !== "logs" || resourceType !== "log-group") {
+    throw new Error("Invalid log group ARN");
+  }
+  return {
+    arn,
+    logGroupName: resourceId,
+    logGroupRegion: region,
+  };
 }
 
 function buildArn(args: { region: string; name: string; accountId: string }) {
-    return `arn:aws:logs:${args.region}:${args.accountId}:log-group:${args.name}`;
+  return `arn:aws:logs:${args.region}:${args.accountId}:log-group:${args.name}`;
 }
 
 function makeLogGroupId(
-    args:
-        | {
-              name: pulumi.Input<string>;
-              region: pulumi.Input<string>;
-          }
-        | { arn: pulumi.Input<string> },
+  args:
+    | {
+        name: pulumi.Input<string>;
+        region: pulumi.Input<string>;
+      }
+    | { arn: pulumi.Input<string> },
+  opts: pulumi.ResourceOptions,
 ): pulumi.Output<LogGroupId> {
-    if ("arn" in args) {
-        if ("name" in args) {
-            throw new Error(
-                "Only one of an existing log group name or ARN can be specified",
-            );
-        }
-        return pulumi.output(args.arn).apply(idFromArn);
-    } else {
-        return pulumi
-            .all([args.name, args.region, aws.getCallerIdentity()])
-            .apply(([name, region, callerIdentity]) => {
-                const arn = buildArn({
-                    name: name,
-                    region: region,
-                    accountId: callerIdentity.accountId,
-                });
-                return idFromArn(arn);
-            });
+  if ("arn" in args) {
+    if ("name" in args) {
+      throw new Error("Only one of an existing log group name or ARN can be specified");
     }
+    return pulumi.output(args.arn).apply(idFromArn);
+  } else {
+    return pulumi
+      .all([args.name, args.region, aws.getCallerIdentity({}, opts)])
+      .apply(([name, region, callerIdentity]) => {
+        const arn = buildArn({
+          name: name,
+          region: region,
+          accountId: callerIdentity.accountId,
+        });
+        return idFromArn(arn);
+      });
+  }
 }

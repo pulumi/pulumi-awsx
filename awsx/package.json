@@ -1,41 +1,70 @@
 {
-    "name": "@pulumi/awsx-provider",
-    "version": "${VERSION}",
-    "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
-    "license": "Apache-2.0",
-    "keywords": [
-        "pulumi",
-        "aws",
-        "awsx"
+  "name": "@pulumi/awsx-provider",
+  "version": "${VERSION}",
+  "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
+  "license": "Apache-2.0",
+  "bin": "bin/index.js",
+  "keywords": [
+    "pulumi",
+    "aws",
+    "awsx"
+  ],
+  "homepage": "https://pulumi.io",
+  "repository": "https://github.com/pulumi/pulumi-awsx",
+  "scripts": {
+    "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
+    "gen-types": "ts-node scripts/generate-provider-types.ts",
+    "build": "SCHEMA=../provider/cmd/pulumi-resource-awsx/schema-embed.json ./scripts/build.sh",
+    "format": "prettier --list-different --write .",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "jest",
+    "tsc": "tsc --incremental",
+    "start": "ts-node index.ts",
+    "dedupe-deps": "yarn-deduplicate",
+    "check-duplicate-deps": "yarn-deduplicate --fail"
+  },
+  "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
+  "dependencies": {
+    "@pulumi/aws": "6.66.3",
+    "@pulumi/docker": "4.6.0",
+    "@pulumi/docker-build": "0.0.8",
+    "@pulumi/pulumi": "3.160.0",
+    "@types/aws-lambda": "^8.10.23",
+    "docker-classic": "npm:@pulumi/docker@4.6.0",
+    "ip-address": "^8.1.0",
+    "mime": "^3.0.0",
+    "netmask": "^2.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/jest": "^29.0.0",
+    "@types/jsbn": "^1.2.32",
+    "@types/mime": "^3.0.0",
+    "@types/netmask": "^2.0.5",
+    "@types/node": "^18",
+    "babel-jest": "^29.0.0",
+    "fast-check": "^3.13.2",
+    "install-peers-cli": "^2.2.0",
+    "jest": "^29.0.0",
+    "json-schema-to-typescript": "^14.0.5",
+    "pkg": "^5.6.0",
+    "prettier": "^2.5.1",
+    "ts-node": "^10.7.0",
+    "tslint": "^6.1.3",
+    "typedoc": "^0.25.13",
+    "typescript": "^4.6.2",
+    "yarn-deduplicate": "^6.0.2"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "/bin/"
     ],
-    "homepage": "https://pulumi.io",
-    "repository": "https://github.com/pulumi/pulumi-awsx",
-    "scripts": {
-        "postinstall": "install-peers",
-        "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
-        "gen-types": "ts-node scripts/generate-provider-types.ts",
-        "format": "prettier --write .",
-        "lint": "tslint -c tslint.json -p tsconfig.json"
-    },
-    "dependencies": {
-        "@pulumi/docker": "^3.0.0",
-        "@types/aws-lambda": "^8.10.23",
-        "mime": "^2.0.0"
-    },
-    "peerDependencies": {
-        "@pulumi/aws": "^4.23.0",
-        "@pulumi/pulumi": "^3.0.0"
-    },
-    "devDependencies": {
-        "@types/aws-sdk": "^2.7.0",
-        "@types/mime": "^2.0.0",
-        "@types/node": "^17.0.21",
-        "install-peers-cli": "^2.2.0",
-        "json-schema-to-typescript": "^10.1.5",
-        "prettier": "^2.5.1",
-        "ts-node": "^10.7.0",
-        "tslint": "^6.1.3",
-        "typedoc": "^0.13.0",
-        "typescript": "^4.6.2"
-    }
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/bin/"
+    ]
+  }
 }

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Reference to an existing bucket.
     /// </summary>
-    public sealed class ExistingBucketArgs : Pulumi.ResourceArgs
+    public sealed class ExistingBucketArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Arn of the bucket. Only one of [arn] or [name] can be specified.
@@ -30,5 +30,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public ExistingBucketArgs()
         {
         }
+        public static new ExistingBucketArgs Empty => new ExistingBucketArgs();
     }
 }

@@ -5,23 +5,30 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
-export * from "./provider";
+export { ProviderArgs } from "./provider";
+export type Provider = import("./provider").Provider;
+export const Provider: typeof import("./provider").Provider = null as any;
+utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
+
 
 // Export sub-modules:
 import * as classic from "./classic";
 import * as cloudtrail from "./cloudtrail";
+import * as ec2 from "./ec2";
+import * as ecr from "./ecr";
 import * as ecs from "./ecs";
+import * as lb from "./lb";
 import * as types from "./types";
 
 export {
     classic,
     cloudtrail,
+    ec2,
+    ecr,
     ecs,
+    lb,
     types,
 };
-
-import { Provider } from "./provider";
-
 pulumi.runtime.registerResourcePackage("awsx", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {

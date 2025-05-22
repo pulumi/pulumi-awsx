@@ -16,69 +16,65 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { ResourceOptions } from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { getRegion, getRegionFromOpts, parseArn } from "../utils";
+import { parseArn } from "../utils";
 
 export interface BucketId {
-    name: pulumi.Output<string>;
-    arn: pulumi.Output<string>;
+  name: pulumi.Output<string>;
+  arn: pulumi.Output<string>;
 }
 
 export function requiredBucket(
-    name: string,
-    inputs: schema.RequiredBucketInputs | undefined,
-    defaults: aws.s3.BucketArgs,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.RequiredBucketInputs | undefined,
+  defaults: aws.s3.BucketArgs,
+  opts: ResourceOptions,
 ): {
-    bucket?: aws.s3.Bucket;
-    bucketId: BucketId;
+  bucket?: aws.s3.Bucket;
+  bucketId: BucketId;
 } {
-    if (inputs?.existing !== undefined && inputs.args !== undefined) {
-        throw new Error(
-            "Can't define bucket args if specifying an existing bucket",
-        );
+  if (inputs?.existing !== undefined && inputs.args !== undefined) {
+    throw new Error("Can't define bucket args if specifying an existing bucket");
+  }
+  const existing = inputs?.existing;
+  if (existing !== undefined) {
+    if (existing.arn) {
+      const arn = pulumi.output(existing.arn);
+      return { bucketId: { arn, name: arn.apply(nameFromArn) } };
+    } else if (existing.name) {
+      const name = pulumi.output(existing.name);
+      return { bucketId: { arn: name.apply(arnFromName), name } };
+    } else {
+      throw new Error("One of an existing log group name or ARN must be specified");
     }
-    const existing = inputs?.existing;
-    if (existing !== undefined) {
-        if (existing.arn) {
-            const arn = pulumi.output(existing.arn);
-            return { bucketId: { arn, name: arn.apply(nameFromArn) } };
-        } else if (existing.name) {
-            const name = pulumi.output(existing.name);
-            return { bucketId: { arn: name.apply(arnFromName), name } };
-        } else {
-            throw new Error(
-                "One of an existing log group name or ARN must be specified",
-            );
-        }
-    }
-    const args = { ...defaults, ...inputs?.args };
-    const bucket = new aws.s3.Bucket(name, args, opts);
-    return {
-        bucket,
-        bucketId: { arn: bucket.arn, name: bucket.bucket },
-    };
+  }
+  const args = { forceDestroy: true, ...defaults, ...inputs?.args };
+  const bucket = new aws.s3.Bucket(name, args, opts);
+  return {
+    bucket,
+    bucketId: { arn: bucket.arn, name: bucket.bucket },
+  };
 }
 
 export function defaultBucket(
-    name: string,
-    inputs: schema.DefaultBucketInputs | undefined,
-    defaults: aws.s3.BucketArgs,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.DefaultBucketInputs | undefined,
+  defaults: aws.s3.BucketArgs,
+  opts: ResourceOptions,
 ): {
-    bucket?: aws.s3.Bucket;
-    bucketId?: BucketId;
+  bucket?: aws.s3.Bucket;
+  bucketId?: BucketId;
 } {
-    if (inputs?.skip) {
-        return {};
-    }
-    return requiredBucket(name, inputs, defaults, opts);
+  if (inputs?.skip) {
+    return {};
+  }
+  return requiredBucket(name, inputs, defaults, opts);
 }
 
 function nameFromArn(bucketArn: string) {
-    const parsed = parseArn(bucketArn);
-    return parsed.resourceId;
+  const parsed = parseArn(bucketArn);
+  return parsed.resourceId;
 }
 
 function arnFromName(bucketName: string) {
-    return `arn:aws:::${bucketName}`;
+  return `arn:aws:::${bucketName}`;
 }

@@ -207,7 +207,7 @@ const repository = new awsx.ecr.Repository("app", {
         rules: [{
             selection: { tagPrefixList: ["alpha", "beta"] },
             maximumAgeLimit: 5,
-        },
+        }],
     },
 });
 ```
@@ -238,7 +238,7 @@ const repository = new awsx.ecr.Repository("app", {
         rules: [{
             selection: "any",
             maximumNumberOfImages: 5,
-        },
+        }],
     },
 });
 ```

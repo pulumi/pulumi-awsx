@@ -3,19 +3,27 @@
 # *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 
+import asyncio
+import functools
+import importlib.metadata
 import importlib.util
 import inspect
 import json
 import os
-import pkg_resources
 import sys
 import typing
+import warnings
+import base64
 
 import pulumi
 import pulumi.runtime
+from pulumi.runtime.sync_await import _sync_await
+from pulumi.runtime.proto import resource_pb2
 
 from semver import VersionInfo as SemverVersion
 from parver import Version as PEP440Version
+
+C = typing.TypeVar("C", bound=typing.Callable)
 
 
 def get_env(*args):
@@ -70,7 +78,7 @@ def _get_semver_version():
     # to receive a valid semver string when receiving requests from the language host, so it's our
     # responsibility as the library to convert our own PEP440 version into a valid semver string.
 
-    pep440_version_string = pkg_resources.require(root_package)[0].version
+    pep440_version_string = importlib.metadata.version(root_package)
     pep440_version = PEP440Version.parse(pep440_version_string)
     (major, minor, patch) = pep440_version.release
     prerelease = None
@@ -81,12 +89,16 @@ def _get_semver_version():
     elif pep440_version.pre_tag == 'rc':
         prerelease = f"rc.{pep440_version.pre}"
     elif pep440_version.dev is not None:
+        # PEP440 has explicit support for dev builds, while semver encodes them as "prerelease" versions. To bridge 
+        # between the two, we convert our dev build version into a prerelease tag. This matches what all of our other
+        # packages do when constructing their own semver string.
         prerelease = f"dev.{pep440_version.dev}"
+    elif pep440_version.local is not None:
+        # PEP440 only allows a small set of prerelease tags, so when converting an arbitrary prerelease,
+        # PypiVersion in /pkg/codegen/python/utilities.go converts it to a local version. Therefore, we need to
+        # do the reverse conversion here and set the local version as the prerelease tag.
+        prerelease = pep440_version.local
 
-    # The only significant difference between PEP440 and semver as it pertains to us is that PEP440 has explicit support
-    # for dev builds, while semver encodes them as "prerelease" versions. In order to bridge between the two, we convert
-    # our dev build version into a prerelease tag. This matches what all of our other packages do when constructing
-    # their own semver string.
     return SemverVersion(major=major, minor=minor, patch=patch, prerelease=prerelease)
 
 
@@ -94,10 +106,17 @@ def _get_semver_version():
 _version = _get_semver_version()
 _version_str = str(_version)
 
+def get_resource_opts_defaults() -> pulumi.ResourceOptions:
+    return pulumi.ResourceOptions(
+        version=get_version(),
+        plugin_download_url=get_plugin_download_url(),
+    )
 
-def get_version():
-    return _version_str
-
+def get_invoke_opts_defaults() -> pulumi.InvokeOptions:
+    return pulumi.InvokeOptions(
+        version=get_version(),
+        plugin_download_url=get_plugin_download_url(),
+    )
 
 def get_resource_args_opts(resource_args_type, resource_options_type, *args, **kwargs):
     """
@@ -234,3 +253,79 @@ def lift_output_func(func: typing.Any) -> typing.Callable[[_F], _F]:
                                             **resolved_args['kwargs']))
 
     return (lambda _: lifted_func)
+
+
+def call_plain(
+    tok: str,
+    props: pulumi.Inputs,
+    res: typing.Optional[pulumi.Resource] = None,
+    typ: typing.Optional[type] = None,
+) -> typing.Any:
+    """
+    Wraps pulumi.runtime.plain to force the output and return it plainly.
+    """
+
+    output = pulumi.runtime.call(tok, props, res, typ)
+
+    # Ingoring deps silently. They are typically non-empty, r.f() calls include r as a dependency.
+    result, known, secret, _ = _sync_await(asyncio.create_task(_await_output(output)))
+
+    problem = None
+    if not known:
+        problem = ' an unknown value'
+    elif secret:
+        problem = ' a secret value'
+
+    if problem:
+        raise AssertionError(
+            f"Plain resource method '{tok}' incorrectly returned {problem}. "
+            + "This is an error in the provider, please report this to the provider developer."
+        )
+
+    return result
+
+
+async def _await_output(o: pulumi.Output[typing.Any]) -> typing.Tuple[object, bool, bool, set]:
+    return (
+        await o._future,
+        await o._is_known,
+        await o._is_secret,
+        await o._resources,
+    )
+
+
+# This is included to provide an upgrade path for users who are using a version
+# of the Pulumi SDK (<3.121.0) that does not include the `deprecated` decorator.
+def deprecated(message: str) -> typing.Callable[[C], C]:
+    """
+    Decorator to indicate a function is deprecated.
+
+    As well as inserting appropriate statements to indicate that the function is
+    deprecated, this decorator also tags the function with a special attribute
+    so that Pulumi code can detect that it is deprecated and react appropriately
+    in certain situations.
+
+    message is the deprecation message that should be printed if the function is called.
+    """
+
+    def decorator(fn: C) -> C:
+        if not callable(fn):
+            raise TypeError("Expected fn to be callable")
+
+        @functools.wraps(fn)
+        def deprecated_fn(*args, **kwargs):
+            warnings.warn(message)
+            pulumi.warn(f"{fn.__name__} is deprecated: {message}")
+
+            return fn(*args, **kwargs)
+
+        deprecated_fn.__dict__["_pulumi_deprecated_callable"] = fn
+        return typing.cast(C, deprecated_fn)
+
+    return decorator
+
+def get_plugin_download_url():
+	return None
+
+def get_version():
+     return _version_str

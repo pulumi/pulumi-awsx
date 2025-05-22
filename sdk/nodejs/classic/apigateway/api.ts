@@ -21,7 +21,7 @@ import * as fspath from "path";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as awslambda from "aws-lambda";
+import type * as awslambda from "aws-lambda";
 
 import { getRegion, ifUndefined, sha1hash } from "../utils";
 
@@ -609,6 +609,9 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
         name: ifUndefined(restApiArgs.name, title),
         binaryMediaTypes: ifUndefined(restApiArgs.binaryMediaTypes, ["*/*"]),
         body: swaggerString,
+        // We pass this in directly, because setting it in the Swagger doesn't cause
+        // it to take affect, it must be passed directly to the RestAPI constructor as well.
+        apiKeySource: args.apiKeySource,
     }, { parent });
 
     if (restApiArgs.policy) {
@@ -825,7 +828,7 @@ function addSwaggerOperation(swagger: SwaggerSpec, path: string, method: string,
 
 function checkRoute<TRoute>(parent: pulumi.Resource, route: TRoute, propName: keyof TRoute) {
     if (route[propName] === undefined) {
-        throw new pulumi.ResourceError(`Route missing required [${propName}] property`, parent);
+        throw new pulumi.ResourceError(`Route missing required [${String(propName)}] property`, parent);
     }
 }
 
@@ -926,7 +929,7 @@ function addAuthorizersToSwagger(
     authorizers = Array.isArray(authorizers) ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
-        const suffix = Object.keys(swagger.securityDefinitions).length;
+        const suffix: number = Object.keys(swagger.securityDefinitions).length;
         const authName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
         auth.authorizerName = authName;
 
@@ -1288,7 +1291,7 @@ function addIntegrationRouteToSwaggerSpec(
         const connectionType = target.connectionType;
         const connectionId = target.connectionId;
         const type = ifUndefined(target.type, <IntegrationType>"http_proxy");
-        const passthroughBehavior = ifUndefined(target.passthroughBehavior, "when_no_match");
+        const passthroughBehavior = ifUndefined(target.passthroughBehavior, "when_no_match" as const);
 
         const result: SwaggerOperation = {
             "x-amazon-apigateway-integration": {

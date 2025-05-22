@@ -1,0 +1,3 @@
+name: ecs-parallel
+runtime: nodejs
+description: An ECS cluster with a Fargate service

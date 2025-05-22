@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetArgs } from "./subnet";
 import { VpcSubnetArgs, VpcSubnetType } from "./vpc";
@@ -21,7 +20,6 @@ import { Cidr32Block, getIPv4Address } from "./cidr";
 
 import * as utils from "../utils";
 
-/** @internal */
 export interface AvailabilityZoneDescription {
     name: string;
     id: string;
@@ -445,14 +443,12 @@ class ExplicitLocationTopology extends VpcTopology {
     }
 }
 
-/** @internal */
 export interface VpcTopologyDescription {
     subnets: SubnetDescription[];
     natGateways: NatGatewayDescription[];
     natRoutes: NatRouteDescription[];
 }
 
-/** @internal */
 export interface SubnetDescription {
     type: VpcSubnetType;
     subnetName: string;
@@ -461,7 +457,6 @@ export interface SubnetDescription {
 }
 
 
-/** @internal */
 export interface NatGatewayDescription {
     name: string;
 
@@ -469,7 +464,6 @@ export interface NatGatewayDescription {
     publicSubnet: string;
 }
 
-/** @internal */
 export interface NatRouteDescription {
     name: string;
 

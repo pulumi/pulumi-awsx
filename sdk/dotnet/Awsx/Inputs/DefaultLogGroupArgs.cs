@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Log group with default setup unless explicitly skipped.
     /// </summary>
-    public sealed class DefaultLogGroupArgs : Pulumi.ResourceArgs
+    public sealed class DefaultLogGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Arguments to use instead of the default values during creation.
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public DefaultLogGroupArgs()
         {
         }
+        public static new DefaultLogGroupArgs Empty => new DefaultLogGroupArgs();
     }
 }

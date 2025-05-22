@@ -19,51 +19,84 @@ import * as schema from "./schema-types";
 import * as utils from "./utils";
 
 interface RolePolicyAttachments {
-    /**
-     * ARNs of the policies to attach to the created role.
-     */
-    policyArns?: string[];
+  /**
+   * ARNs of the policies to attach to the created role.
+   */
+  policyArns?: string[];
+}
+
+/** @internal */
+export function defaultExecutionRolePolicyARNs() {
+  return [
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+    // aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+  ];
+}
+
+/** @internal */
+export function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
+  return {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: "sts:AssumeRole",
+        Principal: {
+          Service: "ecs-tasks.amazonaws.com",
+        },
+        Effect: "Allow",
+        Sid: "",
+      },
+    ],
+  };
+}
+
+/** @internal */
+export function defaultTaskRolePolicyARNs() {
+  return [
+    // Provides full access to Lambda
+    // aws.iam.ManagedPolicy.LambdaFullAccess,
+    // Required for lambda compute to be able to run Tasks
+    // aws.iam.ManagedPolicy.AmazonECSFullAccess,
+  ];
 }
 
 /** @internal */
 export function defaultRoleWithPolicies(
-    name: string,
-    inputs: schema.DefaultRoleWithPolicyInputs | undefined,
-    defaults: aws.iam.RoleArgs & RolePolicyAttachments,
-    opts: ResourceOptions,
+  name: string,
+  inputs: schema.DefaultRoleWithPolicyInputs | undefined,
+  defaults: aws.iam.RoleArgs & RolePolicyAttachments,
+  opts: ResourceOptions,
 ): {
-    roleArn?: pulumi.Output<string>;
-    role?: aws.iam.Role;
-    policies?: aws.iam.RolePolicyAttachment[];
+  roleArn?: pulumi.Output<string>;
+  role?: aws.iam.Role;
+  policies?: aws.iam.RolePolicyAttachment[];
 } {
-    if (inputs?.roleArn !== undefined && inputs?.args !== undefined) {
-        throw new Error(
-            "Can't define role args if specified an existing role ARN",
-        );
-    }
-    if (inputs?.skip === true) {
-        return {};
-    }
-    if (inputs?.roleArn !== undefined) {
-        return { roleArn: pulumi.output(inputs.roleArn) };
-    }
-    const args = { ...defaults, ...inputs?.args };
-    const assumeRolePolicy =
-        typeof args.assumeRolePolicy === "string"
-            ? args.assumeRolePolicy
-            : JSON.stringify(args.assumeRolePolicy);
+  if (inputs?.roleArn !== undefined && inputs?.args !== undefined) {
+    throw new Error("Can't define role args if specified an existing role ARN");
+  }
+  if (inputs?.skip === true) {
+    return {};
+  }
+  if (inputs?.roleArn !== undefined) {
+    return { roleArn: pulumi.output(inputs.roleArn) };
+  }
+  const args = { ...defaults, ...inputs?.args };
+  const assumeRolePolicy =
+    typeof args.assumeRolePolicy === "string"
+      ? args.assumeRolePolicy
+      : JSON.stringify(args.assumeRolePolicy);
 
-    const roleArgs = { ...args, assumeRolePolicy };
-    delete roleArgs.policyArns;
+  const roleArgs = { ...args, assumeRolePolicy };
+  delete roleArgs.policyArns;
 
-    const role = new aws.iam.Role(name, roleArgs, opts);
-    const policies = args.policyArns?.map(
-        (policyArn) =>
-            new aws.iam.RolePolicyAttachment(
-                `${name}-${utils.sha1hash(policyArn)}`,
-                { role: role.name, policyArn },
-                opts,
-            ),
-    );
-    return { role, policies, roleArn: role.arn };
+  const role = new aws.iam.Role(name, roleArgs, opts);
+  const policies = args.policyArns?.map(
+    (policyArn) =>
+      new aws.iam.RolePolicyAttachment(
+        `${name}-${utils.sha1hash(policyArn)}`,
+        { role: role.name, policyArn },
+        opts,
+      ),
+  );
+  return { role, policies, roleArn: role.arn };
 }

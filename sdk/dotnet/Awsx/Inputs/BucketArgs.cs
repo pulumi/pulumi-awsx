@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a Bucket resource.
     /// </summary>
-    public sealed class BucketArgs : Pulumi.ResourceArgs
+    public sealed class BucketArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
@@ -107,12 +107,14 @@ namespace Pulumi.Awsx.Awsx.Inputs
 
         /// <summary>
         /// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+        /// 
+        /// &gt; **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
         /// </summary>
         [Input("objectLockConfiguration")]
         public Input<Pulumi.Aws.S3.Inputs.BucketObjectLockConfigurationArgs>? ObjectLockConfiguration { get; set; }
 
         /// <summary>
-        /// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.
+        /// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
         /// </summary>
         [Input("policy")]
         public Input<string>? Policy { get; set; }
@@ -142,7 +144,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A mapping of tags to assign to the bucket.
+        /// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -177,5 +179,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public BucketArgs()
         {
         }
+        public static new BucketArgs Empty => new BucketArgs();
     }
 }

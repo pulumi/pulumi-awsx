@@ -1,13 +1,16 @@
 .pulumi
-**/bin/
-**/obj/
-**/node_modules/
+bin
+obj
+node_modules
+nuget
+awsx/coverage
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
 yarn.lock
 package-lock.json
 .idea/
+**/.vscode
 **/version.txt
 **/dist
 .DS_Store
@@ -16,3 +19,16 @@ ci-scripts/
 *.tar.gz
 
 **/venv
+
+!/awsx/yarn.lock
+
+sdk/java/build
+sdk/java/.gradle
+sdk/java/gradle
+sdk/java/gradlew
+sdk/java/gradlew.bat
+
+.make
+.envrc
+go.work
+go.work.sum

@@ -1,7 +1,7 @@
 #!/bin/bash
 # publish.sh builds and publishes a release.
 set -o nounset -o errexit -o pipefail
-ROOT=$(dirname $0)/..
+ROOT=$(pwd)
 
 echo "Publishing NPM packages to NPMjs.com:"
 
@@ -9,33 +9,50 @@ echo "Publishing NPM packages to NPMjs.com:"
 # development and testing the SDK, since we use symlinking for those workflows.  Namely, we must promote the SDK
 # dependencies from peerDependencies that are resolved via those links, to real installable dependencies.
 publish() {
-    node $(dirname $0)/promote.js ${@:2} < \
-        ${ROOT}/nodejs/$1/bin/package.json > \
-        ${ROOT}/nodejs/$1/bin/package.json.publish
-    pushd ${ROOT}/nodejs/$1/bin
+    mkdir -p "${ROOT}/sdk/nodejs/bin/scripts"
+
+    cp "${ROOT}/scripts/install-pulumi-plugin.js" \
+       "${ROOT}/sdk/nodejs/bin/scripts"
+
+    node "${ROOT}/scripts/add-plugin-installer-script.js" < \
+        "${ROOT}/sdk/nodejs/bin/package.json" > \
+        "${ROOT}/sdk/nodejs/bin/package.json.publish"
+
+    pushd ${ROOT}/sdk/nodejs/bin
     mv package.json package.json.dev
     mv package.json.publish package.json
 
     NPM_TAG="dev"
 
-    # We use the "features/" prefix on branches that we want to build and publish for doing
-    # cross repo work. But in this case, we don't want to publish over "dev", since the bits
-    # could be totally busted and the dev tag tracks master.
-    if [[ "${TRAVIS_BRANCH:-}" == features/* ]]; then
-        NPM_TAG=$(echo "${TRAVIS_BRANCH}" | sed -e 's|^features/|feature-|g')
-    fi
-    if [[ "${TRAVIS_BRANCH:-}" == feature-* ]]; then
-        NPM_TAG=$(echo "${TRAVIS_BRANCH}")
+    ## We need split the GITHUB_REF into the correct parts
+    ## so that we can test for NPM Tags
+    IFS='/' read -ra my_array <<< "${GITHUB_REF:-}"
+    BRANCH_NAME="${my_array[2]}"
+
+    if [[ "${BRANCH_NAME}" == features/* ]]; then
+        NPM_TAG=$(echo "${BRANCH_NAME}" | sed -e 's|^features/|feature-|g')
     fi
 
-    PKG_NAME=$(jq -r .name < package.json)
-    PKG_VERSION=$(jq -r .version < package.json)
+    if [[ "${BRANCH_NAME}" == feature-* ]]; then
+        NPM_TAG=$(echo "${BRANCH_NAME}")
+    fi
 
     # If the package doesn't have a pre-release tag, use the tag of latest instead of
     # dev. NPM uses this tag as the default version to add, so we want it to mean
     # the newest released version.
-    if [[ "${PKG_VERSION}" != *-* ]]; then
+    PKG_NAME=$(jq -r .name < package.json)
+    PKG_VERSION=$(jq -r .version < package.json)
+    if [[ "${PKG_VERSION}" != *-dev* ]] && [[ "${PKG_VERSION}" != *-alpha* ]]; then
         NPM_TAG="latest"
+    fi
+
+    # we need to set explicit beta and rc tags to ensure that we don't mutate to use the latest tag
+    if [[ "${PKG_VERSION}" == *-beta* ]]; then
+        NPM_TAG="beta"
+    fi
+
+    if [[ "${PKG_VERSION}" == *-rc* ]]; then
+        NPM_TAG="rc"
     fi
 
     # Now, perform the publish. The logic here is a little goofy because npm provides
@@ -64,6 +81,17 @@ publish() {
     mv package.json package.json.publish
     mv package.json.dev package.json
     popd
+
+    echo "Publishing Pip package to pypi as ${PYPI_USERNAME}:"
+    twine upload \
+        -u "${PYPI_USERNAME}" -p "${PYPI_PASSWORD}" \
+        "${ROOT}/sdk/python/bin/dist/*" \
+        --skip-existing \
+        --verbose
+
+    # Start DotNet Publish
+    find "${ROOT}/sdk/dotnet/bin/Debug/" -name 'Pulumi.*.nupkg' \
+        -exec dotnet nuget push -k "${NUGET_PUBLISH_KEY}" -s https://api.nuget.org/v3/index.json {} ';'
 }
 
-publish awsx
+publish

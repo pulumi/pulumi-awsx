@@ -1,208 +1,94 @@
-env:
-  AWS_REGION: us-west-2
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GO111MODULE: "on"
-  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  PROVIDER: awsx
-  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-  PULUMI_API: https://api.pulumi-staging.io
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  TRAVIS_OS_NAME: linux
-jobs:
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.nodeversion}}
-          registry-url: https://registry.npmjs.org
-      - name: Install Yarn
-        run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
-      - name: Update PATH for Yarn
-        run: |
-          echo "$HOME/.yarn/bin" >> $GITHUB_PATH
-          echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
-      - name: Lint AWSX Code
-        run: make lint
-      - name: Lint classic AWSX Code
-        run: make lint-classic
-  build_sdk:
-    name: build_sdk
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.nodeversion}}
-          registry-url: https://registry.npmjs.org
-      - name: Build SDK
-        run: make build_${{ matrix.language }}
-      - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
-      - name: Compress SDK folder
-        run: tar -zcf ${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
-          .
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ matrix.language  }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz
-      - name: Run SDK tests
-        run: make istanbul_tests
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-          - 1.16.x
-        language:
-          - nodejs
-        nodeversion:
-          - 13.x
-  publish_sdk:
-    name: publish_sdk
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          always-auth: true
-          registry-url: https://registry.npmjs.org
-      - name: Download NodeJS SDK
-        uses: actions/download-artifact@v2
-        with:
-          name: nodejs-sdk.tar.gz
-          path: ${{ github.workspace}}/nodejs
-      - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/nodejs/nodejs.tar.gz -C ${{
-          github.workspace}}/nodejs/awsx
-      - env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        name: Publish SDK
-        run: ./scripts/publish_packages.sh
-  create_docs_build:
-    name: Create docs build
-    needs: publish_sdk
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - env:
-          GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
-        name: Dispatch event
-        run: pulumictl create docs-build pulumi-${{ env.PROVIDER }} ${GITHUB_REF#refs/tags/}
-  test:
-    name: test
-    needs: build_sdk
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.nodeversion}}
-          registry-url: https://registry.npmjs.org
-      - name: Download SDK
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/
-      - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
-          github.workspace}}/${{ matrix.language}}/awsx
-      - name: Install dependencies
-        run: make install_${{ matrix.language}}_sdk
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-region: ${{ env.AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-duration-seconds: 3600
-          role-session-name: ${{ env.PROVIDER }}@githubActions
-          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-      - name: Run tests
-        run: make test_${{ matrix.language}}
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-          - 1.16.x
-        language:
-          - nodejs
-        nodeversion:
-          - 13.x
+# WARNING: This file is autogenerated - changes will be overwritten when regenerated by https://github.com/pulumi/ci-mgmt
 name: release
-"on":
+on:
   push:
     tags:
-      - v*.*.*
+    - v*.*.*
+    - "!v*.*.*-**"
+
+env:
+  ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
+  ALT_AWS_SECRET_ACCESS_KEY: ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: us-west-2
+  GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+  GOLANGCI_LINT_VERSION: v1.61.0
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
+  PROVIDER: awsx
+  PUBLISH_REPO_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+  PUBLISH_REPO_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  PULUMI_API: https://api.pulumi-staging.io
+  PULUMI_ENABLE_RESOURCE_REFERENCES: "1"
+  PULUMI_GO_DEP_ROOT: ${{ github.workspace }}/..
+  PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
+  PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+  PYPI_USERNAME: __token__
+  SIGNING_KEY: ${{ secrets.JAVA_SIGNING_KEY }}
+  SIGNING_KEY_ID: ${{ secrets.JAVA_SIGNING_KEY_ID }}
+  SIGNING_PASSWORD: ${{ secrets.JAVA_SIGNING_PASSWORD }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  TF_APPEND_USER_AGENT: pulumi
+jobs:
+  prerequisites:
+    uses: ./.github/workflows/prerequisites.yml
+    secrets: inherit
+    with:
+      default_branch: ${{ github.event.repository.default_branch }}
+      is_pr: ${{ github.event_name == 'pull_request' }}
+      is_automated: ${{ github.actor == 'dependabot[bot]' }}
+
+  build_provider:
+    uses: ./.github/workflows/build_provider.yml
+    needs: prerequisites
+    secrets: inherit
+    with:
+      version: ${{ needs.prerequisites.outputs.version }}
+
+  build_sdk:
+    name: build_sdk
+    needs: prerequisites
+    uses: ./.github/workflows/build_sdk.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.prerequisites.outputs.version }}
+
+  lint:
+    name: lint
+    uses: ./.github/workflows/lint.yml
+    secrets: inherit
+  license_check:
+    name: License Check
+    uses: ./.github/workflows/license.yml
+    secrets: inherit
+
+  publish:
+    name: publish
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    needs:
+      - prerequisites
+      - build_provider
+      - test
+      - license_check
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.prerequisites.outputs.version }}
+      isPrerelease: false
+
+  test:
+    uses: ./.github/workflows/test.yml
+    needs:
+      - prerequisites
+      - build_provider
+      - build_sdk
+    permissions:
+      contents: read
+      id-token: write
+    secrets: inherit
+    with:
+      version: ${{ needs.prerequisites.outputs.version }}

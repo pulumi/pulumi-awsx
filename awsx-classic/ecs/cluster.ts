@@ -176,17 +176,6 @@ type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
 export interface ClusterArgs {
 
     /**
-     * List of short names of one or more capacity providers to associate with the cluster.
-     * Valid values also include `FARGATE` and `FARGATE_SPOT`.
-     */
-    capacityProviders?: aws.ecs.ClusterArgs["capacityProviders"];
-
-    /**
-     * The capacity provider strategy to use by default for the cluster. Can be one or more.
-     */
-    defaultCapacityProviderStrategies?: aws.ecs.ClusterArgs["defaultCapacityProviderStrategies"];
-
-    /**
      * Configuration block(s) with cluster settings. For example, this can be used to enable CloudWatch Container Insights for a cluster.
      */
     settings?: aws.ecs.ClusterArgs["settings"];

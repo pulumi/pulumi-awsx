@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a Role resource and Policy attachments.
     /// </summary>
-    public sealed class RoleWithPolicyArgs : Pulumi.ResourceArgs
+    public sealed class RoleWithPolicyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Description of the role.
@@ -31,7 +31,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs>? _inlinePolicies;
 
         /// <summary>
-        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
         /// </summary>
         public InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs> InlinePolicies
         {
@@ -43,7 +43,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputList<string>? _managedPolicyArns;
 
         /// <summary>
-        /// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+        /// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
         /// </summary>
         public InputList<string> ManagedPolicyArns
         {
@@ -58,7 +58,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<int>? MaxSessionDuration { get; set; }
 
         /// <summary>
-        /// Name of the role policy.
+        /// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -97,7 +97,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -108,5 +108,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public RoleWithPolicyArgs()
         {
         }
+        public static new RoleWithPolicyArgs Empty => new RoleWithPolicyArgs();
     }
 }

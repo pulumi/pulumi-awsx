@@ -17,17 +17,17 @@
 package examples
 
 import (
-	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"path/filepath"
 	"testing"
+
+	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
 func TestAccTrail(t *testing.T) {
-	t.Skip("skip")
 	test := getGoBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "go-trail"),
+			Dir:           filepath.Join(getCwd(t), "cloudtrail", "go"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -41,7 +41,7 @@ func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
 			"aws:region": region,
 		},
 		Dependencies: []string{
-			"github.com/pulumi/pulumi-awsx/sdk",
+			"github.com/pulumi/pulumi-awsx/sdk/v2=../sdk",
 		},
 	})
 

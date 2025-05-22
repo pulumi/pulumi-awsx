@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccCluster(t *testing.T) {
@@ -284,6 +285,26 @@ func TestAccAlb_fargate(t *testing.T) {
 					Dir:             "step2",
 					Additive:        true,
 					ExpectNoChanges: true,
+				},
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccApiKeySource(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:     path.Join(getCwd(t), "./apikeysource"),
+			Verbose: true,
+			EditDirs: []integration.EditDir{
+				{
+					Dir:      "./apikeysource/step2",
+					Additive: true,
+					ExtraRuntimeValidation: func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+						apiKeySource := stack.Outputs["apiKeySource"].(string)
+						assert.Equal(t, "AUTHORIZER", apiKeySource)
+					},
 				},
 			},
 		})

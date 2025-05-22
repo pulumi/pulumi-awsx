@@ -2,7 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs } from "../types";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -42,14 +44,13 @@ export class FargateService extends pulumi.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args: FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.networkConfiguration === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'networkConfiguration'");
-            }
-            resourceInputs["capacityProviderStrategies"] = args ? args.capacityProviderStrategies : undefined;
+            resourceInputs["alarms"] = args ? args.alarms : undefined;
+            resourceInputs["assignPublicIp"] = args ? args.assignPublicIp : undefined;
+            resourceInputs["availabilityZoneRebalancing"] = args ? args.availabilityZoneRebalancing : undefined;
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -59,21 +60,25 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["desiredCount"] = args ? args.desiredCount : undefined;
             resourceInputs["enableEcsManagedTags"] = args ? args.enableEcsManagedTags : undefined;
             resourceInputs["enableExecuteCommand"] = args ? args.enableExecuteCommand : undefined;
+            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
             resourceInputs["forceNewDeployment"] = args ? args.forceNewDeployment : undefined;
             resourceInputs["healthCheckGracePeriodSeconds"] = args ? args.healthCheckGracePeriodSeconds : undefined;
             resourceInputs["iamRole"] = args ? args.iamRole : undefined;
             resourceInputs["loadBalancers"] = args ? args.loadBalancers : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["networkConfiguration"] = args ? args.networkConfiguration : undefined;
-            resourceInputs["orderedPlacementStrategies"] = args ? args.orderedPlacementStrategies : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
             resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
             resourceInputs["schedulingStrategy"] = args ? args.schedulingStrategy : undefined;
+            resourceInputs["serviceConnectConfiguration"] = args ? args.serviceConnectConfiguration : undefined;
             resourceInputs["serviceRegistries"] = args ? args.serviceRegistries : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
+            resourceInputs["volumeConfiguration"] = args ? args.volumeConfiguration : undefined;
+            resourceInputs["vpcLatticeConfigurations"] = args ? args.vpcLatticeConfigurations : undefined;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;
@@ -89,9 +94,17 @@ export class FargateService extends pulumi.ComponentResource {
  */
 export interface FargateServiceArgs {
     /**
-     * Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below.
+     * Information about the CloudWatch alarms. See below.
      */
-    capacityProviderStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
+    alarms?: pulumi.Input<pulumiAws.types.input.ecs.ServiceAlarms>;
+    /**
+     * Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+     */
+    assignPublicIp?: pulumi.Input<boolean>;
+    /**
+     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     */
+    availabilityZoneRebalancing?: pulumi.Input<string>;
     /**
      * ARN of an ECS cluster.
      */
@@ -117,19 +130,24 @@ export interface FargateServiceArgs {
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
     /**
-     * Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+     * Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
      */
     desiredCount?: pulumi.Input<number>;
     /**
-     * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+     * Whether to enable Amazon ECS managed tags for the tasks within the service.
      */
     enableEcsManagedTags?: pulumi.Input<boolean>;
     /**
-     * Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+     * Whether to enable Amazon ECS Exec for the tasks within the service.
      */
     enableExecuteCommand?: pulumi.Input<boolean>;
     /**
+     * Enable to delete a service even if it wasn't scaled down to zero tasks. It's only necessary to use this if the service uses the `REPLICA` scheduling strategy.
+     */
+    forceDelete?: pulumi.Input<boolean>;
+    /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * When using the forceNewDeployment property you also need to configure the triggers property.
      */
     forceNewDeployment?: pulumi.Input<boolean>;
     /**
@@ -146,16 +164,14 @@ export interface FargateServiceArgs {
     loadBalancers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceLoadBalancer>[]>;
     /**
      * Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+     *
+     * The following arguments are optional:
      */
     name?: pulumi.Input<string>;
     /**
      * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      */
-    networkConfiguration: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
-    /**
-     * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
-     */
-    orderedPlacementStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
+    networkConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
     /**
      * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
      */
@@ -165,13 +181,17 @@ export interface FargateServiceArgs {
      */
     platformVersion?: pulumi.Input<string>;
     /**
-     * Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+     * Whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
      */
     propagateTags?: pulumi.Input<string>;
     /**
      * Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
      */
     schedulingStrategy?: pulumi.Input<string>;
+    /**
+     * ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     */
+    serviceConnectConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceConnectConfiguration>;
     /**
      * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
      */
@@ -188,4 +208,16 @@ export interface FargateServiceArgs {
      * The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
     taskDefinitionArgs?: inputs.ecs.FargateServiceTaskDefinitionArgs;
+    /**
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+     */
+    triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
+     */
+    volumeConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceVolumeConfiguration>;
+    /**
+     * The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     */
+    vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }

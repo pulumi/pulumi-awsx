@@ -1,0 +1,6 @@
+*.json
+*.md
+schema-types.ts
+*.d.ts
+coverage/
+bin/

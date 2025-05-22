@@ -21,7 +21,7 @@ import { YAxis } from "./widgets_graph";
 // the json conversion properly as it's very easy to screw up if using things like the 'any' type.
 
 export interface WidgetJson {
-    type: pulumi.Input<"alarm" | "metric" | "text">;
+    type: pulumi.Input<"alarm" | "metric" | "text" | "log">;
     x: pulumi.Input<number>;
     y: pulumi.Input<number>;
     width: pulumi.Input<number>;
@@ -61,6 +61,19 @@ export interface MetricWidgetPropertiesJson {
     view: pulumi.Input<"timeSeries" | "singleValue" | undefined>;
     stacked: pulumi.Input<boolean | undefined>;
     yAxis: pulumi.Input<YAxis> | undefined;
+}
+
+export interface LogWidgetJson extends WidgetJson {
+    type: pulumi.Input<"log">;
+    properties: pulumi.Input<LogWidgetPropertiesJson>;
+}
+
+export interface LogWidgetPropertiesJson {
+    query: pulumi.Input<string>;
+    region: pulumi.Input<string | undefined>;
+    view: pulumi.Input<"timeSeries" | "singleValue" | undefined>;
+    stacked: pulumi.Input<boolean | undefined>;
+    title: pulumi.Input<string | undefined>;
 }
 
 export interface MetricWidgetAnnotationsJson {
