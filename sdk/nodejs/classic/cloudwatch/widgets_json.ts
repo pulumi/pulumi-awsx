@@ -99,6 +99,7 @@ export interface RenderingPropertiesJson {
     stat: string | undefined;
     visible: boolean | undefined;
     yAxis: "right" | "left" | undefined;
+    id: string | undefined;
 }
 
 export interface BaseHorizontalAnnotationJson {
