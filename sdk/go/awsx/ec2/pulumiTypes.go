@@ -593,6 +593,72 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### VPC Lattice Resource Configuration Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("Resource"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
+// ### VPC Lattice Service Network Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("ServiceNetwork"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
@@ -611,6 +677,8 @@ type VpcEndpointSpec struct {
 	Policy *string `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
 	PrivateDnsEnabled *bool `pulumi:"privateDnsEnabled"`
+	// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+	ResourceConfigurationArn *string `pulumi:"resourceConfigurationArn"`
 	// One or more route table IDs. Applicable for endpoints of type `Gateway`.
 	RouteTableIds []string `pulumi:"routeTableIds"`
 	// The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
@@ -618,6 +686,8 @@ type VpcEndpointSpec struct {
 	SecurityGroupIds []string `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+	ServiceNetworkArn *string `pulumi:"serviceNetworkArn"`
 	// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
 	ServiceRegion *string `pulumi:"serviceRegion"`
 	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
@@ -626,7 +696,7 @@ type VpcEndpointSpec struct {
 	SubnetIds []string `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
-	// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+	// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
 	VpcEndpointType *string `pulumi:"vpcEndpointType"`
 }
 
@@ -842,6 +912,72 @@ type VpcEndpointSpecInput interface {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### VPC Lattice Resource Configuration Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("Resource"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
+// ### VPC Lattice Service Network Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("ServiceNetwork"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
@@ -860,6 +996,8 @@ type VpcEndpointSpecArgs struct {
 	Policy pulumi.StringPtrInput `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
 	PrivateDnsEnabled *bool `pulumi:"privateDnsEnabled"`
+	// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+	ResourceConfigurationArn pulumi.StringPtrInput `pulumi:"resourceConfigurationArn"`
 	// One or more route table IDs. Applicable for endpoints of type `Gateway`.
 	RouteTableIds pulumi.StringArrayInput `pulumi:"routeTableIds"`
 	// The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
@@ -867,6 +1005,8 @@ type VpcEndpointSpecArgs struct {
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
+	// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+	ServiceNetworkArn pulumi.StringPtrInput `pulumi:"serviceNetworkArn"`
 	// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
 	ServiceRegion pulumi.StringPtrInput `pulumi:"serviceRegion"`
 	// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.
@@ -875,7 +1015,7 @@ type VpcEndpointSpecArgs struct {
 	SubnetIds pulumi.StringArrayInput `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
-	// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+	// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
 	VpcEndpointType pulumi.StringPtrInput `pulumi:"vpcEndpointType"`
 }
 
@@ -1117,6 +1257,72 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### VPC Lattice Resource Configuration Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("Resource"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
+// ### VPC Lattice Service Network Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+//				SubnetIds: pulumi.StringArray{
+//					exampleAwsSubnet.Id,
+//				},
+//				VpcEndpointType: pulumi.String("ServiceNetwork"),
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
@@ -1163,6 +1369,11 @@ func (o VpcEndpointSpecOutput) PrivateDnsEnabled() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) *bool { return v.PrivateDnsEnabled }).(pulumi.BoolPtrOutput)
 }
 
+// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+func (o VpcEndpointSpecOutput) ResourceConfigurationArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.ResourceConfigurationArn }).(pulumi.StringPtrOutput)
+}
+
 // One or more route table IDs. Applicable for endpoints of type `Gateway`.
 func (o VpcEndpointSpecOutput) RouteTableIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) []string { return v.RouteTableIds }).(pulumi.StringArrayOutput)
@@ -1177,6 +1388,11 @@ func (o VpcEndpointSpecOutput) SecurityGroupIds() pulumi.StringArrayOutput {
 // The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 func (o VpcEndpointSpecOutput) ServiceName() pulumi.StringOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) string { return v.ServiceName }).(pulumi.StringOutput)
+}
+
+// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+func (o VpcEndpointSpecOutput) ServiceNetworkArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.ServiceNetworkArn }).(pulumi.StringPtrOutput)
 }
 
 // The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
@@ -1199,7 +1415,7 @@ func (o VpcEndpointSpecOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
 
-// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
 func (o VpcEndpointSpecOutput) VpcEndpointType() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.VpcEndpointType }).(pulumi.StringPtrOutput)
 }
