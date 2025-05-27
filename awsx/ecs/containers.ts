@@ -48,9 +48,11 @@ export function computeContainerDefinitions(
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
   const computed = containers.apply((c) => {
     return pulumi.all(
-      Object.entries(c).map(([containerName, container]) =>
-        computeContainerDefinition(parent, containerName, container, logGroupId),
-      ),
+      Object.entries(c)
+        .sort(([a], [b]) => a.localeCompare(b)) // sort by container name to ensure deterministic order and reduce false positive redeploys
+        .map(([containerName, container]) =>
+          computeContainerDefinition(parent, containerName, container, logGroupId),
+        ),
     );
   });
   return computed;
