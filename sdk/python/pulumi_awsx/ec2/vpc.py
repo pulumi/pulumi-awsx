@@ -349,10 +349,8 @@ class VpcArgs:
         pulumi.set(self, "vpc_endpoint_specs", value)
 
 
+@pulumi.type_token("awsx:ec2:Vpc")
 class Vpc(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ec2:Vpc"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

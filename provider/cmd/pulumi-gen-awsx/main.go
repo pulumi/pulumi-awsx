@@ -131,7 +131,7 @@ func generate(language Language, cwd, outDir string) error {
 
 func bindSchema(pkgSpec schema.PackageSpec, version string) (*schema.Package, error) {
 	pkgSpec.Version = version
-	pkg, err := schema.ImportSpec(pkgSpec, nil)
+	pkg, err := schema.ImportSpec(pkgSpec, nil, schema.ValidationOptions{})
 	if err != nil {
 		return nil, err
 	}

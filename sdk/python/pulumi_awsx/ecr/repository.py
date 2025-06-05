@@ -142,10 +142,8 @@ class RepositoryArgs:
         pulumi.set(self, "tags", value)
 
 
+@pulumi.type_token("awsx:ecr:Repository")
 class Repository(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ecr:Repository"
-
     @overload
     def __init__(__self__,
                  resource_name: str,
