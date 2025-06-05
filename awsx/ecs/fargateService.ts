@@ -66,7 +66,7 @@ export class FargateService extends schema.FargateService {
           args.networkConfiguration ??
           getDefaultNetworkConfiguration(name, this, args.assignPublicIp),
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
-        launchType: "FARGATE",
+        launchType: args.launchType ?? "FARGATE",
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
         waitForSteadyState: utils
           .ifUndefined(args.continueBeforeSteadyState, false)
