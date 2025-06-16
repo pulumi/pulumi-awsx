@@ -547,10 +547,8 @@ class EC2ServiceArgs:
         pulumi.set(self, "vpc_lattice_configurations", value)
 
 
+@pulumi.type_token("awsx:ecs:EC2Service")
 class EC2Service(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ecs:EC2Service"
-
     @overload
     def __init__(__self__,
                  resource_name: str,

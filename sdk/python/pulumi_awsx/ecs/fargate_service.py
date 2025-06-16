@@ -531,10 +531,8 @@ class FargateServiceArgs:
         pulumi.set(self, "vpc_lattice_configurations", value)
 
 
+@pulumi.type_token("awsx:ecs:FargateService")
 class FargateService(pulumi.ComponentResource):
-
-    pulumi_type = "awsx:ecs:FargateService"
-
     @overload
     def __init__(__self__,
                  resource_name: str,
