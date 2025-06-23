@@ -74,6 +74,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
+            resourceInputs["ipamPools"] = args ? args.ipamPools : undefined;
             resourceInputs["listener"] = args ? args.listener : undefined;
             resourceInputs["listeners"] = args ? args.listeners : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
@@ -178,6 +179,10 @@ export interface NetworkLoadBalancerArgs {
      * Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
      */
     ipAddressType?: pulumi.Input<string>;
+    /**
+     * . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+     */
+    ipamPools?: pulumi.Input<pulumiAws.types.input.lb.LoadBalancerIpamPools>;
     /**
      * A listener to create. Only one of [listener] and [listeners] can be specified.
      */

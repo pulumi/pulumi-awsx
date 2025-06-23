@@ -69,7 +69,7 @@ type trailArgs struct {
 	S3Bucket *awsx.RequiredBucket `pulumi:"s3Bucket"`
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
-	// Name of the Amazon SNS topic defined for notification of log file delivery.
+	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName *string `pulumi:"snsTopicName"`
 	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
@@ -103,7 +103,7 @@ type TrailArgs struct {
 	S3Bucket *awsx.RequiredBucketArgs
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix pulumi.StringPtrInput
-	// Name of the Amazon SNS topic defined for notification of log file delivery.
+	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName pulumi.StringPtrInput
 	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
