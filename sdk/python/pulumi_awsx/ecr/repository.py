@@ -29,6 +29,7 @@ class RepositoryArgs:
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
                  lifecycle_policy: Optional['LifecyclePolicyArgs'] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None):
         """
         The set of arguments for constructing a Repository resource.
@@ -39,6 +40,7 @@ class RepositoryArgs:
         :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
         :param 'LifecyclePolicyArgs' lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[builtins.str] name: Name of the repository.
+        :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if encryption_configurations is not None:
@@ -53,6 +55,8 @@ class RepositoryArgs:
             pulumi.set(__self__, "lifecycle_policy", lifecycle_policy)
         if name is not None:
             pulumi.set(__self__, "name", name)
+        if region is not None:
+            pulumi.set(__self__, "region", region)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
 
@@ -131,6 +135,18 @@ class RepositoryArgs:
 
     @property
     @pulumi.getter
+    def region(self) -> Optional[pulumi.Input[builtins.str]]:
+        """
+        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        """
+        return pulumi.get(self, "region")
+
+    @region.setter
+    def region(self, value: Optional[pulumi.Input[builtins.str]]):
+        pulumi.set(self, "region", value)
+
+    @property
+    @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]]:
         """
         A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -156,6 +172,7 @@ class Repository(pulumi.ComponentResource):
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
                  lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
                  __props__=None):
         """
@@ -172,6 +189,7 @@ class Repository(pulumi.ComponentResource):
         :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
         :param Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict'] lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[builtins.str] name: Name of the repository.
+        :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         ...
@@ -206,6 +224,7 @@ class Repository(pulumi.ComponentResource):
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
                  lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -224,6 +243,7 @@ class Repository(pulumi.ComponentResource):
             __props__.__dict__["image_tag_mutability"] = image_tag_mutability
             __props__.__dict__["lifecycle_policy"] = lifecycle_policy
             __props__.__dict__["name"] = name
+            __props__.__dict__["region"] = region
             __props__.__dict__["tags"] = tags
             __props__.__dict__["repository"] = None
             __props__.__dict__["url"] = None

@@ -384,6 +384,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
+    }
+
+    /**
      * Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don&#39;t support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
      * 
      */
@@ -544,6 +559,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.placementConstraints = $.placementConstraints;
         this.platformVersion = $.platformVersion;
         this.propagateTags = $.propagateTags;
+        this.region = $.region;
         this.schedulingStrategy = $.schedulingStrategy;
         this.serviceConnectConfiguration = $.serviceConnectConfiguration;
         this.serviceRegistries = $.serviceRegistries;
@@ -1100,6 +1116,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder propagateTags(String propagateTags) {
             return propagateTags(Output.of(propagateTags));
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
         }
 
         /**

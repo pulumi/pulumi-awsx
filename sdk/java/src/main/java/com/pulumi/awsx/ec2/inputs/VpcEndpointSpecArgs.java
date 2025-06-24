@@ -221,11 +221,12 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         final var current = AwsFunctions.getCallerIdentity();
+ *         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+ *             .build());
  * 
  *         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
  *             .acceptanceRequired(false)
- *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+ *             .allowedPrincipals(current.arn())
  *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
  *             .build());
  * 
@@ -233,6 +234,82 @@ import javax.annotation.Nullable;
  *             .serviceName(example.serviceName())
  *             .subnetIds(exampleAwsSubnet.id())
  *             .vpcEndpointType(example.serviceType())
+ *             .vpcId(exampleAwsVpc.id())
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * ### VPC Lattice Resource Configuration Endpoint Type
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+ *             .resourceConfigurationArn(exampleAwsVpclatticeResourceConfiguration.arn())
+ *             .subnetIds(exampleAwsSubnet.id())
+ *             .vpcEndpointType("Resource")
+ *             .vpcId(exampleAwsVpc.id())
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * ### VPC Lattice Service Network Endpoint Type
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+ *             .serviceNetworkArn(exampleAwsVpclatticeServiceNetwork.arn())
+ *             .subnetIds(exampleAwsSubnet.id())
+ *             .vpcEndpointType("ServiceNetwork")
  *             .vpcId(exampleAwsVpc.id())
  *             .build());
  * 
@@ -331,6 +408,36 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
+    }
+
+    /**
+     * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+     * 
+     */
+    @Import(name="resourceConfigurationArn")
+    private @Nullable Output<String> resourceConfigurationArn;
+
+    /**
+     * @return The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+     * 
+     */
+    public Optional<Output<String>> resourceConfigurationArn() {
+        return Optional.ofNullable(this.resourceConfigurationArn);
+    }
+
+    /**
      * One or more route table IDs. Applicable for endpoints of type `Gateway`.
      * 
      */
@@ -375,6 +482,21 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
      */
     public String serviceName() {
         return this.serviceName;
+    }
+
+    /**
+     * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+     * 
+     */
+    @Import(name="serviceNetworkArn")
+    private @Nullable Output<String> serviceNetworkArn;
+
+    /**
+     * @return The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+     * 
+     */
+    public Optional<Output<String>> serviceNetworkArn() {
+        return Optional.ofNullable(this.serviceNetworkArn);
     }
 
     /**
@@ -438,14 +560,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+     * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
      * 
      */
     @Import(name="vpcEndpointType")
     private @Nullable Output<String> vpcEndpointType;
 
     /**
-     * @return The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+     * @return The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
      * 
      */
     public Optional<Output<String>> vpcEndpointType() {
@@ -460,9 +582,12 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         this.ipAddressType = $.ipAddressType;
         this.policy = $.policy;
         this.privateDnsEnabled = $.privateDnsEnabled;
+        this.region = $.region;
+        this.resourceConfigurationArn = $.resourceConfigurationArn;
         this.routeTableIds = $.routeTableIds;
         this.securityGroupIds = $.securityGroupIds;
         this.serviceName = $.serviceName;
+        this.serviceNetworkArn = $.serviceNetworkArn;
         this.serviceRegion = $.serviceRegion;
         this.subnetConfigurations = $.subnetConfigurations;
         this.subnetIds = $.subnetIds;
@@ -574,6 +699,48 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
+        }
+
+        /**
+         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder resourceConfigurationArn(@Nullable Output<String> resourceConfigurationArn) {
+            $.resourceConfigurationArn = resourceConfigurationArn;
+            return this;
+        }
+
+        /**
+         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder resourceConfigurationArn(String resourceConfigurationArn) {
+            return resourceConfigurationArn(Output.of(resourceConfigurationArn));
+        }
+
+        /**
          * @param routeTableIds One or more route table IDs. Applicable for endpoints of type `Gateway`.
          * 
          * @return builder
@@ -647,6 +814,27 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         public Builder serviceName(String serviceName) {
             $.serviceName = serviceName;
             return this;
+        }
+
+        /**
+         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder serviceNetworkArn(@Nullable Output<String> serviceNetworkArn) {
+            $.serviceNetworkArn = serviceNetworkArn;
+            return this;
+        }
+
+        /**
+         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder serviceNetworkArn(String serviceNetworkArn) {
+            return serviceNetworkArn(Output.of(serviceNetworkArn));
         }
 
         /**
@@ -754,7 +942,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param vpcEndpointType The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+         * @param vpcEndpointType The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
          * 
          * @return builder
          * 
@@ -765,7 +953,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param vpcEndpointType The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+         * @param vpcEndpointType The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
          * 
          * @return builder
          * 

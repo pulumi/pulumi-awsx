@@ -189,6 +189,21 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
+    }
+
+    /**
      * S3 bucket designated for publishing log files.
      * 
      */
@@ -219,14 +234,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Name of the Amazon SNS topic defined for notification of log file delivery.
+     * Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
      * 
      */
     @Import(name="snsTopicName")
     private @Nullable Output<String> snsTopicName;
 
     /**
-     * @return Name of the Amazon SNS topic defined for notification of log file delivery.
+     * @return Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
      * 
      */
     public Optional<Output<String>> snsTopicName() {
@@ -262,6 +277,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         this.isOrganizationTrail = $.isOrganizationTrail;
         this.kmsKeyId = $.kmsKeyId;
         this.name = $.name;
+        this.region = $.region;
         this.s3Bucket = $.s3Bucket;
         this.s3KeyPrefix = $.s3KeyPrefix;
         this.snsTopicName = $.snsTopicName;
@@ -538,6 +554,27 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
+        }
+
+        /**
          * @param s3Bucket S3 bucket designated for publishing log files.
          * 
          * @return builder
@@ -570,7 +607,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param snsTopicName Name of the Amazon SNS topic defined for notification of log file delivery.
+         * @param snsTopicName Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
          * 
          * @return builder
          * 
@@ -581,7 +618,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param snsTopicName Name of the Amazon SNS topic defined for notification of log file delivery.
+         * @param snsTopicName Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
          * 
          * @return builder
          * 
