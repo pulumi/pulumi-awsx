@@ -379,9 +379,10 @@ describe("child resource api", () => {
           case "aws:index/getAvailabilityZones:getAvailabilityZones":
             const result: pulumiAws.GetAvailabilityZonesResult = {
               id: "mocked-az-result",
-              zoneIds: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
-              names: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
-              groupNames: [1, 2, 3].map((i) => `${pulumiAws.USEast1Region}${i}`),
+              zoneIds: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              names: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              groupNames: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              region: pulumiAws.Region.USEast1,
             };
             return result;
           default:
