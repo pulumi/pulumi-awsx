@@ -34,7 +34,7 @@ export function defaultExecutionRolePolicyARNs() {
 }
 
 /** @internal */
-export function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
+export function defaultRoleAssumeRolePolicy(): aws.types.input.iam.PolicyDocument {
   return {
     Version: "2012-10-17",
     Statement: [
