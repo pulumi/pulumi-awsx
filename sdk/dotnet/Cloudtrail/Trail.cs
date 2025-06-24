@@ -143,6 +143,12 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? Name { get; set; }
 
         /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        /// <summary>
         /// S3 bucket designated for publishing log files.
         /// </summary>
         [Input("s3Bucket")]
@@ -155,7 +161,7 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? S3KeyPrefix { get; set; }
 
         /// <summary>
-        /// Name of the Amazon SNS topic defined for notification of log file delivery.
+        /// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
         /// </summary>
         [Input("snsTopicName")]
         public Input<string>? SnsTopicName { get; set; }
