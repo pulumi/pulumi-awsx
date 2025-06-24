@@ -26,7 +26,8 @@ pulumi.runtime.setMocks(
       args: pulumi.runtime.MockCallArgs,
     ): pulumi.runtime.MockCallResult | Promise<pulumi.runtime.MockCallResult> {
       return {
-        authorizationToken: Buffer.from("AWS:password").toString("base64"),
+        userName: "AWS",
+        password: "password",
         proxyEndpoint: `https://${args.inputs.registryId}.dkr.ecr.us-west-2.amazonaws.com`,
       };
     },

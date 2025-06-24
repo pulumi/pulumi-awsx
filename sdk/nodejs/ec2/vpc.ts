@@ -137,6 +137,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["ipv6NetmaskLength"] = args ? args.ipv6NetmaskLength : undefined;
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
             resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
+            resourceInputs["region"] = args ? args.region : undefined;
             resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
             resourceInputs["subnetStrategy"] = args ? args.subnetStrategy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -243,6 +244,10 @@ export interface VpcArgs {
      * A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */
     numberOfAvailabilityZones?: number;
+    /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     */
+    region?: pulumi.Input<string>;
     /**
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
      */

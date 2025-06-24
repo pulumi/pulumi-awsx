@@ -48,6 +48,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<string>? Cpu { get; set; }
 
         /// <summary>
+        /// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+        /// </summary>
+        [Input("enableFaultInjection")]
+        public Input<bool>? EnableFaultInjection { get; set; }
+
+        /// <summary>
         /// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         /// </summary>
         [Input("ephemeralStorage")]
@@ -65,18 +71,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// </summary>
         [Input("family")]
         public Input<string>? Family { get; set; }
-
-        [Input("inferenceAccelerators")]
-        private InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionInferenceAcceleratorArgs>? _inferenceAccelerators;
-
-        /// <summary>
-        /// Configuration block(s) with Inference Accelerators settings. Detailed below.
-        /// </summary>
-        public InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionInferenceAcceleratorArgs> InferenceAccelerators
-        {
-            get => _inferenceAccelerators ?? (_inferenceAccelerators = new InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionInferenceAcceleratorArgs>());
-            set => _inferenceAccelerators = value;
-        }
 
         /// <summary>
         /// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
@@ -122,6 +116,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionProxyConfigurationArgs>? ProxyConfiguration { get; set; }
 
         /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        /// <summary>
         /// Configuration block for runtime_platform that containers in your task may use.
         /// </summary>
         [Input("runtimePlatform")]
@@ -163,6 +163,10 @@ namespace Pulumi.Awsx.Ecs.Inputs
 
         /// <summary>
         /// Configuration block for volumes that containers in your task may use. Detailed below.
+        /// 
+        /// &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+        /// 
+        /// &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
         /// </summary>
         public InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionVolumeArgs> Volumes
         {

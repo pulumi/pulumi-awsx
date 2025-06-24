@@ -7,9 +7,9 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cloudtrail"
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cloudwatch"
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudtrail"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudwatch"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/s3"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -65,11 +65,13 @@ type trailArgs struct {
 	KmsKeyId *string `pulumi:"kmsKeyId"`
 	// Name of the trail.
 	Name *string `pulumi:"name"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region *string `pulumi:"region"`
 	// S3 bucket designated for publishing log files.
 	S3Bucket *awsx.RequiredBucket `pulumi:"s3Bucket"`
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
-	// Name of the Amazon SNS topic defined for notification of log file delivery.
+	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName *string `pulumi:"snsTopicName"`
 	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
@@ -99,11 +101,13 @@ type TrailArgs struct {
 	KmsKeyId pulumi.StringPtrInput
 	// Name of the trail.
 	Name pulumi.StringPtrInput
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region pulumi.StringPtrInput
 	// S3 bucket designated for publishing log files.
 	S3Bucket *awsx.RequiredBucketArgs
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix pulumi.StringPtrInput
-	// Name of the Amazon SNS topic defined for notification of log file delivery.
+	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName pulumi.StringPtrInput
 	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput

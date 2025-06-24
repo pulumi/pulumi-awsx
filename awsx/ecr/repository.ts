@@ -53,7 +53,7 @@ export class Repository extends schema.Repository {
 
 function buildLifecyclePolicy(
   lifecyclePolicy: schema.lifecyclePolicyInputs | undefined,
-): pulumi.Input<aws.ecr.LifecyclePolicyDocument> {
+): pulumi.Input<aws.types.input.ecr.LifecyclePolicyDocument> {
   const rules = lifecyclePolicy?.rules;
   if (!rules) {
     return convertRules([
@@ -69,8 +69,9 @@ function buildLifecyclePolicy(
 
 function convertRules(
   rules: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>[],
-): aws.ecr.LifecyclePolicyDocument {
-  const result: aws.ecr.LifecyclePolicyDocument = { rules: [] };
+): aws.types.input.ecr.LifecyclePolicyDocument {
+  const result: aws.types.input.ecr.LifecyclePolicyDocument = { rules: [] };
+  const documentRules: aws.types.input.ecr.LifecyclePolicyRule[] = [];
 
   const nonAnyRules = rules.filter((r) => r.tagStatus !== "any");
   const anyRules = rules.filter((r) => r.tagStatus === "any");
@@ -84,9 +85,10 @@ function convertRules(
 
   let rulePriority = 1;
   for (const rule of orderedRules) {
-    result.rules.push(convertRule(rule, rulePriority));
+    documentRules.push(convertRule(rule, rulePriority));
     rulePriority++;
   }
+  result.rules = documentRules;
 
   return result;
 }
@@ -94,7 +96,7 @@ function convertRules(
 function convertRule(
   rule: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>,
   rulePriority: number,
-): aws.ecr.PolicyRule {
+): aws.types.input.ecr.LifecyclePolicyRule {
   return {
     rulePriority,
     description: rule.description,
