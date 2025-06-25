@@ -1,8 +1,0 @@
-name: vpc-ipam-ipv4-auto-cidrblock-with-specs
-runtime:
-  name: nodejs
-description: Test inheriting the cidrBlock from an IPv4 IPAM pool and constraining the subnet specs
-config:
-  pulumi:tags:
-    value:
-      pulumi:template: aws-typescript
