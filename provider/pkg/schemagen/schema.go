@@ -57,7 +57,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":             "3.*",
-					"Pulumi.Aws":         "6.*",
+					"Pulumi.Aws":         "7.0.0-alpha.2",
 					"Pulumi.Docker":      "4.*",
 					"Pulumi.DockerBuild": "0.*",
 				},
@@ -100,7 +100,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi-aws":          ">=6.0.4,<7.0.0",
+					"pulumi-aws":          ">=7.0.0,<8.0.0",
 					"pulumi-docker":       fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
 					"pulumi-docker-build": fmt.Sprintf(">=%s,<1.0.0", dependencies.DockerBuild),
 				},
