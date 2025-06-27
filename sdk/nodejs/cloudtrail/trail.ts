@@ -59,6 +59,7 @@ export class Trail extends pulumi.ComponentResource {
             resourceInputs["isOrganizationTrail"] = args ? args.isOrganizationTrail : undefined;
             resourceInputs["kmsKeyId"] = args ? args.kmsKeyId : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
+            resourceInputs["region"] = args ? args.region : undefined;
             resourceInputs["s3Bucket"] = args ? args.s3Bucket : undefined;
             resourceInputs["s3KeyPrefix"] = args ? args.s3KeyPrefix : undefined;
             resourceInputs["snsTopicName"] = args ? args.snsTopicName : undefined;
@@ -125,6 +126,10 @@ export interface TrailArgs {
      */
     name?: pulumi.Input<string>;
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     */
+    region?: pulumi.Input<string>;
+    /**
      * S3 bucket designated for publishing log files.
      */
     s3Bucket?: inputs.awsx.RequiredBucketArgs;
@@ -133,7 +138,7 @@ export interface TrailArgs {
      */
     s3KeyPrefix?: pulumi.Input<string>;
     /**
-     * Name of the Amazon SNS topic defined for notification of log file delivery.
+     * Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
      */
     snsTopicName?: pulumi.Input<string>;
     /**
