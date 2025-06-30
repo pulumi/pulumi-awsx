@@ -96,11 +96,16 @@ export function getDockerCredentials(
 
   const ecrCredentials = aws.ecr.getAuthorizationTokenOutput({ registryId: registryId }, opts);
 
-  return ecrCredentials.apply((creds: any) => {
+  return ecrCredentials.apply((creds) => {
+    const decodedCredentials = Buffer.from(creds.authorizationToken, "base64").toString();
+    const [username, password] = decodedCredentials.split(":");
+    if (!password || !username) {
+      throw new Error("Invalid credentials");
+    }
     return {
-      address: creds.proxyEndpoint as string,
-      username: creds.userName as string,
-      password: creds.password as string,
+      address: creds.proxyEndpoint,
+      username: username,
+      password: password,
     };
   });
 }
