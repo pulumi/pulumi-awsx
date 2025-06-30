@@ -64,16 +64,17 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             resourceInputs["container"] = args ? args.container : undefined;
             resourceInputs["containers"] = args ? args.containers : undefined;
             resourceInputs["cpu"] = args ? args.cpu : undefined;
+            resourceInputs["enableFaultInjection"] = args ? args.enableFaultInjection : undefined;
             resourceInputs["ephemeralStorage"] = args ? args.ephemeralStorage : undefined;
             resourceInputs["executionRole"] = args ? args.executionRole : undefined;
             resourceInputs["family"] = args ? args.family : undefined;
-            resourceInputs["inferenceAccelerators"] = args ? args.inferenceAccelerators : undefined;
             resourceInputs["ipcMode"] = args ? args.ipcMode : undefined;
             resourceInputs["logGroup"] = args ? args.logGroup : undefined;
             resourceInputs["memory"] = args ? args.memory : undefined;
             resourceInputs["pidMode"] = args ? args.pidMode : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["proxyConfiguration"] = args ? args.proxyConfiguration : undefined;
+            resourceInputs["region"] = args ? args.region : undefined;
             resourceInputs["runtimePlatform"] = args ? args.runtimePlatform : undefined;
             resourceInputs["skipDestroy"] = args ? args.skipDestroy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -117,6 +118,10 @@ export interface FargateTaskDefinitionArgs {
      */
     cpu?: pulumi.Input<string>;
     /**
+     * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+     */
+    enableFaultInjection?: pulumi.Input<boolean>;
+    /**
      * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      */
     ephemeralStorage?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionEphemeralStorage>;
@@ -129,10 +134,6 @@ export interface FargateTaskDefinitionArgs {
      * An optional unique name for your task definition. If not specified, then a default will be created.
      */
     family?: pulumi.Input<string>;
-    /**
-     * Configuration block(s) with Inference Accelerators settings. Detailed below.
-     */
-    inferenceAccelerators?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
     /**
      * IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
      */
@@ -159,6 +160,10 @@ export interface FargateTaskDefinitionArgs {
      */
     proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     */
+    region?: pulumi.Input<string>;
+    /**
      * Configuration block for runtime_platform that containers in your task may use.
      */
     runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
@@ -181,6 +186,10 @@ export interface FargateTaskDefinitionArgs {
     trackLatest?: pulumi.Input<boolean>;
     /**
      * Configuration block for volumes that containers in your task may use. Detailed below.
+     *
+     * > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+     *
+     * > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
      */
     volumes?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionVolume>[]>;
 }

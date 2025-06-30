@@ -83,12 +83,13 @@ function convertRules(
   const orderedRules = [...nonAnyRules, ...anyRules];
 
   let rulePriority = 1;
+  const convertedRules: aws.ecr.PolicyRule[] = [];
   for (const rule of orderedRules) {
-    result.rules.push(convertRule(rule, rulePriority));
+    convertedRules.push(convertRule(rule, rulePriority));
     rulePriority++;
   }
 
-  return result;
+  return { rules: convertedRules };
 }
 
 function convertRule(
