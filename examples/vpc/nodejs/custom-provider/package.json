@@ -1,10 +1,10 @@
 {
-    "name": "nodejs",
+    "name": "vpc-custom-provider",
     "devDependencies": {
-        "@types/node": "^18"
+        "@types/node": "^18.0.0"
     },
     "dependencies": {
-        "@pulumi/aws": "^6.0.0",
+        "@pulumi/aws": "^7.0.0-alpha.2",
         "@pulumi/awsx": "latest",
         "@pulumi/pulumi": "^3.0.0"
     }

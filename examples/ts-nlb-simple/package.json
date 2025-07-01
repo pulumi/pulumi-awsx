@@ -1,11 +1,11 @@
 {
-  "name": "ts-lb-simple",
+  "name": "ts-nlb-simple",
   "devDependencies": {
     "@types/node": "^18.0.0"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.0.0",
-    "@pulumi/pulumi": "^3.0.0",
-    "@pulumi/awsx": "latest"
+    "@pulumi/aws": "^7.0.0-alpha.2",
+    "@pulumi/awsx": "latest",
+    "@pulumi/pulumi": "^3.0.0"
   }
 }

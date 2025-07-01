@@ -1,2 +1,2 @@
 pulumi>=3.0.0,<4.0.0
-pulumi_aws>=6.66.1,<6.67.0
+pulumi_aws>=7.0.0-alpha.2,<8.0.0
