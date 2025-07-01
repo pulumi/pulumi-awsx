@@ -194,6 +194,12 @@ namespace Pulumi.Awsx.Lb
         public Input<string>? IpAddressType { get; set; }
 
         /// <summary>
+        /// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+        /// </summary>
+        [Input("ipamPools")]
+        public Input<Pulumi.Aws.LB.Inputs.LoadBalancerIpamPoolsArgs>? IpamPools { get; set; }
+
+        /// <summary>
         /// A listener to create. Only one of [listener] and [listeners] can be specified.
         /// </summary>
         [Input("listener")]
@@ -212,6 +218,12 @@ namespace Pulumi.Awsx.Lb
         }
 
         /// <summary>
+        /// Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+        /// </summary>
+        [Input("minimumLoadBalancerCapacity")]
+        public Input<Pulumi.Aws.LB.Inputs.LoadBalancerMinimumLoadBalancerCapacityArgs>? MinimumLoadBalancerCapacity { get; set; }
+
+        /// <summary>
         /// Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
         /// </summary>
         [Input("name")]
@@ -228,6 +240,12 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("preserveHostHeader")]
         public Input<bool>? PreserveHostHeader { get; set; }
+
+        /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
 
         [Input("securityGroups")]
         private InputList<string>? _securityGroups;
@@ -291,6 +309,10 @@ namespace Pulumi.Awsx.Lb
 
         /// <summary>
         /// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+        /// 
+        /// &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+        /// 
+        /// &gt; **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
         /// </summary>
         [Input("xffHeaderProcessingMode")]
         public Input<string>? XffHeaderProcessingMode { get; set; }

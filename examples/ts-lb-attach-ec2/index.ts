@@ -8,8 +8,8 @@ const lb = new awsx.lb.ApplicationLoadBalancer("lb", { subnets: vpc.subnets });
 // Get the Amazon Linux AMI. We use a specific version because its id is serialized into the
 // recorded snapshot for upgrade tests. Using a later image requires re-recording the snapshot.
 const ami = aws.ec2.getAmiOutput({
-    filters: [{ name: "name", values: ["amzn2-ami-hvm-2.0.20231218.0-x86_64-ebs"] }],
-    owners: ["137112412989"], // Amazon
+    filters: [{ name: "name", values: ["amzn2-ami-hvm-*-x86_64-ebs"] }],
+    owners: ["amazon"], // Use "amazon" instead of the numeric ID for better compatibility
     mostRecent: true,
 }).id;
 
@@ -28,7 +28,7 @@ const group = new aws.ec2.SecurityGroup("web-secgrp", {
 // (optional) create a simple web server using the startup script for the instance
 const userData = `#!/bin/bash
 echo "Hello, World!" > index.html
-nohup python -m SimpleHTTPServer 80 &`;
+nohup python3 -m http.server 80 &`;
 
 const instance = new aws.ec2.Instance("instance", {
     instanceType: aws.ec2.InstanceType.T2_Micro, // t2.micro is available in the AWS free tier

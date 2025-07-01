@@ -70,8 +70,6 @@ function buildLifecyclePolicy(
 function convertRules(
   rules: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>[],
 ): aws.ecr.LifecyclePolicyDocument {
-  const result: aws.ecr.LifecyclePolicyDocument = { rules: [] };
-
   const nonAnyRules = rules.filter((r) => r.tagStatus !== "any");
   const anyRules = rules.filter((r) => r.tagStatus === "any");
 
@@ -82,13 +80,14 @@ function convertRules(
   // Place the 'any' rule last so it has higest priority.
   const orderedRules = [...nonAnyRules, ...anyRules];
 
+  const policyRules: aws.ecr.PolicyRule[] = [];
   let rulePriority = 1;
   for (const rule of orderedRules) {
-    result.rules.push(convertRule(rule, rulePriority));
+    policyRules.push(convertRule(rule, rulePriority));
     rulePriority++;
   }
 
-  return result;
+  return { rules: policyRules };
 }
 
 function convertRule(

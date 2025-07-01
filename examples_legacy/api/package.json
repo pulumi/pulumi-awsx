@@ -6,12 +6,12 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^3.0.0",
-        "@pulumi/aws": "^6.0.0"
+        "@pulumi/aws": "7.0.0-alpha.2",
+        "@pulumi/awsx": "latest",
+        "@pulumi/pulumi": "^3.0.0"
     },
     "devDependencies": {
-        "@types/aws-sdk": "^2.7.0",
-        "@types/node": "^8.0.0"
+        "@types/node": "^18.0.0"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"

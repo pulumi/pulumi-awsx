@@ -1,14 +1,15 @@
 {
-    "name": "api",
+    "name": "apikeysource",
     "version": "0.0.1",
     "license": "Apache-2.0",
     "scripts": {
         "build": "tsc"
     },
     "dependencies": {
-        "@aws-sdk/client-ecs": "^3.454.0",
-        "@pulumi/aws": "^6.0.0",
+        "@pulumi/aws": "7.0.0-alpha.2",
+        "@pulumi/awsx": "latest",
         "@pulumi/pulumi": "^3.0.0",
+        "@aws-sdk/client-ecs": "^3.454.0",
         "aws-sdk": "^2.1500.0",
         "@pulumi/docker": "^4.4.4",
         "@types/aws-lambda": "^8.10.23",
@@ -17,7 +18,7 @@
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
-        "@types/node": "^8.0.0"
+        "@types/node": "^18.0.0"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
