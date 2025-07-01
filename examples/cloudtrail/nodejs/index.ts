@@ -39,14 +39,14 @@ const kmsEncryptedBucketTrail = new awsx.cloudtrail.Trail("example-kms-bucket-tr
     }
 })
 
-defaultTrail.bucket.apply(b => b!)
+defaultTrail.bucket.apply((b: any) => b!)
     .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
-    .apply(alg => assert.strictEqual(alg, "AES256"));
+    .apply((alg: string) => assert.strictEqual(alg, "AES256"));
 
-aesEncryptedBucketTrail.bucket.apply(b => b!)
+aesEncryptedBucketTrail.bucket.apply((b: any) => b!)
     .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
-    .apply(alg => assert.strictEqual(alg, "AES256"));
+    .apply((alg: string) => assert.strictEqual(alg, "AES256"));
 
-kmsEncryptedBucketTrail.bucket.apply(b => b!)
+kmsEncryptedBucketTrail.bucket.apply((b: any) => b!)
     .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
-    .apply(kmsAlg => assert.strictEqual(kmsAlg, "aws:kms"));
+    .apply((kmsAlg: string) => assert.strictEqual(kmsAlg, "aws:kms"));
