@@ -19,7 +19,7 @@
         "format": "prettier --write ."
     },
     "dependencies": {
-        "@pulumi/aws": "^7.0.0-alpha.2",
+        "@pulumi/aws": "7.0.0-alpha.2",
         "@pulumi/pulumi": "^3.0.0"
     },
     "devDependencies": {
