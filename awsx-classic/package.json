@@ -1,33 +1,36 @@
 {
-    "name": "@pulumi/awsx",
-    "version": "${VERSION}",
+    "name": "@pulumi/awsx-classic",
+    "version": "2.0.0-alpha.0",
+    "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
+    "license": "Apache-2.0",
+    "bin": "bin/index.js",
     "keywords": [
         "pulumi",
         "aws",
         "awsx"
     ],
-    "homepage": "https://pulumi.com",
+    "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-awsx",
-    "license": "Apache-2.0",
     "scripts": {
-        "lint": "tslint -c tslint.json -p tsconfig.json"
+        "build": "tsc",
+        "install-tools": "go mod download",
+        "test": "jest",
+        "lint": "tslint --project .",
+        "format": "prettier --write ."
     },
     "dependencies": {
-        "@aws-sdk/client-ecs": "^3.405.0",
-        "@pulumi/aws": "^6.0.2",
-        "@pulumi/docker": "4.5.8",
-        "@pulumi/pulumi": "^3.34.0",
-        "aws-lambda": "^1.0.7",
-        "docker-classic": "npm:@pulumi/docker@4.5.8",
-        "mime": "^3.0.0"
+        "@pulumi/aws": "^7.0.0-alpha.2",
+        "@pulumi/pulumi": "^3.0.0"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.23",
-        "@types/aws-sdk": "^2.7.0",
-        "@types/mime": "^3.0.0",
-        "@types/node": "^17.0.21",
-        "tslint": "^5.11.0",
-        "typedoc": "^0.13.0",
-        "typescript": "^4.6.2"
+        "@types/node": "^18.0.0",
+        "typescript": "^4.6.2",
+        "jest": "^27.0.0",
+        "ts-jest": "^27.0.0",
+        "tslint": "^6.1.0",
+        "prettier": "^2.0.0"
+    },
+    "engines": {
+        "node": ">=14"
     }
 }
