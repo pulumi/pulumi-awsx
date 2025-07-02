@@ -15,6 +15,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// </summary>
     public sealed class SubnetSpecArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Indicates whether a network interface created in this subnet receives an IPv6 address.
+        /// </summary>
+        [Input("assignIpv6AddressOnCreation")]
+        public bool? AssignIpv6AddressOnCreation { get; set; }
+
         [Input("cidrBlocks")]
         private List<string>? _cidrBlocks;
 

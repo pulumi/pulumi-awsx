@@ -23,6 +23,7 @@ import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
   compareSubnetSpecs,
   findSubnetGap,
+  createIpv6SubnetCidrBlock,
   OverlappingSubnet,
   shouldCreateNatGateway,
   validateEips,
@@ -468,5 +469,33 @@ describe("child resource api", () => {
       expect(tags?.share1).toBe("parent");
       expect(tags?.share2).toBe("parent");
     }
+  });
+});
+
+describe("createIpv6SubnetCidrBlock", () => {
+  it("index 0 keeps the trailing 00 byte", () => {
+    expect(createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 0)).toBe("2600:1f14:82a:ab00::/64");
+  });
+
+  it("index 42 yields 0x2a in fourth hextet", () => {
+    expect(createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 42)).toBe(
+      "2600:1f14:82a:ab2a::/64",
+    );
+  });
+
+  it("throws on non-IPv6 input", () => {
+    expect(() => createIpv6SubnetCidrBlock("10.0.0.0/56", 0)).toThrow(TypeError);
+  });
+
+  it("throws on non-/56 VPC block", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/48", 0)).toThrow(RangeError);
+  });
+
+  it("throws when index < 0", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", -1)).toThrow(RangeError);
+  });
+
+  it("throws when index > 255", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 300)).toThrow(RangeError);
   });
 });
