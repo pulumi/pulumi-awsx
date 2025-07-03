@@ -94,6 +94,7 @@ export function getSubnetSpecsLegacy(
         type: "Private",
         subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`,
         tags: privateSubnetsIn[j].tags,
+        assignIpv6AddressOnCreation: privateSubnetsIn[j].assignIpv6AddressOnCreation,
       });
       currentAddress = nextAddress;
     }
@@ -125,6 +126,7 @@ export function getSubnetSpecsLegacy(
         type: "Public",
         subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`,
         tags: publicSubnetsIn[j].tags,
+        assignIpv6AddressOnCreation: publicSubnetsIn[j].assignIpv6AddressOnCreation,
       });
       currentAddress = nextAddress;
     }
@@ -166,6 +168,7 @@ export function getSubnetSpecsLegacy(
         type: "Isolated",
         subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`,
         tags: isolatedSubnetsIn[j].tags,
+        assignIpv6AddressOnCreation: isolatedSubnetsIn[j].assignIpv6AddressOnCreation,
       });
       currentAddress = nextAddress;
     }

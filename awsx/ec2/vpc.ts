@@ -26,6 +26,7 @@ import {
   ExplicitSubnetSpecInputs,
 } from "./subnetDistributorNew";
 import { Netmask } from "netmask";
+import { isIPv6 } from "net";
 
 interface VpcData {
   vpc: aws.ec2.Vpc;
@@ -171,6 +172,8 @@ export class Vpc extends schema.Vpc<VpcData> {
               availabilityZone: spec.azName,
               mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
               cidrBlock: spec.cidrBlock,
+              ipv6CidrBlock: handleIpv6Cidr(vpc.ipv6CidrBlock, spec, subnetSpecs),
+              assignIpv6AddressOnCreation: spec.assignIpv6AddressOnCreation,
               tags: {
                 ...sharedTags,
                 ...spec.tags,
@@ -576,6 +579,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
       ...extractName(subnet.subnetName, subnet.type),
       cidrMask: netmask.bitmask,
       ...(subnet.tags ? { tags: subnet.tags } : {}),
+      assignIpv6AddressOnCreation: subnet.assignIpv6AddressOnCreation,
     });
     previousNetmask = netmask;
   }
@@ -784,4 +788,43 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
   throw new Error(
     `There are gaps in the subnet ranges. Please fix the following gaps: ${gaps.join(", ")}`,
   );
+}
+
+export function createIpv6SubnetCidrBlock(vpcCidr: string, index: number) {
+  const [addr, mask] = vpcCidr.split("/");
+
+  if (mask !== "56") {
+    throw new RangeError(`VPC must be a /56 block (got /${mask})`);
+  }
+  if (!isIPv6(addr)) {
+    throw new TypeError(`"${addr}" is not a valid IPv6 address`);
+  }
+  if (!Number.isInteger(index) || index < 0 || index > 0xff) {
+    throw new RangeError("index must be an integer from 0-255");
+  }
+
+  const hextets = addr.split(":");
+  const prefix = hextets.slice(0, 3).join(":");
+
+  const existing = parseInt(hextets[3], 16);
+  const updated = (existing & 0xff00) | index;
+  const result = updated.toString(16);
+
+  return `${prefix}:${result}::/64`;
+}
+
+export function handleIpv6Cidr(
+  ipv6CidrBlock: pulumi.Output<string>,
+  spec: SubnetSpecPartial,
+  specs: SubnetSpecPartial[],
+): pulumi.Output<string> | undefined {
+  if (!spec.assignIpv6AddressOnCreation) return;
+  const index = specs
+    .filter((s) => s.type !== "Unused")
+    .sort(compareSubnetSpecs)
+    .findIndex((s) => s.subnetName === spec.subnetName);
+  if (index === -1) return;
+  return pulumi.output(ipv6CidrBlock).apply((cidrBlock) => {
+    return createIpv6SubnetCidrBlock(cidrBlock, index);
+  });
 }

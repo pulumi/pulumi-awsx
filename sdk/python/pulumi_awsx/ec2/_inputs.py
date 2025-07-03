@@ -92,6 +92,10 @@ if not MYPY:
         """
         The type of subnet.
         """
+        assign_ipv6_address_on_creation: NotRequired[builtins.bool]
+        """
+        Indicates whether a network interface created in this subnet receives an IPv6 address.
+        """
         cidr_blocks: NotRequired[Sequence[builtins.str]]
         """
         An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
@@ -119,6 +123,7 @@ elif False:
 class SubnetSpecArgs:
     def __init__(__self__, *,
                  type: 'SubnetType',
+                 assign_ipv6_address_on_creation: Optional[builtins.bool] = None,
                  cidr_blocks: Optional[Sequence[builtins.str]] = None,
                  cidr_mask: Optional[builtins.int] = None,
                  name: Optional[builtins.str] = None,
@@ -127,6 +132,7 @@ class SubnetSpecArgs:
         """
         Configuration for a VPC subnet.
         :param 'SubnetType' type: The type of subnet.
+        :param builtins.bool assign_ipv6_address_on_creation: Indicates whether a network interface created in this subnet receives an IPv6 address.
         :param Sequence[builtins.str] cidr_blocks: An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
         :param builtins.int cidr_mask: The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         :param builtins.str name: The subnet's name. Will be templated upon creation.
@@ -134,6 +140,8 @@ class SubnetSpecArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource.
         """
         pulumi.set(__self__, "type", type)
+        if assign_ipv6_address_on_creation is not None:
+            pulumi.set(__self__, "assign_ipv6_address_on_creation", assign_ipv6_address_on_creation)
         if cidr_blocks is not None:
             pulumi.set(__self__, "cidr_blocks", cidr_blocks)
         if cidr_mask is not None:
@@ -156,6 +164,18 @@ class SubnetSpecArgs:
     @type.setter
     def type(self, value: 'SubnetType'):
         pulumi.set(self, "type", value)
+
+    @property
+    @pulumi.getter(name="assignIpv6AddressOnCreation")
+    def assign_ipv6_address_on_creation(self) -> Optional[builtins.bool]:
+        """
+        Indicates whether a network interface created in this subnet receives an IPv6 address.
+        """
+        return pulumi.get(self, "assign_ipv6_address_on_creation")
+
+    @assign_ipv6_address_on_creation.setter
+    def assign_ipv6_address_on_creation(self, value: Optional[builtins.bool]):
+        pulumi.set(self, "assign_ipv6_address_on_creation", value)
 
     @property
     @pulumi.getter(name="cidrBlocks")
