@@ -631,13 +631,8 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
     const deployment = new aws.apigateway.Deployment(name, {
         ...args.deploymentArgs,
         restApi: restAPI,
-        // Note: Set to empty to avoid creating an implicit stage, we'll create it explicitly below instead.
-        stageName: "",
         // Note: We set `variables` here because it forces recreation of the Deployment object
-        // whenever the body hash changes.  Because we use a blank stage name above, there will
-        // not actually be any stage created in AWS, and thus these variables will not actually
-        // end up anywhere.  But this will still cause the right replacement of the Deployment
-        // when needed.  The Stage allocated below will be the stable stage that always points
+        // whenever the body hash changes. The Stage allocated below will be the stable stage that always points
         // to the latest deployment of the API.
         variables: { version },
     }, {
@@ -645,18 +640,18 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
         dependsOn: apiPolicy ? [apiPolicy] : [],
     });
 
-    const permissions = createLambdaPermissions(parent, deployment, name, swaggerLambdas);
-
-    // Expose the URL that the API is served at.
-    const url = pulumi.interpolate`${deployment.invokeUrl}${stageName}/`;
-
     // Create a stage, which is an addressable instance of the Rest API. Set it to point at the latest deployment.
     const stage = new aws.apigateway.Stage(name, {
         ...args.stageArgs,
         restApi: restAPI,
         deployment: deployment,
         stageName: stageName,
-    }, { parent, dependsOn: permissions });
+    }, { parent });
+
+    const permissions = createLambdaPermissions(parent, stage, name, swaggerLambdas);
+
+    // Expose the URL that the API is served at.
+    const url = stage.invokeUrl;
 
     return {
         restAPI,
@@ -669,7 +664,7 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
     };
 }
 
-function createLambdaPermissions(parent: pulumi.Resource, deployment: aws.apigateway.Deployment, name: string, swaggerLambdas: SwaggerLambdas) {
+function createLambdaPermissions(parent: pulumi.Resource, stage: aws.apigateway.Stage, name: string, swaggerLambdas: SwaggerLambdas) {
     const permissions: aws.lambda.Permission[] = [];
     for (const [path, lambdas] of swaggerLambdas) {
         for (const [method, lambda] of lambdas) {
@@ -683,7 +678,7 @@ function createLambdaPermissions(parent: pulumi.Resource, deployment: aws.apigat
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
                 // deployed by Pulumi because the API Gateway console "Test" feature invokes the route
                 // handler with the fake stage `test-invoke-stage`.
-                sourceArn: pulumi.interpolate`${deployment.executionArn}*/${methodAndPath}`,
+                sourceArn: pulumi.interpolate`${stage.executionArn}*/${methodAndPath}`,
             }, { parent }));
         }
     }
@@ -1084,7 +1079,7 @@ function addStaticRouteToSwaggerSpec(
         }, { parent });
         const attachment = new aws.iam.RolePolicyAttachment(key, {
             role: role,
-            policyArn: aws.iam.ManagedPolicies.AmazonS3FullAccess,
+            policyArn: aws.iam.ManagedPolicy.AmazonS3FullAccess,
         }, { parent });
 
         return role;
