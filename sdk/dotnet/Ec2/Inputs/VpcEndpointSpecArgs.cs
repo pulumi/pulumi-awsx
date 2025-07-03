@@ -63,7 +63,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -169,7 +169,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -283,7 +283,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -440,7 +440,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -609,8 +609,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -672,11 +672,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         final var current = AwsFunctions.getCallerIdentity();
+    ///         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+    ///             .build());
     /// 
     ///         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
     ///             .acceptanceRequired(false)
-    ///             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
+    ///             .allowedPrincipals(current.arn())
     ///             .gatewayLoadBalancerArns(exampleAwsLb.arn())
     ///             .build());
     /// 
@@ -714,6 +715,234 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     fn::invoke:
     ///       function: aws:getCallerIdentity
     ///       arguments: {}
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
+    /// ### VPC Lattice Resource Configuration Endpoint Type
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const example = new aws.ec2.VpcEndpoint("example", {
+    ///     resourceConfigurationArn: exampleAwsVpclatticeResourceConfiguration.arn,
+    ///     subnetIds: [exampleAwsSubnet.id],
+    ///     vpcEndpointType: "Resource",
+    ///     vpcId: exampleAwsVpc.id,
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// example = aws.ec2.VpcEndpoint("example",
+    ///     resource_configuration_arn=example_aws_vpclattice_resource_configuration["arn"],
+    ///     subnet_ids=[example_aws_subnet["id"]],
+    ///     vpc_endpoint_type="Resource",
+    ///     vpc_id=example_aws_vpc["id"])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var example = new Aws.Ec2.VpcEndpoint("example", new()
+    ///     {
+    ///         ResourceConfigurationArn = exampleAwsVpclatticeResourceConfiguration.Arn,
+    ///         SubnetIds = new[]
+    ///         {
+    ///             exampleAwsSubnet.Id,
+    ///         },
+    ///         VpcEndpointType = "Resource",
+    ///         VpcId = exampleAwsVpc.Id,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := ec2.NewVpcEndpoint(ctx, "example", &amp;ec2.VpcEndpointArgs{
+    /// 			ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+    /// 			SubnetIds: pulumi.StringArray{
+    /// 				exampleAwsSubnet.Id,
+    /// 			},
+    /// 			VpcEndpointType: pulumi.String("Resource"),
+    /// 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+    ///             .resourceConfigurationArn(exampleAwsVpclatticeResourceConfiguration.arn())
+    ///             .subnetIds(exampleAwsSubnet.id())
+    ///             .vpcEndpointType("Resource")
+    ///             .vpcId(exampleAwsVpc.id())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   example:
+    ///     type: aws:ec2:VpcEndpoint
+    ///     properties:
+    ///       resourceConfigurationArn: ${exampleAwsVpclatticeResourceConfiguration.arn}
+    ///       subnetIds:
+    ///         - ${exampleAwsSubnet.id}
+    ///       vpcEndpointType: Resource
+    ///       vpcId: ${exampleAwsVpc.id}
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
+    /// ### VPC Lattice Service Network Endpoint Type
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const example = new aws.ec2.VpcEndpoint("example", {
+    ///     serviceNetworkArn: exampleAwsVpclatticeServiceNetwork.arn,
+    ///     subnetIds: [exampleAwsSubnet.id],
+    ///     vpcEndpointType: "ServiceNetwork",
+    ///     vpcId: exampleAwsVpc.id,
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// example = aws.ec2.VpcEndpoint("example",
+    ///     service_network_arn=example_aws_vpclattice_service_network["arn"],
+    ///     subnet_ids=[example_aws_subnet["id"]],
+    ///     vpc_endpoint_type="ServiceNetwork",
+    ///     vpc_id=example_aws_vpc["id"])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var example = new Aws.Ec2.VpcEndpoint("example", new()
+    ///     {
+    ///         ServiceNetworkArn = exampleAwsVpclatticeServiceNetwork.Arn,
+    ///         SubnetIds = new[]
+    ///         {
+    ///             exampleAwsSubnet.Id,
+    ///         },
+    ///         VpcEndpointType = "ServiceNetwork",
+    ///         VpcId = exampleAwsVpc.Id,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := ec2.NewVpcEndpoint(ctx, "example", &amp;ec2.VpcEndpointArgs{
+    /// 			ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+    /// 			SubnetIds: pulumi.StringArray{
+    /// 				exampleAwsSubnet.Id,
+    /// 			},
+    /// 			VpcEndpointType: pulumi.String("ServiceNetwork"),
+    /// 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+    ///             .serviceNetworkArn(exampleAwsVpclatticeServiceNetwork.arn())
+    ///             .subnetIds(exampleAwsSubnet.id())
+    ///             .vpcEndpointType("ServiceNetwork")
+    ///             .vpcId(exampleAwsVpc.id())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   example:
+    ///     type: aws:ec2:VpcEndpoint
+    ///     properties:
+    ///       serviceNetworkArn: ${exampleAwsVpclatticeServiceNetwork.arn}
+    ///       subnetIds:
+    ///         - ${exampleAwsSubnet.id}
+    ///       vpcEndpointType: ServiceNetwork
+    ///       vpcId: ${exampleAwsVpc.id}
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
@@ -757,6 +986,18 @@ namespace Pulumi.Awsx.Ec2.Inputs
         [Input("privateDnsEnabled")]
         public bool? PrivateDnsEnabled { get; set; }
 
+        /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        /// <summary>
+        /// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+        /// </summary>
+        [Input("resourceConfigurationArn")]
+        public Input<string>? ResourceConfigurationArn { get; set; }
+
         [Input("routeTableIds")]
         private InputList<string>? _routeTableIds;
 
@@ -787,6 +1028,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
         /// </summary>
         [Input("serviceName", required: true)]
         public string ServiceName { get; set; } = null!;
+
+        /// <summary>
+        /// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+        /// </summary>
+        [Input("serviceNetworkArn")]
+        public Input<string>? ServiceNetworkArn { get; set; }
 
         /// <summary>
         /// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
@@ -831,7 +1078,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         }
 
         /// <summary>
-        /// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+        /// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
         /// </summary>
         [Input("vpcEndpointType")]
         public Input<string>? VpcEndpointType { get; set; }
