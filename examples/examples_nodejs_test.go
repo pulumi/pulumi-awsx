@@ -356,9 +356,9 @@ func TestVpc(t *testing.T) {
 
 func TestIPv6Assignment(t *testing.T) {
 	validate := func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
-		subnets := stack.Outputs["subnets"].([]interface{})
+		subnets := stack.Outputs["subnets"].([]any)
 		for _, subnetInterface := range subnets {
-			subnet := subnetInterface.(map[string]interface{})
+			subnet := subnetInterface.(map[string]any)
 			assignIpv6 := subnet["assignIpv6AddressOnCreation"].(bool)
 			ipv6Cidr := subnet["ipv6CidrBlock"]
 
@@ -373,7 +373,6 @@ func TestIPv6Assignment(t *testing.T) {
 		With(integration.ProgramTestOptions{
 			RunUpdateTest:          false,
 			Dir:                    filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-ipv6-assignment"),
-			RetryFailedSteps:       true, // Internet Gateway occasionally fails to delete on first attempt.
 			ExtraRuntimeValidation: validate,
 		})
 	integration.ProgramTest(t, &test)
