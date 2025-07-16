@@ -631,8 +631,6 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
     const deployment = new aws.apigateway.Deployment(name, {
         ...args.deploymentArgs,
         restApi: restAPI,
-        // Note: Set to empty to avoid creating an implicit stage, we'll create it explicitly below instead.
-        stageName: "",
         // Note: We set `variables` here because it forces recreation of the Deployment object
         // whenever the body hash changes.  Because we use a blank stage name above, there will
         // not actually be any stage created in AWS, and thus these variables will not actually
