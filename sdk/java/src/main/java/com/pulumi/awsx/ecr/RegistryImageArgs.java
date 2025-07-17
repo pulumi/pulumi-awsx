@@ -5,6 +5,7 @@ package com.pulumi.awsx.ecr;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Boolean;
 import java.lang.String;
 import java.util.Map;
@@ -263,8 +264,12 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         public RegistryImageArgs build() {
-            $.repositoryUrl = Objects.requireNonNull($.repositoryUrl, "expected parameter 'repositoryUrl' to be non-null");
-            $.sourceImage = Objects.requireNonNull($.sourceImage, "expected parameter 'sourceImage' to be non-null");
+            if ($.repositoryUrl == null) {
+                throw new MissingRequiredPropertyException("RegistryImageArgs", "repositoryUrl");
+            }
+            if ($.sourceImage == null) {
+                throw new MissingRequiredPropertyException("RegistryImageArgs", "sourceImage");
+            }
             return $;
         }
     }

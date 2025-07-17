@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ec2.outputs;
 
 import com.pulumi.core.annotations.CustomType;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.String;
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +56,10 @@ public final class GetDefaultVpcResult {
 
         @CustomType.Setter
         public Builder privateSubnetIds(List<String> privateSubnetIds) {
-            this.privateSubnetIds = Objects.requireNonNull(privateSubnetIds);
+            if (privateSubnetIds == null) {
+              throw new MissingRequiredPropertyException("GetDefaultVpcResult", "privateSubnetIds");
+            }
+            this.privateSubnetIds = privateSubnetIds;
             return this;
         }
         public Builder privateSubnetIds(String... privateSubnetIds) {
@@ -63,7 +67,10 @@ public final class GetDefaultVpcResult {
         }
         @CustomType.Setter
         public Builder publicSubnetIds(List<String> publicSubnetIds) {
-            this.publicSubnetIds = Objects.requireNonNull(publicSubnetIds);
+            if (publicSubnetIds == null) {
+              throw new MissingRequiredPropertyException("GetDefaultVpcResult", "publicSubnetIds");
+            }
+            this.publicSubnetIds = publicSubnetIds;
             return this;
         }
         public Builder publicSubnetIds(String... publicSubnetIds) {
@@ -71,15 +78,18 @@ public final class GetDefaultVpcResult {
         }
         @CustomType.Setter
         public Builder vpcId(String vpcId) {
-            this.vpcId = Objects.requireNonNull(vpcId);
+            if (vpcId == null) {
+              throw new MissingRequiredPropertyException("GetDefaultVpcResult", "vpcId");
+            }
+            this.vpcId = vpcId;
             return this;
         }
         public GetDefaultVpcResult build() {
-            final var o = new GetDefaultVpcResult();
-            o.privateSubnetIds = privateSubnetIds;
-            o.publicSubnetIds = publicSubnetIds;
-            o.vpcId = vpcId;
-            return o;
+            final var _resultValue = new GetDefaultVpcResult();
+            _resultValue.privateSubnetIds = privateSubnetIds;
+            _resultValue.publicSubnetIds = publicSubnetIds;
+            _resultValue.vpcId = vpcId;
+            return _resultValue;
         }
     }
 }

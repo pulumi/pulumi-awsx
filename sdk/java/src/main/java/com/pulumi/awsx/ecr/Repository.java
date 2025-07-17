@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
  * 
- * Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+ * Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `{@literal @}pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
  * 
  */
 @ResourceType(type="awsx:ecr:Repository")
@@ -69,7 +69,7 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public Repository(String name) {
+    public Repository(java.lang.String name) {
         this(name, RepositoryArgs.Empty);
     }
     /**
@@ -77,7 +77,7 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public Repository(String name, @Nullable RepositoryArgs args) {
+    public Repository(java.lang.String name, @Nullable RepositoryArgs args) {
         this(name, args, null);
     }
     /**
@@ -86,11 +86,18 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public Repository(String name, @Nullable RepositoryArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ecr:Repository", name, args == null ? RepositoryArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public Repository(java.lang.String name, @Nullable RepositoryArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ecr:Repository", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static RepositoryArgs makeArgs(@Nullable RepositoryArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? RepositoryArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

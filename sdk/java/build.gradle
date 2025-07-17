@@ -5,7 +5,7 @@ plugins {
     id("signing")
     id("java-library")
     id("maven-publish")
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 group = "com.pulumi"
@@ -17,7 +17,8 @@ def resolvedVersion = System.getenv("PACKAGE_VERSION") ?:
 
 def signingKey = System.getenv("SIGNING_KEY")
 def signingPassword = System.getenv("SIGNING_PASSWORD")
-def publishRepoURL = System.getenv("PUBLISH_REPO_URL") ?: "https://s01.oss.sonatype.org"
+def publishRepoURL = System.getenv("PUBLISH_REPO_URL") ?: "https://central.sonatype.com/repository/maven-snapshots/"
+def publishStagingURL = System.getenv("PUBLISH_STAGING_URL") ?: "https://ossrh-staging-api.central.sonatype.com/service/local/"
 def publishRepoUsername = System.getenv("PUBLISH_REPO_USERNAME")
 def publishRepoPassword = System.getenv("PUBLISH_REPO_PASSWORD")
 
@@ -30,6 +31,7 @@ java {
 compileJava {
     options.fork = true
     options.forkOptions.jvmArgs.addAll(["-Xmx16g"])
+    options.encoding = "UTF-8"
 }
 
 repositories {
@@ -46,7 +48,7 @@ dependencies {
     implementation("com.pulumi:aws:6.66.3")
     implementation("com.pulumi:docker:4.6.0")
     implementation("com.pulumi:docker-build:0.0.8")
-    implementation("com.pulumi:pulumi:0.9.7")
+    implementation("com.pulumi:pulumi:1.16.0")
 }
 
 task sourcesJar(type: Jar) {
@@ -67,11 +69,13 @@ def genPulumiResources = tasks.register('genPulumiResources') {
         def outDir = file("$resourcesDir/$subDir")
         outDir.mkdirs()
         new File(outDir, "version.txt").text = resolvedVersion
-        def info = new Object()
-        info.metaClass.resource = true
-        info.metaClass.name = "awsx"
-        info.metaClass.version = resolvedVersion
-        def infoJson = new groovy.json.JsonBuilder(info).toPrettyString()
+        def builder = new groovy.json.JsonBuilder()
+        builder {
+            resource true
+            name "awsx"
+            version resolvedVersion
+        }
+        def infoJson = builder.toPrettyString()
         new File(outDir, "plugin.json").text = infoJson
     }
 }
@@ -138,8 +142,8 @@ if (publishRepoUsername) {
     nexusPublishing {
         repositories {
             sonatype {
-                nexusUrl.set(uri(publishRepoURL + "/service/local/"))
-                snapshotRepositoryUrl.set(uri(publishRepoURL + "/content/repositories/snapshots/"))
+                nexusUrl.set(uri(publishStagingURL))
+                snapshotRepositoryUrl.set(uri(publishRepoURL))
                 username = publishRepoUsername
                 password = publishRepoPassword
             }

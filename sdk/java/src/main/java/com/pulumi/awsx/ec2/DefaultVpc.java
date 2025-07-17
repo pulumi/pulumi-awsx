@@ -50,7 +50,7 @@ public class DefaultVpc extends com.pulumi.resources.ComponentResource {
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public DefaultVpc(String name) {
+    public DefaultVpc(java.lang.String name) {
         this(name, DefaultVpcArgs.Empty);
     }
     /**
@@ -58,7 +58,7 @@ public class DefaultVpc extends com.pulumi.resources.ComponentResource {
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public DefaultVpc(String name, @Nullable DefaultVpcArgs args) {
+    public DefaultVpc(java.lang.String name, @Nullable DefaultVpcArgs args) {
         this(name, args, null);
     }
     /**
@@ -67,11 +67,18 @@ public class DefaultVpc extends com.pulumi.resources.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public DefaultVpc(String name, @Nullable DefaultVpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ec2:DefaultVpc", name, args == null ? DefaultVpcArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public DefaultVpc(java.lang.String name, @Nullable DefaultVpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ec2:DefaultVpc", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static DefaultVpcArgs makeArgs(@Nullable DefaultVpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? DefaultVpcArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

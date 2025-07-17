@@ -5,6 +5,7 @@ package com.pulumi.awsx.ec2.inputs;
 
 import com.pulumi.awsx.ec2.enums.NatGatewayStrategy;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.String;
 import java.util.List;
 import java.util.Objects;
@@ -108,7 +109,9 @@ public final class NatGatewayConfigurationArgs extends com.pulumi.resources.Reso
         }
 
         public NatGatewayConfigurationArgs build() {
-            $.strategy = Objects.requireNonNull($.strategy, "expected parameter 'strategy' to be non-null");
+            if ($.strategy == null) {
+                throw new MissingRequiredPropertyException("NatGatewayConfigurationArgs", "strategy");
+            }
             return $;
         }
     }

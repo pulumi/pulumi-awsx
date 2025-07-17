@@ -5,6 +5,7 @@ package com.pulumi.awsx.ecs.inputs;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.Objects;
@@ -89,9 +90,15 @@ public final class TaskDefinitionUlimitArgs extends com.pulumi.resources.Resourc
         }
 
         public TaskDefinitionUlimitArgs build() {
-            $.hardLimit = Objects.requireNonNull($.hardLimit, "expected parameter 'hardLimit' to be non-null");
-            $.name = Objects.requireNonNull($.name, "expected parameter 'name' to be non-null");
-            $.softLimit = Objects.requireNonNull($.softLimit, "expected parameter 'softLimit' to be non-null");
+            if ($.hardLimit == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionUlimitArgs", "hardLimit");
+            }
+            if ($.name == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionUlimitArgs", "name");
+            }
+            if ($.softLimit == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionUlimitArgs", "softLimit");
+            }
             return $;
         }
     }

@@ -5,6 +5,7 @@ package com.pulumi.awsx.ecs.inputs;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.String;
 import java.util.Objects;
 
@@ -71,8 +72,12 @@ public final class TaskDefinitionSecretArgs extends com.pulumi.resources.Resourc
         }
 
         public TaskDefinitionSecretArgs build() {
-            $.name = Objects.requireNonNull($.name, "expected parameter 'name' to be non-null");
-            $.valueFrom = Objects.requireNonNull($.valueFrom, "expected parameter 'valueFrom' to be non-null");
+            if ($.name == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionSecretArgs", "name");
+            }
+            if ($.valueFrom == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionSecretArgs", "valueFrom");
+            }
             return $;
         }
     }

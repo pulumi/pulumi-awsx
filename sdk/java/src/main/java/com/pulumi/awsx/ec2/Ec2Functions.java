@@ -11,6 +11,7 @@ import com.pulumi.core.Output;
 import com.pulumi.core.TypeShape;
 import com.pulumi.deployment.Deployment;
 import com.pulumi.deployment.InvokeOptions;
+import com.pulumi.deployment.InvokeOutputOptions;
 import java.util.concurrent.CompletableFuture;
 
 public final class Ec2Functions {
@@ -67,6 +68,17 @@ public final class Ec2Functions {
      */
     @Deprecated /* Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved. */
     public static Output<GetDefaultVpcResult> getDefaultVpc(GetDefaultVpcArgs args, InvokeOptions options) {
+        return Deployment.getInstance().invoke("awsx:ec2:getDefaultVpc", TypeShape.of(GetDefaultVpcResult.class), args, Utilities.withVersion(options));
+    }
+    /**
+     * [NOT YET IMPLEMENTED] Get the Default VPC for a region.
+     * 
+     * @deprecated
+     * Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.
+     * 
+     */
+    @Deprecated /* Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved. */
+    public static Output<GetDefaultVpcResult> getDefaultVpc(GetDefaultVpcArgs args, InvokeOutputOptions options) {
         return Deployment.getInstance().invoke("awsx:ec2:getDefaultVpc", TypeShape.of(GetDefaultVpcResult.class), args, Utilities.withVersion(options));
     }
     /**

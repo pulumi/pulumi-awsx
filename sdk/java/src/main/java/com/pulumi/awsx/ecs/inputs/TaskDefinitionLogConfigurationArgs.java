@@ -6,6 +6,7 @@ package com.pulumi.awsx.ecs.inputs;
 import com.pulumi.awsx.ecs.inputs.TaskDefinitionSecretArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Object;
 import java.lang.String;
 import java.util.List;
@@ -97,7 +98,9 @@ public final class TaskDefinitionLogConfigurationArgs extends com.pulumi.resourc
         }
 
         public TaskDefinitionLogConfigurationArgs build() {
-            $.logDriver = Objects.requireNonNull($.logDriver, "expected parameter 'logDriver' to be non-null");
+            if ($.logDriver == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionLogConfigurationArgs", "logDriver");
+            }
             return $;
         }
     }

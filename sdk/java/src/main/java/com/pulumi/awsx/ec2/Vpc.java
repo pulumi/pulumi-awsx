@@ -29,7 +29,8 @@ import javax.annotation.Nullable;
  * 
  * Basic usage:
  * 
- * ```java
+ * <pre>
+ * {@code
  * package generated_program;
  * 
  * import com.pulumi.Context;
@@ -49,14 +50,15 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         var vpc = new Vpc(&#34;vpc&#34;);
+ *         var vpc = new Vpc("vpc");
  * 
- *         ctx.export(&#34;vpcId&#34;, vpc.vpcId());
- *         ctx.export(&#34;vpcPrivateSubnetIds&#34;, vpc.privateSubnetIds());
- *         ctx.export(&#34;vpcPublicSubnetIds&#34;, vpc.publicSubnetIds());
+ *         ctx.export("vpcId", vpc.vpcId());
+ *         ctx.export("vpcPrivateSubnetIds", vpc.privateSubnetIds());
+ *         ctx.export("vpcPublicSubnetIds", vpc.publicSubnetIds());
  *     }
  * }
- * ```
+ * }
+ * </pre>
  * 
  * ## Subnet Layout Strategies
  * 
@@ -254,7 +256,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public Vpc(String name) {
+    public Vpc(java.lang.String name) {
         this(name, VpcArgs.Empty);
     }
     /**
@@ -262,7 +264,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public Vpc(String name, @Nullable VpcArgs args) {
+    public Vpc(java.lang.String name, @Nullable VpcArgs args) {
         this(name, args, null);
     }
     /**
@@ -271,11 +273,18 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public Vpc(String name, @Nullable VpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ec2:Vpc", name, args == null ? VpcArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public Vpc(java.lang.String name, @Nullable VpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ec2:Vpc", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static VpcArgs makeArgs(@Nullable VpcArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? VpcArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();
