@@ -94,7 +94,7 @@ export function getDockerCredentials(
     registryId = hostnameParts[0];
   }
 
-  const ecrCredentials = aws.ecr.getCredentialsOutput({ registryId: registryId }, opts);
+  const ecrCredentials = aws.ecr.getAuthorizationTokenOutput({ registryId: registryId }, opts);
 
   return ecrCredentials.apply((creds) => {
     const decodedCredentials = Buffer.from(creds.authorizationToken, "base64").toString();

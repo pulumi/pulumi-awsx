@@ -4,7 +4,6 @@
 package com.pulumi.awsx.ecs;
 
 import com.pulumi.aws.ecs.inputs.TaskDefinitionEphemeralStorageArgs;
-import com.pulumi.aws.ecs.inputs.TaskDefinitionInferenceAcceleratorArgs;
 import com.pulumi.aws.ecs.inputs.TaskDefinitionPlacementConstraintArgs;
 import com.pulumi.aws.ecs.inputs.TaskDefinitionProxyConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.TaskDefinitionRuntimePlatformArgs;
@@ -85,6 +84,21 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
     }
 
     /**
+     * Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * 
+     */
+    @Import(name="enableFaultInjection")
+    private @Nullable Output<Boolean> enableFaultInjection;
+
+    /**
+     * @return Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * 
+     */
+    public Optional<Output<Boolean>> enableFaultInjection() {
+        return Optional.ofNullable(this.enableFaultInjection);
+    }
+
+    /**
      * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      * 
      */
@@ -129,21 +143,6 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
      */
     public Optional<Output<String>> family() {
         return Optional.ofNullable(this.family);
-    }
-
-    /**
-     * Configuration block(s) with Inference Accelerators settings. Detailed below.
-     * 
-     */
-    @Import(name="inferenceAccelerators")
-    private @Nullable Output<List<TaskDefinitionInferenceAcceleratorArgs>> inferenceAccelerators;
-
-    /**
-     * @return Configuration block(s) with Inference Accelerators settings. Detailed below.
-     * 
-     */
-    public Optional<Output<List<TaskDefinitionInferenceAcceleratorArgs>>> inferenceAccelerators() {
-        return Optional.ofNullable(this.inferenceAccelerators);
     }
 
     /**
@@ -254,6 +253,21 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
     }
 
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
+    }
+
+    /**
      * Configuration block for runtime_platform that containers in your task may use.
      * 
      */
@@ -333,12 +347,20 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
     /**
      * Configuration block for volumes that containers in your task may use. Detailed below.
      * 
+     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+     * 
+     * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+     * 
      */
     @Import(name="volumes")
     private @Nullable Output<List<TaskDefinitionVolumeArgs>> volumes;
 
     /**
      * @return Configuration block for volumes that containers in your task may use. Detailed below.
+     * 
+     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+     * 
+     * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
      * 
      */
     public Optional<Output<List<TaskDefinitionVolumeArgs>>> volumes() {
@@ -351,10 +373,10 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         this.container = $.container;
         this.containers = $.containers;
         this.cpu = $.cpu;
+        this.enableFaultInjection = $.enableFaultInjection;
         this.ephemeralStorage = $.ephemeralStorage;
         this.executionRole = $.executionRole;
         this.family = $.family;
-        this.inferenceAccelerators = $.inferenceAccelerators;
         this.ipcMode = $.ipcMode;
         this.logGroup = $.logGroup;
         this.memory = $.memory;
@@ -362,6 +384,7 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         this.pidMode = $.pidMode;
         this.placementConstraints = $.placementConstraints;
         this.proxyConfiguration = $.proxyConfiguration;
+        this.region = $.region;
         this.runtimePlatform = $.runtimePlatform;
         this.skipDestroy = $.skipDestroy;
         this.tags = $.tags;
@@ -438,6 +461,27 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         }
 
         /**
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableFaultInjection(@Nullable Output<Boolean> enableFaultInjection) {
+            $.enableFaultInjection = enableFaultInjection;
+            return this;
+        }
+
+        /**
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableFaultInjection(Boolean enableFaultInjection) {
+            return enableFaultInjection(Output.of(enableFaultInjection));
+        }
+
+        /**
          * @param ephemeralStorage The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          * 
          * @return builder
@@ -489,37 +533,6 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
          */
         public Builder family(String family) {
             return family(Output.of(family));
-        }
-
-        /**
-         * @param inferenceAccelerators Configuration block(s) with Inference Accelerators settings. Detailed below.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder inferenceAccelerators(@Nullable Output<List<TaskDefinitionInferenceAcceleratorArgs>> inferenceAccelerators) {
-            $.inferenceAccelerators = inferenceAccelerators;
-            return this;
-        }
-
-        /**
-         * @param inferenceAccelerators Configuration block(s) with Inference Accelerators settings. Detailed below.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder inferenceAccelerators(List<TaskDefinitionInferenceAcceleratorArgs> inferenceAccelerators) {
-            return inferenceAccelerators(Output.of(inferenceAccelerators));
-        }
-
-        /**
-         * @param inferenceAccelerators Configuration block(s) with Inference Accelerators settings. Detailed below.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder inferenceAccelerators(TaskDefinitionInferenceAcceleratorArgs... inferenceAccelerators) {
-            return inferenceAccelerators(List.of(inferenceAccelerators));
         }
 
         /**
@@ -672,6 +685,27 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         }
 
         /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
+        }
+
+        /**
          * @param runtimePlatform Configuration block for runtime_platform that containers in your task may use.
          * 
          * @return builder
@@ -770,6 +804,10 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         /**
          * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
          * 
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * 
+         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * 
          * @return builder
          * 
          */
@@ -781,6 +819,10 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         /**
          * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
          * 
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * 
+         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * 
          * @return builder
          * 
          */
@@ -790,6 +832,10 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
 
         /**
          * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
+         * 
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * 
+         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
          * 
          * @return builder
          * 

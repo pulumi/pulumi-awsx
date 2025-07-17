@@ -90,7 +90,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -154,7 +154,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("443")
+    ///             .port(443)
     ///             .protocol("HTTPS")
     ///             .sslPolicy("ELBSecurityPolicy-2016-08")
     ///             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -258,7 +258,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -309,7 +309,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     public static void stack(Context ctx) {
     ///         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEndAwsLb.arn())
-    ///             .port("443")
+    ///             .port(443)
     ///             .protocol("TLS")
     ///             .sslPolicy("ELBSecurityPolicy-2016-08")
     ///             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -417,7 +417,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -477,7 +477,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(ListenerDefaultActionArgs.builder()
     ///                 .type("redirect")
@@ -589,7 +589,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -649,7 +649,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(ListenerDefaultActionArgs.builder()
     ///                 .type("fixed-response")
@@ -794,8 +794,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cognito"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -887,7 +887,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(            
     ///                 ListenerDefaultActionArgs.builder()
@@ -1045,7 +1045,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1119,7 +1119,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
     ///             .loadBalancerArn(frontEnd.arn())
-    ///             .port("80")
+    ///             .port(80)
     ///             .protocol("HTTP")
     ///             .defaultActions(            
     ///                 ListenerDefaultActionArgs.builder()
@@ -1282,7 +1282,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1371,7 +1371,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///             .protocol("GENEVE")
     ///             .vpcId(exampleAwsVpc.id())
     ///             .healthCheck(TargetGroupHealthCheckArgs.builder()
-    ///                 .port(80)
+    ///                 .port("80")
     ///                 .protocol("HTTP")
     ///                 .build())
     ///             .build());
@@ -1495,7 +1495,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1652,6 +1652,126 @@ namespace Pulumi.Awsx.Lb.Inputs
         /// </summary>
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
+
+        /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Issuer` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertIssuerHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertIssuerHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Leaf` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertLeafHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertLeafHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Serial-Number` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Subject` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertSubjectHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertSubjectHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Validity` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznMtlsClientcertValidityHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznMtlsClientcertValidityHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Tls-Cipher-Suite` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznTlsCipherSuiteHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznTlsCipherSuiteHeaderName { get; set; }
+
+        /// <summary>
+        /// Enables you to modify the header name of the `X-Amzn-Tls-Version` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+        /// </summary>
+        [Input("routingHttpRequestXAmznTlsVersionHeaderName")]
+        public Input<string>? RoutingHttpRequestXAmznTlsVersionHeaderName { get; set; }
+
+        /// <summary>
+        /// Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlAllowCredentialsHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlAllowCredentialsHeaderValue { get; set; }
+
+        /// <summary>
+        /// Specifies which headers can be used during the request. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Accept`, `Accept-Language`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`. Dependent on your use-case other headers can be exposed and then set as a value consult the Access-Control-Allow-Headers documentation.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlAllowHeadersHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlAllowHeadersHeaderValue { get; set; }
+
+        /// <summary>
+        /// Set which HTTP methods are allowed when accessing the server from a different origin. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `GET`, `HEAD`, `POST`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE` or `PATCH`.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlAllowMethodsHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlAllowMethodsHeaderValue { get; set; }
+
+        /// <summary>
+        /// Specifies which origins are allowed to access the server. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. A valid value is a URI, eg: `https://example.com`.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlAllowOriginHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlAllowOriginHeaderValue { get; set; }
+
+        /// <summary>
+        /// Specifies whether the browser should include credentials such as cookies or authentication when making requests. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, or `Pragma`. Dependent on your use-case other headers can be exposed, consult the Access-Control-Expose-Headers documentation.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlExposeHeadersHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlExposeHeadersHeaderValue { get; set; }
+
+        /// <summary>
+        /// Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.
+        /// </summary>
+        [Input("routingHttpResponseAccessControlMaxAgeHeaderValue")]
+        public Input<string>? RoutingHttpResponseAccessControlMaxAgeHeaderValue { get; set; }
+
+        /// <summary>
+        /// Specifies restrictions enforced by the browser to help minimize the risk of certain types of security threats. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Values for this are extensive, and can be impactful when set, consult Content-Security-Policy documentation.
+        /// </summary>
+        [Input("routingHttpResponseContentSecurityPolicyHeaderValue")]
+        public Input<string>? RoutingHttpResponseContentSecurityPolicyHeaderValue { get; set; }
+
+        /// <summary>
+        /// Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.
+        /// </summary>
+        [Input("routingHttpResponseServerEnabled")]
+        public Input<bool>? RoutingHttpResponseServerEnabled { get; set; }
+
+        /// <summary>
+        /// Informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. Default values are `max-age=31536000; includeSubDomains; preload` consult the Strict-Transport-Security documentation for further details.
+        /// </summary>
+        [Input("routingHttpResponseStrictTransportSecurityHeaderValue")]
+        public Input<string>? RoutingHttpResponseStrictTransportSecurityHeaderValue { get; set; }
+
+        /// <summary>
+        /// Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.
+        /// </summary>
+        [Input("routingHttpResponseXContentTypeOptionsHeaderValue")]
+        public Input<string>? RoutingHttpResponseXContentTypeOptionsHeaderValue { get; set; }
+
+        /// <summary>
+        /// Indicates whether the browser is allowed to render a page in a frame, iframe, embed or object. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid values are `DENY`, `SAMEORIGIN`, or `ALLOW-FROM https://example.com`.
+        /// </summary>
+        [Input("routingHttpResponseXFrameOptionsHeaderValue")]
+        public Input<string>? RoutingHttpResponseXFrameOptionsHeaderValue { get; set; }
 
         /// <summary>
         /// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.

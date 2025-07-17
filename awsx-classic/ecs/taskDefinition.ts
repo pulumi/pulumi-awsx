@@ -158,7 +158,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public static defaultExecutionRolePolicyARNs() {
         return [
             "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-            aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+            aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole,
         ];
     }
 }
@@ -336,11 +336,6 @@ export interface TaskDefinitionArgs {
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
      */
     family?: pulumi.Input<string>;
-
-    /**
-     * Configuration block(s) with Inference Accelerators settings. Detailed below.
-     */
-    inferenceAccelerators?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
 
     /**
      * The IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
