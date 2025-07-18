@@ -351,7 +351,30 @@ func TestVpc(t *testing.T) {
 			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-multiple-similar-subnet-types"),
 			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
+	integration.ProgramTest(t, &test)
+}
 
+func TestIPv6Assignment(t *testing.T) {
+	validate := func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+		subnets := stack.Outputs["subnets"].([]any)
+		for _, subnetInterface := range subnets {
+			subnet := subnetInterface.(map[string]any)
+			assignIpv6 := subnet["assignIpv6AddressOnCreation"].(bool)
+			ipv6Cidr := subnet["ipv6CidrBlock"]
+
+			if assignIpv6 {
+				assert.NotEmpty(t, ipv6Cidr, "Subnets with IPv6 assignment should have IPv6 CIDR")
+			} else {
+				assert.Empty(t, ipv6Cidr, "Subnets without IPv6 assignment should have no IPv6 CIDR")
+			}
+		}
+	}
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest:          false,
+			Dir:                    filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-ipv6-assignment"),
+			ExtraRuntimeValidation: validate,
+		})
 	integration.ProgramTest(t, &test)
 }
 

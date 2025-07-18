@@ -361,6 +361,10 @@ func subnetSpecType() schema.ComplexTypeSpec {
 						"divided evenly by availability zone.",
 					TypeSpec: plainInt(),
 				},
+				"assignIpv6AddressOnCreation": {
+					Description: "Indicates whether a network interface created in this subnet receives an IPv6 address.",
+					TypeSpec:    schema.TypeSpec{Type: "boolean", Plain: true},
+				},
 				"tags": {
 					TypeSpec: schema.TypeSpec{
 						Type:                 "object",
