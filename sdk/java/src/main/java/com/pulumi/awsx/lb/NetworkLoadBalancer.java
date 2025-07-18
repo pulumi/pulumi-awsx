@@ -84,7 +84,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public NetworkLoadBalancer(String name) {
+    public NetworkLoadBalancer(java.lang.String name) {
         this(name, NetworkLoadBalancerArgs.Empty);
     }
     /**
@@ -92,7 +92,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public NetworkLoadBalancer(String name, @Nullable NetworkLoadBalancerArgs args) {
+    public NetworkLoadBalancer(java.lang.String name, @Nullable NetworkLoadBalancerArgs args) {
         this(name, args, null);
     }
     /**
@@ -101,11 +101,18 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public NetworkLoadBalancer(String name, @Nullable NetworkLoadBalancerArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:lb:NetworkLoadBalancer", name, args == null ? NetworkLoadBalancerArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public NetworkLoadBalancer(java.lang.String name, @Nullable NetworkLoadBalancerArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:lb:NetworkLoadBalancer", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static NetworkLoadBalancerArgs makeArgs(@Nullable NetworkLoadBalancerArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? NetworkLoadBalancerArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

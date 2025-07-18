@@ -5,6 +5,7 @@ package com.pulumi.awsx.ecs.inputs;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.List;
@@ -96,7 +97,9 @@ public final class TaskDefinitionTmpfsArgs extends com.pulumi.resources.Resource
         }
 
         public TaskDefinitionTmpfsArgs build() {
-            $.size = Objects.requireNonNull($.size, "expected parameter 'size' to be non-null");
+            if ($.size == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionTmpfsArgs", "size");
+            }
             return $;
         }
     }

@@ -16,7 +16,8 @@ import javax.annotation.Nullable;
  * 
  * ## Example Usage
  * ### Pushing an image to an ECR repository
- * ```java
+ * <pre>
+ * {@code
  * import com.pulumi.Pulumi;
  * import com.pulumi.awsx.ecr.Repository;
  * import com.pulumi.awsx.ecr.RepositoryArgs;
@@ -25,21 +26,22 @@ import javax.annotation.Nullable;
  * 
  * public class Main {
  *     public static void main(String[] args) {
- *         Pulumi.run(ctx -&gt; {
+ *         Pulumi.run(ctx -> {
  *             // Create an ECR repository with force delete enabled
- *             var repository = new Repository(&#34;repository&#34;, RepositoryArgs.builder()
+ *             var repository = new Repository("repository", RepositoryArgs.builder()
  *                 .forceDelete(true)
  *                 .build());
  * 
  *             // Create a RegistryImage based on the ECR repository URL and source image
- *             var registryImage = new RegistryImage(&#34;registryImage&#34;, RegistryImageArgs.builder()
+ *             var registryImage = new RegistryImage("registryImage", RegistryImageArgs.builder()
  *                 .repositoryUrl(repository.url())
- *                 .sourceImage(&#34;my-awesome-image:v1.0.0&#34;)
+ *                 .sourceImage("my-awesome-image:v1.0.0")
  *                 .build());
  *         });
  *     }
  * }
- * ```
+ * }
+ * </pre>
  * 
  */
 @ResourceType(type="awsx:ecr:RegistryImage")
@@ -63,7 +65,7 @@ public class RegistryImage extends com.pulumi.resources.ComponentResource {
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public RegistryImage(String name) {
+    public RegistryImage(java.lang.String name) {
         this(name, RegistryImageArgs.Empty);
     }
     /**
@@ -71,7 +73,7 @@ public class RegistryImage extends com.pulumi.resources.ComponentResource {
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public RegistryImage(String name, RegistryImageArgs args) {
+    public RegistryImage(java.lang.String name, RegistryImageArgs args) {
         this(name, args, null);
     }
     /**
@@ -80,11 +82,18 @@ public class RegistryImage extends com.pulumi.resources.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public RegistryImage(String name, RegistryImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ecr:RegistryImage", name, args == null ? RegistryImageArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public RegistryImage(java.lang.String name, RegistryImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ecr:RegistryImage", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static RegistryImageArgs makeArgs(RegistryImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? RegistryImageArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

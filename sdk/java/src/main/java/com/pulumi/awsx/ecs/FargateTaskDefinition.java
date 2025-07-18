@@ -100,7 +100,7 @@ public class FargateTaskDefinition extends com.pulumi.resources.ComponentResourc
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public FargateTaskDefinition(String name) {
+    public FargateTaskDefinition(java.lang.String name) {
         this(name, FargateTaskDefinitionArgs.Empty);
     }
     /**
@@ -108,7 +108,7 @@ public class FargateTaskDefinition extends com.pulumi.resources.ComponentResourc
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public FargateTaskDefinition(String name, @Nullable FargateTaskDefinitionArgs args) {
+    public FargateTaskDefinition(java.lang.String name, @Nullable FargateTaskDefinitionArgs args) {
         this(name, args, null);
     }
     /**
@@ -117,11 +117,18 @@ public class FargateTaskDefinition extends com.pulumi.resources.ComponentResourc
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public FargateTaskDefinition(String name, @Nullable FargateTaskDefinitionArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ecs:FargateTaskDefinition", name, args == null ? FargateTaskDefinitionArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public FargateTaskDefinition(java.lang.String name, @Nullable FargateTaskDefinitionArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ecs:FargateTaskDefinition", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static FargateTaskDefinitionArgs makeArgs(@Nullable FargateTaskDefinitionArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? FargateTaskDefinitionArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

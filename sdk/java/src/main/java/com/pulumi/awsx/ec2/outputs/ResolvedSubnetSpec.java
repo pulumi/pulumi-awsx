@@ -5,6 +5,7 @@ package com.pulumi.awsx.ec2.outputs;
 
 import com.pulumi.awsx.ec2.enums.SubnetType;
 import com.pulumi.core.annotations.CustomType;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.List;
@@ -103,6 +104,7 @@ public final class ResolvedSubnetSpec {
 
         @CustomType.Setter
         public Builder cidrBlocks(@Nullable List<String> cidrBlocks) {
+
             this.cidrBlocks = cidrBlocks;
             return this;
         }
@@ -111,32 +113,38 @@ public final class ResolvedSubnetSpec {
         }
         @CustomType.Setter
         public Builder cidrMask(@Nullable Integer cidrMask) {
+
             this.cidrMask = cidrMask;
             return this;
         }
         @CustomType.Setter
         public Builder name(@Nullable String name) {
+
             this.name = name;
             return this;
         }
         @CustomType.Setter
         public Builder size(@Nullable Integer size) {
+
             this.size = size;
             return this;
         }
         @CustomType.Setter
         public Builder type(SubnetType type) {
-            this.type = Objects.requireNonNull(type);
+            if (type == null) {
+              throw new MissingRequiredPropertyException("ResolvedSubnetSpec", "type");
+            }
+            this.type = type;
             return this;
         }
         public ResolvedSubnetSpec build() {
-            final var o = new ResolvedSubnetSpec();
-            o.cidrBlocks = cidrBlocks;
-            o.cidrMask = cidrMask;
-            o.name = name;
-            o.size = size;
-            o.type = type;
-            return o;
+            final var _resultValue = new ResolvedSubnetSpec();
+            _resultValue.cidrBlocks = cidrBlocks;
+            _resultValue.cidrMask = cidrMask;
+            _resultValue.name = name;
+            _resultValue.size = size;
+            _resultValue.type = type;
+            return _resultValue;
         }
     }
 }

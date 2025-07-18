@@ -52,7 +52,7 @@ public class TargetGroupAttachment extends com.pulumi.resources.ComponentResourc
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public TargetGroupAttachment(String name) {
+    public TargetGroupAttachment(java.lang.String name) {
         this(name, TargetGroupAttachmentArgs.Empty);
     }
     /**
@@ -60,7 +60,7 @@ public class TargetGroupAttachment extends com.pulumi.resources.ComponentResourc
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public TargetGroupAttachment(String name, @Nullable TargetGroupAttachmentArgs args) {
+    public TargetGroupAttachment(java.lang.String name, @Nullable TargetGroupAttachmentArgs args) {
         this(name, args, null);
     }
     /**
@@ -69,11 +69,18 @@ public class TargetGroupAttachment extends com.pulumi.resources.ComponentResourc
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public TargetGroupAttachment(String name, @Nullable TargetGroupAttachmentArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:lb:TargetGroupAttachment", name, args == null ? TargetGroupAttachmentArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public TargetGroupAttachment(java.lang.String name, @Nullable TargetGroupAttachmentArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:lb:TargetGroupAttachment", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static TargetGroupAttachmentArgs makeArgs(@Nullable TargetGroupAttachmentArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? TargetGroupAttachmentArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

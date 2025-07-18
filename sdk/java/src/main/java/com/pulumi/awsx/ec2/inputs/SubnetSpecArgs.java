@@ -6,6 +6,7 @@ package com.pulumi.awsx.ec2.inputs;
 import com.pulumi.awsx.ec2.enums.SubnetType;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.List;
@@ -229,7 +230,9 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         public SubnetSpecArgs build() {
-            $.type = Objects.requireNonNull($.type, "expected parameter 'type' to be non-null");
+            if ($.type == null) {
+                throw new MissingRequiredPropertyException("SubnetSpecArgs", "type");
+            }
             return $;
         }
     }

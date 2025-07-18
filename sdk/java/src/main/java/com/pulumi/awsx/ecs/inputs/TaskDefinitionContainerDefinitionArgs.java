@@ -21,6 +21,7 @@ import com.pulumi.awsx.ecs.inputs.TaskDefinitionUlimitArgs;
 import com.pulumi.awsx.ecs.inputs.TaskDefinitionVolumeFromArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Object;
@@ -932,8 +933,12 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
         }
 
         public TaskDefinitionContainerDefinitionArgs build() {
-            $.image = Objects.requireNonNull($.image, "expected parameter 'image' to be non-null");
-            $.name = Objects.requireNonNull($.name, "expected parameter 'name' to be non-null");
+            if ($.image == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionContainerDefinitionArgs", "image");
+            }
+            if ($.name == null) {
+                throw new MissingRequiredPropertyException("TaskDefinitionContainerDefinitionArgs", "name");
+            }
             return $;
         }
     }

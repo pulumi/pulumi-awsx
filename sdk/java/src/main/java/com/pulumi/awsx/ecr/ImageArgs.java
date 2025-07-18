@@ -6,6 +6,7 @@ package com.pulumi.awsx.ecr;
 import com.pulumi.awsx.ecr.enums.BuilderVersion;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.String;
 import java.util.List;
 import java.util.Map;
@@ -449,7 +450,9 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         public ImageArgs build() {
-            $.repositoryUrl = Objects.requireNonNull($.repositoryUrl, "expected parameter 'repositoryUrl' to be non-null");
+            if ($.repositoryUrl == null) {
+                throw new MissingRequiredPropertyException("ImageArgs", "repositoryUrl");
+            }
             return $;
         }
     }

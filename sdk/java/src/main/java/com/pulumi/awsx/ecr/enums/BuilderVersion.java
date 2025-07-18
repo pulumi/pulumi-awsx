@@ -37,7 +37,7 @@ import java.util.StringJoiner;
         }
 
         @Override
-        public String toString() {
+        public java.lang.String toString() {
             return new StringJoiner(", ", "BuilderVersion[", "]")
                 .add("value='" + this.value + "'")
                 .toString();

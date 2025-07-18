@@ -37,7 +37,7 @@ public class Image extends com.pulumi.resources.ComponentResource {
      *
      * @param name The _unique_ name of the resulting resource.
      */
-    public Image(String name) {
+    public Image(java.lang.String name) {
         this(name, ImageArgs.Empty);
     }
     /**
@@ -45,7 +45,7 @@ public class Image extends com.pulumi.resources.ComponentResource {
      * @param name The _unique_ name of the resulting resource.
      * @param args The arguments to use to populate this resource's properties.
      */
-    public Image(String name, ImageArgs args) {
+    public Image(java.lang.String name, ImageArgs args) {
         this(name, args, null);
     }
     /**
@@ -54,11 +54,18 @@ public class Image extends com.pulumi.resources.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public Image(String name, ImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
-        super("awsx:ecr:Image", name, args == null ? ImageArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
+    public Image(java.lang.String name, ImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:ecr:Image", name, makeArgs(args, options), makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+    private static ImageArgs makeArgs(ImageArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        if (options != null && options.getUrn().isPresent()) {
+            return null;
+        }
+        return args == null ? ImageArgs.Empty : args;
+    }
+
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<java.lang.String> id) {
         var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();

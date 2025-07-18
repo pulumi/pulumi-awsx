@@ -6,6 +6,7 @@ package com.pulumi.awsx.ecr.inputs;
 import com.pulumi.awsx.ecr.enums.LifecycleTagStatus;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Double;
 import java.lang.String;
 import java.util.List;
@@ -241,7 +242,9 @@ public final class LifecyclePolicyRuleArgs extends com.pulumi.resources.Resource
         }
 
         public LifecyclePolicyRuleArgs build() {
-            $.tagStatus = Objects.requireNonNull($.tagStatus, "expected parameter 'tagStatus' to be non-null");
+            if ($.tagStatus == null) {
+                throw new MissingRequiredPropertyException("LifecyclePolicyRuleArgs", "tagStatus");
+            }
             return $;
         }
     }
