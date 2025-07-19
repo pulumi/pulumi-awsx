@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecs"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -32,6 +32,8 @@ type EC2ServiceTaskDefinition struct {
 	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu *string `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -39,8 +41,6 @@ type EC2ServiceTaskDefinition struct {
 	ExecutionRole *awsx.DefaultRoleWithPolicy `pulumi:"executionRole"`
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family *string `pulumi:"family"`
-	// Configuration block(s) with Inference Accelerators settings. Detailed below.
-	InferenceAccelerators []ecs.TaskDefinitionInferenceAccelerator `pulumi:"inferenceAccelerators"`
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode *string `pulumi:"ipcMode"`
 	// A set of volume blocks that containers in your task may use.
@@ -56,6 +56,8 @@ type EC2ServiceTaskDefinition struct {
 	PlacementConstraints []ecs.TaskDefinitionPlacementConstraint `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region *string `pulumi:"region"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
 	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
@@ -68,6 +70,10 @@ type EC2ServiceTaskDefinition struct {
 	// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
 	TrackLatest *bool `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
+	//
+	// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+	//
+	// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
 
@@ -98,6 +104,8 @@ type EC2ServiceTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinitionArgs `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	EnableFaultInjection pulumi.BoolPtrInput `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -105,8 +113,6 @@ type EC2ServiceTaskDefinitionArgs struct {
 	ExecutionRole *awsx.DefaultRoleWithPolicyArgs `pulumi:"executionRole"`
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family pulumi.StringPtrInput `pulumi:"family"`
-	// Configuration block(s) with Inference Accelerators settings. Detailed below.
-	InferenceAccelerators ecs.TaskDefinitionInferenceAcceleratorArrayInput `pulumi:"inferenceAccelerators"`
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode pulumi.StringPtrInput `pulumi:"ipcMode"`
 	// A set of volume blocks that containers in your task may use.
@@ -122,6 +128,8 @@ type EC2ServiceTaskDefinitionArgs struct {
 	PlacementConstraints ecs.TaskDefinitionPlacementConstraintArrayInput `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput `pulumi:"proxyConfiguration"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region pulumi.StringPtrInput `pulumi:"region"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput `pulumi:"runtimePlatform"`
 	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
@@ -134,6 +142,10 @@ type EC2ServiceTaskDefinitionArgs struct {
 	// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
 	TrackLatest pulumi.BoolPtrInput `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
+	//
+	// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+	//
+	// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 	Volumes ecs.TaskDefinitionVolumeArrayInput `pulumi:"volumes"`
 }
 
@@ -238,6 +250,11 @@ func (o EC2ServiceTaskDefinitionOutput) Cpu() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *string { return v.Cpu }).(pulumi.StringPtrOutput)
 }
 
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+func (o EC2ServiceTaskDefinitionOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v EC2ServiceTaskDefinition) *bool { return v.EnableFaultInjection }).(pulumi.BoolPtrOutput)
+}
+
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 func (o EC2ServiceTaskDefinitionOutput) EphemeralStorage() ecs.TaskDefinitionEphemeralStoragePtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *ecs.TaskDefinitionEphemeralStorage { return v.EphemeralStorage }).(ecs.TaskDefinitionEphemeralStoragePtrOutput)
@@ -252,13 +269,6 @@ func (o EC2ServiceTaskDefinitionOutput) ExecutionRole() awsx.DefaultRoleWithPoli
 // An optional unique name for your task definition. If not specified, then a default will be created.
 func (o EC2ServiceTaskDefinitionOutput) Family() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *string { return v.Family }).(pulumi.StringPtrOutput)
-}
-
-// Configuration block(s) with Inference Accelerators settings. Detailed below.
-func (o EC2ServiceTaskDefinitionOutput) InferenceAccelerators() ecs.TaskDefinitionInferenceAcceleratorArrayOutput {
-	return o.ApplyT(func(v EC2ServiceTaskDefinition) []ecs.TaskDefinitionInferenceAccelerator {
-		return v.InferenceAccelerators
-	}).(ecs.TaskDefinitionInferenceAcceleratorArrayOutput)
 }
 
 // IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
@@ -299,6 +309,11 @@ func (o EC2ServiceTaskDefinitionOutput) ProxyConfiguration() ecs.TaskDefinitionP
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *ecs.TaskDefinitionProxyConfiguration { return v.ProxyConfiguration }).(ecs.TaskDefinitionProxyConfigurationPtrOutput)
 }
 
+// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+func (o EC2ServiceTaskDefinitionOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v EC2ServiceTaskDefinition) *string { return v.Region }).(pulumi.StringPtrOutput)
+}
+
 // Configuration block for runtime_platform that containers in your task may use.
 func (o EC2ServiceTaskDefinitionOutput) RuntimePlatform() ecs.TaskDefinitionRuntimePlatformPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform { return v.RuntimePlatform }).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
@@ -326,6 +341,10 @@ func (o EC2ServiceTaskDefinitionOutput) TrackLatest() pulumi.BoolPtrOutput {
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
+//
+// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+//
+// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 func (o EC2ServiceTaskDefinitionOutput) Volumes() ecs.TaskDefinitionVolumeArrayOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) []ecs.TaskDefinitionVolume { return v.Volumes }).(ecs.TaskDefinitionVolumeArrayOutput)
 }
@@ -390,6 +409,16 @@ func (o EC2ServiceTaskDefinitionPtrOutput) Cpu() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+func (o EC2ServiceTaskDefinitionPtrOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableFaultInjection
+	}).(pulumi.BoolPtrOutput)
+}
+
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 func (o EC2ServiceTaskDefinitionPtrOutput) EphemeralStorage() ecs.TaskDefinitionEphemeralStoragePtrOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *ecs.TaskDefinitionEphemeralStorage {
@@ -419,16 +448,6 @@ func (o EC2ServiceTaskDefinitionPtrOutput) Family() pulumi.StringPtrOutput {
 		}
 		return v.Family
 	}).(pulumi.StringPtrOutput)
-}
-
-// Configuration block(s) with Inference Accelerators settings. Detailed below.
-func (o EC2ServiceTaskDefinitionPtrOutput) InferenceAccelerators() ecs.TaskDefinitionInferenceAcceleratorArrayOutput {
-	return o.ApplyT(func(v *EC2ServiceTaskDefinition) []ecs.TaskDefinitionInferenceAccelerator {
-		if v == nil {
-			return nil
-		}
-		return v.InferenceAccelerators
-	}).(ecs.TaskDefinitionInferenceAcceleratorArrayOutput)
 }
 
 // IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
@@ -502,6 +521,16 @@ func (o EC2ServiceTaskDefinitionPtrOutput) ProxyConfiguration() ecs.TaskDefiniti
 	}).(ecs.TaskDefinitionProxyConfigurationPtrOutput)
 }
 
+// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+func (o EC2ServiceTaskDefinitionPtrOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Region
+	}).(pulumi.StringPtrOutput)
+}
+
 // Configuration block for runtime_platform that containers in your task may use.
 func (o EC2ServiceTaskDefinitionPtrOutput) RuntimePlatform() ecs.TaskDefinitionRuntimePlatformPtrOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform {
@@ -554,6 +583,10 @@ func (o EC2ServiceTaskDefinitionPtrOutput) TrackLatest() pulumi.BoolPtrOutput {
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
+//
+// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+//
+// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 func (o EC2ServiceTaskDefinitionPtrOutput) Volumes() ecs.TaskDefinitionVolumeArrayOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) []ecs.TaskDefinitionVolume {
 		if v == nil {
@@ -579,6 +612,8 @@ type FargateServiceTaskDefinition struct {
 	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu *string `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -586,8 +621,6 @@ type FargateServiceTaskDefinition struct {
 	ExecutionRole *awsx.DefaultRoleWithPolicy `pulumi:"executionRole"`
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family *string `pulumi:"family"`
-	// Configuration block(s) with Inference Accelerators settings. Detailed below.
-	InferenceAccelerators []ecs.TaskDefinitionInferenceAccelerator `pulumi:"inferenceAccelerators"`
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode *string `pulumi:"ipcMode"`
 	// A set of volume blocks that containers in your task may use.
@@ -601,6 +634,8 @@ type FargateServiceTaskDefinition struct {
 	PlacementConstraints []ecs.TaskDefinitionPlacementConstraint `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region *string `pulumi:"region"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
 	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
@@ -613,6 +648,10 @@ type FargateServiceTaskDefinition struct {
 	// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
 	TrackLatest *bool `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
+	//
+	// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+	//
+	// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
 
@@ -643,6 +682,8 @@ type FargateServiceTaskDefinitionArgs struct {
 	Containers map[string]TaskDefinitionContainerDefinitionArgs `pulumi:"containers"`
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput `pulumi:"cpu"`
+	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+	EnableFaultInjection pulumi.BoolPtrInput `pulumi:"enableFaultInjection"`
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -650,8 +691,6 @@ type FargateServiceTaskDefinitionArgs struct {
 	ExecutionRole *awsx.DefaultRoleWithPolicyArgs `pulumi:"executionRole"`
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family pulumi.StringPtrInput `pulumi:"family"`
-	// Configuration block(s) with Inference Accelerators settings. Detailed below.
-	InferenceAccelerators ecs.TaskDefinitionInferenceAcceleratorArrayInput `pulumi:"inferenceAccelerators"`
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode pulumi.StringPtrInput `pulumi:"ipcMode"`
 	// A set of volume blocks that containers in your task may use.
@@ -665,6 +704,8 @@ type FargateServiceTaskDefinitionArgs struct {
 	PlacementConstraints ecs.TaskDefinitionPlacementConstraintArrayInput `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput `pulumi:"proxyConfiguration"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region pulumi.StringPtrInput `pulumi:"region"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput `pulumi:"runtimePlatform"`
 	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
@@ -677,6 +718,10 @@ type FargateServiceTaskDefinitionArgs struct {
 	// Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
 	TrackLatest pulumi.BoolPtrInput `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
+	//
+	// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+	//
+	// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 	Volumes ecs.TaskDefinitionVolumeArrayInput `pulumi:"volumes"`
 }
 
@@ -781,6 +826,11 @@ func (o FargateServiceTaskDefinitionOutput) Cpu() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *string { return v.Cpu }).(pulumi.StringPtrOutput)
 }
 
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+func (o FargateServiceTaskDefinitionOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v FargateServiceTaskDefinition) *bool { return v.EnableFaultInjection }).(pulumi.BoolPtrOutput)
+}
+
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 func (o FargateServiceTaskDefinitionOutput) EphemeralStorage() ecs.TaskDefinitionEphemeralStoragePtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *ecs.TaskDefinitionEphemeralStorage { return v.EphemeralStorage }).(ecs.TaskDefinitionEphemeralStoragePtrOutput)
@@ -795,13 +845,6 @@ func (o FargateServiceTaskDefinitionOutput) ExecutionRole() awsx.DefaultRoleWith
 // An optional unique name for your task definition. If not specified, then a default will be created.
 func (o FargateServiceTaskDefinitionOutput) Family() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *string { return v.Family }).(pulumi.StringPtrOutput)
-}
-
-// Configuration block(s) with Inference Accelerators settings. Detailed below.
-func (o FargateServiceTaskDefinitionOutput) InferenceAccelerators() ecs.TaskDefinitionInferenceAcceleratorArrayOutput {
-	return o.ApplyT(func(v FargateServiceTaskDefinition) []ecs.TaskDefinitionInferenceAccelerator {
-		return v.InferenceAccelerators
-	}).(ecs.TaskDefinitionInferenceAcceleratorArrayOutput)
 }
 
 // IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
@@ -839,6 +882,11 @@ func (o FargateServiceTaskDefinitionOutput) ProxyConfiguration() ecs.TaskDefinit
 	}).(ecs.TaskDefinitionProxyConfigurationPtrOutput)
 }
 
+// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+func (o FargateServiceTaskDefinitionOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v FargateServiceTaskDefinition) *string { return v.Region }).(pulumi.StringPtrOutput)
+}
+
 // Configuration block for runtime_platform that containers in your task may use.
 func (o FargateServiceTaskDefinitionOutput) RuntimePlatform() ecs.TaskDefinitionRuntimePlatformPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform { return v.RuntimePlatform }).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
@@ -866,6 +914,10 @@ func (o FargateServiceTaskDefinitionOutput) TrackLatest() pulumi.BoolPtrOutput {
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
+//
+// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+//
+// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 func (o FargateServiceTaskDefinitionOutput) Volumes() ecs.TaskDefinitionVolumeArrayOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) []ecs.TaskDefinitionVolume { return v.Volumes }).(ecs.TaskDefinitionVolumeArrayOutput)
 }
@@ -930,6 +982,16 @@ func (o FargateServiceTaskDefinitionPtrOutput) Cpu() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
+// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+func (o FargateServiceTaskDefinitionPtrOutput) EnableFaultInjection() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *FargateServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableFaultInjection
+	}).(pulumi.BoolPtrOutput)
+}
+
 // The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 func (o FargateServiceTaskDefinitionPtrOutput) EphemeralStorage() ecs.TaskDefinitionEphemeralStoragePtrOutput {
 	return o.ApplyT(func(v *FargateServiceTaskDefinition) *ecs.TaskDefinitionEphemeralStorage {
@@ -959,16 +1021,6 @@ func (o FargateServiceTaskDefinitionPtrOutput) Family() pulumi.StringPtrOutput {
 		}
 		return v.Family
 	}).(pulumi.StringPtrOutput)
-}
-
-// Configuration block(s) with Inference Accelerators settings. Detailed below.
-func (o FargateServiceTaskDefinitionPtrOutput) InferenceAccelerators() ecs.TaskDefinitionInferenceAcceleratorArrayOutput {
-	return o.ApplyT(func(v *FargateServiceTaskDefinition) []ecs.TaskDefinitionInferenceAccelerator {
-		if v == nil {
-			return nil
-		}
-		return v.InferenceAccelerators
-	}).(ecs.TaskDefinitionInferenceAcceleratorArrayOutput)
 }
 
 // IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
@@ -1032,6 +1084,16 @@ func (o FargateServiceTaskDefinitionPtrOutput) ProxyConfiguration() ecs.TaskDefi
 	}).(ecs.TaskDefinitionProxyConfigurationPtrOutput)
 }
 
+// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+func (o FargateServiceTaskDefinitionPtrOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *FargateServiceTaskDefinition) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Region
+	}).(pulumi.StringPtrOutput)
+}
+
 // Configuration block for runtime_platform that containers in your task may use.
 func (o FargateServiceTaskDefinitionPtrOutput) RuntimePlatform() ecs.TaskDefinitionRuntimePlatformPtrOutput {
 	return o.ApplyT(func(v *FargateServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform {
@@ -1084,6 +1146,10 @@ func (o FargateServiceTaskDefinitionPtrOutput) TrackLatest() pulumi.BoolPtrOutpu
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
+//
+// > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+//
+// > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
 func (o FargateServiceTaskDefinitionPtrOutput) Volumes() ecs.TaskDefinitionVolumeArrayOutput {
 	return o.ApplyT(func(v *FargateServiceTaskDefinition) []ecs.TaskDefinitionVolume {
 		if v == nil {

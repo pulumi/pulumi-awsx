@@ -40,6 +40,7 @@ class VpcArgs:
                  ipv6_netmask_length: Optional[pulumi.Input[builtins.int]] = None,
                  nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
                  number_of_availability_zones: Optional[builtins.int] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
@@ -62,6 +63,7 @@ class VpcArgs:
         :param pulumi.Input[builtins.int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param builtins.int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -99,6 +101,8 @@ class VpcArgs:
             pulumi.set(__self__, "nat_gateways", nat_gateways)
         if number_of_availability_zones is not None:
             pulumi.set(__self__, "number_of_availability_zones", number_of_availability_zones)
+        if region is not None:
+            pulumi.set(__self__, "region", region)
         if subnet_specs is not None:
             pulumi.set(__self__, "subnet_specs", subnet_specs)
         if subnet_strategy is not None:
@@ -301,6 +305,18 @@ class VpcArgs:
         pulumi.set(self, "number_of_availability_zones", value)
 
     @property
+    @pulumi.getter
+    def region(self) -> Optional[pulumi.Input[builtins.str]]:
+        """
+        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        """
+        return pulumi.get(self, "region")
+
+    @region.setter
+    def region(self, value: Optional[pulumi.Input[builtins.str]]):
+        pulumi.set(self, "region", value)
+
+    @property
     @pulumi.getter(name="subnetSpecs")
     def subnet_specs(self) -> Optional[Sequence['SubnetSpecArgs']]:
         """
@@ -373,6 +389,7 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_netmask_length: Optional[pulumi.Input[builtins.int]] = None,
                  nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[builtins.int] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
@@ -437,6 +454,7 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[builtins.int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         :param Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param builtins.int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -520,6 +538,7 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_netmask_length: Optional[pulumi.Input[builtins.int]] = None,
                  nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[builtins.int] = None,
+                 region: Optional[pulumi.Input[builtins.str]] = None,
                  subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
@@ -551,6 +570,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["ipv6_netmask_length"] = ipv6_netmask_length
             __props__.__dict__["nat_gateways"] = nat_gateways
             __props__.__dict__["number_of_availability_zones"] = number_of_availability_zones
+            __props__.__dict__["region"] = region
             __props__.__dict__["subnet_specs"] = subnet_specs
             __props__.__dict__["subnet_strategy"] = subnet_strategy
             __props__.__dict__["tags"] = tags
