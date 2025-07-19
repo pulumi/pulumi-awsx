@@ -59,6 +59,7 @@ export class Repository extends pulumi.ComponentResource {
             resourceInputs["imageTagMutability"] = args ? args.imageTagMutability : undefined;
             resourceInputs["lifecyclePolicy"] = args ? args.lifecyclePolicy : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
+            resourceInputs["region"] = args ? args.region : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["repository"] = undefined /*out*/;
             resourceInputs["url"] = undefined /*out*/;
@@ -101,6 +102,10 @@ export interface RepositoryArgs {
      * Name of the repository.
      */
     name?: pulumi.Input<string>;
+    /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     */
+    region?: pulumi.Input<string>;
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

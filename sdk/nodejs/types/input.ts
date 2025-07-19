@@ -15,19 +15,18 @@ export namespace awsx {
      */
     export interface BucketArgs {
         /**
-         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketAccelerateConfiguration` instead.
+         *
+         * @deprecated acceleration_status is deprecated. Use the aws.s3.BucketAccelerateConfiguration resource instead.
          */
         accelerationStatus?: pulumi.Input<string>;
         /**
-         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
          */
         acl?: pulumi.Input<string>;
         /**
-         * The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
-         */
-        arn?: pulumi.Input<string>;
-        /**
-         * The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         * Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
          */
         bucket?: pulumi.Input<string>;
         /**
@@ -35,74 +34,101 @@ export namespace awsx {
          */
         bucketPrefix?: pulumi.Input<string>;
         /**
-         * A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+         * Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfiguration` instead.
+         *
+         * @deprecated cors_rule is deprecated. Use the aws.s3.BucketCorsConfiguration resource instead.
          */
         corsRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketCorsRule>[]>;
         /**
-         * A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+         * Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
          */
         forceDestroy?: pulumi.Input<boolean>;
         /**
-         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+         *
+         * @deprecated grant is deprecated. Use the aws.s3.BucketAcl resource instead.
          */
         grants?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketGrant>[]>;
         /**
-         * The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
-         */
-        hostedZoneId?: pulumi.Input<string>;
-        /**
-         * A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+         * Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketLifecycleConfiguration` instead.
+         *
+         * @deprecated lifecycle_rule is deprecated. Use the aws.s3.BucketLifecycleConfiguration resource instead.
          */
         lifecycleRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLifecycleRule>[]>;
         /**
-         * A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
-         */
-        loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
-        /**
-         * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+         * Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketLogging` instead.
          *
-         * > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
+         * @deprecated logging is deprecated. Use the aws.s3.BucketLogging resource instead.
+         */
+        logging?: pulumi.Input<pulumiAws.types.input.s3.BucketLogging>;
+        /**
+         * Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
+         * The provider wil only perform drift detection if a configuration value is provided.
+         * Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfiguration` instead.
+         *
+         * @deprecated object_lock_configuration is deprecated. Use the top-level parameter object_lock_enabled and the aws.s3.BucketObjectLockConfiguration resource instead.
          */
         objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
         /**
-         * A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
+         * Indicates whether this bucket has an Object Lock configuration enabled. Valid values are `true` or `false`. This argument is not supported in all regions or partitions.
+         */
+        objectLockEnabled?: pulumi.Input<boolean>;
+        /**
+         * Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
+         * The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketPolicy` instead.
          */
         policy?: pulumi.Input<string>;
         /**
-         * A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
+         * Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketReplicationConfig` instead.
+         *
+         * @deprecated replication_configuration is deprecated. Use the aws.s3.BucketReplicationConfig resource instead.
          */
         replicationConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketReplicationConfiguration>;
         /**
          * Specifies who should bear the cost of Amazon S3 data transfer.
-         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
-         * the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
-         * developer guide for more information.
+         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
+         * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
+         * The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketRequestPaymentConfiguration` instead.
+         *
+         * @deprecated request_payer is deprecated. Use the aws.s3.BucketRequestPaymentConfiguration resource instead.
          */
         requestPayer?: pulumi.Input<string>;
         /**
-         * A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+         * Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
+         * The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketServerSideEncryptionConfiguration` instead.
+         *
+         * @deprecated server_side_encryption_configuration is deprecated. Use the aws.s3.BucketServerSideEncryptionConfiguration resource instead.
          */
         serverSideEncryptionConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketServerSideEncryptionConfiguration>;
         /**
-         * A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         *
+         * The following arguments are deprecated, and will be removed in a future major version:
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
-         * A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+         * Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioning` instead.
+         *
+         * @deprecated versioning is deprecated. Use the aws.s3.BucketVersioning resource instead.
          */
         versioning?: pulumi.Input<pulumiAws.types.input.s3.BucketVersioning>;
         /**
-         * A website object (documented below).
+         * Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
+         * Use the resource `aws.s3.BucketWebsiteConfiguration` instead.
+         *
+         * @deprecated website is deprecated. Use the aws.s3.BucketWebsiteConfiguration resource instead.
          */
         website?: pulumi.Input<pulumiAws.types.input.s3.BucketWebsite>;
-        /**
-         * The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
-         */
-        websiteDomain?: pulumi.Input<string>;
-        /**
-         * The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
-         */
-        websiteEndpoint?: pulumi.Input<string>;
     }
 
     /**
@@ -211,7 +237,7 @@ export namespace awsx {
          */
         kmsKeyId?: pulumi.Input<string>;
         /**
-         * Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+         * Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
          */
         logGroupClass?: pulumi.Input<string>;
         /**
@@ -223,9 +249,13 @@ export namespace awsx {
          */
         namePrefix?: pulumi.Input<string>;
         /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
          * Specifies the number of days
          * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-         * If you select 0, the events in the log group are always retained and never expire.
+         * If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
          */
         retentionInDays?: pulumi.Input<number>;
         /**
@@ -344,6 +374,10 @@ export namespace awsx {
          * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
          */
         namePrefix?: pulumi.Input<string>;
+        /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
         /**
          * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
          */
@@ -469,7 +503,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -575,7 +609,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -689,7 +723,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -846,7 +880,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1015,8 +1049,8 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1078,11 +1112,12 @@ export namespace ec2 {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         final var current = AwsFunctions.getCallerIdentity();
+     *         final var current = AwsFunctions.getCallerIdentity(GetCallerIdentityArgs.builder()
+     *             .build());
      *
      *         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
      *             .acceptanceRequired(false)
-     *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+     *             .allowedPrincipals(current.arn())
      *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
      *             .build());
      *
@@ -1123,6 +1158,234 @@ export namespace ec2 {
      * ```
      * <!--End PulumiCodeChooser -->
      *
+     * ### VPC Lattice Resource Configuration Endpoint Type
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const example = new aws.ec2.VpcEndpoint("example", {
+     *     resourceConfigurationArn: exampleAwsVpclatticeResourceConfiguration.arn,
+     *     subnetIds: [exampleAwsSubnet.id],
+     *     vpcEndpointType: "Resource",
+     *     vpcId: exampleAwsVpc.id,
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * example = aws.ec2.VpcEndpoint("example",
+     *     resource_configuration_arn=example_aws_vpclattice_resource_configuration["arn"],
+     *     subnet_ids=[example_aws_subnet["id"]],
+     *     vpc_endpoint_type="Resource",
+     *     vpc_id=example_aws_vpc["id"])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var example = new Aws.Ec2.VpcEndpoint("example", new()
+     *     {
+     *         ResourceConfigurationArn = exampleAwsVpclatticeResourceConfiguration.Arn,
+     *         SubnetIds = new[]
+     *         {
+     *             exampleAwsSubnet.Id,
+     *         },
+     *         VpcEndpointType = "Resource",
+     *         VpcId = exampleAwsVpc.Id,
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+     * 			ResourceConfigurationArn: pulumi.Any(exampleAwsVpclatticeResourceConfiguration.Arn),
+     * 			SubnetIds: pulumi.StringArray{
+     * 				exampleAwsSubnet.Id,
+     * 			},
+     * 			VpcEndpointType: pulumi.String("Resource"),
+     * 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+     *             .resourceConfigurationArn(exampleAwsVpclatticeResourceConfiguration.arn())
+     *             .subnetIds(exampleAwsSubnet.id())
+     *             .vpcEndpointType("Resource")
+     *             .vpcId(exampleAwsVpc.id())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   example:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       resourceConfigurationArn: ${exampleAwsVpclatticeResourceConfiguration.arn}
+     *       subnetIds:
+     *         - ${exampleAwsSubnet.id}
+     *       vpcEndpointType: Resource
+     *       vpcId: ${exampleAwsVpc.id}
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
+     * ### VPC Lattice Service Network Endpoint Type
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const example = new aws.ec2.VpcEndpoint("example", {
+     *     serviceNetworkArn: exampleAwsVpclatticeServiceNetwork.arn,
+     *     subnetIds: [exampleAwsSubnet.id],
+     *     vpcEndpointType: "ServiceNetwork",
+     *     vpcId: exampleAwsVpc.id,
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * example = aws.ec2.VpcEndpoint("example",
+     *     service_network_arn=example_aws_vpclattice_service_network["arn"],
+     *     subnet_ids=[example_aws_subnet["id"]],
+     *     vpc_endpoint_type="ServiceNetwork",
+     *     vpc_id=example_aws_vpc["id"])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var example = new Aws.Ec2.VpcEndpoint("example", new()
+     *     {
+     *         ServiceNetworkArn = exampleAwsVpclatticeServiceNetwork.Arn,
+     *         SubnetIds = new[]
+     *         {
+     *             exampleAwsSubnet.Id,
+     *         },
+     *         VpcEndpointType = "ServiceNetwork",
+     *         VpcId = exampleAwsVpc.Id,
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+     * 			ServiceNetworkArn: pulumi.Any(exampleAwsVpclatticeServiceNetwork.Arn),
+     * 			SubnetIds: pulumi.StringArray{
+     * 				exampleAwsSubnet.Id,
+     * 			},
+     * 			VpcEndpointType: pulumi.String("ServiceNetwork"),
+     * 			VpcId:           pulumi.Any(exampleAwsVpc.Id),
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var example = new VpcEndpoint("example", VpcEndpointArgs.builder()
+     *             .serviceNetworkArn(exampleAwsVpclatticeServiceNetwork.arn())
+     *             .subnetIds(exampleAwsSubnet.id())
+     *             .vpcEndpointType("ServiceNetwork")
+     *             .vpcId(exampleAwsVpc.id())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   example:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       serviceNetworkArn: ${exampleAwsVpclatticeServiceNetwork.arn}
+     *       subnetIds:
+     *         - ${exampleAwsSubnet.id}
+     *       vpcEndpointType: ServiceNetwork
+     *       vpcId: ${exampleAwsVpc.id}
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
      * ## Import
      *
      * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
@@ -1153,6 +1416,14 @@ export namespace ec2 {
          */
         privateDnsEnabled?: boolean;
         /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
+         * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         */
+        resourceConfigurationArn?: pulumi.Input<string>;
+        /**
          * One or more route table IDs. Applicable for endpoints of type `Gateway`.
          */
         routeTableIds?: pulumi.Input<pulumi.Input<string>[]>;
@@ -1165,6 +1436,10 @@ export namespace ec2 {
          * The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
          */
         serviceName: string;
+        /**
+         * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resource_configuration_arn`, `service_name` or `service_network_arn` is required.
+         */
+        serviceNetworkArn?: pulumi.Input<string>;
         /**
          * The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
          */
@@ -1182,7 +1457,7 @@ export namespace ec2 {
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
-         * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
+         * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
          */
         vpcEndpointType?: pulumi.Input<string>;
     }
@@ -1256,6 +1531,10 @@ export namespace ecs {
          */
         cpu?: pulumi.Input<string>;
         /**
+         * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+         */
+        enableFaultInjection?: pulumi.Input<boolean>;
+        /**
          * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          */
         ephemeralStorage?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionEphemeralStorage>;
@@ -1268,10 +1547,6 @@ export namespace ecs {
          * An optional unique name for your task definition. If not specified, then a default will be created.
          */
         family?: pulumi.Input<string>;
-        /**
-         * Configuration block(s) with Inference Accelerators settings. Detailed below.
-         */
-        inferenceAccelerators?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
         /**
          * IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
          */
@@ -1302,6 +1577,10 @@ export namespace ecs {
          */
         proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
         /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
          * Configuration block for runtime_platform that containers in your task may use.
          */
         runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
@@ -1324,6 +1603,10 @@ export namespace ecs {
         trackLatest?: pulumi.Input<boolean>;
         /**
          * Configuration block for volumes that containers in your task may use. Detailed below.
+         *
+         * > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+         *
+         * > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
          */
         volumes?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionVolume>[]>;
     }
@@ -1353,6 +1636,10 @@ export namespace ecs {
          */
         cpu?: pulumi.Input<string>;
         /**
+         * Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+         */
+        enableFaultInjection?: pulumi.Input<boolean>;
+        /**
          * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          */
         ephemeralStorage?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionEphemeralStorage>;
@@ -1365,10 +1652,6 @@ export namespace ecs {
          * An optional unique name for your task definition. If not specified, then a default will be created.
          */
         family?: pulumi.Input<string>;
-        /**
-         * Configuration block(s) with Inference Accelerators settings. Detailed below.
-         */
-        inferenceAccelerators?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
         /**
          * IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
          */
@@ -1395,6 +1678,10 @@ export namespace ecs {
          */
         proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
         /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
          * Configuration block for runtime_platform that containers in your task may use.
          */
         runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
@@ -1417,6 +1704,10 @@ export namespace ecs {
         trackLatest?: pulumi.Input<boolean>;
         /**
          * Configuration block for volumes that containers in your task may use. Detailed below.
+         *
+         * > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\"` in the JSON,  e.g., `"value": "I \"love\" escaped quotes"`. If using a variable value, they should be escaped as `\\\"` in the variable, e.g., `value = "I \\\"love\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+         *
+         * > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
          */
         volumes?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionVolume>[]>;
     }
@@ -1696,7 +1987,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1760,7 +2051,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("443")
+     *             .port(443)
      *             .protocol("HTTPS")
      *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -1864,7 +2155,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1915,7 +2206,7 @@ export namespace lb {
      *     public static void stack(Context ctx) {
      *         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
      *             .loadBalancerArn(frontEndAwsLb.arn())
-     *             .port("443")
+     *             .port(443)
      *             .protocol("TLS")
      *             .sslPolicy("ELBSecurityPolicy-2016-08")
      *             .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
@@ -2023,7 +2314,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2083,7 +2374,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .type("redirect")
@@ -2195,7 +2486,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2255,7 +2546,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .type("fixed-response")
@@ -2400,8 +2691,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cognito"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2493,7 +2784,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(            
      *                 ListenerDefaultActionArgs.builder()
@@ -2651,7 +2942,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2725,7 +3016,7 @@ export namespace lb {
      *
      *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
-     *             .port("80")
+     *             .port(80)
      *             .protocol("HTTP")
      *             .defaultActions(            
      *                 ListenerDefaultActionArgs.builder()
@@ -2888,7 +3179,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2977,7 +3268,7 @@ export namespace lb {
      *             .protocol("GENEVE")
      *             .vpcId(exampleAwsVpc.id())
      *             .healthCheck(TargetGroupHealthCheckArgs.builder()
-     *                 .port(80)
+     *                 .port("80")
      *                 .protocol("HTTP")
      *                 .build())
      *             .build());
@@ -3101,7 +3392,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3241,6 +3532,86 @@ export namespace lb {
          */
         protocol?: pulumi.Input<string>;
         /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Issuer` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertIssuerHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Leaf` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertLeafHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Serial-Number` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSerialNumberHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Subject` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertSubjectHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Mtls-Clientcert-Validity` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznMtlsClientcertValidityHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Cipher-Suite` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsCipherSuiteHeaderName?: pulumi.Input<string>;
+        /**
+         * Enables you to modify the header name of the `X-Amzn-Tls-Version` HTTP request header. Can only be set if protocol is `HTTPS` for Application Load Balancers.
+         */
+        routingHttpRequestXAmznTlsVersionHeaderName?: pulumi.Input<string>;
+        /**
+         * Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.
+         */
+        routingHttpResponseAccessControlAllowCredentialsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which headers can be used during the request. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Accept`, `Accept-Language`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, `Pragma`. Dependent on your use-case other headers can be exposed and then set as a value consult the Access-Control-Allow-Headers documentation.
+         */
+        routingHttpResponseAccessControlAllowHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Set which HTTP methods are allowed when accessing the server from a different origin. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `GET`, `HEAD`, `POST`, `DELETE`, `CONNECT`, `OPTIONS`, `TRACE` or `PATCH`.
+         */
+        routingHttpResponseAccessControlAllowMethodsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies which origins are allowed to access the server. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. A valid value is a URI, eg: `https://example.com`.
+         */
+        routingHttpResponseAccessControlAllowOriginHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies whether the browser should include credentials such as cookies or authentication when making requests. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `*`, `Cache-Control`, `Content-Language`, `Content-Length`, `Content-Type`, `Expires`, `Last-Modified`, or `Pragma`. Dependent on your use-case other headers can be exposed, consult the Access-Control-Expose-Headers documentation.
+         */
+        routingHttpResponseAccessControlExposeHeadersHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.
+         */
+        routingHttpResponseAccessControlMaxAgeHeaderValue?: pulumi.Input<string>;
+        /**
+         * Specifies restrictions enforced by the browser to help minimize the risk of certain types of security threats. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Values for this are extensive, and can be impactful when set, consult Content-Security-Policy documentation.
+         */
+        routingHttpResponseContentSecurityPolicyHeaderValue?: pulumi.Input<string>;
+        /**
+         * Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.
+         */
+        routingHttpResponseServerEnabled?: pulumi.Input<boolean>;
+        /**
+         * Informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. Default values are `max-age=31536000; includeSubDomains; preload` consult the Strict-Transport-Security documentation for further details.
+         */
+        routingHttpResponseStrictTransportSecurityHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.
+         */
+        routingHttpResponseXContentTypeOptionsHeaderValue?: pulumi.Input<string>;
+        /**
+         * Indicates whether the browser is allowed to render a page in a frame, iframe, embed or object. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid values are `DENY`, `SAMEORIGIN`, or `ALLOW-FROM https://example.com`.
+         */
+        routingHttpResponseXFrameOptionsHeaderValue?: pulumi.Input<string>;
+        /**
          * Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
          */
         sslPolicy?: pulumi.Input<string>;
@@ -3316,8 +3687,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3451,8 +3822,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3573,7 +3944,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3678,7 +4049,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3802,7 +4173,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3954,7 +4325,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -4018,7 +4389,7 @@ export namespace lb {
      *                     .minimumHealthyTargetsPercentage("off")
      *                     .build())
      *                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-     *                     .minimumHealthyTargetsCount("1")
+     *                     .minimumHealthyTargetsCount(1)
      *                     .minimumHealthyTargetsPercentage("off")
      *                     .build())
      *                 .build())
@@ -4118,6 +4489,10 @@ export namespace lb {
          * Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
          */
         proxyProtocolV2?: pulumi.Input<boolean>;
+        /**
+         * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         */
+        region?: pulumi.Input<string>;
         /**
          * Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
          */

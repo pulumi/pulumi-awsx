@@ -70,8 +70,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -205,8 +205,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -327,7 +327,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -432,7 +432,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -556,7 +556,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -708,7 +708,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -772,7 +772,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///                     .minimumHealthyTargetsPercentage("off")
     ///                     .build())
     ///                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-    ///                     .minimumHealthyTargetsCount("1")
+    ///                     .minimumHealthyTargetsCount(1)
     ///                     .minimumHealthyTargetsPercentage("off")
     ///                     .build())
     ///                 .build())
@@ -902,6 +902,12 @@ namespace Pulumi.Awsx.Lb.Inputs
         /// </summary>
         [Input("proxyProtocolV2")]
         public Input<bool>? ProxyProtocolV2 { get; set; }
+
+        /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
 
         /// <summary>
         /// Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.

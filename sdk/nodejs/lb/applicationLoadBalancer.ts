@@ -79,11 +79,14 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
+            resourceInputs["ipamPools"] = args ? args.ipamPools : undefined;
             resourceInputs["listener"] = args ? args.listener : undefined;
             resourceInputs["listeners"] = args ? args.listeners : undefined;
+            resourceInputs["minimumLoadBalancerCapacity"] = args ? args.minimumLoadBalancerCapacity : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
             resourceInputs["preserveHostHeader"] = args ? args.preserveHostHeader : undefined;
+            resourceInputs["region"] = args ? args.region : undefined;
             resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
@@ -189,6 +192,10 @@ export interface ApplicationLoadBalancerArgs {
      */
     ipAddressType?: pulumi.Input<string>;
     /**
+     * . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+     */
+    ipamPools?: pulumi.Input<pulumiAws.types.input.lb.LoadBalancerIpamPools>;
+    /**
      * A listener to create. Only one of [listener] and [listeners] can be specified.
      */
     listener?: inputs.lb.ListenerArgs;
@@ -196,6 +203,10 @@ export interface ApplicationLoadBalancerArgs {
      * List of listeners to create. Only one of [listener] and [listeners] can be specified.
      */
     listeners?: inputs.lb.ListenerArgs[];
+    /**
+     * Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+     */
+    minimumLoadBalancerCapacity?: pulumi.Input<pulumiAws.types.input.lb.LoadBalancerMinimumLoadBalancerCapacity>;
     /**
      * Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
      */
@@ -208,6 +219,10 @@ export interface ApplicationLoadBalancerArgs {
      * Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
      */
     preserveHostHeader?: pulumi.Input<boolean>;
+    /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     */
+    region?: pulumi.Input<string>;
     /**
      * List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
      */
@@ -230,6 +245,10 @@ export interface ApplicationLoadBalancerArgs {
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+     *
+     * > **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+     *
+     * > **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
      */
     xffHeaderProcessingMode?: pulumi.Input<string>;
 }
