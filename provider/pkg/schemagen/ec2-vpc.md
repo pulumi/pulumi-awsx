@@ -51,7 +51,7 @@ return await Deployment.RunAsync(() =>
 package main
 
 import (
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/ec2"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

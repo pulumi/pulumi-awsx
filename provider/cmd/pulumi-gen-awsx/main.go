@@ -31,8 +31,8 @@ import (
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 
-	gen "github.com/pulumi/pulumi-awsx/provider/v2/pkg/schemagen"
-	"github.com/pulumi/pulumi-awsx/provider/v2/pkg/version"
+	gen "github.com/pulumi/pulumi-awsx/provider/v3/pkg/schemagen"
+	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/version"
 )
 
 const (

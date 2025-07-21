@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-awsx/sdk/v2
+module github.com/pulumi/pulumi-awsx/sdk/v3
 
 go 1.23.0
 

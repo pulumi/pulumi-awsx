@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"errors"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -22,7 +22,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/ecr"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecr"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
