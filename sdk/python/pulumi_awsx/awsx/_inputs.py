@@ -907,7 +907,7 @@ if not MYPY:
         """
         log_group_class: NotRequired[pulumi.Input[builtins.str]]
         """
-        Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
         """
         name: NotRequired[pulumi.Input[builtins.str]]
         """
@@ -925,7 +925,7 @@ if not MYPY:
         """
         Specifies the number of days
         you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        If you select 0, the events in the log group are always retained and never expire.
+        If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
         """
         skip_destroy: NotRequired[pulumi.Input[builtins.bool]]
         """
@@ -954,13 +954,13 @@ class LogGroupArgs:
         :param pulumi.Input[builtins.str] kms_key_id: The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
                AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
                permissions for the CMK whenever the encrypted data is requested.
-        :param pulumi.Input[builtins.str] log_group_class: Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        :param pulumi.Input[builtins.str] log_group_class: Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
         :param pulumi.Input[builtins.str] name: The name of the log group. If omitted, this provider will assign a random, unique name.
         :param pulumi.Input[builtins.str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param pulumi.Input[builtins.int] retention_in_days: Specifies the number of days
                you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-               If you select 0, the events in the log group are always retained and never expire.
+               If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
         :param pulumi.Input[builtins.bool] skip_destroy: Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
@@ -999,7 +999,7 @@ class LogGroupArgs:
     @pulumi.getter(name="logGroupClass")
     def log_group_class(self) -> Optional[pulumi.Input[builtins.str]]:
         """
-        Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
         """
         return pulumi.get(self, "log_group_class")
 
@@ -1049,7 +1049,7 @@ class LogGroupArgs:
         """
         Specifies the number of days
         you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        If you select 0, the events in the log group are always retained and never expire.
+        If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
         """
         return pulumi.get(self, "retention_in_days")
 

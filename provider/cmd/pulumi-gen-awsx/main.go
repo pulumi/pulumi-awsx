@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -163,6 +164,36 @@ func genPython(pkg *schema.Package, outdir string) error {
 
 func genNodejs(pkg *schema.Package, outdir string) error {
 	extraFiles := map[string][]byte{}
+	root := filepath.Join(outdir, "..", "..", "awsx-classic")
+	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if info.Name() == "index.ts" || !strings.HasSuffix(info.Name(), ".ts") {
+			return nil
+		}
+		for _, s := range []string{"/tests/", "/node_modules/", "/bin/"} {
+			if strings.Contains(path, s) {
+				return nil
+			}
+		}
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		extraFiles[filepath.Join("classic", rel)] = content
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	localDependencies := map[string]string{}
 	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies, false, nil)
 	if err != nil {

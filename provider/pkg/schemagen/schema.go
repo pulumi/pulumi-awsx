@@ -57,7 +57,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":             "3.*",
-					"Pulumi.Aws":         "7.0.0-alpha.1",
+					"Pulumi.Aws":         "7.*",
 					"Pulumi.Docker":      "4.*",
 					"Pulumi.DockerBuild": "0.*",
 				},
