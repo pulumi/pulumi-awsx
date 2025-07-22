@@ -72,7 +72,7 @@ function createBucketCloudtrailPolicy(
   );
 }
 
-function defaultCloudTrailPolicy(bucketArn: string): aws.iam.PolicyDocument {
+function defaultCloudTrailPolicy(bucketArn: string): aws.types.input.iam.PolicyDocument {
   return {
     Version: "2012-10-17",
     Statement: [

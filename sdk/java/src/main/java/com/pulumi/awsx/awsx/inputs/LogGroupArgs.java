@@ -42,14 +42,14 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+     * Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
      * 
      */
     @Import(name="logGroupClass")
     private @Nullable Output<String> logGroupClass;
 
     /**
-     * @return Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+     * @return Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
      * 
      */
     public Optional<Output<String>> logGroupClass() {
@@ -87,9 +87,24 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
+    }
+
+    /**
      * Specifies the number of days
      * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-     * If you select 0, the events in the log group are always retained and never expire.
+     * If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
      * 
      */
     @Import(name="retentionInDays")
@@ -98,7 +113,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Specifies the number of days
      * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-     * If you select 0, the events in the log group are always retained and never expire.
+     * If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
      * 
      */
     public Optional<Output<Integer>> retentionInDays() {
@@ -142,6 +157,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         this.logGroupClass = $.logGroupClass;
         this.name = $.name;
         this.namePrefix = $.namePrefix;
+        this.region = $.region;
         this.retentionInDays = $.retentionInDays;
         this.skipDestroy = $.skipDestroy;
         this.tags = $.tags;
@@ -191,7 +207,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param logGroupClass Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+         * @param logGroupClass Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
          * 
          * @return builder
          * 
@@ -202,7 +218,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param logGroupClass Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+         * @param logGroupClass Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
          * 
          * @return builder
          * 
@@ -254,9 +270,30 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
+        }
+
+        /**
          * @param retentionInDays Specifies the number of days
          * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-         * If you select 0, the events in the log group are always retained and never expire.
+         * If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
          * 
          * @return builder
          * 
@@ -269,7 +306,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param retentionInDays Specifies the number of days
          * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-         * If you select 0, the events in the log group are always retained and never expire.
+         * If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
          * 
          * @return builder
          * 

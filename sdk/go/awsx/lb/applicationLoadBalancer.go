@@ -7,10 +7,10 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/awsx"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -90,16 +90,22 @@ type applicationLoadBalancerArgs struct {
 	Internal *bool `pulumi:"internal"`
 	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType *string `pulumi:"ipAddressType"`
+	// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+	IpamPools *lb.LoadBalancerIpamPools `pulumi:"ipamPools"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
 	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
 	Listeners []Listener `pulumi:"listeners"`
+	// Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+	MinimumLoadBalancerCapacity *lb.LoadBalancerMinimumLoadBalancerCapacity `pulumi:"minimumLoadBalancerCapacity"`
 	// Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
 	Name *string `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader *bool `pulumi:"preserveHostHeader"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region *string `pulumi:"region"`
 	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups []string `pulumi:"securityGroups"`
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
@@ -111,6 +117,10 @@ type applicationLoadBalancerArgs struct {
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+	//
+	// > **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+	//
+	// > **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
 	XffHeaderProcessingMode *string `pulumi:"xffHeaderProcessingMode"`
 }
 
@@ -156,16 +166,22 @@ type ApplicationLoadBalancerArgs struct {
 	Internal pulumi.BoolPtrInput
 	// Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
 	IpAddressType pulumi.StringPtrInput
+	// . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+	IpamPools lb.LoadBalancerIpamPoolsPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs
 	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
 	Listeners []ListenerArgs
+	// Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+	MinimumLoadBalancerCapacity lb.LoadBalancerMinimumLoadBalancerCapacityPtrInput
 	// Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
 	Name pulumi.StringPtrInput
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix pulumi.StringPtrInput
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader pulumi.BoolPtrInput
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region pulumi.StringPtrInput
 	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups pulumi.StringArrayInput
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
@@ -177,6 +193,10 @@ type ApplicationLoadBalancerArgs struct {
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+	//
+	// > **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+	//
+	// > **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
 	XffHeaderProcessingMode pulumi.StringPtrInput
 }
 

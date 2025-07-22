@@ -30,7 +30,7 @@ registry_image = awsx.ecr.RegistryImage("registry_image",
 package main
 
 import (
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/ecr"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecr"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

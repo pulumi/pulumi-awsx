@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-awsx/provider/v2
+module github.com/pulumi/pulumi-awsx/provider/v3
 
 go 1.23
 

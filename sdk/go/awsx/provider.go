@@ -7,7 +7,7 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

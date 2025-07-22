@@ -24,7 +24,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
-        /// Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        /// Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
         /// </summary>
         [Input("logGroupClass")]
         public Input<string>? LogGroupClass { get; set; }
@@ -42,9 +42,15 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<string>? NamePrefix { get; set; }
 
         /// <summary>
+        /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        /// <summary>
         /// Specifies the number of days
         /// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        /// If you select 0, the events in the log group are always retained and never expire.
+        /// If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
         /// </summary>
         [Input("retentionInDays")]
         public Input<int>? RetentionInDays { get; set; }

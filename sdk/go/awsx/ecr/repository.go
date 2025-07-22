@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecr"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecr"
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -56,6 +56,8 @@ type repositoryArgs struct {
 	LifecyclePolicy *LifecyclePolicy `pulumi:"lifecyclePolicy"`
 	// Name of the repository.
 	Name *string `pulumi:"name"`
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region *string `pulumi:"region"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
@@ -75,6 +77,8 @@ type RepositoryArgs struct {
 	LifecyclePolicy *LifecyclePolicyArgs
 	// Name of the repository.
 	Name pulumi.StringPtrInput
+	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+	Region pulumi.StringPtrInput
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }

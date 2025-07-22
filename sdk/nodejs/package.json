@@ -1,6 +1,6 @@
 {
     "name": "@pulumi/awsx",
-    "version": "2.0.0-alpha.0+dev",
+    "version": "3.0.0-alpha.0+dev",
     "keywords": [
         "pulumi",
         "aws",
@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "@aws-sdk/client-ecs": "^3.405.0",
-        "@pulumi/aws": "^6.66.3",
+        "@pulumi/aws": "^7.0.0",
         "@pulumi/docker": "^4.6.0",
         "@pulumi/docker-build": "^0.0.8",
         "@pulumi/pulumi": "^3.142.0",
@@ -32,6 +32,6 @@
     "pulumi": {
         "resource": true,
         "name": "awsx",
-        "version": "2.0.0-alpha.0+dev"
+        "version": "3.0.0-alpha.0+dev"
     }
 }

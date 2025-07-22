@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://pulumi.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pulumi/pulumi-awsx</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>2.0.0-alpha.0+dev</Version>
+    <Version>3.0.0-alpha.0+dev</Version>
 
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -46,7 +46,7 @@
 
   <ItemGroup>
     <PackageReference Include="Pulumi" Version="3.*" />
-    <PackageReference Include="Pulumi.Aws" Version="6.*" ExcludeAssets="contentFiles" />
+    <PackageReference Include="Pulumi.Aws" Version="7.*" ExcludeAssets="contentFiles" />
     <PackageReference Include="Pulumi.Docker" Version="4.*" ExcludeAssets="contentFiles" />
     <PackageReference Include="Pulumi.DockerBuild" Version="0.*" ExcludeAssets="contentFiles" />
   </ItemGroup>

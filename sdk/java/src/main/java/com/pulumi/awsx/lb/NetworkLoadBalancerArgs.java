@@ -6,6 +6,8 @@ package com.pulumi.awsx.lb;
 import com.pulumi.aws.ec2.Subnet;
 import com.pulumi.aws.lb.inputs.LoadBalancerAccessLogsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerConnectionLogsArgs;
+import com.pulumi.aws.lb.inputs.LoadBalancerIpamPoolsArgs;
+import com.pulumi.aws.lb.inputs.LoadBalancerMinimumLoadBalancerCapacityArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;
 import com.pulumi.awsx.lb.inputs.ListenerArgs;
 import com.pulumi.awsx.lb.inputs.TargetGroupArgs;
@@ -311,6 +313,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
+     * . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+     * 
+     */
+    @Import(name="ipamPools")
+    private @Nullable Output<LoadBalancerIpamPoolsArgs> ipamPools;
+
+    /**
+     * @return . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+     * 
+     */
+    public Optional<Output<LoadBalancerIpamPoolsArgs>> ipamPools() {
+        return Optional.ofNullable(this.ipamPools);
+    }
+
+    /**
      * A listener to create. Only one of [listener] and [listeners] can be specified.
      * 
      */
@@ -338,6 +355,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
      */
     public Optional<List<ListenerArgs>> listeners() {
         return Optional.ofNullable(this.listeners);
+    }
+
+    /**
+     * Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+     * 
+     */
+    @Import(name="minimumLoadBalancerCapacity")
+    private @Nullable Output<LoadBalancerMinimumLoadBalancerCapacityArgs> minimumLoadBalancerCapacity;
+
+    /**
+     * @return Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+     * 
+     */
+    public Optional<Output<LoadBalancerMinimumLoadBalancerCapacityArgs>> minimumLoadBalancerCapacity() {
+        return Optional.ofNullable(this.minimumLoadBalancerCapacity);
     }
 
     /**
@@ -383,6 +415,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
      */
     public Optional<Output<Boolean>> preserveHostHeader() {
         return Optional.ofNullable(this.preserveHostHeader);
+    }
+
+    /**
+     * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    @Import(name="region")
+    private @Nullable Output<String> region;
+
+    /**
+     * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+     * 
+     */
+    public Optional<Output<String>> region() {
+        return Optional.ofNullable(this.region);
     }
 
     /**
@@ -463,12 +510,20 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     /**
      * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
      * 
+     * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+     * 
+     * &gt; **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
+     * 
      */
     @Import(name="xffHeaderProcessingMode")
     private @Nullable Output<String> xffHeaderProcessingMode;
 
     /**
      * @return Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+     * 
+     * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+     * 
+     * &gt; **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
      * 
      */
     public Optional<Output<String>> xffHeaderProcessingMode() {
@@ -497,11 +552,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.idleTimeout = $.idleTimeout;
         this.internal = $.internal;
         this.ipAddressType = $.ipAddressType;
+        this.ipamPools = $.ipamPools;
         this.listener = $.listener;
         this.listeners = $.listeners;
+        this.minimumLoadBalancerCapacity = $.minimumLoadBalancerCapacity;
         this.name = $.name;
         this.namePrefix = $.namePrefix;
         this.preserveHostHeader = $.preserveHostHeader;
+        this.region = $.region;
         this.securityGroups = $.securityGroups;
         this.subnetIds = $.subnetIds;
         this.subnetMappings = $.subnetMappings;
@@ -918,6 +976,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
+         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ipamPools(@Nullable Output<LoadBalancerIpamPoolsArgs> ipamPools) {
+            $.ipamPools = ipamPools;
+            return this;
+        }
+
+        /**
+         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ipamPools(LoadBalancerIpamPoolsArgs ipamPools) {
+            return ipamPools(Output.of(ipamPools));
+        }
+
+        /**
          * @param listener A listener to create. Only one of [listener] and [listeners] can be specified.
          * 
          * @return builder
@@ -947,6 +1026,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder listeners(ListenerArgs... listeners) {
             return listeners(List.of(listeners));
+        }
+
+        /**
+         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder minimumLoadBalancerCapacity(@Nullable Output<LoadBalancerMinimumLoadBalancerCapacityArgs> minimumLoadBalancerCapacity) {
+            $.minimumLoadBalancerCapacity = minimumLoadBalancerCapacity;
+            return this;
+        }
+
+        /**
+         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder minimumLoadBalancerCapacity(LoadBalancerMinimumLoadBalancerCapacityArgs minimumLoadBalancerCapacity) {
+            return minimumLoadBalancerCapacity(Output.of(minimumLoadBalancerCapacity));
         }
 
         /**
@@ -1010,6 +1110,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder preserveHostHeader(Boolean preserveHostHeader) {
             return preserveHostHeader(Output.of(preserveHostHeader));
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(@Nullable Output<String> region) {
+            $.region = region;
+            return this;
+        }
+
+        /**
+         * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder region(String region) {
+            return region(Output.of(region));
         }
 
         /**
@@ -1160,6 +1281,10 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         /**
          * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
          * 
+         * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+         * 
+         * &gt; **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
+         * 
          * @return builder
          * 
          */
@@ -1170,6 +1295,10 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
 
         /**
          * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+         * 
+         * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ip_address_type`. You can only change to `dualstack` `ip_address_type` if the selected subnets are IPv6 enabled.
+         * 
+         * &gt; **NOTE:** Please note that one of either `subnets` or `subnet_mapping` is required.
          * 
          * @return builder
          * 
