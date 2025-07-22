@@ -32,4 +32,4 @@ releaseVerification:
   nodejs: examples/vpc/nodejs/default-args
   python: examples/cloudtrail/python
   dotnet: examples/cloudtrail/dotnet
-  go: examples/release-verification/go
+  go: examples/cloudtrail/go

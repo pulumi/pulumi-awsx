@@ -5,11 +5,9 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/pulumi/pulumi-awsx/sdk/v3 v3.0.0
+	github.com/pulumi/pulumi-awsx/sdk/v2 v2.4.0
 	github.com/pulumi/pulumi/sdk/v3 v3.175.0
 )
-
-replace github.com/pulumi/pulumi-awsx/sdk/v3 => ../../../sdk
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
@@ -31,6 +29,7 @@ require (
 	github.com/cyphar/filepath-securejoin v0.3.6 // indirect
 	github.com/djherbis/times v1.5.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
+	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.1 // indirect
 	github.com/go-git/go-git/v5 v5.13.1 // indirect
@@ -63,8 +62,7 @@ require (
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.14.2 // indirect
-	github.com/pulumi/pulumi-aws/sdk/v7 v7.0.0 // indirect
-	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3 // indirect
+	github.com/pulumi/pulumi-aws/sdk/v6 v6.9.0 // indirect
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
@@ -74,6 +72,7 @@ require (
 	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
@@ -95,4 +94,5 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/frand v1.4.2 // indirect
+	pgregory.net/rapid v1.1.0 // indirect
 )
