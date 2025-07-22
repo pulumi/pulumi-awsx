@@ -130,6 +130,6 @@ jobs:
         if: inputs.skipGoSdk == false
         with:
           runtime: go
-          directory: examples/cloudtrail/go
+          directory: examples/release-verification/go
           provider: awsx
           providerVersion: ${{ inputs.providerVersion }}
