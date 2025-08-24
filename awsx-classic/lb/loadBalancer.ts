@@ -158,8 +158,7 @@ export interface LoadBalancerArgs {
     tags?: pulumi.Input<aws.Tags>;
 
     /**
-     * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
-     * `application`.
+     * A list of security group IDs to assign to the LB.
      */
     securityGroups?: ec2.SecurityGroupOrId[];
 }
