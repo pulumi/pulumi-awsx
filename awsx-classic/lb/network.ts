@@ -298,6 +298,11 @@ export interface NetworkLoadBalancerArgs {
      * If true, cross-zone load balancing of the load balancer will be enabled.  Defaults to `false`.
      */
     enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
+
+    /**
+     * A list of security group IDs to assign to the LB.
+     */
+    securityGroups?: ec2.SecurityGroupOrId[];
 }
 
 /**
