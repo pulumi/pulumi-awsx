@@ -27,6 +27,7 @@ class RepositoryArgs:
                  force_delete: Optional[pulumi.Input[builtins.bool]] = None,
                  image_scanning_configuration: Optional[pulumi.Input['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']] = None,
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
+                 image_tag_mutability_exclusion_filters: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]] = None,
                  lifecycle_policy: Optional['LifecyclePolicyArgs'] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
                  region: Optional[pulumi.Input[builtins.str]] = None,
@@ -37,7 +38,8 @@ class RepositoryArgs:
         :param pulumi.Input[builtins.bool] force_delete: If `true`, will delete the repository even if it contains images.
                Defaults to `false`.
         :param pulumi.Input['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs'] image_scanning_configuration: Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
-        :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+        :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `IMMUTABLE_WITH_EXCLUSION`, or `MUTABLE_WITH_EXCLUSION`. Defaults to `MUTABLE`.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]] image_tag_mutability_exclusion_filters: Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `image_tag_mutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
         :param 'LifecyclePolicyArgs' lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[builtins.str] name: Name of the repository.
         :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -51,6 +53,8 @@ class RepositoryArgs:
             pulumi.set(__self__, "image_scanning_configuration", image_scanning_configuration)
         if image_tag_mutability is not None:
             pulumi.set(__self__, "image_tag_mutability", image_tag_mutability)
+        if image_tag_mutability_exclusion_filters is not None:
+            pulumi.set(__self__, "image_tag_mutability_exclusion_filters", image_tag_mutability_exclusion_filters)
         if lifecycle_policy is not None:
             pulumi.set(__self__, "lifecycle_policy", lifecycle_policy)
         if name is not None:
@@ -101,13 +105,25 @@ class RepositoryArgs:
     @pulumi.getter(name="imageTagMutability")
     def image_tag_mutability(self) -> Optional[pulumi.Input[builtins.str]]:
         """
-        The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+        The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `IMMUTABLE_WITH_EXCLUSION`, or `MUTABLE_WITH_EXCLUSION`. Defaults to `MUTABLE`.
         """
         return pulumi.get(self, "image_tag_mutability")
 
     @image_tag_mutability.setter
     def image_tag_mutability(self, value: Optional[pulumi.Input[builtins.str]]):
         pulumi.set(self, "image_tag_mutability", value)
+
+    @property
+    @pulumi.getter(name="imageTagMutabilityExclusionFilters")
+    def image_tag_mutability_exclusion_filters(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]]:
+        """
+        Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `image_tag_mutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+        """
+        return pulumi.get(self, "image_tag_mutability_exclusion_filters")
+
+    @image_tag_mutability_exclusion_filters.setter
+    def image_tag_mutability_exclusion_filters(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]]):
+        pulumi.set(self, "image_tag_mutability_exclusion_filters", value)
 
     @property
     @pulumi.getter(name="lifecyclePolicy")
@@ -170,6 +186,7 @@ class Repository(pulumi.ComponentResource):
                  force_delete: Optional[pulumi.Input[builtins.bool]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
+                 image_tag_mutability_exclusion_filters: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]]] = None,
                  lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
                  region: Optional[pulumi.Input[builtins.str]] = None,
@@ -186,7 +203,8 @@ class Repository(pulumi.ComponentResource):
         :param pulumi.Input[builtins.bool] force_delete: If `true`, will delete the repository even if it contains images.
                Defaults to `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']] image_scanning_configuration: Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
-        :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+        :param pulumi.Input[builtins.str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `IMMUTABLE_WITH_EXCLUSION`, or `MUTABLE_WITH_EXCLUSION`. Defaults to `MUTABLE`.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]] image_tag_mutability_exclusion_filters: Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `image_tag_mutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
         :param Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict'] lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[builtins.str] name: Name of the repository.
         :param pulumi.Input[builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -222,6 +240,7 @@ class Repository(pulumi.ComponentResource):
                  force_delete: Optional[pulumi.Input[builtins.bool]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[builtins.str]] = None,
+                 image_tag_mutability_exclusion_filters: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageTagMutabilityExclusionFilterArgs']]]]] = None,
                  lifecycle_policy: Optional[Union['LifecyclePolicyArgs', 'LifecyclePolicyArgsDict']] = None,
                  name: Optional[pulumi.Input[builtins.str]] = None,
                  region: Optional[pulumi.Input[builtins.str]] = None,
@@ -241,6 +260,7 @@ class Repository(pulumi.ComponentResource):
             __props__.__dict__["force_delete"] = force_delete
             __props__.__dict__["image_scanning_configuration"] = image_scanning_configuration
             __props__.__dict__["image_tag_mutability"] = image_tag_mutability
+            __props__.__dict__["image_tag_mutability_exclusion_filters"] = image_tag_mutability_exclusion_filters
             __props__.__dict__["lifecycle_policy"] = lifecycle_policy
             __props__.__dict__["name"] = name
             __props__.__dict__["region"] = region

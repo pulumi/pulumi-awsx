@@ -6,6 +6,7 @@ package com.pulumi.awsx.ecs;
 import com.pulumi.aws.ecs.inputs.ServiceAlarmsArgs;
 import com.pulumi.aws.ecs.inputs.ServiceCapacityProviderStrategyArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentCircuitBreakerArgs;
+import com.pulumi.aws.ecs.inputs.ServiceDeploymentConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentControllerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceLoadBalancerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceNetworkConfigurationArgs;
@@ -120,6 +121,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<ServiceDeploymentCircuitBreakerArgs>> deploymentCircuitBreaker() {
         return Optional.ofNullable(this.deploymentCircuitBreaker);
+    }
+
+    /**
+     * Configuration block for deployment settings. See below.
+     * 
+     */
+    @Import(name="deploymentConfiguration")
+    private @Nullable Output<ServiceDeploymentConfigurationArgs> deploymentConfiguration;
+
+    /**
+     * @return Configuration block for deployment settings. See below.
+     * 
+     */
+    public Optional<Output<ServiceDeploymentConfigurationArgs>> deploymentConfiguration() {
+        return Optional.ofNullable(this.deploymentConfiguration);
     }
 
     /**
@@ -444,6 +460,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+     * 
+     */
+    @Import(name="sigintRollback")
+    private @Nullable Output<Boolean> sigintRollback;
+
+    /**
+     * @return Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+     * 
+     */
+    public Optional<Output<Boolean>> sigintRollback() {
+        return Optional.ofNullable(this.sigintRollback);
+    }
+
+    /**
      * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
@@ -542,6 +573,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
+        this.deploymentConfiguration = $.deploymentConfiguration;
         this.deploymentController = $.deploymentController;
         this.deploymentMaximumPercent = $.deploymentMaximumPercent;
         this.deploymentMinimumHealthyPercent = $.deploymentMinimumHealthyPercent;
@@ -563,6 +595,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.schedulingStrategy = $.schedulingStrategy;
         this.serviceConnectConfiguration = $.serviceConnectConfiguration;
         this.serviceRegistries = $.serviceRegistries;
+        this.sigintRollback = $.sigintRollback;
         this.tags = $.tags;
         this.taskDefinition = $.taskDefinition;
         this.taskDefinitionArgs = $.taskDefinitionArgs;
@@ -723,6 +756,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder deploymentCircuitBreaker(ServiceDeploymentCircuitBreakerArgs deploymentCircuitBreaker) {
             return deploymentCircuitBreaker(Output.of(deploymentCircuitBreaker));
+        }
+
+        /**
+         * @param deploymentConfiguration Configuration block for deployment settings. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder deploymentConfiguration(@Nullable Output<ServiceDeploymentConfigurationArgs> deploymentConfiguration) {
+            $.deploymentConfiguration = deploymentConfiguration;
+            return this;
+        }
+
+        /**
+         * @param deploymentConfiguration Configuration block for deployment settings. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder deploymentConfiguration(ServiceDeploymentConfigurationArgs deploymentConfiguration) {
+            return deploymentConfiguration(Output.of(deploymentConfiguration));
         }
 
         /**
@@ -1200,6 +1254,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder serviceRegistries(ServiceServiceRegistriesArgs serviceRegistries) {
             return serviceRegistries(Output.of(serviceRegistries));
+        }
+
+        /**
+         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder sigintRollback(@Nullable Output<Boolean> sigintRollback) {
+            $.sigintRollback = sigintRollback;
+            return this;
+        }
+
+        /**
+         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder sigintRollback(Boolean sigintRollback) {
+            return sigintRollback(Output.of(sigintRollback));
         }
 
         /**

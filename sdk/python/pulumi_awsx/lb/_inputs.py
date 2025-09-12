@@ -207,6 +207,256 @@ if not MYPY:
         ```
         <!--End PulumiCodeChooser -->
 
+        With weighted target groups:
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const frontEnd = new aws.lb.LoadBalancer("front_end", {});
+        const frontEndBlue = new aws.lb.TargetGroup("front_end_blue", {});
+        const frontEndGreen = new aws.lb.TargetGroup("front_end_green", {});
+        const frontEndListener = new aws.lb.Listener("front_end", {
+            loadBalancerArn: frontEnd.arn,
+            port: 443,
+            protocol: "HTTPS",
+            sslPolicy: "ELBSecurityPolicy-2016-08",
+            certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+            defaultActions: [{
+                type: "forward",
+                forward: {
+                    targetGroups: [
+                        {
+                            arn: frontEndBlue.arn,
+                            weight: 100,
+                        },
+                        {
+                            arn: frontEndGreen.arn,
+                            weight: 0,
+                        },
+                    ],
+                },
+            }],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        front_end = aws.lb.LoadBalancer("front_end")
+        front_end_blue = aws.lb.TargetGroup("front_end_blue")
+        front_end_green = aws.lb.TargetGroup("front_end_green")
+        front_end_listener = aws.lb.Listener("front_end",
+            load_balancer_arn=front_end.arn,
+            port=443,
+            protocol="HTTPS",
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+            default_actions=[{
+                "type": "forward",
+                "forward": {
+                    "target_groups": [
+                        {
+                            "arn": front_end_blue.arn,
+                            "weight": 100,
+                        },
+                        {
+                            "arn": front_end_green.arn,
+                            "weight": 0,
+                        },
+                    ],
+                },
+            }])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var frontEnd = new Aws.LB.LoadBalancer("front_end");
+
+            var frontEndBlue = new Aws.LB.TargetGroup("front_end_blue");
+
+            var frontEndGreen = new Aws.LB.TargetGroup("front_end_green");
+
+            var frontEndListener = new Aws.LB.Listener("front_end", new()
+            {
+                LoadBalancerArn = frontEnd.Arn,
+                Port = 443,
+                Protocol = "HTTPS",
+                SslPolicy = "ELBSecurityPolicy-2016-08",
+                CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "forward",
+                        Forward = new Aws.LB.Inputs.ListenerDefaultActionForwardArgs
+                        {
+                            TargetGroups = new[]
+                            {
+                                new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs
+                                {
+                                    Arn = frontEndBlue.Arn,
+                                    Weight = 100,
+                                },
+                                new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs
+                                {
+                                    Arn = frontEndGreen.Arn,
+                                    Weight = 0,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		frontEnd, err := lb.NewLoadBalancer(ctx, "front_end", nil)
+        		if err != nil {
+        			return err
+        		}
+        		frontEndBlue, err := lb.NewTargetGroup(ctx, "front_end_blue", nil)
+        		if err != nil {
+        			return err
+        		}
+        		frontEndGreen, err := lb.NewTargetGroup(ctx, "front_end_green", nil)
+        		if err != nil {
+        			return err
+        		}
+        		_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
+        			LoadBalancerArn: frontEnd.Arn,
+        			Port:            pulumi.Int(443),
+        			Protocol:        pulumi.String("HTTPS"),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+        			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+        			DefaultActions: lb.ListenerDefaultActionArray{
+        				&lb.ListenerDefaultActionArgs{
+        					Type: pulumi.String("forward"),
+        					Forward: &lb.ListenerDefaultActionForwardArgs{
+        						TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
+        							&lb.ListenerDefaultActionForwardTargetGroupArgs{
+        								Arn:    frontEndBlue.Arn,
+        								Weight: pulumi.Int(100),
+        							},
+        							&lb.ListenerDefaultActionForwardTargetGroupArgs{
+        								Arn:    frontEndGreen.Arn,
+        								Weight: pulumi.Int(0),
+        							},
+        						},
+        					},
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionForwardArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var frontEnd = new LoadBalancer("frontEnd");
+
+                var frontEndBlue = new TargetGroup("frontEndBlue");
+
+                var frontEndGreen = new TargetGroup("frontEndGreen");
+
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
+                    .loadBalancerArn(frontEnd.arn())
+                    .port(443)
+                    .protocol("HTTPS")
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
+                    .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
+                    .defaultActions(ListenerDefaultActionArgs.builder()
+                        .type("forward")
+                        .forward(ListenerDefaultActionForwardArgs.builder()
+                            .targetGroups(                    
+                                ListenerDefaultActionForwardTargetGroupArgs.builder()
+                                    .arn(frontEndBlue.arn())
+                                    .weight(100)
+                                    .build(),
+                                ListenerDefaultActionForwardTargetGroupArgs.builder()
+                                    .arn(frontEndGreen.arn())
+                                    .weight(0)
+                                    .build())
+                            .build())
+                        .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          frontEnd:
+            type: aws:lb:LoadBalancer
+            name: front_end
+          frontEndBlue:
+            type: aws:lb:TargetGroup
+            name: front_end_blue
+          frontEndGreen:
+            type: aws:lb:TargetGroup
+            name: front_end_green
+          frontEndListener:
+            type: aws:lb:Listener
+            name: front_end
+            properties:
+              loadBalancerArn: ${frontEnd.arn}
+              port: '443'
+              protocol: HTTPS
+              sslPolicy: ELBSecurityPolicy-2016-08
+              certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
+              defaultActions:
+                - type: forward
+                  forward:
+                    targetGroups:
+                      - arn: ${frontEndBlue.arn}
+                        weight: 100
+                      - arn: ${frontEndGreen.arn}
+                        weight: 0
+        ```
+        <!--End PulumiCodeChooser -->
+
         To a NLB:
 
         <!--Start PulumiCodeChooser -->
@@ -1956,6 +2206,256 @@ class ListenerArgs:
               defaultActions:
                 - type: forward
                   targetGroupArn: ${frontEndTargetGroup.arn}
+        ```
+        <!--End PulumiCodeChooser -->
+
+        With weighted target groups:
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const frontEnd = new aws.lb.LoadBalancer("front_end", {});
+        const frontEndBlue = new aws.lb.TargetGroup("front_end_blue", {});
+        const frontEndGreen = new aws.lb.TargetGroup("front_end_green", {});
+        const frontEndListener = new aws.lb.Listener("front_end", {
+            loadBalancerArn: frontEnd.arn,
+            port: 443,
+            protocol: "HTTPS",
+            sslPolicy: "ELBSecurityPolicy-2016-08",
+            certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+            defaultActions: [{
+                type: "forward",
+                forward: {
+                    targetGroups: [
+                        {
+                            arn: frontEndBlue.arn,
+                            weight: 100,
+                        },
+                        {
+                            arn: frontEndGreen.arn,
+                            weight: 0,
+                        },
+                    ],
+                },
+            }],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        front_end = aws.lb.LoadBalancer("front_end")
+        front_end_blue = aws.lb.TargetGroup("front_end_blue")
+        front_end_green = aws.lb.TargetGroup("front_end_green")
+        front_end_listener = aws.lb.Listener("front_end",
+            load_balancer_arn=front_end.arn,
+            port=443,
+            protocol="HTTPS",
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+            default_actions=[{
+                "type": "forward",
+                "forward": {
+                    "target_groups": [
+                        {
+                            "arn": front_end_blue.arn,
+                            "weight": 100,
+                        },
+                        {
+                            "arn": front_end_green.arn,
+                            "weight": 0,
+                        },
+                    ],
+                },
+            }])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var frontEnd = new Aws.LB.LoadBalancer("front_end");
+
+            var frontEndBlue = new Aws.LB.TargetGroup("front_end_blue");
+
+            var frontEndGreen = new Aws.LB.TargetGroup("front_end_green");
+
+            var frontEndListener = new Aws.LB.Listener("front_end", new()
+            {
+                LoadBalancerArn = frontEnd.Arn,
+                Port = 443,
+                Protocol = "HTTPS",
+                SslPolicy = "ELBSecurityPolicy-2016-08",
+                CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "forward",
+                        Forward = new Aws.LB.Inputs.ListenerDefaultActionForwardArgs
+                        {
+                            TargetGroups = new[]
+                            {
+                                new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs
+                                {
+                                    Arn = frontEndBlue.Arn,
+                                    Weight = 100,
+                                },
+                                new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs
+                                {
+                                    Arn = frontEndGreen.Arn,
+                                    Weight = 0,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		frontEnd, err := lb.NewLoadBalancer(ctx, "front_end", nil)
+        		if err != nil {
+        			return err
+        		}
+        		frontEndBlue, err := lb.NewTargetGroup(ctx, "front_end_blue", nil)
+        		if err != nil {
+        			return err
+        		}
+        		frontEndGreen, err := lb.NewTargetGroup(ctx, "front_end_green", nil)
+        		if err != nil {
+        			return err
+        		}
+        		_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
+        			LoadBalancerArn: frontEnd.Arn,
+        			Port:            pulumi.Int(443),
+        			Protocol:        pulumi.String("HTTPS"),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+        			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+        			DefaultActions: lb.ListenerDefaultActionArray{
+        				&lb.ListenerDefaultActionArgs{
+        					Type: pulumi.String("forward"),
+        					Forward: &lb.ListenerDefaultActionForwardArgs{
+        						TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
+        							&lb.ListenerDefaultActionForwardTargetGroupArgs{
+        								Arn:    frontEndBlue.Arn,
+        								Weight: pulumi.Int(100),
+        							},
+        							&lb.ListenerDefaultActionForwardTargetGroupArgs{
+        								Arn:    frontEndGreen.Arn,
+        								Weight: pulumi.Int(0),
+        							},
+        						},
+        					},
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionForwardArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var frontEnd = new LoadBalancer("frontEnd");
+
+                var frontEndBlue = new TargetGroup("frontEndBlue");
+
+                var frontEndGreen = new TargetGroup("frontEndGreen");
+
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
+                    .loadBalancerArn(frontEnd.arn())
+                    .port(443)
+                    .protocol("HTTPS")
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
+                    .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
+                    .defaultActions(ListenerDefaultActionArgs.builder()
+                        .type("forward")
+                        .forward(ListenerDefaultActionForwardArgs.builder()
+                            .targetGroups(                    
+                                ListenerDefaultActionForwardTargetGroupArgs.builder()
+                                    .arn(frontEndBlue.arn())
+                                    .weight(100)
+                                    .build(),
+                                ListenerDefaultActionForwardTargetGroupArgs.builder()
+                                    .arn(frontEndGreen.arn())
+                                    .weight(0)
+                                    .build())
+                            .build())
+                        .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          frontEnd:
+            type: aws:lb:LoadBalancer
+            name: front_end
+          frontEndBlue:
+            type: aws:lb:TargetGroup
+            name: front_end_blue
+          frontEndGreen:
+            type: aws:lb:TargetGroup
+            name: front_end_green
+          frontEndListener:
+            type: aws:lb:Listener
+            name: front_end
+            properties:
+              loadBalancerArn: ${frontEnd.arn}
+              port: '443'
+              protocol: HTTPS
+              sslPolicy: ELBSecurityPolicy-2016-08
+              certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
+              defaultActions:
+                - type: forward
+                  forward:
+                    targetGroups:
+                      - arn: ${frontEndBlue.arn}
+                        weight: 100
+                      - arn: ${frontEndGreen.arn}
+                        weight: 0
         ```
         <!--End PulumiCodeChooser -->
 

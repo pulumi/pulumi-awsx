@@ -18,10 +18,21 @@ jobs:
 
   upgrade-aws:
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+
+      - env:
+          ESC_ACTION_ENVIRONMENT: imports/github-secrets
+          ESC_ACTION_OIDC_AUTH: "true"
+          ESC_ACTION_OIDC_ORGANIZATION: pulumi
+          ESC_ACTION_OIDC_REQUESTED_TOKEN_TYPE: urn:pulumi:token-type:access_token:organization
+          ESC_ACTION_EXPORT_ENVIRONMENT_VARIABLES: "false"
+        id: esc-secrets
+        name: Fetch secrets from ESC
+        uses: pulumi/esc-action@9eb774255b1a4afb7855678ae8d4a77359da0d9b
 
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
@@ -64,7 +75,7 @@ jobs:
       - name: Create a Pull Request
         if: steps.upgrade.outputs.changes != 0
         env:
-          GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+          GH_TOKEN: ${{ steps.esc-secrets.outputs.PULUMI_BOT_TOKEN }}
           PULUMI_AWS_VERSION: ${{ steps.upgrade.outputs.version }}
         run: |
           branch="update-pulumi-aws/$PULUMI_AWS_VERSION-${{ github.run_id }}-${{ github.run_number }}"

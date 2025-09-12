@@ -54,6 +54,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
+            resourceInputs["deploymentConfiguration"] = args ? args.deploymentConfiguration : undefined;
             resourceInputs["deploymentController"] = args ? args.deploymentController : undefined;
             resourceInputs["deploymentMaximumPercent"] = args ? args.deploymentMaximumPercent : undefined;
             resourceInputs["deploymentMinimumHealthyPercent"] = args ? args.deploymentMinimumHealthyPercent : undefined;
@@ -75,6 +76,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["schedulingStrategy"] = args ? args.schedulingStrategy : undefined;
             resourceInputs["serviceConnectConfiguration"] = args ? args.serviceConnectConfiguration : undefined;
             resourceInputs["serviceRegistries"] = args ? args.serviceRegistries : undefined;
+            resourceInputs["sigintRollback"] = args ? args.sigintRollback : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
@@ -119,6 +121,10 @@ export interface EC2ServiceArgs {
      * Configuration block for deployment circuit breaker. See below.
      */
     deploymentCircuitBreaker?: pulumi.Input<pulumiAws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
+    /**
+     * Configuration block for deployment settings. See below.
+     */
+    deploymentConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceDeploymentConfiguration>;
     /**
      * Configuration block for deployment controller configuration. See below.
      */
@@ -206,6 +212,10 @@ export interface EC2ServiceArgs {
      * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
      */
     serviceRegistries?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceRegistries>;
+    /**
+     * Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+     */
+    sigintRollback?: pulumi.Input<boolean>;
     /**
      * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

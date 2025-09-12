@@ -57,6 +57,7 @@ export class Repository extends pulumi.ComponentResource {
             resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
             resourceInputs["imageScanningConfiguration"] = args ? args.imageScanningConfiguration : undefined;
             resourceInputs["imageTagMutability"] = args ? args.imageTagMutability : undefined;
+            resourceInputs["imageTagMutabilityExclusionFilters"] = args ? args.imageTagMutabilityExclusionFilters : undefined;
             resourceInputs["lifecyclePolicy"] = args ? args.lifecyclePolicy : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["region"] = args ? args.region : undefined;
@@ -91,9 +92,13 @@ export interface RepositoryArgs {
      */
     imageScanningConfiguration?: pulumi.Input<pulumiAws.types.input.ecr.RepositoryImageScanningConfiguration>;
     /**
-     * The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+     * The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `IMMUTABLE_WITH_EXCLUSION`, or `MUTABLE_WITH_EXCLUSION`. Defaults to `MUTABLE`.
      */
     imageTagMutability?: pulumi.Input<string>;
+    /**
+     * Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `image_tag_mutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+     */
+    imageTagMutabilityExclusionFilters?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecr.RepositoryImageTagMutabilityExclusionFilter>[]>;
     /**
      * A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
      */

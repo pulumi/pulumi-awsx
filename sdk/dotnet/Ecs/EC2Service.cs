@@ -99,6 +99,12 @@ namespace Pulumi.Awsx.Ecs
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceDeploymentCircuitBreakerArgs>? DeploymentCircuitBreaker { get; set; }
 
         /// <summary>
+        /// Configuration block for deployment settings. See below.
+        /// </summary>
+        [Input("deploymentConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceDeploymentConfigurationArgs>? DeploymentConfiguration { get; set; }
+
+        /// <summary>
         /// Configuration block for deployment controller configuration. See below.
         /// </summary>
         [Input("deploymentController")]
@@ -244,6 +250,12 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("serviceRegistries")]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceRegistriesArgs>? ServiceRegistries { get; set; }
+
+        /// <summary>
+        /// Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+        /// </summary>
+        [Input("sigintRollback")]
+        public Input<bool>? SigintRollback { get; set; }
 
         [Input("tags")]
         private InputMap<string>? _tags;
