@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "@aws-sdk/client-ecs": "^3.405.0",
-        "@pulumi/aws": "^7.0.0",
+        "@pulumi/aws": "^7.7.0",
         "@pulumi/docker": "^4.6.0",
         "@pulumi/docker-build": "^0.0.8",
         "@pulumi/pulumi": "^3.142.0",

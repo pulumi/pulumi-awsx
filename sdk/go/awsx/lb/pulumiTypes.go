@@ -66,6 +66,67 @@ var _ = internal.GetEnvOrDefault
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// With weighted target groups:
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			frontEnd, err := lb.NewLoadBalancer(ctx, "front_end", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndBlue, err := lb.NewTargetGroup(ctx, "front_end_blue", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndGreen, err := lb.NewTargetGroup(ctx, "front_end_green", nil)
+//			if err != nil {
+//				return err
+//			}
+//			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("forward"),
+//						Forward: &lb.ListenerDefaultActionForwardArgs{
+//							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndBlue.Arn,
+//									Weight: pulumi.Int(100),
+//								},
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndGreen.Arn,
+//									Weight: pulumi.Int(0),
+//								},
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // To a NLB:
 //
 // <!--Start PulumiCodeChooser -->
@@ -540,6 +601,67 @@ type ListenerInput interface {
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
+// With weighted target groups:
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			frontEnd, err := lb.NewLoadBalancer(ctx, "front_end", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndBlue, err := lb.NewTargetGroup(ctx, "front_end_blue", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndGreen, err := lb.NewTargetGroup(ctx, "front_end_green", nil)
+//			if err != nil {
+//				return err
+//			}
+//			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("forward"),
+//						Forward: &lb.ListenerDefaultActionForwardArgs{
+//							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndBlue.Arn,
+//									Weight: pulumi.Int(100),
+//								},
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndGreen.Arn,
+//									Weight: pulumi.Int(0),
+//								},
+//							},
+//						},
 //					},
 //				},
 //			})
@@ -1094,6 +1216,67 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
+// With weighted target groups:
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			frontEnd, err := lb.NewLoadBalancer(ctx, "front_end", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndBlue, err := lb.NewTargetGroup(ctx, "front_end_blue", nil)
+//			if err != nil {
+//				return err
+//			}
+//			frontEndGreen, err := lb.NewTargetGroup(ctx, "front_end_green", nil)
+//			if err != nil {
+//				return err
+//			}
+//			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("forward"),
+//						Forward: &lb.ListenerDefaultActionForwardArgs{
+//							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndBlue.Arn,
+//									Weight: pulumi.Int(100),
+//								},
+//								&lb.ListenerDefaultActionForwardTargetGroupArgs{
+//									Arn:    frontEndGreen.Arn,
+//									Weight: pulumi.Int(0),
+//								},
+//							},
+//						},
 //					},
 //				},
 //			})

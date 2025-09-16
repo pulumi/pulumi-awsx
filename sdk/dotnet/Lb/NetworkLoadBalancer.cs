@@ -235,6 +235,12 @@ namespace Pulumi.Awsx.Lb
         [Input("region")]
         public Input<string>? Region { get; set; }
 
+        /// <summary>
+        /// The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
+        /// </summary>
+        [Input("secondaryIpsAutoAssignedPerSubnet")]
+        public Input<int>? SecondaryIpsAutoAssignedPerSubnet { get; set; }
+
         [Input("securityGroups")]
         private InputList<string>? _securityGroups;
 

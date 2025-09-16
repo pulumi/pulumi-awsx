@@ -30,6 +30,7 @@ class EC2ServiceArgs:
                  cluster: Optional[pulumi.Input[builtins.str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[builtins.bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] = None,
+                 deployment_configuration: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']] = None,
                  deployment_controller: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentControllerArgs']] = None,
                  deployment_maximum_percent: Optional[pulumi.Input[builtins.int]] = None,
                  deployment_minimum_healthy_percent: Optional[pulumi.Input[builtins.int]] = None,
@@ -51,6 +52,7 @@ class EC2ServiceArgs:
                  scheduling_strategy: Optional[pulumi.Input[builtins.str]] = None,
                  service_connect_configuration: Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] = None,
                  service_registries: Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] = None,
+                 sigint_rollback: Optional[pulumi.Input[builtins.bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
                  task_definition: Optional[pulumi.Input[builtins.str]] = None,
                  task_definition_args: Optional['EC2ServiceTaskDefinitionArgs'] = None,
@@ -65,6 +67,7 @@ class EC2ServiceArgs:
         :param pulumi.Input[builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
+        :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs'] deployment_configuration: Configuration block for deployment settings. See below.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentControllerArgs'] deployment_controller: Configuration block for deployment controller configuration. See below.
         :param pulumi.Input[builtins.int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[builtins.int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
@@ -89,6 +92,7 @@ class EC2ServiceArgs:
         :param pulumi.Input[builtins.str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
         :param pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs'] service_connect_configuration: ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs'] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+        :param pulumi.Input[builtins.bool] sigint_rollback: Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[builtins.str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'EC2ServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
@@ -108,6 +112,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "continue_before_steady_state", continue_before_steady_state)
         if deployment_circuit_breaker is not None:
             pulumi.set(__self__, "deployment_circuit_breaker", deployment_circuit_breaker)
+        if deployment_configuration is not None:
+            pulumi.set(__self__, "deployment_configuration", deployment_configuration)
         if deployment_controller is not None:
             pulumi.set(__self__, "deployment_controller", deployment_controller)
         if deployment_maximum_percent is not None:
@@ -150,6 +156,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "service_connect_configuration", service_connect_configuration)
         if service_registries is not None:
             pulumi.set(__self__, "service_registries", service_registries)
+        if sigint_rollback is not None:
+            pulumi.set(__self__, "sigint_rollback", sigint_rollback)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
         if task_definition is not None:
@@ -234,6 +242,18 @@ class EC2ServiceArgs:
     @deployment_circuit_breaker.setter
     def deployment_circuit_breaker(self, value: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]):
         pulumi.set(self, "deployment_circuit_breaker", value)
+
+    @property
+    @pulumi.getter(name="deploymentConfiguration")
+    def deployment_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']]:
+        """
+        Configuration block for deployment settings. See below.
+        """
+        return pulumi.get(self, "deployment_configuration")
+
+    @deployment_configuration.setter
+    def deployment_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']]):
+        pulumi.set(self, "deployment_configuration", value)
 
     @property
     @pulumi.getter(name="deploymentController")
@@ -491,6 +511,18 @@ class EC2ServiceArgs:
         pulumi.set(self, "service_registries", value)
 
     @property
+    @pulumi.getter(name="sigintRollback")
+    def sigint_rollback(self) -> Optional[pulumi.Input[builtins.bool]]:
+        """
+        Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+        """
+        return pulumi.get(self, "sigint_rollback")
+
+    @sigint_rollback.setter
+    def sigint_rollback(self, value: Optional[pulumi.Input[builtins.bool]]):
+        pulumi.set(self, "sigint_rollback", value)
+
+    @property
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]]:
         """
@@ -577,6 +609,7 @@ class EC2Service(pulumi.ComponentResource):
                  cluster: Optional[pulumi.Input[builtins.str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[builtins.bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
+                 deployment_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']]] = None,
                  deployment_controller: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentControllerArgs']]] = None,
                  deployment_maximum_percent: Optional[pulumi.Input[builtins.int]] = None,
                  deployment_minimum_healthy_percent: Optional[pulumi.Input[builtins.int]] = None,
@@ -598,6 +631,7 @@ class EC2Service(pulumi.ComponentResource):
                  scheduling_strategy: Optional[pulumi.Input[builtins.str]] = None,
                  service_connect_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]] = None,
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
+                 sigint_rollback: Optional[pulumi.Input[builtins.bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
                  task_definition: Optional[pulumi.Input[builtins.str]] = None,
                  task_definition_args: Optional[Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict']] = None,
@@ -617,6 +651,7 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']] deployment_configuration: Configuration block for deployment settings. See below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentControllerArgs']] deployment_controller: Configuration block for deployment controller configuration. See below.
         :param pulumi.Input[builtins.int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[builtins.int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
@@ -641,6 +676,7 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[builtins.str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] service_connect_configuration: ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+        :param pulumi.Input[builtins.bool] sigint_rollback: Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
         :param pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[builtins.str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
@@ -679,6 +715,7 @@ class EC2Service(pulumi.ComponentResource):
                  cluster: Optional[pulumi.Input[builtins.str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[builtins.bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
+                 deployment_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentConfigurationArgs']]] = None,
                  deployment_controller: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentControllerArgs']]] = None,
                  deployment_maximum_percent: Optional[pulumi.Input[builtins.int]] = None,
                  deployment_minimum_healthy_percent: Optional[pulumi.Input[builtins.int]] = None,
@@ -700,6 +737,7 @@ class EC2Service(pulumi.ComponentResource):
                  scheduling_strategy: Optional[pulumi.Input[builtins.str]] = None,
                  service_connect_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]] = None,
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
+                 sigint_rollback: Optional[pulumi.Input[builtins.bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[builtins.str]]]] = None,
                  task_definition: Optional[pulumi.Input[builtins.str]] = None,
                  task_definition_args: Optional[Union['EC2ServiceTaskDefinitionArgs', 'EC2ServiceTaskDefinitionArgsDict']] = None,
@@ -723,6 +761,7 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["cluster"] = cluster
             __props__.__dict__["continue_before_steady_state"] = continue_before_steady_state
             __props__.__dict__["deployment_circuit_breaker"] = deployment_circuit_breaker
+            __props__.__dict__["deployment_configuration"] = deployment_configuration
             __props__.__dict__["deployment_controller"] = deployment_controller
             __props__.__dict__["deployment_maximum_percent"] = deployment_maximum_percent
             __props__.__dict__["deployment_minimum_healthy_percent"] = deployment_minimum_healthy_percent
@@ -744,6 +783,7 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["scheduling_strategy"] = scheduling_strategy
             __props__.__dict__["service_connect_configuration"] = service_connect_configuration
             __props__.__dict__["service_registries"] = service_registries
+            __props__.__dict__["sigint_rollback"] = sigint_rollback
             __props__.__dict__["tags"] = tags
             __props__.__dict__["task_definition"] = task_definition
             __props__.__dict__["task_definition_args"] = task_definition_args

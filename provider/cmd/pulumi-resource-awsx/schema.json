@@ -36,7 +36,7 @@
         },
         "java": {
             "dependencies": {
-                "com.pulumi:aws": "7.0.0",
+                "com.pulumi:aws": "7.7.0",
                 "com.pulumi:docker": "4.6.0",
                 "com.pulumi:docker-build": "0.0.8"
             }
@@ -44,7 +44,7 @@
         "nodejs": {
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
-                "@pulumi/aws": "^7.0.0",
+                "@pulumi/aws": "^7.7.0",
                 "@pulumi/docker": "^4.6.0",
                 "@pulumi/docker-build": "^0.0.8",
                 "@types/aws-lambda": "^8.10.23",
@@ -105,7 +105,7 @@
                 "corsRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
                     },
                     "description": "Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfiguration` instead.\n",
                     "deprecationMessage": "cors_rule is deprecated. Use the aws.s3.BucketCorsConfiguration resource instead."
@@ -117,7 +117,7 @@
                 "grants": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
                     },
                     "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.\n",
                     "deprecationMessage": "grant is deprecated. Use the aws.s3.BucketAcl resource instead."
@@ -125,18 +125,18 @@
                 "lifecycleRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
                     },
                     "description": "Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource `aws.s3.BucketLifecycleConfiguration` instead.\n",
                     "deprecationMessage": "lifecycle_rule is deprecated. Use the aws.s3.BucketLifecycleConfiguration resource instead."
                 },
                 "logging": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketLogging:BucketLogging",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketLogging:BucketLogging",
                     "description": "Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource `aws.s3.BucketLogging` instead.\n",
                     "deprecationMessage": "logging is deprecated. Use the aws.s3.BucketLogging resource instead."
                 },
                 "objectLockConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
                     "description": "Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.\nThe provider wil only perform drift detection if a configuration value is provided.\nUse the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfiguration` instead.\n",
                     "deprecationMessage": "object_lock_configuration is deprecated. Use the top-level parameter object_lock_enabled and the aws.s3.BucketObjectLockConfiguration resource instead."
                 },
@@ -154,7 +154,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "replicationConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
                     "description": "Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource `aws.s3.BucketReplicationConfig` instead.\n",
                     "deprecationMessage": "replication_configuration is deprecated. Use the aws.s3.BucketReplicationConfig resource instead."
                 },
@@ -164,7 +164,7 @@
                     "deprecationMessage": "request_payer is deprecated. Use the aws.s3.BucketRequestPaymentConfiguration resource instead."
                 },
                 "serverSideEncryptionConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
                     "description": "Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.\nThe provider will only perform drift detection if a configuration value is provided.\nUse the resource `aws.s3.BucketServerSideEncryptionConfiguration` instead.\n",
                     "deprecationMessage": "server_side_encryption_configuration is deprecated. Use the aws.s3.BucketServerSideEncryptionConfiguration resource instead."
                 },
@@ -176,12 +176,12 @@
                     "description": "Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n\nThe following arguments are deprecated, and will be removed in a future major version:\n"
                 },
                 "versioning": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
                     "description": "Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioning` instead.\n",
                     "deprecationMessage": "versioning is deprecated. Use the aws.s3.BucketVersioning resource instead."
                 },
                 "website": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
                     "description": "Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource `aws.s3.BucketWebsiteConfiguration` instead.\n",
                     "deprecationMessage": "website is deprecated. Use the aws.s3.BucketWebsiteConfiguration resource instead."
                 }
@@ -413,7 +413,7 @@
                 "inlinePolicies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
                     },
                     "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.\n"
                 },
@@ -478,14 +478,14 @@
                 "egress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
                     },
                     "description": "Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
                 "ingress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
                     },
                     "description": "Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
@@ -713,7 +713,7 @@
                     "description": "Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account)."
                 },
                 "dnsOptions": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
                     "description": "The DNS options for the endpoint. See dns_options below.\n"
                 },
                 "ipAddressType": {
@@ -770,7 +770,7 @@
                 "subnetConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
                     },
                     "description": "Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See subnet_configuration below.\n"
                 },
@@ -959,7 +959,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -999,13 +999,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1014,7 +1014,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1041,7 +1041,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -1076,7 +1076,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1111,13 +1111,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1126,7 +1126,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1153,7 +1153,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -1550,7 +1550,7 @@
                     "type": "string"
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
                 }
             },
             "type": "object"
@@ -1672,7 +1672,7 @@
             "type": "object"
         },
         "awsx:lb:Listener": {
-            "description": "Provides a Load Balancer Listener resource.\n\n\u003e **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.\n\n## Example Usage\n\n### Forward Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 443,\n    protocol: \"HTTPS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndTargetGroup.arn,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=443,\n    protocol=\"HTTPS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_target_group.arn,\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 443,\n        Protocol = \"HTTPS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(443)\n            .protocol(\"HTTPS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndTargetGroup.arn())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '443'\n      protocol: HTTPS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\nTo a NLB:\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEndAwsLb.arn,\n    port: 443,\n    protocol: \"TLS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpnPolicy: \"HTTP2Preferred\",\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndAwsLbTargetGroup.arn,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end_aws_lb[\"arn\"],\n    port=443,\n    protocol=\"TLS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpn_policy=\"HTTP2Preferred\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_aws_lb_target_group[\"arn\"],\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEndAwsLb.Arn,\n        Port = 443,\n        Protocol = \"TLS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        AlpnPolicy = \"HTTP2Preferred\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndAwsLbTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"TLS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tAlpnPolicy:      pulumi.String(\"HTTP2Preferred\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new Listener(\"frontEnd\", ListenerArgs.builder()\n            .loadBalancerArn(frontEndAwsLb.arn())\n            .port(443)\n            .protocol(\"TLS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .alpnPolicy(\"HTTP2Preferred\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndAwsLbTargetGroup.arn())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEndAwsLb.arn}\n      port: '443'\n      protocol: TLS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      alpnPolicy: HTTP2Preferred\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndAwsLbTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Redirect Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [{\n        type: \"redirect\",\n        redirect: {\n            port: \"443\",\n            protocol: \"HTTPS\",\n            statusCode: \"HTTP_301\",\n        },\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[{\n        \"type\": \"redirect\",\n        \"redirect\": {\n            \"port\": \"443\",\n            \"protocol\": \"HTTPS\",\n            \"status_code\": \"HTTP_301\",\n        },\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"redirect\",\n                Redirect = new Aws.LB.Inputs.ListenerDefaultActionRedirectArgs\n                {\n                    Port = \"443\",\n                    Protocol = \"HTTPS\",\n                    StatusCode = \"HTTP_301\",\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"redirect\"),\n\t\t\t\t\tRedirect: \u0026lb.ListenerDefaultActionRedirectArgs{\n\t\t\t\t\t\tPort:       pulumi.String(\"443\"),\n\t\t\t\t\t\tProtocol:   pulumi.String(\"HTTPS\"),\n\t\t\t\t\t\tStatusCode: pulumi.String(\"HTTP_301\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionRedirectArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"redirect\")\n                .redirect(ListenerDefaultActionRedirectArgs.builder()\n                    .port(\"443\")\n                    .protocol(\"HTTPS\")\n                    .statusCode(\"HTTP_301\")\n                    .build())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: redirect\n          redirect:\n            port: '443'\n            protocol: HTTPS\n            statusCode: HTTP_301\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Fixed-response Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [{\n        type: \"fixed-response\",\n        fixedResponse: {\n            contentType: \"text/plain\",\n            messageBody: \"Fixed response content\",\n            statusCode: \"200\",\n        },\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[{\n        \"type\": \"fixed-response\",\n        \"fixed_response\": {\n            \"content_type\": \"text/plain\",\n            \"message_body\": \"Fixed response content\",\n            \"status_code\": \"200\",\n        },\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"fixed-response\",\n                FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs\n                {\n                    ContentType = \"text/plain\",\n                    MessageBody = \"Fixed response content\",\n                    StatusCode = \"200\",\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"fixed-response\"),\n\t\t\t\t\tFixedResponse: \u0026lb.ListenerDefaultActionFixedResponseArgs{\n\t\t\t\t\t\tContentType: pulumi.String(\"text/plain\"),\n\t\t\t\t\t\tMessageBody: pulumi.String(\"Fixed response content\"),\n\t\t\t\t\t\tStatusCode:  pulumi.String(\"200\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"fixed-response\")\n                .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()\n                    .contentType(\"text/plain\")\n                    .messageBody(\"Fixed response content\")\n                    .statusCode(\"200\")\n                    .build())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: fixed-response\n          fixedResponse:\n            contentType: text/plain\n            messageBody: Fixed response content\n            statusCode: '200'\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-cognito Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst pool = new aws.cognito.UserPool(\"pool\", {});\nconst client = new aws.cognito.UserPoolClient(\"client\", {});\nconst domain = new aws.cognito.UserPoolDomain(\"domain\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [\n        {\n            type: \"authenticate-cognito\",\n            authenticateCognito: {\n                userPoolArn: pool.arn,\n                userPoolClientId: client.id,\n                userPoolDomain: domain.domain,\n            },\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\npool = aws.cognito.UserPool(\"pool\")\nclient = aws.cognito.UserPoolClient(\"client\")\ndomain = aws.cognito.UserPoolDomain(\"domain\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[\n        {\n            \"type\": \"authenticate-cognito\",\n            \"authenticate_cognito\": {\n                \"user_pool_arn\": pool.arn,\n                \"user_pool_client_id\": client.id,\n                \"user_pool_domain\": domain.domain,\n            },\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var pool = new Aws.Cognito.UserPool(\"pool\");\n\n    var client = new Aws.Cognito.UserPoolClient(\"client\");\n\n    var domain = new Aws.Cognito.UserPoolDomain(\"domain\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"authenticate-cognito\",\n                AuthenticateCognito = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateCognitoArgs\n                {\n                    UserPoolArn = pool.Arn,\n                    UserPoolClientId = client.Id,\n                    UserPoolDomain = domain.Domain,\n                },\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cognito\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tpool, err := cognito.NewUserPool(ctx, \"pool\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tclient, err := cognito.NewUserPoolClient(ctx, \"client\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tdomain, err := cognito.NewUserPoolDomain(ctx, \"domain\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"authenticate-cognito\"),\n\t\t\t\t\tAuthenticateCognito: \u0026lb.ListenerDefaultActionAuthenticateCognitoArgs{\n\t\t\t\t\t\tUserPoolArn:      pool.Arn,\n\t\t\t\t\t\tUserPoolClientId: client.ID(),\n\t\t\t\t\t\tUserPoolDomain:   domain.Domain,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.cognito.UserPool;\nimport com.pulumi.aws.cognito.UserPoolClient;\nimport com.pulumi.aws.cognito.UserPoolDomain;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateCognitoArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var pool = new UserPool(\"pool\");\n\n        var client = new UserPoolClient(\"client\");\n\n        var domain = new UserPoolDomain(\"domain\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .type(\"authenticate-cognito\")\n                    .authenticateCognito(ListenerDefaultActionAuthenticateCognitoArgs.builder()\n                        .userPoolArn(pool.arn())\n                        .userPoolClientId(client.id())\n                        .userPoolDomain(domain.domain())\n                        .build())\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  pool:\n    type: aws:cognito:UserPool\n  client:\n    type: aws:cognito:UserPoolClient\n  domain:\n    type: aws:cognito:UserPoolDomain\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: authenticate-cognito\n          authenticateCognito:\n            userPoolArn: ${pool.arn}\n            userPoolClientId: ${client.id}\n            userPoolDomain: ${domain.domain}\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-OIDC Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [\n        {\n            type: \"authenticate-oidc\",\n            authenticateOidc: {\n                authorizationEndpoint: \"https://example.com/authorization_endpoint\",\n                clientId: \"client_id\",\n                clientSecret: \"client_secret\",\n                issuer: \"https://example.com\",\n                tokenEndpoint: \"https://example.com/token_endpoint\",\n                userInfoEndpoint: \"https://example.com/user_info_endpoint\",\n            },\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[\n        {\n            \"type\": \"authenticate-oidc\",\n            \"authenticate_oidc\": {\n                \"authorization_endpoint\": \"https://example.com/authorization_endpoint\",\n                \"client_id\": \"client_id\",\n                \"client_secret\": \"client_secret\",\n                \"issuer\": \"https://example.com\",\n                \"token_endpoint\": \"https://example.com/token_endpoint\",\n                \"user_info_endpoint\": \"https://example.com/user_info_endpoint\",\n            },\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"authenticate-oidc\",\n                AuthenticateOidc = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateOidcArgs\n                {\n                    AuthorizationEndpoint = \"https://example.com/authorization_endpoint\",\n                    ClientId = \"client_id\",\n                    ClientSecret = \"client_secret\",\n                    Issuer = \"https://example.com\",\n                    TokenEndpoint = \"https://example.com/token_endpoint\",\n                    UserInfoEndpoint = \"https://example.com/user_info_endpoint\",\n                },\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"authenticate-oidc\"),\n\t\t\t\t\tAuthenticateOidc: \u0026lb.ListenerDefaultActionAuthenticateOidcArgs{\n\t\t\t\t\t\tAuthorizationEndpoint: pulumi.String(\"https://example.com/authorization_endpoint\"),\n\t\t\t\t\t\tClientId:              pulumi.String(\"client_id\"),\n\t\t\t\t\t\tClientSecret:          pulumi.String(\"client_secret\"),\n\t\t\t\t\t\tIssuer:                pulumi.String(\"https://example.com\"),\n\t\t\t\t\t\tTokenEndpoint:         pulumi.String(\"https://example.com/token_endpoint\"),\n\t\t\t\t\t\tUserInfoEndpoint:      pulumi.String(\"https://example.com/user_info_endpoint\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateOidcArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .type(\"authenticate-oidc\")\n                    .authenticateOidc(ListenerDefaultActionAuthenticateOidcArgs.builder()\n                        .authorizationEndpoint(\"https://example.com/authorization_endpoint\")\n                        .clientId(\"client_id\")\n                        .clientSecret(\"client_secret\")\n                        .issuer(\"https://example.com\")\n                        .tokenEndpoint(\"https://example.com/token_endpoint\")\n                        .userInfoEndpoint(\"https://example.com/user_info_endpoint\")\n                        .build())\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: authenticate-oidc\n          authenticateOidc:\n            authorizationEndpoint: https://example.com/authorization_endpoint\n            clientId: client_id\n            clientSecret: client_secret\n            issuer: https://example.com\n            tokenEndpoint: https://example.com/token_endpoint\n            userInfoEndpoint: https://example.com/user_info_endpoint\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Gateway Load Balancer Listener\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {\n    loadBalancerType: \"gateway\",\n    name: \"example\",\n    subnetMappings: [{\n        subnetId: exampleAwsSubnet.id,\n    }],\n});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {\n    name: \"example\",\n    port: 6081,\n    protocol: \"GENEVE\",\n    vpcId: exampleAwsVpc.id,\n    healthCheck: {\n        port: \"80\",\n        protocol: \"HTTP\",\n    },\n});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    loadBalancerArn: example.id,\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\",\n    load_balancer_type=\"gateway\",\n    name=\"example\",\n    subnet_mappings=[{\n        \"subnet_id\": example_aws_subnet[\"id\"],\n    }])\nexample_target_group = aws.lb.TargetGroup(\"example\",\n    name=\"example\",\n    port=6081,\n    protocol=\"GENEVE\",\n    vpc_id=example_aws_vpc[\"id\"],\n    health_check={\n        \"port\": \"80\",\n        \"protocol\": \"HTTP\",\n    })\nexample_listener = aws.lb.Listener(\"example\",\n    load_balancer_arn=example.id,\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        LoadBalancerType = \"gateway\",\n        Name = \"example\",\n        SubnetMappings = new[]\n        {\n            new Aws.LB.Inputs.LoadBalancerSubnetMappingArgs\n            {\n                SubnetId = exampleAwsSubnet.Id,\n            },\n        },\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\", new()\n    {\n        Name = \"example\",\n        Port = 6081,\n        Protocol = \"GENEVE\",\n        VpcId = exampleAwsVpc.Id,\n        HealthCheck = new Aws.LB.Inputs.TargetGroupHealthCheckArgs\n        {\n            Port = \"80\",\n            Protocol = \"HTTP\",\n        },\n    });\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        LoadBalancerArn = example.Id,\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tLoadBalancerType: pulumi.String(\"gateway\"),\n\t\t\tName:             pulumi.String(\"example\"),\n\t\t\tSubnetMappings: lb.LoadBalancerSubnetMappingArray{\n\t\t\t\t\u0026lb.LoadBalancerSubnetMappingArgs{\n\t\t\t\t\tSubnetId: pulumi.Any(exampleAwsSubnet.Id),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", \u0026lb.TargetGroupArgs{\n\t\t\tName:     pulumi.String(\"example\"),\n\t\t\tPort:     pulumi.Int(6081),\n\t\t\tProtocol: pulumi.String(\"GENEVE\"),\n\t\t\tVpcId:    pulumi.Any(exampleAwsVpc.Id),\n\t\t\tHealthCheck: \u0026lb.TargetGroupHealthCheckArgs{\n\t\t\t\tPort:     pulumi.String(\"80\"),\n\t\t\t\tProtocol: pulumi.String(\"HTTP\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.TargetGroupArgs;\nimport com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .loadBalancerType(\"gateway\")\n            .name(\"example\")\n            .subnetMappings(LoadBalancerSubnetMappingArgs.builder()\n                .subnetId(exampleAwsSubnet.id())\n                .build())\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\", TargetGroupArgs.builder()\n            .name(\"example\")\n            .port(6081)\n            .protocol(\"GENEVE\")\n            .vpcId(exampleAwsVpc.id())\n            .healthCheck(TargetGroupHealthCheckArgs.builder()\n                .port(\"80\")\n                .protocol(\"HTTP\")\n                .build())\n            .build());\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .loadBalancerArn(example.id())\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      loadBalancerType: gateway\n      name: example\n      subnetMappings:\n        - subnetId: ${exampleAwsSubnet.id}\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n    properties:\n      name: example\n      port: 6081\n      protocol: GENEVE\n      vpcId: ${exampleAwsVpc.id}\n      healthCheck:\n        port: 80\n        protocol: HTTP\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      loadBalancerArn: ${example.id}\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Mutual TLS Authentication\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {loadBalancerType: \"application\"});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    loadBalancerArn: example.id,\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n    mutualAuthentication: {\n        mode: \"verify\",\n        trustStoreArn: \"...\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\", load_balancer_type=\"application\")\nexample_target_group = aws.lb.TargetGroup(\"example\")\nexample_listener = aws.lb.Listener(\"example\",\n    load_balancer_arn=example.id,\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }],\n    mutual_authentication={\n        \"mode\": \"verify\",\n        \"trust_store_arn\": \"...\",\n    })\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        LoadBalancerType = \"application\",\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\");\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        LoadBalancerArn = example.Id,\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n        MutualAuthentication = new Aws.LB.Inputs.ListenerMutualAuthenticationArgs\n        {\n            Mode = \"verify\",\n            TrustStoreArn = \"...\",\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tLoadBalancerType: pulumi.String(\"application\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tMutualAuthentication: \u0026lb.ListenerMutualAuthenticationArgs{\n\t\t\t\tMode:          pulumi.String(\"verify\"),\n\t\t\t\tTrustStoreArn: pulumi.String(\"...\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerMutualAuthenticationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .loadBalancerType(\"application\")\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\");\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .loadBalancerArn(example.id())\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .mutualAuthentication(ListenerMutualAuthenticationArgs.builder()\n                .mode(\"verify\")\n                .trustStoreArn(\"...\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      loadBalancerType: application\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      loadBalancerArn: ${example.id}\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n      mutualAuthentication:\n        mode: verify\n        trustStoreArn: '...'\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n## Import\n\nUsing `pulumi import`, import listeners using their ARN. For example:\n\n```sh\n$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96\n```\n",
+            "description": "Provides a Load Balancer Listener resource.\n\n\u003e **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.\n\n## Example Usage\n\n### Forward Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 443,\n    protocol: \"HTTPS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndTargetGroup.arn,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=443,\n    protocol=\"HTTPS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_target_group.arn,\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 443,\n        Protocol = \"HTTPS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(443)\n            .protocol(\"HTTPS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndTargetGroup.arn())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '443'\n      protocol: HTTPS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\nWith weighted target groups:\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndBlue = new aws.lb.TargetGroup(\"front_end_blue\", {});\nconst frontEndGreen = new aws.lb.TargetGroup(\"front_end_green\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 443,\n    protocol: \"HTTPS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    defaultActions: [{\n        type: \"forward\",\n        forward: {\n            targetGroups: [\n                {\n                    arn: frontEndBlue.arn,\n                    weight: 100,\n                },\n                {\n                    arn: frontEndGreen.arn,\n                    weight: 0,\n                },\n            ],\n        },\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_blue = aws.lb.TargetGroup(\"front_end_blue\")\nfront_end_green = aws.lb.TargetGroup(\"front_end_green\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=443,\n    protocol=\"HTTPS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"forward\": {\n            \"target_groups\": [\n                {\n                    \"arn\": front_end_blue.arn,\n                    \"weight\": 100,\n                },\n                {\n                    \"arn\": front_end_green.arn,\n                    \"weight\": 0,\n                },\n            ],\n        },\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndBlue = new Aws.LB.TargetGroup(\"front_end_blue\");\n\n    var frontEndGreen = new Aws.LB.TargetGroup(\"front_end_green\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 443,\n        Protocol = \"HTTPS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                Forward = new Aws.LB.Inputs.ListenerDefaultActionForwardArgs\n                {\n                    TargetGroups = new[]\n                    {\n                        new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs\n                        {\n                            Arn = frontEndBlue.Arn,\n                            Weight = 100,\n                        },\n                        new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs\n                        {\n                            Arn = frontEndGreen.Arn,\n                            Weight = 0,\n                        },\n                    },\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndBlue, err := lb.NewTargetGroup(ctx, \"front_end_blue\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndGreen, err := lb.NewTargetGroup(ctx, \"front_end_green\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"forward\"),\n\t\t\t\t\tForward: \u0026lb.ListenerDefaultActionForwardArgs{\n\t\t\t\t\t\tTargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionForwardTargetGroupArgs{\n\t\t\t\t\t\t\t\tArn:    frontEndBlue.Arn,\n\t\t\t\t\t\t\t\tWeight: pulumi.Int(100),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionForwardTargetGroupArgs{\n\t\t\t\t\t\t\t\tArn:    frontEndGreen.Arn,\n\t\t\t\t\t\t\t\tWeight: pulumi.Int(0),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionForwardArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndBlue = new TargetGroup(\"frontEndBlue\");\n\n        var frontEndGreen = new TargetGroup(\"frontEndGreen\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(443)\n            .protocol(\"HTTPS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .forward(ListenerDefaultActionForwardArgs.builder()\n                    .targetGroups(                    \n                        ListenerDefaultActionForwardTargetGroupArgs.builder()\n                            .arn(frontEndBlue.arn())\n                            .weight(100)\n                            .build(),\n                        ListenerDefaultActionForwardTargetGroupArgs.builder()\n                            .arn(frontEndGreen.arn())\n                            .weight(0)\n                            .build())\n                    .build())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndBlue:\n    type: aws:lb:TargetGroup\n    name: front_end_blue\n  frontEndGreen:\n    type: aws:lb:TargetGroup\n    name: front_end_green\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '443'\n      protocol: HTTPS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      defaultActions:\n        - type: forward\n          forward:\n            targetGroups:\n              - arn: ${frontEndBlue.arn}\n                weight: 100\n              - arn: ${frontEndGreen.arn}\n                weight: 0\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\nTo a NLB:\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEndAwsLb.arn,\n    port: 443,\n    protocol: \"TLS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpnPolicy: \"HTTP2Preferred\",\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndAwsLbTargetGroup.arn,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end_aws_lb[\"arn\"],\n    port=443,\n    protocol=\"TLS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpn_policy=\"HTTP2Preferred\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_aws_lb_target_group[\"arn\"],\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEndAwsLb.Arn,\n        Port = 443,\n        Protocol = \"TLS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        AlpnPolicy = \"HTTP2Preferred\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndAwsLbTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"TLS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tAlpnPolicy:      pulumi.String(\"HTTP2Preferred\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new Listener(\"frontEnd\", ListenerArgs.builder()\n            .loadBalancerArn(frontEndAwsLb.arn())\n            .port(443)\n            .protocol(\"TLS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .alpnPolicy(\"HTTP2Preferred\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndAwsLbTargetGroup.arn())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEndAwsLb.arn}\n      port: '443'\n      protocol: TLS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      alpnPolicy: HTTP2Preferred\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndAwsLbTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Redirect Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [{\n        type: \"redirect\",\n        redirect: {\n            port: \"443\",\n            protocol: \"HTTPS\",\n            statusCode: \"HTTP_301\",\n        },\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[{\n        \"type\": \"redirect\",\n        \"redirect\": {\n            \"port\": \"443\",\n            \"protocol\": \"HTTPS\",\n            \"status_code\": \"HTTP_301\",\n        },\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"redirect\",\n                Redirect = new Aws.LB.Inputs.ListenerDefaultActionRedirectArgs\n                {\n                    Port = \"443\",\n                    Protocol = \"HTTPS\",\n                    StatusCode = \"HTTP_301\",\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"redirect\"),\n\t\t\t\t\tRedirect: \u0026lb.ListenerDefaultActionRedirectArgs{\n\t\t\t\t\t\tPort:       pulumi.String(\"443\"),\n\t\t\t\t\t\tProtocol:   pulumi.String(\"HTTPS\"),\n\t\t\t\t\t\tStatusCode: pulumi.String(\"HTTP_301\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionRedirectArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"redirect\")\n                .redirect(ListenerDefaultActionRedirectArgs.builder()\n                    .port(\"443\")\n                    .protocol(\"HTTPS\")\n                    .statusCode(\"HTTP_301\")\n                    .build())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: redirect\n          redirect:\n            port: '443'\n            protocol: HTTPS\n            statusCode: HTTP_301\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Fixed-response Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [{\n        type: \"fixed-response\",\n        fixedResponse: {\n            contentType: \"text/plain\",\n            messageBody: \"Fixed response content\",\n            statusCode: \"200\",\n        },\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[{\n        \"type\": \"fixed-response\",\n        \"fixed_response\": {\n            \"content_type\": \"text/plain\",\n            \"message_body\": \"Fixed response content\",\n            \"status_code\": \"200\",\n        },\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"fixed-response\",\n                FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs\n                {\n                    ContentType = \"text/plain\",\n                    MessageBody = \"Fixed response content\",\n                    StatusCode = \"200\",\n                },\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"fixed-response\"),\n\t\t\t\t\tFixedResponse: \u0026lb.ListenerDefaultActionFixedResponseArgs{\n\t\t\t\t\t\tContentType: pulumi.String(\"text/plain\"),\n\t\t\t\t\t\tMessageBody: pulumi.String(\"Fixed response content\"),\n\t\t\t\t\t\tStatusCode:  pulumi.String(\"200\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"fixed-response\")\n                .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()\n                    .contentType(\"text/plain\")\n                    .messageBody(\"Fixed response content\")\n                    .statusCode(\"200\")\n                    .build())\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: fixed-response\n          fixedResponse:\n            contentType: text/plain\n            messageBody: Fixed response content\n            statusCode: '200'\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-cognito Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst pool = new aws.cognito.UserPool(\"pool\", {});\nconst client = new aws.cognito.UserPoolClient(\"client\", {});\nconst domain = new aws.cognito.UserPoolDomain(\"domain\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [\n        {\n            type: \"authenticate-cognito\",\n            authenticateCognito: {\n                userPoolArn: pool.arn,\n                userPoolClientId: client.id,\n                userPoolDomain: domain.domain,\n            },\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\npool = aws.cognito.UserPool(\"pool\")\nclient = aws.cognito.UserPoolClient(\"client\")\ndomain = aws.cognito.UserPoolDomain(\"domain\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[\n        {\n            \"type\": \"authenticate-cognito\",\n            \"authenticate_cognito\": {\n                \"user_pool_arn\": pool.arn,\n                \"user_pool_client_id\": client.id,\n                \"user_pool_domain\": domain.domain,\n            },\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var pool = new Aws.Cognito.UserPool(\"pool\");\n\n    var client = new Aws.Cognito.UserPoolClient(\"client\");\n\n    var domain = new Aws.Cognito.UserPoolDomain(\"domain\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"authenticate-cognito\",\n                AuthenticateCognito = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateCognitoArgs\n                {\n                    UserPoolArn = pool.Arn,\n                    UserPoolClientId = client.Id,\n                    UserPoolDomain = domain.Domain,\n                },\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cognito\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tpool, err := cognito.NewUserPool(ctx, \"pool\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tclient, err := cognito.NewUserPoolClient(ctx, \"client\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tdomain, err := cognito.NewUserPoolDomain(ctx, \"domain\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"authenticate-cognito\"),\n\t\t\t\t\tAuthenticateCognito: \u0026lb.ListenerDefaultActionAuthenticateCognitoArgs{\n\t\t\t\t\t\tUserPoolArn:      pool.Arn,\n\t\t\t\t\t\tUserPoolClientId: client.ID(),\n\t\t\t\t\t\tUserPoolDomain:   domain.Domain,\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.cognito.UserPool;\nimport com.pulumi.aws.cognito.UserPoolClient;\nimport com.pulumi.aws.cognito.UserPoolDomain;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateCognitoArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var pool = new UserPool(\"pool\");\n\n        var client = new UserPoolClient(\"client\");\n\n        var domain = new UserPoolDomain(\"domain\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .type(\"authenticate-cognito\")\n                    .authenticateCognito(ListenerDefaultActionAuthenticateCognitoArgs.builder()\n                        .userPoolArn(pool.arn())\n                        .userPoolClientId(client.id())\n                        .userPoolDomain(domain.domain())\n                        .build())\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  pool:\n    type: aws:cognito:UserPool\n  client:\n    type: aws:cognito:UserPoolClient\n  domain:\n    type: aws:cognito:UserPoolDomain\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: authenticate-cognito\n          authenticateCognito:\n            userPoolArn: ${pool.arn}\n            userPoolClientId: ${client.id}\n            userPoolDomain: ${domain.domain}\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-OIDC Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n    defaultActions: [\n        {\n            type: \"authenticate-oidc\",\n            authenticateOidc: {\n                authorizationEndpoint: \"https://example.com/authorization_endpoint\",\n                clientId: \"client_id\",\n                clientSecret: \"client_secret\",\n                issuer: \"https://example.com\",\n                tokenEndpoint: \"https://example.com/token_endpoint\",\n                userInfoEndpoint: \"https://example.com/user_info_endpoint\",\n            },\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\",\n    default_actions=[\n        {\n            \"type\": \"authenticate-oidc\",\n            \"authenticate_oidc\": {\n                \"authorization_endpoint\": \"https://example.com/authorization_endpoint\",\n                \"client_id\": \"client_id\",\n                \"client_secret\": \"client_secret\",\n                \"issuer\": \"https://example.com\",\n                \"token_endpoint\": \"https://example.com/token_endpoint\",\n                \"user_info_endpoint\": \"https://example.com/user_info_endpoint\",\n            },\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"authenticate-oidc\",\n                AuthenticateOidc = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateOidcArgs\n                {\n                    AuthorizationEndpoint = \"https://example.com/authorization_endpoint\",\n                    ClientId = \"client_id\",\n                    ClientSecret = \"client_secret\",\n                    Issuer = \"https://example.com\",\n                    TokenEndpoint = \"https://example.com/token_endpoint\",\n                    UserInfoEndpoint = \"https://example.com/user_info_endpoint\",\n                },\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType: pulumi.String(\"authenticate-oidc\"),\n\t\t\t\t\tAuthenticateOidc: \u0026lb.ListenerDefaultActionAuthenticateOidcArgs{\n\t\t\t\t\t\tAuthorizationEndpoint: pulumi.String(\"https://example.com/authorization_endpoint\"),\n\t\t\t\t\t\tClientId:              pulumi.String(\"client_id\"),\n\t\t\t\t\t\tClientSecret:          pulumi.String(\"client_secret\"),\n\t\t\t\t\t\tIssuer:                pulumi.String(\"https://example.com\"),\n\t\t\t\t\t\tTokenEndpoint:         pulumi.String(\"https://example.com/token_endpoint\"),\n\t\t\t\t\t\tUserInfoEndpoint:      pulumi.String(\"https://example.com/user_info_endpoint\"),\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateOidcArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .type(\"authenticate-oidc\")\n                    .authenticateOidc(ListenerDefaultActionAuthenticateOidcArgs.builder()\n                        .authorizationEndpoint(\"https://example.com/authorization_endpoint\")\n                        .clientId(\"client_id\")\n                        .clientSecret(\"client_secret\")\n                        .issuer(\"https://example.com\")\n                        .tokenEndpoint(\"https://example.com/token_endpoint\")\n                        .userInfoEndpoint(\"https://example.com/user_info_endpoint\")\n                        .build())\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n      defaultActions:\n        - type: authenticate-oidc\n          authenticateOidc:\n            authorizationEndpoint: https://example.com/authorization_endpoint\n            clientId: client_id\n            clientSecret: client_secret\n            issuer: https://example.com\n            tokenEndpoint: https://example.com/token_endpoint\n            userInfoEndpoint: https://example.com/user_info_endpoint\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Gateway Load Balancer Listener\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {\n    loadBalancerType: \"gateway\",\n    name: \"example\",\n    subnetMappings: [{\n        subnetId: exampleAwsSubnet.id,\n    }],\n});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {\n    name: \"example\",\n    port: 6081,\n    protocol: \"GENEVE\",\n    vpcId: exampleAwsVpc.id,\n    healthCheck: {\n        port: \"80\",\n        protocol: \"HTTP\",\n    },\n});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    loadBalancerArn: example.id,\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\",\n    load_balancer_type=\"gateway\",\n    name=\"example\",\n    subnet_mappings=[{\n        \"subnet_id\": example_aws_subnet[\"id\"],\n    }])\nexample_target_group = aws.lb.TargetGroup(\"example\",\n    name=\"example\",\n    port=6081,\n    protocol=\"GENEVE\",\n    vpc_id=example_aws_vpc[\"id\"],\n    health_check={\n        \"port\": \"80\",\n        \"protocol\": \"HTTP\",\n    })\nexample_listener = aws.lb.Listener(\"example\",\n    load_balancer_arn=example.id,\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        LoadBalancerType = \"gateway\",\n        Name = \"example\",\n        SubnetMappings = new[]\n        {\n            new Aws.LB.Inputs.LoadBalancerSubnetMappingArgs\n            {\n                SubnetId = exampleAwsSubnet.Id,\n            },\n        },\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\", new()\n    {\n        Name = \"example\",\n        Port = 6081,\n        Protocol = \"GENEVE\",\n        VpcId = exampleAwsVpc.Id,\n        HealthCheck = new Aws.LB.Inputs.TargetGroupHealthCheckArgs\n        {\n            Port = \"80\",\n            Protocol = \"HTTP\",\n        },\n    });\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        LoadBalancerArn = example.Id,\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tLoadBalancerType: pulumi.String(\"gateway\"),\n\t\t\tName:             pulumi.String(\"example\"),\n\t\t\tSubnetMappings: lb.LoadBalancerSubnetMappingArray{\n\t\t\t\t\u0026lb.LoadBalancerSubnetMappingArgs{\n\t\t\t\t\tSubnetId: pulumi.Any(exampleAwsSubnet.Id),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", \u0026lb.TargetGroupArgs{\n\t\t\tName:     pulumi.String(\"example\"),\n\t\t\tPort:     pulumi.Int(6081),\n\t\t\tProtocol: pulumi.String(\"GENEVE\"),\n\t\t\tVpcId:    pulumi.Any(exampleAwsVpc.Id),\n\t\t\tHealthCheck: \u0026lb.TargetGroupHealthCheckArgs{\n\t\t\t\tPort:     pulumi.String(\"80\"),\n\t\t\t\tProtocol: pulumi.String(\"HTTP\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.TargetGroupArgs;\nimport com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .loadBalancerType(\"gateway\")\n            .name(\"example\")\n            .subnetMappings(LoadBalancerSubnetMappingArgs.builder()\n                .subnetId(exampleAwsSubnet.id())\n                .build())\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\", TargetGroupArgs.builder()\n            .name(\"example\")\n            .port(6081)\n            .protocol(\"GENEVE\")\n            .vpcId(exampleAwsVpc.id())\n            .healthCheck(TargetGroupHealthCheckArgs.builder()\n                .port(\"80\")\n                .protocol(\"HTTP\")\n                .build())\n            .build());\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .loadBalancerArn(example.id())\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      loadBalancerType: gateway\n      name: example\n      subnetMappings:\n        - subnetId: ${exampleAwsSubnet.id}\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n    properties:\n      name: example\n      port: 6081\n      protocol: GENEVE\n      vpcId: ${exampleAwsVpc.id}\n      healthCheck:\n        port: 80\n        protocol: HTTP\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      loadBalancerArn: ${example.id}\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Mutual TLS Authentication\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {loadBalancerType: \"application\"});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    loadBalancerArn: example.id,\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n    mutualAuthentication: {\n        mode: \"verify\",\n        trustStoreArn: \"...\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\", load_balancer_type=\"application\")\nexample_target_group = aws.lb.TargetGroup(\"example\")\nexample_listener = aws.lb.Listener(\"example\",\n    load_balancer_arn=example.id,\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }],\n    mutual_authentication={\n        \"mode\": \"verify\",\n        \"trust_store_arn\": \"...\",\n    })\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        LoadBalancerType = \"application\",\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\");\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        LoadBalancerArn = example.Id,\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n        MutualAuthentication = new Aws.LB.Inputs.ListenerMutualAuthenticationArgs\n        {\n            Mode = \"verify\",\n            TrustStoreArn = \"...\",\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tLoadBalancerType: pulumi.String(\"application\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tMutualAuthentication: \u0026lb.ListenerMutualAuthenticationArgs{\n\t\t\t\tMode:          pulumi.String(\"verify\"),\n\t\t\t\tTrustStoreArn: pulumi.String(\"...\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerMutualAuthenticationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .loadBalancerType(\"application\")\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\");\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .loadBalancerArn(example.id())\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .mutualAuthentication(ListenerMutualAuthenticationArgs.builder()\n                .mode(\"verify\")\n                .trustStoreArn(\"...\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      loadBalancerType: application\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      loadBalancerArn: ${example.id}\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n      mutualAuthentication:\n        mode: verify\n        trustStoreArn: '...'\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n## Import\n\nUsing `pulumi import`, import listeners using their ARN. For example:\n\n```sh\n$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96\n```\n",
             "properties": {
                 "alpnPolicy": {
                     "type": "string",
@@ -1685,12 +1685,12 @@
                 "defaultActions": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
                     },
                     "description": "Configuration block for default actions. See below.\n"
                 },
                 "mutualAuthentication": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
                     "description": "The mutual authentication configuration information. See below.\n"
                 },
                 "port": {
@@ -1811,7 +1811,7 @@
                     "description": "Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.\n"
                 },
                 "healthCheck": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
                     "description": "Health Check configuration block. Detailed below.\n"
                 },
                 "ipAddressType": {
@@ -1877,7 +1877,7 @@
                     "description": "Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.\n"
                 },
                 "stickiness": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
                     "description": "Stickiness configuration block. Detailed below.\n"
                 },
                 "tags": {
@@ -1890,18 +1890,18 @@
                 "targetFailovers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
                     },
                     "description": "Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.\n"
                 },
                 "targetGroupHealth": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
                     "description": "Target health requirements block. See target_group_health for more information.\n"
                 },
                 "targetHealthStates": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
                     },
                     "description": "Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.\n"
                 },
@@ -1924,15 +1924,15 @@
         "awsx:cloudtrail:Trail": {
             "properties": {
                 "bucket": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:s3%2Fbucket:Bucket",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:s3%2Fbucket:Bucket",
                     "description": "The managed S3 Bucket where the Trail will place its logs."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "The managed Cloudwatch Log Group."
                 },
                 "trail": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
                     "description": "The CloudTrail Trail.",
                     "language": {
                         "csharp": {
@@ -1948,7 +1948,7 @@
                 "advancedEventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
                     },
                     "description": "Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.\n"
                 },
@@ -1968,7 +1968,7 @@
                 "eventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
                     },
                     "description": "Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.\n"
                 },
@@ -1979,7 +1979,7 @@
                 "insightSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
                     },
                     "description": "Configuration block for identifying unusual operational activity. See details below.\n"
                 },
@@ -2060,12 +2060,12 @@
                 "eips": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2feip:Eip"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2feip:Eip"
                     },
                     "description": "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
                 "internetGateway": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
                     "description": "The Internet Gateway for the VPC."
                 },
                 "isolatedSubnetIds": {
@@ -2077,7 +2077,7 @@
                 "natGateways": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
                     },
                     "description": "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
@@ -2096,21 +2096,21 @@
                 "routeTableAssociations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
                     },
                     "description": "The Route Table Associations for the VPC."
                 },
                 "routeTables": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
                     },
                     "description": "The Route Tables for the VPC."
                 },
                 "routes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2froute:Route"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2froute:Route"
                     },
                     "description": "The Routes for the VPC."
                 },
@@ -2124,12 +2124,12 @@
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's subnets."
                 },
                 "vpc": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fvpc:Vpc",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fvpc:Vpc",
                     "description": "The VPC.",
                     "language": {
                         "csharp": {
@@ -2140,7 +2140,7 @@
                 "vpcEndpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
                     },
                     "description": "The VPC Endpoints that are enabled"
                 },
@@ -2399,11 +2399,11 @@
             "description": "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
             "properties": {
                 "lifecyclePolicy": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
                     "description": "Underlying repository lifecycle policy"
                 },
                 "repository": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecr%2frepository:Repository",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecr%2frepository:Repository",
                     "description": "Underlying Repository resource",
                     "language": {
                         "csharp": {
@@ -2425,7 +2425,7 @@
                 "encryptionConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
                     },
                     "description": "Encryption configuration for the repository. See below for schema.\n",
                     "willReplaceOnChanges": true
@@ -2435,12 +2435,19 @@
                     "description": "If `true`, will delete the repository even if it contains images.\nDefaults to `false`.\n"
                 },
                 "imageScanningConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
                     "description": "Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.\n"
                 },
                 "imageTagMutability": {
                     "type": "string",
-                    "description": "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.\n"
+                    "description": "The tag mutability setting for the repository. Must be one of: `MUTABLE`, `IMMUTABLE`, `IMMUTABLE_WITH_EXCLUSION`, or `MUTABLE_WITH_EXCLUSION`. Defaults to `MUTABLE`.\n"
+                },
+                "imageTagMutabilityExclusionFilters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecr/RepositoryImageTagMutabilityExclusionFilter:RepositoryImageTagMutabilityExclusionFilter"
+                    },
+                    "description": "Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `image_tag_mutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.\n"
                 },
                 "lifecyclePolicy": {
                     "$ref": "#/types/awsx:ecr:lifecyclePolicy",
@@ -2470,11 +2477,11 @@
             "description": "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying EC2 Task definition component resource if created from args"
                 }
             },
@@ -2483,7 +2490,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "availabilityZoneRebalancing": {
@@ -2493,7 +2500,7 @@
                 "capacityProviderStrategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
                     },
                     "description": "Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.\n"
                 },
@@ -2507,11 +2514,15 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
+                "deploymentConfiguration": {
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
+                    "description": "Configuration block for deployment settings. See below.\n"
+                },
                 "deploymentController": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2554,7 +2565,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2564,20 +2575,20 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "orderedPlacementStrategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
                     },
                     "description": "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.\n"
                 },
@@ -2599,12 +2610,16 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.\n"
+                },
+                "sigintRollback": {
+                    "type": "boolean",
+                    "description": "Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.\n"
                 },
                 "tags": {
                     "type": "object",
@@ -2630,13 +2645,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2647,26 +2662,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -2699,7 +2714,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2739,13 +2754,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2754,7 +2769,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2781,7 +2796,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -2793,11 +2808,11 @@
             "description": "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying Fargate component resource if created from args"
                 }
             },
@@ -2806,7 +2821,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "assignPublicIp": {
@@ -2827,11 +2842,15 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
+                "deploymentConfiguration": {
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
+                    "description": "Configuration block for deployment settings. See below.\n"
+                },
                 "deploymentController": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2874,7 +2893,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2884,13 +2903,13 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.\n"
                 },
@@ -2912,12 +2931,16 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.\n"
+                },
+                "sigintRollback": {
+                    "type": "boolean",
+                    "description": "Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.\n"
                 },
                 "tags": {
                     "type": "object",
@@ -2943,13 +2966,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2960,26 +2983,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -3012,7 +3035,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3047,13 +3070,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3062,7 +3085,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for runtime_platform that containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3089,7 +3112,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -3101,22 +3124,22 @@
             "description": "Provides an Application Load Balancer resource with listeners, default target group and default security group.",
             "properties": {
                 "defaultSecurityGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
                     "description": "Default security group, if auto-created"
                 },
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -3131,7 +3154,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3139,7 +3162,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type `application`.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3215,7 +3238,7 @@
                     "description": "Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).\n"
                 },
                 "ipamPools": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
                     "description": ". The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.\n"
                 },
                 "listener": {
@@ -3233,7 +3256,7 @@
                     "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
                 },
                 "minimumLoadBalancerCapacity": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
                     "description": "Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.\n"
                 },
                 "name": {
@@ -3254,6 +3277,10 @@
                     "type": "string",
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
+                "secondaryIpsAutoAssignedPerSubnet": {
+                    "type": "integer",
+                    "description": "The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.\n"
+                },
                 "securityGroups": {
                     "type": "array",
                     "items": {
@@ -3271,14 +3298,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3300,18 +3327,18 @@
             "description": "Provides a Network Load Balancer resource with listeners and default target group.",
             "properties": {
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -3326,7 +3353,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3334,7 +3361,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type `application`.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3405,7 +3432,7 @@
                     "description": "Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).\n"
                 },
                 "ipamPools": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
                     "description": ". The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipam_pools for more information.\n"
                 },
                 "listener": {
@@ -3423,7 +3450,7 @@
                     "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
                 },
                 "minimumLoadBalancerCapacity": {
-                    "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
+                    "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
                     "description": "Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.\n"
                 },
                 "name": {
@@ -3444,6 +3471,10 @@
                     "type": "string",
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
+                "secondaryIpsAutoAssignedPerSubnet": {
+                    "type": "integer",
+                    "description": "The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.\n"
+                },
                 "securityGroups": {
                     "type": "array",
                     "items": {
@@ -3461,14 +3492,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v7.7.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3490,11 +3521,11 @@
             "description": "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
             "properties": {
                 "lambdaPermission": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
                     "description": "Auto-created Lambda permission, if targeting a Lambda function"
                 },
                 "targetGroupAttachment": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
                     "description": "Underlying Target Group Attachment resource",
                     "language": {
                         "csharp": {
@@ -3509,7 +3540,7 @@
             ],
             "inputProperties": {
                 "instance": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:ec2%2finstance:Instance",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:ec2%2finstance:Instance",
                     "description": "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "instanceId": {
@@ -3517,7 +3548,7 @@
                     "description": "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "lambda": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lambda%2ffunction:Function",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lambda%2ffunction:Function",
                     "description": "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
                     "language": {
                         "python": {
@@ -3530,7 +3561,7 @@
                     "description": "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v7.0.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.7.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified."
                 },
                 "targetGroupArn": {
