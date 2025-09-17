@@ -12,7 +12,10 @@ on:
 env:
   ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
   ALT_AWS_SECRET_ACCESS_KEY: ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }}
+  AWS_CORP_S3_UPLOAD_ACCESS_KEY_ID: ${{ secrets.AWS_CORP_S3_UPLOAD_ACCESS_KEY_ID }}
+  AWS_CORP_S3_UPLOAD_SECRET_ACCESS_KEY: ${{ secrets.AWS_CORP_S3_UPLOAD_SECRET_ACCESS_KEY }}
   AWS_REGION: us-west-2
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   GOLANGCI_LINT_VERSION: v1.61.0
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -22,9 +25,13 @@ env:
   PUBLISH_REPO_USERNAME: ${{ secrets.OSSRH_USERNAME }}
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
   PULUMI_API: https://api.pulumi-staging.io
+  PULUMI_BOT_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   PULUMI_ENABLE_RESOURCE_REFERENCES: "1"
   PULUMI_GO_DEP_ROOT: ${{ github.workspace }}/..
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
+  RELEASE_BOT_ENDPOINT: ${{ secrets.RELEASE_BOT_ENDPOINT }}
+  RELEASE_BOT_KEY: ${{ secrets.RELEASE_BOT_KEY }}
+  S3_COVERAGE_BUCKET_NAME: ${{ secrets.S3_COVERAGE_BUCKET_NAME }}
   SIGNING_KEY: ${{ secrets.JAVA_SIGNING_KEY }}
   SIGNING_KEY_ID: ${{ secrets.JAVA_SIGNING_KEY_ID }}
   SIGNING_PASSWORD: ${{ secrets.JAVA_SIGNING_PASSWORD }}
@@ -47,11 +54,17 @@ jobs:
         - dotnet
         - go
         - java
+    permissions:
+      contents: write # For Renovate SDKs.
+      id-token: write # For ESC secrets.
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
-          persist-credentials: false
+          persist-credentials: false      
+      - id: esc-secrets
+        name: Map environment to ESC outputs
+        uses: ./.github/actions/esc-action
       - name: Cache examples generation
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
         with:
@@ -74,6 +87,7 @@ jobs:
         run: make --touch provider schema
       - name: Build SDK
         run: make build_${{ matrix.language }}
+
       - name: Check worktree clean
         id: worktreeClean
         uses: pulumi/git-status-check-action@v1
@@ -85,6 +99,7 @@ jobs:
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
             sdk/python/pyproject.toml
+            sdk/java/build.gradle
       - name: Commit ${{ matrix.language }} SDK changes for Renovate
         # If the worktree is dirty and this is a Renovate PR to bump
         # dependencies, commit the updated SDK and push it back to the PR. The
@@ -118,7 +133,7 @@ jobs:
 
           # Push with pulumi-bot credentials to trigger a re-run of the
           # workflow. https://github.com/orgs/community/discussions/25702
-          git push https://pulumi-bot:${{ secrets.PULUMI_BOT_TOKEN }}@github.com/${{ github.repository }} \
+          git push https://pulumi-bot:${{ steps.esc-secrets.outputs.PULUMI_BOT_TOKEN }}@github.com/${{ github.repository }} \
               "HEAD:$HEAD_REF"
         env:
           # head_ref is untrusted so it's recommended to pass via env var to
