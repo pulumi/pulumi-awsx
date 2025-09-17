@@ -28,6 +28,10 @@ env:
   PULUMI_ENABLE_RESOURCE_REFERENCES: 1
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
 
+esc:
+  enabled: true
+  environment: imports/github-secrets # No repo-specific secrets.
+
 releaseVerification:
   nodejs: examples/vpc/nodejs/default-args
   python: examples/cloudtrail/python

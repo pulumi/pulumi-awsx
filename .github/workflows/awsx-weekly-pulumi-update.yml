@@ -17,9 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
+    permissions: write-all
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+    - env:
+        ESC_ACTION_ENVIRONMENT: imports/github-secrets
+        ESC_ACTION_OIDC_AUTH: "true"
+        ESC_ACTION_OIDC_ORGANIZATION: pulumi
+        ESC_ACTION_OIDC_REQUESTED_TOKEN_TYPE: urn:pulumi:token-type:access_token:organization
+        ESC_ACTION_EXPORT_ENVIRONMENT_VARIABLES: "false"
+      id: esc-secrets
+      name: Fetch secrets from ESC
+      uses: pulumi/esc-action@9eb774255b1a4afb7855678ae8d4a77359da0d9b
     - name: Install Go
       uses: actions/setup-go@v4
       with:
@@ -95,7 +105,7 @@ jobs:
     - name: pull-request
       if: steps.gomod.outputs.changes != 0
       env:
-        GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+        GH_TOKEN: ${{ steps.esc-secrets.outputs.PULUMI_BOT_TOKEN }}
       run: |
         # See https://github.com/cli/cli/issues/6485#issuecomment-2560935183 for --head workaround
         gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION." --head $(git branch --show-current)
