@@ -433,6 +433,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
+     * The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
+     * 
+     */
+    @Import(name="secondaryIpsAutoAssignedPerSubnet")
+    private @Nullable Output<Integer> secondaryIpsAutoAssignedPerSubnet;
+
+    /**
+     * @return The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
+     * 
+     */
+    public Optional<Output<Integer>> secondaryIpsAutoAssignedPerSubnet() {
+        return Optional.ofNullable(this.secondaryIpsAutoAssignedPerSubnet);
+    }
+
+    /**
      * List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
      * 
      */
@@ -560,6 +575,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.namePrefix = $.namePrefix;
         this.preserveHostHeader = $.preserveHostHeader;
         this.region = $.region;
+        this.secondaryIpsAutoAssignedPerSubnet = $.secondaryIpsAutoAssignedPerSubnet;
         this.securityGroups = $.securityGroups;
         this.subnetIds = $.subnetIds;
         this.subnetMappings = $.subnetMappings;
@@ -1131,6 +1147,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder region(String region) {
             return region(Output.of(region));
+        }
+
+        /**
+         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder secondaryIpsAutoAssignedPerSubnet(@Nullable Output<Integer> secondaryIpsAutoAssignedPerSubnet) {
+            $.secondaryIpsAutoAssignedPerSubnet = secondaryIpsAutoAssignedPerSubnet;
+            return this;
+        }
+
+        /**
+         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder secondaryIpsAutoAssignedPerSubnet(Integer secondaryIpsAutoAssignedPerSubnet) {
+            return secondaryIpsAutoAssignedPerSubnet(Output.of(secondaryIpsAutoAssignedPerSubnet));
         }
 
         /**

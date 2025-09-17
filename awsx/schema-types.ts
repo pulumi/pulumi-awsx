@@ -149,6 +149,7 @@ export interface RepositoryArgs {
     readonly forceDelete?: pulumi.Input<boolean>;
     readonly imageScanningConfiguration?: pulumi.Input<aws.types.input.ecr.RepositoryImageScanningConfiguration>;
     readonly imageTagMutability?: pulumi.Input<string>;
+    readonly imageTagMutabilityExclusionFilters?: pulumi.Input<pulumi.Input<aws.types.input.ecr.RepositoryImageTagMutabilityExclusionFilter>[]>;
     readonly lifecyclePolicy?: lifecyclePolicyInputs;
     readonly name?: pulumi.Input<string>;
     readonly region?: pulumi.Input<string>;
@@ -168,6 +169,7 @@ export interface EC2ServiceArgs {
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
+    readonly deploymentConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentConfiguration>;
     readonly deploymentController?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentController>;
     readonly deploymentMaximumPercent?: pulumi.Input<number>;
     readonly deploymentMinimumHealthyPercent?: pulumi.Input<number>;
@@ -189,6 +191,7 @@ export interface EC2ServiceArgs {
     readonly schedulingStrategy?: pulumi.Input<string>;
     readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
+    readonly sigintRollback?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
@@ -243,6 +246,7 @@ export interface FargateServiceArgs {
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
+    readonly deploymentConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentConfiguration>;
     readonly deploymentController?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentController>;
     readonly deploymentMaximumPercent?: pulumi.Input<number>;
     readonly deploymentMinimumHealthyPercent?: pulumi.Input<number>;
@@ -263,6 +267,7 @@ export interface FargateServiceArgs {
     readonly schedulingStrategy?: pulumi.Input<string>;
     readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
+    readonly sigintRollback?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
@@ -341,6 +346,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly namePrefix?: pulumi.Input<string>;
     readonly preserveHostHeader?: pulumi.Input<boolean>;
     readonly region?: pulumi.Input<string>;
+    readonly secondaryIpsAutoAssignedPerSubnet?: pulumi.Input<number>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
@@ -385,6 +391,7 @@ export interface NetworkLoadBalancerArgs {
     readonly namePrefix?: pulumi.Input<string>;
     readonly preserveHostHeader?: pulumi.Input<boolean>;
     readonly region?: pulumi.Input<string>;
+    readonly secondaryIpsAutoAssignedPerSubnet?: pulumi.Input<number>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;

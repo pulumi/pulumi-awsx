@@ -52,6 +52,8 @@ type ec2serviceArgs struct {
 	ContinueBeforeSteadyState *bool `pulumi:"continueBeforeSteadyState"`
 	// Configuration block for deployment circuit breaker. See below.
 	DeploymentCircuitBreaker *ecs.ServiceDeploymentCircuitBreaker `pulumi:"deploymentCircuitBreaker"`
+	// Configuration block for deployment settings. See below.
+	DeploymentConfiguration *ecs.ServiceDeploymentConfiguration `pulumi:"deploymentConfiguration"`
 	// Configuration block for deployment controller configuration. See below.
 	DeploymentController *ecs.ServiceDeploymentController `pulumi:"deploymentController"`
 	// Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
@@ -97,6 +99,8 @@ type ec2serviceArgs struct {
 	ServiceConnectConfiguration *ecs.ServiceServiceConnectConfiguration `pulumi:"serviceConnectConfiguration"`
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries *ecs.ServiceServiceRegistries `pulumi:"serviceRegistries"`
+	// Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+	SigintRollback *bool `pulumi:"sigintRollback"`
 	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
@@ -125,6 +129,8 @@ type EC2ServiceArgs struct {
 	ContinueBeforeSteadyState pulumi.BoolPtrInput
 	// Configuration block for deployment circuit breaker. See below.
 	DeploymentCircuitBreaker ecs.ServiceDeploymentCircuitBreakerPtrInput
+	// Configuration block for deployment settings. See below.
+	DeploymentConfiguration ecs.ServiceDeploymentConfigurationPtrInput
 	// Configuration block for deployment controller configuration. See below.
 	DeploymentController ecs.ServiceDeploymentControllerPtrInput
 	// Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
@@ -170,6 +176,8 @@ type EC2ServiceArgs struct {
 	ServiceConnectConfiguration ecs.ServiceServiceConnectConfigurationPtrInput
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries ecs.ServiceServiceRegistriesPtrInput
+	// Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+	SigintRollback pulumi.BoolPtrInput
 	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
