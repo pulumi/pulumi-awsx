@@ -511,6 +511,9 @@ export class Vpc extends schema.Vpc<VpcData> {
   async getDefaultAzs(azCount?: number): Promise<string[]> {
     const desiredCount = azCount ?? 3;
     const result = await aws.getAvailabilityZones(undefined, { parent: this });
+    if (!result.names) {
+      throw new Error("Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.");
+    }
     if (result.names.length < desiredCount) {
       throw new Error(
         `The configured region for this provider does not have at least ${desiredCount} Availability Zones. Either specify an explicit list of zones in availabilityZoneNames or choose a region with at least ${desiredCount} AZs.`,
