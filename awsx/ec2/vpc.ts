@@ -512,7 +512,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     const desiredCount = azCount ?? 3;
     const result = await aws.getAvailabilityZones(undefined, { parent: this });
     if (!result.names) {
-      throw new Error("Region must be opt-in first. Either enable the region in the UI or enable the region via Pulumi in one configurable step and preview/create the VPC in a separate step.");
+      throw new Error("Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`
     }
     if (result.names.length < desiredCount) {
       throw new Error(
