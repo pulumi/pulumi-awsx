@@ -42,7 +42,7 @@ export class RegistryImage extends pulumi.ComponentResource {
     /**
      * The underlying RegistryImage resource.
      */
-    public /*out*/ readonly image!: pulumi.Output<pulumiDocker.RegistryImage>;
+    declare public /*out*/ readonly image: pulumi.Output<pulumiDocker.RegistryImage>;
 
     /**
      * Create a RegistryImage resource with the given unique name, arguments, and options.
@@ -55,18 +55,18 @@ export class RegistryImage extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.repositoryUrl === undefined) && !opts.urn) {
+            if (args?.repositoryUrl === undefined && !opts.urn) {
                 throw new Error("Missing required property 'repositoryUrl'");
             }
-            if ((!args || args.sourceImage === undefined) && !opts.urn) {
+            if (args?.sourceImage === undefined && !opts.urn) {
                 throw new Error("Missing required property 'sourceImage'");
             }
-            resourceInputs["insecureSkipVerify"] = args ? args.insecureSkipVerify : undefined;
-            resourceInputs["keepRemotely"] = args ? args.keepRemotely : undefined;
-            resourceInputs["repositoryUrl"] = args ? args.repositoryUrl : undefined;
-            resourceInputs["sourceImage"] = args ? args.sourceImage : undefined;
-            resourceInputs["tag"] = args ? args.tag : undefined;
-            resourceInputs["triggers"] = args ? args.triggers : undefined;
+            resourceInputs["insecureSkipVerify"] = args?.insecureSkipVerify;
+            resourceInputs["keepRemotely"] = args?.keepRemotely;
+            resourceInputs["repositoryUrl"] = args?.repositoryUrl;
+            resourceInputs["sourceImage"] = args?.sourceImage;
+            resourceInputs["tag"] = args?.tag;
+            resourceInputs["triggers"] = args?.triggers;
             resourceInputs["image"] = undefined /*out*/;
         } else {
             resourceInputs["image"] = undefined /*out*/;

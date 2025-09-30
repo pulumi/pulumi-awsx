@@ -68,47 +68,47 @@ export class Vpc extends pulumi.ComponentResource {
     /**
      * The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      */
-    public /*out*/ readonly eips!: pulumi.Output<pulumiAws.ec2.Eip[]>;
+    declare public /*out*/ readonly eips: pulumi.Output<pulumiAws.ec2.Eip[]>;
     /**
      * The Internet Gateway for the VPC.
      */
-    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway>;
-    public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[]>;
+    declare public /*out*/ readonly internetGateway: pulumi.Output<pulumiAws.ec2.InternetGateway>;
+    declare public /*out*/ readonly isolatedSubnetIds: pulumi.Output<string[]>;
     /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      */
-    public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[]>;
-    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[]>;
-    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[]>;
+    declare public readonly natGateways: pulumi.Output<pulumiAws.ec2.NatGateway[]>;
+    declare public /*out*/ readonly privateSubnetIds: pulumi.Output<string[]>;
+    declare public /*out*/ readonly publicSubnetIds: pulumi.Output<string[]>;
     /**
      * The Route Table Associations for the VPC.
      */
-    public /*out*/ readonly routeTableAssociations!: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[]>;
+    declare public /*out*/ readonly routeTableAssociations: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[]>;
     /**
      * The Route Tables for the VPC.
      */
-    public /*out*/ readonly routeTables!: pulumi.Output<pulumiAws.ec2.RouteTable[]>;
+    declare public /*out*/ readonly routeTables: pulumi.Output<pulumiAws.ec2.RouteTable[]>;
     /**
      * The Routes for the VPC.
      */
-    public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[]>;
+    declare public /*out*/ readonly routes: pulumi.Output<pulumiAws.ec2.Route[]>;
     /**
      * The resolved subnet specs layout deployed to each availability zone.
      */
-    public /*out*/ readonly subnetLayout!: pulumi.Output<outputs.ec2.ResolvedSubnetSpec[]>;
+    declare public /*out*/ readonly subnetLayout: pulumi.Output<outputs.ec2.ResolvedSubnetSpec[]>;
     /**
      * The VPC's subnets.
      */
-    public /*out*/ readonly subnets!: pulumi.Output<pulumiAws.ec2.Subnet[]>;
+    declare public /*out*/ readonly subnets: pulumi.Output<pulumiAws.ec2.Subnet[]>;
     /**
      * The VPC.
      */
-    public /*out*/ readonly vpc!: pulumi.Output<pulumiAws.ec2.Vpc>;
+    declare public /*out*/ readonly vpc: pulumi.Output<pulumiAws.ec2.Vpc>;
     /**
      * The VPC Endpoints that are enabled
      */
-    public /*out*/ readonly vpcEndpoints!: pulumi.Output<pulumiAws.ec2.VpcEndpoint[]>;
-    public /*out*/ readonly vpcId!: pulumi.Output<string>;
+    declare public /*out*/ readonly vpcEndpoints: pulumi.Output<pulumiAws.ec2.VpcEndpoint[]>;
+    declare public /*out*/ readonly vpcId: pulumi.Output<string>;
 
     /**
      * Create a Vpc resource with the given unique name, arguments, and options.
@@ -121,27 +121,27 @@ export class Vpc extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["assignGeneratedIpv6CidrBlock"] = args ? args.assignGeneratedIpv6CidrBlock : undefined;
-            resourceInputs["availabilityZoneCidrMask"] = args ? args.availabilityZoneCidrMask : undefined;
-            resourceInputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
-            resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
-            resourceInputs["enableDnsHostnames"] = args ? args.enableDnsHostnames : undefined;
-            resourceInputs["enableDnsSupport"] = args ? args.enableDnsSupport : undefined;
-            resourceInputs["enableNetworkAddressUsageMetrics"] = args ? args.enableNetworkAddressUsageMetrics : undefined;
-            resourceInputs["instanceTenancy"] = args ? args.instanceTenancy : undefined;
-            resourceInputs["ipv4IpamPoolId"] = args ? args.ipv4IpamPoolId : undefined;
-            resourceInputs["ipv4NetmaskLength"] = args ? args.ipv4NetmaskLength : undefined;
-            resourceInputs["ipv6CidrBlock"] = args ? args.ipv6CidrBlock : undefined;
-            resourceInputs["ipv6CidrBlockNetworkBorderGroup"] = args ? args.ipv6CidrBlockNetworkBorderGroup : undefined;
-            resourceInputs["ipv6IpamPoolId"] = args ? args.ipv6IpamPoolId : undefined;
-            resourceInputs["ipv6NetmaskLength"] = args ? args.ipv6NetmaskLength : undefined;
-            resourceInputs["natGateways"] = args ? args.natGateways : undefined;
-            resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
-            resourceInputs["region"] = args ? args.region : undefined;
-            resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
-            resourceInputs["subnetStrategy"] = args ? args.subnetStrategy : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["vpcEndpointSpecs"] = args ? args.vpcEndpointSpecs : undefined;
+            resourceInputs["assignGeneratedIpv6CidrBlock"] = args?.assignGeneratedIpv6CidrBlock;
+            resourceInputs["availabilityZoneCidrMask"] = args?.availabilityZoneCidrMask;
+            resourceInputs["availabilityZoneNames"] = args?.availabilityZoneNames;
+            resourceInputs["cidrBlock"] = args?.cidrBlock;
+            resourceInputs["enableDnsHostnames"] = args?.enableDnsHostnames;
+            resourceInputs["enableDnsSupport"] = args?.enableDnsSupport;
+            resourceInputs["enableNetworkAddressUsageMetrics"] = args?.enableNetworkAddressUsageMetrics;
+            resourceInputs["instanceTenancy"] = args?.instanceTenancy;
+            resourceInputs["ipv4IpamPoolId"] = args?.ipv4IpamPoolId;
+            resourceInputs["ipv4NetmaskLength"] = args?.ipv4NetmaskLength;
+            resourceInputs["ipv6CidrBlock"] = args?.ipv6CidrBlock;
+            resourceInputs["ipv6CidrBlockNetworkBorderGroup"] = args?.ipv6CidrBlockNetworkBorderGroup;
+            resourceInputs["ipv6IpamPoolId"] = args?.ipv6IpamPoolId;
+            resourceInputs["ipv6NetmaskLength"] = args?.ipv6NetmaskLength;
+            resourceInputs["natGateways"] = args?.natGateways;
+            resourceInputs["numberOfAvailabilityZones"] = args?.numberOfAvailabilityZones;
+            resourceInputs["region"] = args?.region;
+            resourceInputs["subnetSpecs"] = args?.subnetSpecs;
+            resourceInputs["subnetStrategy"] = args?.subnetStrategy;
+            resourceInputs["tags"] = args?.tags;
+            resourceInputs["vpcEndpointSpecs"] = args?.vpcEndpointSpecs;
             resourceInputs["eips"] = undefined /*out*/;
             resourceInputs["internetGateway"] = undefined /*out*/;
             resourceInputs["isolatedSubnetIds"] = undefined /*out*/;

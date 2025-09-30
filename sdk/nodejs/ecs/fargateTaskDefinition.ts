@@ -32,23 +32,23 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     /**
      * Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
      */
-    public readonly executionRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
+    declare public readonly executionRole: pulumi.Output<pulumiAws.iam.Role | undefined>;
     /**
      * Computed load balancers from target groups specified of container port mappings.
      */
-    public /*out*/ readonly loadBalancers!: pulumi.Output<pulumiAws.types.output.ecs.ServiceLoadBalancer[]>;
+    declare public /*out*/ readonly loadBalancers: pulumi.Output<pulumiAws.types.output.ecs.ServiceLoadBalancer[]>;
     /**
      * Auto-created Log Group resource for use by containers.
      */
-    public readonly logGroup!: pulumi.Output<pulumiAws.cloudwatch.LogGroup | undefined>;
+    declare public readonly logGroup: pulumi.Output<pulumiAws.cloudwatch.LogGroup | undefined>;
     /**
      * Underlying ECS Task Definition resource
      */
-    public /*out*/ readonly taskDefinition!: pulumi.Output<pulumiAws.ecs.TaskDefinition>;
+    declare public /*out*/ readonly taskDefinition: pulumi.Output<pulumiAws.ecs.TaskDefinition>;
     /**
      * Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.
      */
-    public readonly taskRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
+    declare public readonly taskRole: pulumi.Output<pulumiAws.iam.Role | undefined>;
 
     /**
      * Create a FargateTaskDefinition resource with the given unique name, arguments, and options.
@@ -61,26 +61,26 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["container"] = args ? args.container : undefined;
-            resourceInputs["containers"] = args ? args.containers : undefined;
-            resourceInputs["cpu"] = args ? args.cpu : undefined;
-            resourceInputs["enableFaultInjection"] = args ? args.enableFaultInjection : undefined;
-            resourceInputs["ephemeralStorage"] = args ? args.ephemeralStorage : undefined;
-            resourceInputs["executionRole"] = args ? args.executionRole : undefined;
-            resourceInputs["family"] = args ? args.family : undefined;
-            resourceInputs["ipcMode"] = args ? args.ipcMode : undefined;
-            resourceInputs["logGroup"] = args ? args.logGroup : undefined;
-            resourceInputs["memory"] = args ? args.memory : undefined;
-            resourceInputs["pidMode"] = args ? args.pidMode : undefined;
-            resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
-            resourceInputs["proxyConfiguration"] = args ? args.proxyConfiguration : undefined;
-            resourceInputs["region"] = args ? args.region : undefined;
-            resourceInputs["runtimePlatform"] = args ? args.runtimePlatform : undefined;
-            resourceInputs["skipDestroy"] = args ? args.skipDestroy : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["taskRole"] = args ? args.taskRole : undefined;
-            resourceInputs["trackLatest"] = args ? args.trackLatest : undefined;
-            resourceInputs["volumes"] = args ? args.volumes : undefined;
+            resourceInputs["container"] = args?.container;
+            resourceInputs["containers"] = args?.containers;
+            resourceInputs["cpu"] = args?.cpu;
+            resourceInputs["enableFaultInjection"] = args?.enableFaultInjection;
+            resourceInputs["ephemeralStorage"] = args?.ephemeralStorage;
+            resourceInputs["executionRole"] = args?.executionRole;
+            resourceInputs["family"] = args?.family;
+            resourceInputs["ipcMode"] = args?.ipcMode;
+            resourceInputs["logGroup"] = args?.logGroup;
+            resourceInputs["memory"] = args?.memory;
+            resourceInputs["pidMode"] = args?.pidMode;
+            resourceInputs["placementConstraints"] = args?.placementConstraints;
+            resourceInputs["proxyConfiguration"] = args?.proxyConfiguration;
+            resourceInputs["region"] = args?.region;
+            resourceInputs["runtimePlatform"] = args?.runtimePlatform;
+            resourceInputs["skipDestroy"] = args?.skipDestroy;
+            resourceInputs["tags"] = args?.tags;
+            resourceInputs["taskRole"] = args?.taskRole;
+            resourceInputs["trackLatest"] = args?.trackLatest;
+            resourceInputs["volumes"] = args?.volumes;
             resourceInputs["loadBalancers"] = undefined /*out*/;
             resourceInputs["taskDefinition"] = undefined /*out*/;
         } else {

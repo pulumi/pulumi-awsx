@@ -28,7 +28,7 @@ export class Image extends pulumi.ComponentResource {
     /**
      * Unique identifier of the pushed image
      */
-    public /*out*/ readonly imageUri!: pulumi.Output<string>;
+    declare public /*out*/ readonly imageUri: pulumi.Output<string>;
 
     /**
      * Create a Image resource with the given unique name, arguments, and options.
@@ -41,20 +41,20 @@ export class Image extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.repositoryUrl === undefined) && !opts.urn) {
+            if (args?.repositoryUrl === undefined && !opts.urn) {
                 throw new Error("Missing required property 'repositoryUrl'");
             }
-            resourceInputs["args"] = args ? args.args : undefined;
-            resourceInputs["builderVersion"] = args ? args.builderVersion : undefined;
-            resourceInputs["cacheFrom"] = args ? args.cacheFrom : undefined;
-            resourceInputs["context"] = args ? args.context : undefined;
-            resourceInputs["dockerfile"] = args ? args.dockerfile : undefined;
-            resourceInputs["imageName"] = args ? args.imageName : undefined;
-            resourceInputs["imageTag"] = args ? args.imageTag : undefined;
-            resourceInputs["platform"] = args ? args.platform : undefined;
-            resourceInputs["registryId"] = args ? args.registryId : undefined;
-            resourceInputs["repositoryUrl"] = args ? args.repositoryUrl : undefined;
-            resourceInputs["target"] = args ? args.target : undefined;
+            resourceInputs["args"] = args?.args;
+            resourceInputs["builderVersion"] = args?.builderVersion;
+            resourceInputs["cacheFrom"] = args?.cacheFrom;
+            resourceInputs["context"] = args?.context;
+            resourceInputs["dockerfile"] = args?.dockerfile;
+            resourceInputs["imageName"] = args?.imageName;
+            resourceInputs["imageTag"] = args?.imageTag;
+            resourceInputs["platform"] = args?.platform;
+            resourceInputs["registryId"] = args?.registryId;
+            resourceInputs["repositoryUrl"] = args?.repositoryUrl;
+            resourceInputs["target"] = args?.target;
             resourceInputs["imageUri"] = undefined /*out*/;
         } else {
             resourceInputs["imageUri"] = undefined /*out*/;
