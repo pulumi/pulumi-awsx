@@ -32,15 +32,15 @@ export class Repository extends pulumi.ComponentResource {
     /**
      * Underlying repository lifecycle policy
      */
-    public readonly lifecyclePolicy!: pulumi.Output<pulumiAws.ecr.LifecyclePolicy | undefined>;
+    declare public readonly lifecyclePolicy: pulumi.Output<pulumiAws.ecr.LifecyclePolicy | undefined>;
     /**
      * Underlying Repository resource
      */
-    public /*out*/ readonly repository!: pulumi.Output<pulumiAws.ecr.Repository>;
+    declare public /*out*/ readonly repository: pulumi.Output<pulumiAws.ecr.Repository>;
     /**
      * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      */
-    public /*out*/ readonly url!: pulumi.Output<string>;
+    declare public /*out*/ readonly url: pulumi.Output<string>;
 
     /**
      * Create a Repository resource with the given unique name, arguments, and options.
@@ -53,15 +53,15 @@ export class Repository extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["encryptionConfigurations"] = args ? args.encryptionConfigurations : undefined;
-            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
-            resourceInputs["imageScanningConfiguration"] = args ? args.imageScanningConfiguration : undefined;
-            resourceInputs["imageTagMutability"] = args ? args.imageTagMutability : undefined;
-            resourceInputs["imageTagMutabilityExclusionFilters"] = args ? args.imageTagMutabilityExclusionFilters : undefined;
-            resourceInputs["lifecyclePolicy"] = args ? args.lifecyclePolicy : undefined;
-            resourceInputs["name"] = args ? args.name : undefined;
-            resourceInputs["region"] = args ? args.region : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["encryptionConfigurations"] = args?.encryptionConfigurations;
+            resourceInputs["forceDelete"] = args?.forceDelete;
+            resourceInputs["imageScanningConfiguration"] = args?.imageScanningConfiguration;
+            resourceInputs["imageTagMutability"] = args?.imageTagMutability;
+            resourceInputs["imageTagMutabilityExclusionFilters"] = args?.imageTagMutabilityExclusionFilters;
+            resourceInputs["lifecyclePolicy"] = args?.lifecyclePolicy;
+            resourceInputs["name"] = args?.name;
+            resourceInputs["region"] = args?.region;
+            resourceInputs["tags"] = args?.tags;
             resourceInputs["repository"] = undefined /*out*/;
             resourceInputs["url"] = undefined /*out*/;
         } else {

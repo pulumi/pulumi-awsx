@@ -31,11 +31,11 @@ export class FargateService extends pulumi.ComponentResource {
     /**
      * Underlying ECS Service resource
      */
-    public /*out*/ readonly service!: pulumi.Output<pulumiAws.ecs.Service>;
+    declare public /*out*/ readonly service: pulumi.Output<pulumiAws.ecs.Service>;
     /**
      * Underlying Fargate component resource if created from args
      */
-    public readonly taskDefinition!: pulumi.Output<pulumiAws.ecs.TaskDefinition | undefined>;
+    declare public readonly taskDefinition: pulumi.Output<pulumiAws.ecs.TaskDefinition | undefined>;
 
     /**
      * Create a FargateService resource with the given unique name, arguments, and options.
@@ -48,40 +48,40 @@ export class FargateService extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["alarms"] = args ? args.alarms : undefined;
-            resourceInputs["assignPublicIp"] = args ? args.assignPublicIp : undefined;
-            resourceInputs["availabilityZoneRebalancing"] = args ? args.availabilityZoneRebalancing : undefined;
-            resourceInputs["cluster"] = args ? args.cluster : undefined;
-            resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
-            resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
-            resourceInputs["deploymentConfiguration"] = args ? args.deploymentConfiguration : undefined;
-            resourceInputs["deploymentController"] = args ? args.deploymentController : undefined;
-            resourceInputs["deploymentMaximumPercent"] = args ? args.deploymentMaximumPercent : undefined;
-            resourceInputs["deploymentMinimumHealthyPercent"] = args ? args.deploymentMinimumHealthyPercent : undefined;
-            resourceInputs["desiredCount"] = args ? args.desiredCount : undefined;
-            resourceInputs["enableEcsManagedTags"] = args ? args.enableEcsManagedTags : undefined;
-            resourceInputs["enableExecuteCommand"] = args ? args.enableExecuteCommand : undefined;
-            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
-            resourceInputs["forceNewDeployment"] = args ? args.forceNewDeployment : undefined;
-            resourceInputs["healthCheckGracePeriodSeconds"] = args ? args.healthCheckGracePeriodSeconds : undefined;
-            resourceInputs["iamRole"] = args ? args.iamRole : undefined;
-            resourceInputs["loadBalancers"] = args ? args.loadBalancers : undefined;
-            resourceInputs["name"] = args ? args.name : undefined;
-            resourceInputs["networkConfiguration"] = args ? args.networkConfiguration : undefined;
-            resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
-            resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
-            resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
-            resourceInputs["region"] = args ? args.region : undefined;
-            resourceInputs["schedulingStrategy"] = args ? args.schedulingStrategy : undefined;
-            resourceInputs["serviceConnectConfiguration"] = args ? args.serviceConnectConfiguration : undefined;
-            resourceInputs["serviceRegistries"] = args ? args.serviceRegistries : undefined;
-            resourceInputs["sigintRollback"] = args ? args.sigintRollback : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
-            resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
-            resourceInputs["triggers"] = args ? args.triggers : undefined;
-            resourceInputs["volumeConfiguration"] = args ? args.volumeConfiguration : undefined;
-            resourceInputs["vpcLatticeConfigurations"] = args ? args.vpcLatticeConfigurations : undefined;
+            resourceInputs["alarms"] = args?.alarms;
+            resourceInputs["assignPublicIp"] = args?.assignPublicIp;
+            resourceInputs["availabilityZoneRebalancing"] = args?.availabilityZoneRebalancing;
+            resourceInputs["cluster"] = args?.cluster;
+            resourceInputs["continueBeforeSteadyState"] = args?.continueBeforeSteadyState;
+            resourceInputs["deploymentCircuitBreaker"] = args?.deploymentCircuitBreaker;
+            resourceInputs["deploymentConfiguration"] = args?.deploymentConfiguration;
+            resourceInputs["deploymentController"] = args?.deploymentController;
+            resourceInputs["deploymentMaximumPercent"] = args?.deploymentMaximumPercent;
+            resourceInputs["deploymentMinimumHealthyPercent"] = args?.deploymentMinimumHealthyPercent;
+            resourceInputs["desiredCount"] = args?.desiredCount;
+            resourceInputs["enableEcsManagedTags"] = args?.enableEcsManagedTags;
+            resourceInputs["enableExecuteCommand"] = args?.enableExecuteCommand;
+            resourceInputs["forceDelete"] = args?.forceDelete;
+            resourceInputs["forceNewDeployment"] = args?.forceNewDeployment;
+            resourceInputs["healthCheckGracePeriodSeconds"] = args?.healthCheckGracePeriodSeconds;
+            resourceInputs["iamRole"] = args?.iamRole;
+            resourceInputs["loadBalancers"] = args?.loadBalancers;
+            resourceInputs["name"] = args?.name;
+            resourceInputs["networkConfiguration"] = args?.networkConfiguration;
+            resourceInputs["placementConstraints"] = args?.placementConstraints;
+            resourceInputs["platformVersion"] = args?.platformVersion;
+            resourceInputs["propagateTags"] = args?.propagateTags;
+            resourceInputs["region"] = args?.region;
+            resourceInputs["schedulingStrategy"] = args?.schedulingStrategy;
+            resourceInputs["serviceConnectConfiguration"] = args?.serviceConnectConfiguration;
+            resourceInputs["serviceRegistries"] = args?.serviceRegistries;
+            resourceInputs["sigintRollback"] = args?.sigintRollback;
+            resourceInputs["tags"] = args?.tags;
+            resourceInputs["taskDefinition"] = args?.taskDefinition;
+            resourceInputs["taskDefinitionArgs"] = args?.taskDefinitionArgs;
+            resourceInputs["triggers"] = args?.triggers;
+            resourceInputs["volumeConfiguration"] = args?.volumeConfiguration;
+            resourceInputs["vpcLatticeConfigurations"] = args?.vpcLatticeConfigurations;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;

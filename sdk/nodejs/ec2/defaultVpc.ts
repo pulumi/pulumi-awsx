@@ -22,12 +22,12 @@ export class DefaultVpc extends pulumi.ComponentResource {
         return obj['__pulumiType'] === DefaultVpc.__pulumiType;
     }
 
-    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[]>;
-    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[]>;
+    declare public /*out*/ readonly privateSubnetIds: pulumi.Output<string[]>;
+    declare public /*out*/ readonly publicSubnetIds: pulumi.Output<string[]>;
     /**
      * The VPC ID for the default VPC
      */
-    public /*out*/ readonly vpcId!: pulumi.Output<string>;
+    declare public /*out*/ readonly vpcId: pulumi.Output<string>;
 
     /**
      * Create a DefaultVpc resource with the given unique name, arguments, and options.

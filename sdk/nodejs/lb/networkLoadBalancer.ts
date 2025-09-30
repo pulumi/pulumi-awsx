@@ -30,19 +30,19 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
     /**
      * Default target group, if auto-created
      */
-    public readonly defaultTargetGroup!: pulumi.Output<pulumiAws.lb.TargetGroup>;
+    declare public readonly defaultTargetGroup: pulumi.Output<pulumiAws.lb.TargetGroup>;
     /**
      * Listeners created as part of this load balancer
      */
-    public readonly listeners!: pulumi.Output<pulumiAws.lb.Listener[] | undefined>;
+    declare public readonly listeners: pulumi.Output<pulumiAws.lb.Listener[] | undefined>;
     /**
      * Underlying Load Balancer resource
      */
-    public /*out*/ readonly loadBalancer!: pulumi.Output<pulumiAws.lb.LoadBalancer>;
+    declare public /*out*/ readonly loadBalancer: pulumi.Output<pulumiAws.lb.LoadBalancer>;
     /**
      * Id of the VPC in which this load balancer is operating
      */
-    public /*out*/ readonly vpcId!: pulumi.Output<string | undefined>;
+    declare public /*out*/ readonly vpcId: pulumi.Output<string | undefined>;
 
     /**
      * Create a NetworkLoadBalancer resource with the given unique name, arguments, and options.
@@ -55,40 +55,40 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["accessLogs"] = args ? args.accessLogs : undefined;
-            resourceInputs["clientKeepAlive"] = args ? args.clientKeepAlive : undefined;
-            resourceInputs["connectionLogs"] = args ? args.connectionLogs : undefined;
-            resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
-            resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
-            resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
-            resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
-            resourceInputs["dnsRecordClientRoutingPolicy"] = args ? args.dnsRecordClientRoutingPolicy : undefined;
-            resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
-            resourceInputs["enableCrossZoneLoadBalancing"] = args ? args.enableCrossZoneLoadBalancing : undefined;
-            resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
-            resourceInputs["enableTlsVersionAndCipherSuiteHeaders"] = args ? args.enableTlsVersionAndCipherSuiteHeaders : undefined;
-            resourceInputs["enableWafFailOpen"] = args ? args.enableWafFailOpen : undefined;
-            resourceInputs["enableXffClientPort"] = args ? args.enableXffClientPort : undefined;
-            resourceInputs["enableZonalShift"] = args ? args.enableZonalShift : undefined;
-            resourceInputs["enforceSecurityGroupInboundRulesOnPrivateLinkTraffic"] = args ? args.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic : undefined;
-            resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
-            resourceInputs["internal"] = args ? args.internal : undefined;
-            resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
-            resourceInputs["ipamPools"] = args ? args.ipamPools : undefined;
-            resourceInputs["listener"] = args ? args.listener : undefined;
-            resourceInputs["listeners"] = args ? args.listeners : undefined;
-            resourceInputs["minimumLoadBalancerCapacity"] = args ? args.minimumLoadBalancerCapacity : undefined;
-            resourceInputs["name"] = args ? args.name : undefined;
-            resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
-            resourceInputs["preserveHostHeader"] = args ? args.preserveHostHeader : undefined;
-            resourceInputs["region"] = args ? args.region : undefined;
-            resourceInputs["secondaryIpsAutoAssignedPerSubnet"] = args ? args.secondaryIpsAutoAssignedPerSubnet : undefined;
-            resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
-            resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
-            resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
-            resourceInputs["subnets"] = args ? args.subnets : undefined;
-            resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["xffHeaderProcessingMode"] = args ? args.xffHeaderProcessingMode : undefined;
+            resourceInputs["accessLogs"] = args?.accessLogs;
+            resourceInputs["clientKeepAlive"] = args?.clientKeepAlive;
+            resourceInputs["connectionLogs"] = args?.connectionLogs;
+            resourceInputs["customerOwnedIpv4Pool"] = args?.customerOwnedIpv4Pool;
+            resourceInputs["defaultTargetGroup"] = args?.defaultTargetGroup;
+            resourceInputs["defaultTargetGroupPort"] = args?.defaultTargetGroupPort;
+            resourceInputs["desyncMitigationMode"] = args?.desyncMitigationMode;
+            resourceInputs["dnsRecordClientRoutingPolicy"] = args?.dnsRecordClientRoutingPolicy;
+            resourceInputs["dropInvalidHeaderFields"] = args?.dropInvalidHeaderFields;
+            resourceInputs["enableCrossZoneLoadBalancing"] = args?.enableCrossZoneLoadBalancing;
+            resourceInputs["enableDeletionProtection"] = args?.enableDeletionProtection;
+            resourceInputs["enableTlsVersionAndCipherSuiteHeaders"] = args?.enableTlsVersionAndCipherSuiteHeaders;
+            resourceInputs["enableWafFailOpen"] = args?.enableWafFailOpen;
+            resourceInputs["enableXffClientPort"] = args?.enableXffClientPort;
+            resourceInputs["enableZonalShift"] = args?.enableZonalShift;
+            resourceInputs["enforceSecurityGroupInboundRulesOnPrivateLinkTraffic"] = args?.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+            resourceInputs["idleTimeout"] = args?.idleTimeout;
+            resourceInputs["internal"] = args?.internal;
+            resourceInputs["ipAddressType"] = args?.ipAddressType;
+            resourceInputs["ipamPools"] = args?.ipamPools;
+            resourceInputs["listener"] = args?.listener;
+            resourceInputs["listeners"] = args?.listeners;
+            resourceInputs["minimumLoadBalancerCapacity"] = args?.minimumLoadBalancerCapacity;
+            resourceInputs["name"] = args?.name;
+            resourceInputs["namePrefix"] = args?.namePrefix;
+            resourceInputs["preserveHostHeader"] = args?.preserveHostHeader;
+            resourceInputs["region"] = args?.region;
+            resourceInputs["secondaryIpsAutoAssignedPerSubnet"] = args?.secondaryIpsAutoAssignedPerSubnet;
+            resourceInputs["securityGroups"] = args?.securityGroups;
+            resourceInputs["subnetIds"] = args?.subnetIds;
+            resourceInputs["subnetMappings"] = args?.subnetMappings;
+            resourceInputs["subnets"] = args?.subnets;
+            resourceInputs["tags"] = args?.tags;
+            resourceInputs["xffHeaderProcessingMode"] = args?.xffHeaderProcessingMode;
             resourceInputs["loadBalancer"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {

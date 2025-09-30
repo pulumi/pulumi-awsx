@@ -27,11 +27,11 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     /**
      * Auto-created Lambda permission, if targeting a Lambda function
      */
-    public /*out*/ readonly lambdaPermission!: pulumi.Output<pulumiAws.lambda.Permission | undefined>;
+    declare public /*out*/ readonly lambdaPermission: pulumi.Output<pulumiAws.lambda.Permission | undefined>;
     /**
      * Underlying Target Group Attachment resource
      */
-    public /*out*/ readonly targetGroupAttachment!: pulumi.Output<pulumiAws.lb.TargetGroupAttachment>;
+    declare public /*out*/ readonly targetGroupAttachment: pulumi.Output<pulumiAws.lb.TargetGroupAttachment>;
 
     /**
      * Create a TargetGroupAttachment resource with the given unique name, arguments, and options.
@@ -44,12 +44,12 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["instance"] = args ? args.instance : undefined;
-            resourceInputs["instanceId"] = args ? args.instanceId : undefined;
-            resourceInputs["lambda"] = args ? args.lambda : undefined;
-            resourceInputs["lambdaArn"] = args ? args.lambdaArn : undefined;
-            resourceInputs["targetGroup"] = args ? args.targetGroup : undefined;
-            resourceInputs["targetGroupArn"] = args ? args.targetGroupArn : undefined;
+            resourceInputs["instance"] = args?.instance;
+            resourceInputs["instanceId"] = args?.instanceId;
+            resourceInputs["lambda"] = args?.lambda;
+            resourceInputs["lambdaArn"] = args?.lambdaArn;
+            resourceInputs["targetGroup"] = args?.targetGroup;
+            resourceInputs["targetGroupArn"] = args?.targetGroupArn;
             resourceInputs["lambdaPermission"] = undefined /*out*/;
             resourceInputs["targetGroupAttachment"] = undefined /*out*/;
         } else {
