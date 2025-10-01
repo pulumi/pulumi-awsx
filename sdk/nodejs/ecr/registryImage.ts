@@ -61,6 +61,7 @@ export class RegistryImage extends pulumi.ComponentResource {
             if (args?.sourceImage === undefined && !opts.urn) {
                 throw new Error("Missing required property 'sourceImage'");
             }
+            resourceInputs["authConfig"] = args?.authConfig;
             resourceInputs["insecureSkipVerify"] = args?.insecureSkipVerify;
             resourceInputs["keepRemotely"] = args?.keepRemotely;
             resourceInputs["repositoryUrl"] = args?.repositoryUrl;
@@ -80,6 +81,10 @@ export class RegistryImage extends pulumi.ComponentResource {
  * The set of arguments for constructing a RegistryImage resource.
  */
 export interface RegistryImageArgs {
+    /**
+     * Authentication configuration for the Docker registry. It is only used for this resource.
+     */
+    authConfig?: pulumi.Input<pulumiDocker.types.input.RegistryImageAuthConfig>;
     /**
      * If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
      */
