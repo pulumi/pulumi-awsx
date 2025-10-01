@@ -22,6 +22,7 @@ class RegistryImageArgs:
     def __init__(__self__, *,
                  repository_url: pulumi.Input[_builtins.str],
                  source_image: pulumi.Input[_builtins.str],
+                 auth_config: Optional[pulumi.Input['pulumi_docker.RegistryImageAuthConfigArgs']] = None,
                  insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
                  keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
                  tag: Optional[pulumi.Input[_builtins.str]] = None,
@@ -30,6 +31,7 @@ class RegistryImageArgs:
         The set of arguments for constructing a RegistryImage resource.
         :param pulumi.Input[_builtins.str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         :param pulumi.Input[_builtins.str] source_image: The source image to push to the registry.
+        :param pulumi.Input['pulumi_docker.RegistryImageAuthConfigArgs'] auth_config: Authentication configuration for the Docker registry. It is only used for this resource.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[_builtins.bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
         :param pulumi.Input[_builtins.str] tag: The tag to use for the pushed image. If not provided, it defaults to `latest`.
@@ -37,6 +39,8 @@ class RegistryImageArgs:
         """
         pulumi.set(__self__, "repository_url", repository_url)
         pulumi.set(__self__, "source_image", source_image)
+        if auth_config is not None:
+            pulumi.set(__self__, "auth_config", auth_config)
         if insecure_skip_verify is not None:
             pulumi.set(__self__, "insecure_skip_verify", insecure_skip_verify)
         if keep_remotely is not None:
@@ -69,6 +73,18 @@ class RegistryImageArgs:
     @source_image.setter
     def source_image(self, value: pulumi.Input[_builtins.str]):
         pulumi.set(self, "source_image", value)
+
+    @_builtins.property
+    @pulumi.getter(name="authConfig")
+    def auth_config(self) -> Optional[pulumi.Input['pulumi_docker.RegistryImageAuthConfigArgs']]:
+        """
+        Authentication configuration for the Docker registry. It is only used for this resource.
+        """
+        return pulumi.get(self, "auth_config")
+
+    @auth_config.setter
+    def auth_config(self, value: Optional[pulumi.Input['pulumi_docker.RegistryImageAuthConfigArgs']]):
+        pulumi.set(self, "auth_config", value)
 
     @_builtins.property
     @pulumi.getter(name="insecureSkipVerify")
@@ -125,6 +141,7 @@ class RegistryImage(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 auth_config: Optional[pulumi.Input[pulumi.InputType['pulumi_docker.RegistryImageAuthConfigArgs']]] = None,
                  insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
                  keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
                  repository_url: Optional[pulumi.Input[_builtins.str]] = None,
@@ -150,6 +167,7 @@ class RegistryImage(pulumi.ComponentResource):
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[pulumi.InputType['pulumi_docker.RegistryImageAuthConfigArgs']] auth_config: Authentication configuration for the Docker registry. It is only used for this resource.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         :param pulumi.Input[_builtins.bool] keep_remotely: If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
         :param pulumi.Input[_builtins.str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
@@ -194,6 +212,7 @@ class RegistryImage(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 auth_config: Optional[pulumi.Input[pulumi.InputType['pulumi_docker.RegistryImageAuthConfigArgs']]] = None,
                  insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
                  keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
                  repository_url: Optional[pulumi.Input[_builtins.str]] = None,
@@ -211,6 +230,7 @@ class RegistryImage(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = RegistryImageArgs.__new__(RegistryImageArgs)
 
+            __props__.__dict__["auth_config"] = auth_config
             __props__.__dict__["insecure_skip_verify"] = insecure_skip_verify
             __props__.__dict__["keep_remotely"] = keep_remotely
             if repository_url is None and not opts.urn:
