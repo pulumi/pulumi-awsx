@@ -24,6 +24,11 @@ url = "https://github.com/pulumi/schema-tools/releases/download/v0.6.0/schema-to
 version = "1.23.3"
 backend = "core:go"
 
+[tools.go.platforms.linux-x64]
+checksum = "sha256:a0afb9744c00648bafb1b90b4aba5bdb86f424f02f9275399ce0c20b93a2c3a8"
+size = 73629129
+url = "https://dl.google.com/go/go1.23.3.linux-amd64.tar.gz"
+
 [[tools.golangci-lint]]
 version = "1.64.8"
 backend = "aqua:golangci/golangci-lint"
@@ -63,6 +68,11 @@ url = "https://nodejs.org/dist/v20.19.5/node-v20.19.5-linux-x64.tar.gz"
 [[tools.pulumi]]
 version = "3.165.0"
 backend = "aqua:pulumi/pulumi"
+
+[tools.pulumi.platforms.linux-x64]
+checksum = "sha512:0b26c4012f386f690808e6cb3972ef4247ef3d7c4ead11fcb2d5d3790314f8a997415000b81a26f38d59f1bb9c03906bfd2a7c6efd1490b8051e73a80064b2cc"
+size = 90243730
+url = "https://github.com/pulumi/pulumi/releases/download/v3.165.0/pulumi-v3.165.0-linux-x64.tar.gz"
 
 [[tools.python]]
 version = "3.11.8"
