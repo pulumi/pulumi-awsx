@@ -38,7 +38,7 @@
             "dependencies": {
                 "com.pulumi:aws": "7.7.0",
                 "com.pulumi:docker": "4.6.0",
-                "com.pulumi:docker-build": "0.0.8"
+                "com.pulumi:docker-build": "0.0.14"
             }
         },
         "nodejs": {
@@ -46,7 +46,7 @@
                 "@aws-sdk/client-ecs": "^3.405.0",
                 "@pulumi/aws": "^7.7.0",
                 "@pulumi/docker": "^4.6.0",
-                "@pulumi/docker-build": "^0.0.8",
+                "@pulumi/docker-build": "^0.0.14",
                 "@types/aws-lambda": "^8.10.23",
                 "docker-classic": "npm:@pulumi/docker@3.6.1",
                 "mime": "^2.0.0"
@@ -67,7 +67,7 @@
             "requires": {
                 "pulumi-aws": "\u003e=7.0.0,\u003c8.0.0",
                 "pulumi-docker": "\u003e=4.6.0,\u003c5.0.0",
-                "pulumi-docker-build": "\u003e=0.0.8,\u003c1.0.0"
+                "pulumi-docker-build": "\u003e=0.0.14,\u003c1.0.0"
             },
             "respectSchemaVersion": true,
             "usesIOClasses": true
