@@ -12,6 +12,8 @@ on:
 
 env:
   PR_COMMIT_SHA: ${{ github.event.client_payload.pull_request.head.sha }}
+  MISE_ENV: test
+
   AWS_REGION: us-west-2
   GOLANGCI_LINT_VERSION: v1.61.0
   PROVIDER: awsx

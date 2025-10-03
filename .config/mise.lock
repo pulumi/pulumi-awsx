@@ -21,8 +21,13 @@ size = 14282746
 url = "https://github.com/pulumi/schema-tools/releases/download/v0.6.0/schema-tools-v0.6.0-linux-amd64.tar.gz"
 
 [[tools.go]]
-version = "1.23.3"
+version = "1.23.11"
 backend = "core:go"
+
+[tools.go.platforms.linux-x64]
+checksum = "sha256:80899df77459e0b551d2eb8800ad6eb47023b99cccbf8129e7b5786770b948c5"
+size = 73665098
+url = "https://dl.google.com/go/go1.23.11.linux-amd64.tar.gz"
 
 [[tools.golangci-lint]]
 version = "1.64.8"
@@ -60,9 +65,18 @@ checksum = "sha256:4eba5fbe1fb10753bc06e42f001a91c5cec16798b7764a3e9257adc59af47
 size = 47041607
 url = "https://nodejs.org/dist/v20.19.5/node-v20.19.5-linux-x64.tar.gz"
 
+[[tools."npm:yarn"]]
+version = "1.22.22"
+backend = "npm:yarn"
+
 [[tools.pulumi]]
-version = "3.165.0"
+version = "3.198.0"
 backend = "aqua:pulumi/pulumi"
+
+[tools.pulumi.platforms.linux-x64]
+checksum = "sha512:a5317ad0518d0d9ef531052fe620493cf1d7d4b86b1cae54a77eac6056e2f198dd659906dcb657a510f5790d1b8adc8f716ee17e6f688da8854e3d9618a6ed2a"
+size = 93850453
+url = "https://github.com/pulumi/pulumi/releases/download/v3.198.0/pulumi-v3.198.0-linux-x64.tar.gz"
 
 [[tools.python]]
 version = "3.11.8"
