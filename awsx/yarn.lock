@@ -1676,7 +1676,7 @@
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
-"@pulumi/docker@4.6.0":
+"@pulumi/docker@4.6.0", "docker-classic@npm:@pulumi/docker@4.6.0":
   version "4.6.0"
   resolved "https://registry.npmjs.org/@pulumi/docker/-/docker-4.6.0.tgz"
   integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
@@ -1684,10 +1684,10 @@
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@3.160.0", "@pulumi/pulumi@^3.142.0":
-  version "3.160.0"
-  resolved "https://registry.npmjs.org/@pulumi/pulumi/-/pulumi-3.160.0.tgz"
-  integrity sha512-ZQtryqkvJxuugra2t4a5ROmKFEIazSbpvC/W2Qv2Gmw7UPDxtKiYLJQVX/ZQg06Lu3MfoJ1z3S+gvt71R5OYHw==
+"@pulumi/pulumi@3.200.0", "@pulumi/pulumi@^3.142.0":
+  version "3.200.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.200.0.tgz#a5092d62f6c98b2a54a2d6bb13db42f8970486f8"
+  integrity sha512-DnSGAo2AEnGIcuT70FYw++431eHn8jSPIscD1uQ8wRdYG3KIse0tSzyfAQTHwdZ1hqjjpdFMVYF5ZGZkLhd19g==
   dependencies:
     "@grpc/grpc-js" "^1.10.1"
     "@logdna/tail-file" "^2.0.6"
@@ -1699,13 +1699,12 @@
     "@opentelemetry/resources" "^1.28"
     "@opentelemetry/sdk-trace-base" "^1.28"
     "@opentelemetry/sdk-trace-node" "^1.28"
-    "@pulumi/query" "^0.3.0"
     "@types/google-protobuf" "^3.15.5"
     "@types/semver" "^7.5.6"
     "@types/tmp" "^0.2.6"
     execa "^5.1.0"
     fdir "^6.1.1"
-    google-protobuf "^3.5.0"
+    google-protobuf "^3.21.4"
     got "^11.8.6"
     ini "^2.0.0"
     js-yaml "^3.14.0"
@@ -1716,7 +1715,7 @@
     require-from-string "^2.0.1"
     semver "^7.5.2"
     source-map-support "^0.5.6"
-    tmp "^0.2.1"
+    tmp "^0.2.4"
     upath "^1.1.0"
 
 "@pulumi/query@^0.3.0":
@@ -2681,14 +2680,6 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-"docker-classic@npm:@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.npmjs.org/@pulumi/docker/-/docker-4.6.0.tgz"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
-  dependencies:
-    "@pulumi/pulumi" "^3.142.0"
-    semver "^5.4.0"
-
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
@@ -3127,7 +3118,7 @@ globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-google-protobuf@^3.5.0:
+google-protobuf@^3.21.4, google-protobuf@^3.5.0:
   version "3.21.4"
   resolved "https://registry.npmjs.org/google-protobuf/-/google-protobuf-3.21.4.tgz"
   integrity sha512-MnG7N936zcKTco4Jd2PX2U96Kf9PxygAPKBug+74LHzmHXmceN16MmRcdgZv+DGef/S9YvQAfRsNCn4cjf9yyQ==
@@ -5273,16 +5264,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -5314,14 +5296,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -5445,10 +5420,10 @@ timers-ext@^0.1.7:
     es5-ext "~0.10.46"
     next-tick "1"
 
-tmp@^0.2.1:
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/tmp/-/tmp-0.2.3.tgz"
-  integrity sha512-nZD7m9iCPC5g0pYmcaxogYKggSfLsdxl8of3Q/oIbqCqLLIO9IAF0GWjX1z9NZRHPiXv8Wex4yDCaZsgEw0Y8w==
+tmp@^0.2.1, tmp@^0.2.4:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.5.tgz#b06bcd23f0f3c8357b426891726d16015abfd8f8"
+  integrity sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow==
 
 tmpl@1.0.5:
   version "1.0.5"
@@ -5764,16 +5739,7 @@ which@^4.0.0:
   dependencies:
     isexe "^3.1.1"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
