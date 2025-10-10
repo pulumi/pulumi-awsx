@@ -44,7 +44,7 @@ type fargateServiceArgs struct {
 	Alarms *ecs.ServiceAlarms `pulumi:"alarms"`
 	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
 	AssignPublicIp *bool `pulumi:"assignPublicIp"`
-	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
 	AvailabilityZoneRebalancing *string `pulumi:"availabilityZoneRebalancing"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
@@ -119,7 +119,7 @@ type FargateServiceArgs struct {
 	Alarms ecs.ServiceAlarmsPtrInput
 	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
 	AssignPublicIp pulumi.BoolPtrInput
-	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
 	AvailabilityZoneRebalancing pulumi.StringPtrInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput

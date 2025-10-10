@@ -61,8 +61,8 @@ class EC2ServiceArgs:
         """
         The set of arguments for constructing a EC2Service resource.
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
-        :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+        :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
         :param pulumi.Input[_builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[_builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -186,7 +186,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="availabilityZoneRebalancing")
     def availability_zone_rebalancing(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
         """
         return pulumi.get(self, "availability_zone_rebalancing")
 
@@ -198,7 +198,7 @@ class EC2ServiceArgs:
     @pulumi.getter(name="capacityProviderStrategies")
     def capacity_provider_strategies(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]:
         """
-        Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+        Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
         """
         return pulumi.get(self, "capacity_provider_strategies")
 
@@ -643,8 +643,8 @@ class EC2Service(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
-        :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+        :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
         :param pulumi.Input[_builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[_builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
