@@ -9,7 +9,7 @@ require (
 	github.com/pulumi/pulumi-aws/sdk/v7 v7.7.0
 	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8
-	github.com/pulumi/pulumi/sdk/v3 v3.200.0
+	github.com/pulumi/pulumi/sdk/v3 v3.201.0
 )
 
 require (
