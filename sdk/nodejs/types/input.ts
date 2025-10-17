@@ -1385,14 +1385,6 @@ export namespace ec2 {
      *       vpcId: ${exampleAwsVpc.id}
      * ```
      * <!--End PulumiCodeChooser -->
-     *
-     * ## Import
-     *
-     * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
-     *
-     * ```sh
-     * $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-     * ```
      */
     export interface VpcEndpointSpecArgs {
         /**
@@ -3750,11 +3742,17 @@ export namespace lb {
      *
      * ## Import
      *
+     * ### Identity Schema
+     *
+     * #### Required
+     *
+     * - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+     *
      * Using `pulumi import`, import listeners using their ARN. For example:
      *
-     * ```sh
-     * $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-     * ```
+     * console
+     *
+     * % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
      */
     export interface ListenerArgs {
         /**
@@ -4669,11 +4667,17 @@ export namespace lb {
      *
      * ## Import
      *
+     * ### Identity Schema
+     *
+     * #### Required
+     *
+     * - `arn` (String) Amazon Resource Name (ARN) of the target group.
+     *
      * Using `pulumi import`, import Target Groups using their ARN. For example:
      *
-     * ```sh
-     * $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-     * ```
+     * console
+     *
+     * % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
      */
     export interface TargetGroupArgs {
         /**
