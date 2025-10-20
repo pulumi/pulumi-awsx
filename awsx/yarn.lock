@@ -1684,10 +1684,10 @@
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@3.200.0", "@pulumi/pulumi@^3.142.0":
-  version "3.200.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.200.0.tgz#a5092d62f6c98b2a54a2d6bb13db42f8970486f8"
-  integrity sha512-DnSGAo2AEnGIcuT70FYw++431eHn8jSPIscD1uQ8wRdYG3KIse0tSzyfAQTHwdZ1hqjjpdFMVYF5ZGZkLhd19g==
+"@pulumi/pulumi@3.203.0", "@pulumi/pulumi@^3.142.0":
+  version "3.203.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.203.0.tgz#a0fd2ac723ef2ca38bd64f197031a7f0f49c24fa"
+  integrity sha512-wXGzxYC61DF+YtJYwidxrpvRxn2y3+ML5OUuAQWUzPgM0byEgKotHAhadQ9uvfutSE262mmoqv5skXaDJdBGzQ==
   dependencies:
     "@grpc/grpc-js" "^1.10.1"
     "@logdna/tail-file" "^2.0.6"
@@ -1717,11 +1717,6 @@
     source-map-support "^0.5.6"
     tmp "^0.2.4"
     upath "^1.1.0"
-
-"@pulumi/query@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/query/-/query-0.3.0.tgz#f496608e86a18c3dd31b6c533408e2441c29071d"
-  integrity sha512-xfo+yLRM2zVjVEA4p23IjQWzyWl1ZhWOGobsBqRpIarzLvwNH/RAGaoehdxlhx4X92302DrpdIFgTICMN4P38w==
 
 "@sigstore/bundle@^2.3.2":
   version "2.3.2"
@@ -3118,7 +3113,7 @@ globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-google-protobuf@^3.21.4, google-protobuf@^3.5.0:
+google-protobuf@^3.21.4:
   version "3.21.4"
   resolved "https://registry.npmjs.org/google-protobuf/-/google-protobuf-3.21.4.tgz"
   integrity sha512-MnG7N936zcKTco4Jd2PX2U96Kf9PxygAPKBug+74LHzmHXmceN16MmRcdgZv+DGef/S9YvQAfRsNCn4cjf9yyQ==
@@ -5420,7 +5415,7 @@ timers-ext@^0.1.7:
     es5-ext "~0.10.46"
     next-tick "1"
 
-tmp@^0.2.1, tmp@^0.2.4:
+tmp@^0.2.4:
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.5.tgz#b06bcd23f0f3c8357b426891726d16015abfd8f8"
   integrity sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow==
