@@ -13,7 +13,6 @@ on:
 env:
   PR_COMMIT_SHA: ${{ github.event.client_payload.pull_request.head.sha }}
   AWS_REGION: us-west-2
-  GOLANGCI_LINT_VERSION: v1.61.0
   PROVIDER: awsx
   PULUMI_API: https://api.pulumi-staging.io
   PULUMI_ENABLE_RESOURCE_REFERENCES: "1"

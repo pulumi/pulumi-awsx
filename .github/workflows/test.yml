@@ -15,7 +15,6 @@ env:
   MISE_ENV: test
 
   AWS_REGION: us-west-2
-  GOLANGCI_LINT_VERSION: v1.61.0
   PROVIDER: awsx
   PULUMI_API: https://api.pulumi-staging.io
   PULUMI_ENABLE_RESOURCE_REFERENCES: "1"
@@ -111,32 +110,14 @@ jobs:
       env:
         ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
         ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
-        GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
-        NODE_AUTH_TOKEN: ${{ steps.esc-secrets.outputs.NPM_TOKEN }}
-        NPM_TOKEN: ${{ steps.esc-secrets.outputs.NPM_TOKEN }}
-        PUBLISH_REPO_PASSWORD: ${{ steps.esc-secrets.outputs.OSSRH_PASSWORD }}
-        PUBLISH_REPO_USERNAME: ${{ steps.esc-secrets.outputs.OSSRH_USERNAME }}
-        PULUMI_ACCESS_TOKEN: ${{ steps.esc-secrets.outputs.PULUMI_ACCESS_TOKEN }}
-        SIGNING_KEY: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_KEY }}
-        SIGNING_KEY_ID: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_KEY_ID }}
-        SIGNING_PASSWORD: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_PASSWORD }}
-        SLACK_WEBHOOK_URL: ${{ steps.esc-secrets.outputs.SLACK_WEBHOOK_URL }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Run pulumi/examples tests
       if: matrix.testTarget == 'pulumiExamples'
       run: cd examples && go test -v -count=1 -cover -timeout 2h -tags=${{ matrix.language }} -run TestPulumiExamples -parallel 4 .
       env:
         ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
         ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
-        GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
-        NODE_AUTH_TOKEN: ${{ steps.esc-secrets.outputs.NPM_TOKEN }}
-        NPM_TOKEN: ${{ steps.esc-secrets.outputs.NPM_TOKEN }}
-        PUBLISH_REPO_PASSWORD: ${{ steps.esc-secrets.outputs.OSSRH_PASSWORD }}
-        PUBLISH_REPO_USERNAME: ${{ steps.esc-secrets.outputs.OSSRH_USERNAME }}
-        PULUMI_ACCESS_TOKEN: ${{ steps.esc-secrets.outputs.PULUMI_ACCESS_TOKEN }}
-        SIGNING_KEY: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_KEY }}
-        SIGNING_KEY_ID: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_KEY_ID }}
-        SIGNING_PASSWORD: ${{ steps.esc-secrets.outputs.JAVA_SIGNING_PASSWORD }}
-        SLACK_WEBHOOK_URL: ${{ steps.esc-secrets.outputs.SLACK_WEBHOOK_URL }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
