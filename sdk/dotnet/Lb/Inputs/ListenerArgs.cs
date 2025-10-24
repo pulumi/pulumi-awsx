@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// <summary>
     /// Provides a Load Balancer Listener resource.
     /// 
-    /// &gt; **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.
+    /// &gt; **Note:** &lt;span pulumi-lang-nodejs="`aws.alb.Listener`" pulumi-lang-dotnet="`aws.alb.Listener`" pulumi-lang-go="`alb.Listener`" pulumi-lang-python="`alb.Listener`" pulumi-lang-yaml="`aws.alb.Listener`" pulumi-lang-java="`aws.alb.Listener`"&gt;`aws.alb.Listener`&lt;/span&gt; is known as &lt;span pulumi-lang-nodejs="`aws.lb.Listener`" pulumi-lang-dotnet="`aws.lb.Listener`" pulumi-lang-go="`lb.Listener`" pulumi-lang-python="`lb.Listener`" pulumi-lang-yaml="`aws.lb.Listener`" pulumi-lang-java="`aws.lb.Listener`"&gt;`aws.lb.Listener`&lt;/span&gt;. The functionality is identical.
     /// 
     /// ## Example Usage
     /// 
@@ -1853,22 +1853,28 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// ## Import
     /// 
+    /// ### Identity Schema
+    /// 
+    /// #### Required
+    /// 
+    /// - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+    /// 
     /// Using `pulumi import`, import listeners using their ARN. For example:
     /// 
-    /// ```sh
-    /// $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-    /// ```
+    /// console
+    /// 
+    /// % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
     /// </summary>
     public sealed class ListenerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
+        /// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if &lt;span pulumi-lang-nodejs="`protocol`" pulumi-lang-dotnet="`Protocol`" pulumi-lang-go="`protocol`" pulumi-lang-python="`protocol`" pulumi-lang-yaml="`protocol`" pulumi-lang-java="`protocol`"&gt;`protocol`&lt;/span&gt; is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
         /// </summary>
         [Input("alpnPolicy")]
         public Input<string>? AlpnPolicy { get; set; }
 
         /// <summary>
-        /// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
+        /// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the &lt;span pulumi-lang-nodejs="`aws.lb.ListenerCertificate`" pulumi-lang-dotnet="`aws.lb.ListenerCertificate`" pulumi-lang-go="`lb.ListenerCertificate`" pulumi-lang-python="`lb.ListenerCertificate`" pulumi-lang-yaml="`aws.lb.ListenerCertificate`" pulumi-lang-java="`aws.lb.ListenerCertificate`"&gt;`aws.lb.ListenerCertificate`&lt;/span&gt; resource.
         /// </summary>
         [Input("certificateArn")]
         public Input<string>? CertificateArn { get; set; }
@@ -1958,7 +1964,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? RoutingHttpRequestXAmznTlsVersionHeaderName { get; set; }
 
         /// <summary>
-        /// Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `true`.
+        /// Specifies which headers the browser can expose to the requesting client. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is &lt;span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`"&gt;`true`&lt;/span&gt;.
         /// </summary>
         [Input("routingHttpResponseAccessControlAllowCredentialsHeaderValue")]
         public Input<string>? RoutingHttpResponseAccessControlAllowCredentialsHeaderValue { get; set; }
@@ -1988,7 +1994,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? RoutingHttpResponseAccessControlExposeHeadersHeaderValue { get; set; }
 
         /// <summary>
-        /// Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between `0` and `86400`. This value is browser specific, consult the Access-Control-Max-Age documentation.
+        /// Specifies how long the results of a preflight request can be cached, in seconds. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are between &lt;span pulumi-lang-nodejs="`0`" pulumi-lang-dotnet="`0`" pulumi-lang-go="`0`" pulumi-lang-python="`0`" pulumi-lang-yaml="`0`" pulumi-lang-java="`0`"&gt;`0`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`86400`" pulumi-lang-dotnet="`86400`" pulumi-lang-go="`86400`" pulumi-lang-python="`86400`" pulumi-lang-yaml="`86400`" pulumi-lang-java="`86400`"&gt;`86400`&lt;/span&gt;. This value is browser specific, consult the Access-Control-Max-Age documentation.
         /// </summary>
         [Input("routingHttpResponseAccessControlMaxAgeHeaderValue")]
         public Input<string>? RoutingHttpResponseAccessControlMaxAgeHeaderValue { get; set; }
@@ -2000,7 +2006,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? RoutingHttpResponseContentSecurityPolicyHeaderValue { get; set; }
 
         /// <summary>
-        /// Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are `true` or `false`.
+        /// Enables you to allow or remove the HTTP response server header. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. Valid values are &lt;span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`"&gt;`true`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
         /// </summary>
         [Input("routingHttpResponseServerEnabled")]
         public Input<bool>? RoutingHttpResponseServerEnabled { get; set; }
@@ -2012,7 +2018,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? RoutingHttpResponseStrictTransportSecurityHeaderValue { get; set; }
 
         /// <summary>
-        /// Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is `nosniff`.
+        /// Indicates whether the MIME types advertised in the Content-Type headers should be followed and not be changed. Can only be set if protocol is `HTTP` or `HTTPS` for Application Load Balancers. Not supported for Network Load Balancer, or with a Gateway Load Balancer. The only valid value is &lt;span pulumi-lang-nodejs="`nosniff`" pulumi-lang-dotnet="`Nosniff`" pulumi-lang-go="`nosniff`" pulumi-lang-python="`nosniff`" pulumi-lang-yaml="`nosniff`" pulumi-lang-java="`nosniff`"&gt;`nosniff`&lt;/span&gt;.
         /// </summary>
         [Input("routingHttpResponseXContentTypeOptionsHeaderValue")]
         public Input<string>? RoutingHttpResponseXContentTypeOptionsHeaderValue { get; set; }
@@ -2024,7 +2030,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? RoutingHttpResponseXFrameOptionsHeaderValue { get; set; }
 
         /// <summary>
-        /// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
+        /// Name of the SSL Policy for the listener. Required if &lt;span pulumi-lang-nodejs="`protocol`" pulumi-lang-dotnet="`Protocol`" pulumi-lang-go="`protocol`" pulumi-lang-python="`protocol`" pulumi-lang-yaml="`protocol`" pulumi-lang-java="`protocol`"&gt;`protocol`&lt;/span&gt; is `HTTPS` or `TLS`. Default is `ELBSecurityPolicy-2016-08`.
         /// </summary>
         [Input("sslPolicy")]
         public Input<string>? SslPolicy { get; set; }
@@ -2033,7 +2039,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// A map of tags to assign to the resource. .If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// 
         /// &gt; **Note::** When a `Name` key is specified in the map, the AWS Console maps the value to the `Name Tag` column value inside the `Listener Rules` table within a specific load balancer listener page. Otherwise, the value resolves to `Default`.
         /// </summary>
@@ -2044,7 +2050,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between `60` and `6000` inclusive. Default: `350`.
+        /// TCP idle timeout value in seconds. Can only be set if protocol is `TCP` on Network Load Balancer, or with a Gateway Load Balancer. Not supported for Application Load Balancers. Valid values are between &lt;span pulumi-lang-nodejs="`60`" pulumi-lang-dotnet="`60`" pulumi-lang-go="`60`" pulumi-lang-python="`60`" pulumi-lang-yaml="`60`" pulumi-lang-java="`60`"&gt;`60`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`6000`" pulumi-lang-dotnet="`6000`" pulumi-lang-go="`6000`" pulumi-lang-python="`6000`" pulumi-lang-yaml="`6000`" pulumi-lang-java="`6000`"&gt;`6000`&lt;/span&gt; inclusive. Default: &lt;span pulumi-lang-nodejs="`350`" pulumi-lang-dotnet="`350`" pulumi-lang-go="`350`" pulumi-lang-python="`350`" pulumi-lang-yaml="`350`" pulumi-lang-java="`350`"&gt;`350`&lt;/span&gt;.
         /// </summary>
         [Input("tcpIdleTimeoutSeconds")]
         public Input<int>? TcpIdleTimeoutSeconds { get; set; }

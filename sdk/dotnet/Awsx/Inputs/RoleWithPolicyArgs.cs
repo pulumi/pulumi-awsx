@@ -22,7 +22,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<string>? Description { get; set; }
 
         /// <summary>
-        /// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+        /// Whether to force detaching any policies the role has before destroying it. Defaults to &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
         /// </summary>
         [Input("forceDetachPolicies")]
         public Input<bool>? ForceDetachPolicies { get; set; }
@@ -31,7 +31,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs>? _inlinePolicies;
 
         /// <summary>
-        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy "&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`"&gt;`apply`&lt;/span&gt;.
         /// </summary>
         public InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs> InlinePolicies
         {
@@ -43,7 +43,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputList<string>? _managedPolicyArns;
 
         /// <summary>
-        /// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+        /// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns "&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
         /// </summary>
         public InputList<string> ManagedPolicyArns
         {
@@ -64,7 +64,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<string>? Name { get; set; }
 
         /// <summary>
-        /// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+        /// Creates a unique friendly name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`"&gt;`name`&lt;/span&gt;.
         /// </summary>
         [Input("namePrefix")]
         public Input<string>? NamePrefix { get; set; }
@@ -97,7 +97,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Key-value mapping of tags for the IAM role. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {

@@ -73,6 +73,12 @@ namespace Pulumi.Awsx.Ecr
     public sealed class RegistryImageArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
+        /// Authentication configuration for the Docker registry. It is only used for this resource.
+        /// </summary>
+        [Input("authConfig")]
+        public Input<Pulumi.Docker.Inputs.RegistryImageAuthConfigArgs>? AuthConfig { get; set; }
+
+        /// <summary>
         /// If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         /// </summary>
         [Input("insecureSkipVerify")]
