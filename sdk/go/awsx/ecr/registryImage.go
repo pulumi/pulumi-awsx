@@ -79,6 +79,8 @@ func NewRegistryImage(ctx *pulumi.Context,
 }
 
 type registryImageArgs struct {
+	// Authentication configuration for the Docker registry. It is only used for this resource.
+	AuthConfig *docker.RegistryImageAuthConfig `pulumi:"authConfig"`
 	// If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
 	InsecureSkipVerify *bool `pulumi:"insecureSkipVerify"`
 	// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
@@ -95,6 +97,8 @@ type registryImageArgs struct {
 
 // The set of arguments for constructing a RegistryImage resource.
 type RegistryImageArgs struct {
+	// Authentication configuration for the Docker registry. It is only used for this resource.
+	AuthConfig docker.RegistryImageAuthConfigPtrInput
 	// If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
 	InsecureSkipVerify pulumi.BoolPtrInput
 	// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`

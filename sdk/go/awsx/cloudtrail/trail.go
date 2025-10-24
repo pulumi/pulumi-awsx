@@ -43,23 +43,23 @@ func NewTrail(ctx *pulumi.Context,
 }
 
 type trailArgs struct {
-	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
+	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with <span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`">`event_selector`</span>.
 	AdvancedEventSelectors []cloudtrail.TrailAdvancedEventSelector `pulumi:"advancedEventSelectors"`
 	// Log group to which CloudTrail logs will be delivered.
 	CloudWatchLogsGroup *awsx.OptionalLogGroup `pulumi:"cloudWatchLogsGroup"`
-	// Whether log file integrity validation is enabled. Defaults to `false`.
+	// Whether log file integrity validation is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	EnableLogFileValidation *bool `pulumi:"enableLogFileValidation"`
-	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
+	// Enables logging for the trail. When set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>.
 	EnableLogging *bool `pulumi:"enableLogging"`
-	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
+	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with <span pulumi-lang-nodejs="`advancedEventSelector`" pulumi-lang-dotnet="`AdvancedEventSelector`" pulumi-lang-go="`advancedEventSelector`" pulumi-lang-python="`advanced_event_selector`" pulumi-lang-yaml="`advancedEventSelector`" pulumi-lang-java="`advancedEventSelector`">`advanced_event_selector`</span>.
 	EventSelectors []cloudtrail.TrailEventSelector `pulumi:"eventSelectors"`
-	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
+	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>.
 	IncludeGlobalServiceEvents *bool `pulumi:"includeGlobalServiceEvents"`
 	// Configuration block for identifying unusual operational activity. See details below.
 	InsightSelectors []cloudtrail.TrailInsightSelector `pulumi:"insightSelectors"`
-	// Whether the trail is created in the current region or in all regions. Defaults to `false`.
+	// Whether the trail is created in the current region or in all regions. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	IsMultiRegionTrail *bool `pulumi:"isMultiRegionTrail"`
-	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
+	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	IsOrganizationTrail *bool `pulumi:"isOrganizationTrail"`
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId *string `pulumi:"kmsKeyId"`
@@ -73,29 +73,29 @@ type trailArgs struct {
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
 	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName *string `pulumi:"snsTopicName"`
-	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Map of tags to assign to the trail. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
 
 // The set of arguments for constructing a Trail resource.
 type TrailArgs struct {
-	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
+	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with <span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`">`event_selector`</span>.
 	AdvancedEventSelectors cloudtrail.TrailAdvancedEventSelectorArrayInput
 	// Log group to which CloudTrail logs will be delivered.
 	CloudWatchLogsGroup *awsx.OptionalLogGroupArgs
-	// Whether log file integrity validation is enabled. Defaults to `false`.
+	// Whether log file integrity validation is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	EnableLogFileValidation pulumi.BoolPtrInput
-	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
+	// Enables logging for the trail. When set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>.
 	EnableLogging pulumi.BoolPtrInput
-	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
+	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with <span pulumi-lang-nodejs="`advancedEventSelector`" pulumi-lang-dotnet="`AdvancedEventSelector`" pulumi-lang-go="`advancedEventSelector`" pulumi-lang-python="`advanced_event_selector`" pulumi-lang-yaml="`advancedEventSelector`" pulumi-lang-java="`advancedEventSelector`">`advanced_event_selector`</span>.
 	EventSelectors cloudtrail.TrailEventSelectorArrayInput
-	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
+	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>.
 	IncludeGlobalServiceEvents pulumi.BoolPtrInput
 	// Configuration block for identifying unusual operational activity. See details below.
 	InsightSelectors cloudtrail.TrailInsightSelectorArrayInput
-	// Whether the trail is created in the current region or in all regions. Defaults to `false`.
+	// Whether the trail is created in the current region or in all regions. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	IsMultiRegionTrail pulumi.BoolPtrInput
-	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
+	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
 	IsOrganizationTrail pulumi.BoolPtrInput
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId pulumi.StringPtrInput
@@ -109,7 +109,7 @@ type TrailArgs struct {
 	S3KeyPrefix pulumi.StringPtrInput
 	// Name of the Amazon SNS topic defined for notification of log file delivery. Specify the SNS topic ARN if it resides in another region.
 	SnsTopicName pulumi.StringPtrInput
-	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Map of tags to assign to the trail. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }
 

@@ -69,7 +69,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<bool>? AssignPublicIp { get; set; }
 
         /// <summary>
-        /// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+        /// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
         /// </summary>
         [Input("availabilityZoneRebalancing")]
         public Input<string>? AvailabilityZoneRebalancing { get; set; }
@@ -141,7 +141,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<bool>? ForceDelete { get; set; }
 
         /// <summary>
-        /// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+        /// Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy &lt;span pulumi-lang-nodejs="`orderedPlacementStrategy`" pulumi-lang-dotnet="`OrderedPlacementStrategy`" pulumi-lang-go="`orderedPlacementStrategy`" pulumi-lang-python="`ordered_placement_strategy`" pulumi-lang-yaml="`orderedPlacementStrategy`" pulumi-lang-java="`orderedPlacementStrategy`"&gt;`ordered_placement_strategy`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`"&gt;`placement_constraints`&lt;/span&gt; updates.
         /// When using the forceNewDeployment property you also need to configure the triggers property.
         /// </summary>
         [Input("forceNewDeployment")]
@@ -154,7 +154,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<int>? HealthCheckGracePeriodSeconds { get; set; }
 
         /// <summary>
-        /// ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
+        /// ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the &lt;span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`"&gt;`awsvpc`&lt;/span&gt; network mode. If using &lt;span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`"&gt;`awsvpc`&lt;/span&gt; network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         /// </summary>
         [Input("iamRole")]
         public Input<string>? IamRole { get; set; }
@@ -180,7 +180,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? Name { get; set; }
 
         /// <summary>
-        /// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+        /// Network configuration for the service. This parameter is required for task definitions that use the &lt;span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`"&gt;`awsvpc`&lt;/span&gt; network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         /// </summary>
         [Input("networkConfiguration")]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs>? NetworkConfiguration { get; set; }
@@ -189,7 +189,7 @@ namespace Pulumi.Awsx.Ecs
         private InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs>? _placementConstraints;
 
         /// <summary>
-        /// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+        /// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs="`forceNewDeployment`" pulumi-lang-dotnet="`ForceNewDeployment`" pulumi-lang-go="`forceNewDeployment`" pulumi-lang-python="`force_new_deployment`" pulumi-lang-yaml="`forceNewDeployment`" pulumi-lang-java="`forceNewDeployment`"&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`"&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`"&gt;`10`&lt;/span&gt;. See below.
         /// </summary>
         public InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs> PlacementConstraints
         {
@@ -198,7 +198,7 @@ namespace Pulumi.Awsx.Ecs
         }
 
         /// <summary>
-        /// Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+        /// Platform version on which to run your service. Only applicable for &lt;span pulumi-lang-nodejs="`launchType`" pulumi-lang-dotnet="`LaunchType`" pulumi-lang-go="`launchType`" pulumi-lang-python="`launch_type`" pulumi-lang-yaml="`launchType`" pulumi-lang-java="`launchType`"&gt;`launch_type`&lt;/span&gt; set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
         /// </summary>
         [Input("platformVersion")]
         public Input<string>? PlatformVersion { get; set; }
@@ -228,13 +228,13 @@ namespace Pulumi.Awsx.Ecs
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceConnectConfigurationArgs>? ServiceConnectConfiguration { get; set; }
 
         /// <summary>
-        /// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+        /// Service discovery registries for the service. The maximum number of &lt;span pulumi-lang-nodejs="`serviceRegistries`" pulumi-lang-dotnet="`ServiceRegistries`" pulumi-lang-go="`serviceRegistries`" pulumi-lang-python="`service_registries`" pulumi-lang-yaml="`serviceRegistries`" pulumi-lang-java="`serviceRegistries`"&gt;`service_registries`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs="`1`" pulumi-lang-dotnet="`1`" pulumi-lang-go="`1`" pulumi-lang-python="`1`" pulumi-lang-yaml="`1`" pulumi-lang-java="`1`"&gt;`1`&lt;/span&gt;. See below.
         /// </summary>
         [Input("serviceRegistries")]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceRegistriesArgs>? ServiceRegistries { get; set; }
 
         /// <summary>
-        /// Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+        /// Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;. Only applicable when using `ECS` deployment controller and requires &lt;span pulumi-lang-nodejs="`waitForSteadyState " pulumi-lang-dotnet="`WaitForSteadyState " pulumi-lang-go="`waitForSteadyState " pulumi-lang-python="`wait_for_steady_state " pulumi-lang-yaml="`waitForSteadyState " pulumi-lang-java="`waitForSteadyState "&gt;`wait_for_steady_state &lt;/span&gt;= true`.
         /// </summary>
         [Input("sigintRollback")]
         public Input<bool>? SigintRollback { get; set; }
@@ -243,7 +243,7 @@ namespace Pulumi.Awsx.Ecs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
