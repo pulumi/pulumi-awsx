@@ -3,6 +3,7 @@
 
 [env]
 _.source = "{{config_root}}/scripts/get-versions.sh"
+PULUMI_HOME = "{{config_root}}/.pulumi"
 
 [tools]
 
