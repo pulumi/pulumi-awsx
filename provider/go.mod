@@ -1,13 +1,15 @@
 module github.com/pulumi/pulumi-awsx/provider/v3
 
-go 1.23.11
+go 1.24.7
+
+toolchain go1.24.9
 
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/pulumi/providertest v0.1.4
-	github.com/pulumi/pulumi/pkg/v3 v3.200.0
-	github.com/pulumi/pulumi/sdk/v3 v3.200.0
-	github.com/spf13/cobra v1.8.0
+	github.com/pulumi/pulumi/pkg/v3 v3.204.0
+	github.com/pulumi/pulumi/sdk/v3 v3.204.0
+	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.10.0
 )
 
@@ -140,10 +142,10 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.0.0 // indirect
 	github.com/segmentio/asm v1.1.3 // indirect
 	github.com/segmentio/encoding v0.3.5 // indirect
-	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
+	github.com/sergi/go-diff v1.4.0 // indirect
 	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
