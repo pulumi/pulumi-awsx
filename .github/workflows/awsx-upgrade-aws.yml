@@ -49,51 +49,8 @@ jobs:
         with:
           gradle-version: "7.6"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.19.5'
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.23.x'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11.8'
-
-      - name: Install Pulumi CLI
-        uses: pulumi/actions@v6
-
-      - name: Install yarn
-        run: npm install -g yarn@1.22.22
-
-      - name: Install essential tools for make provider
-        run: |
-          # Install golangci-lint
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.8
-          
-          # Create mise-compatible environment and bypass mise installation
-          mkdir -p $HOME/.local/share/mise/{installs,shims}
-          mkdir -p .make
-          
-          # Create fake mise_install completion file to satisfy make dependencies
-          touch .make/mise_install
-          
-          # Create a fake mise command that does nothing (for mise_env target)
-          mkdir -p $HOME/.local/bin
-          cat > $HOME/.local/bin/mise << 'EOF'
-          #!/bin/bash
-          # Fake mise command for CI - just exit successfully
-          exit 0
-          EOF
-          chmod +x $HOME/.local/bin/mise
-          
-          # Ensure tools are in PATH
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install mise
+        uses: jdx/mise-action@v2
 
       - name: Upgrade pulumi-aws dependency
         id: upgrade
