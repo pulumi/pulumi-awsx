@@ -49,6 +49,9 @@ jobs:
         with:
           gradle-version: "7.6"
 
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
       - name: Upgrade pulumi-aws dependency
         id: upgrade
         env:
