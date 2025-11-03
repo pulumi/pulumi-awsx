@@ -40,14 +40,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+     * Whether to force detaching any policies the role has before destroying it. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     @Import(name="forceDetachPolicies")
     private @Nullable Output<Boolean> forceDetachPolicies;
 
     /**
-     * @return Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+     * @return Whether to force detaching any policies the role has before destroying it. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     public Optional<Output<Boolean>> forceDetachPolicies() {
@@ -55,14 +55,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+     * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs=&#34;`inlinePolicy &#34; pulumi-lang-dotnet=&#34;`InlinePolicy &#34; pulumi-lang-go=&#34;`inlinePolicy &#34; pulumi-lang-python=&#34;`inline_policy &#34; pulumi-lang-yaml=&#34;`inlinePolicy &#34; pulumi-lang-java=&#34;`inlinePolicy &#34;&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs=&#34;`apply`&#34; pulumi-lang-dotnet=&#34;`Apply`&#34; pulumi-lang-go=&#34;`apply`&#34; pulumi-lang-python=&#34;`apply`&#34; pulumi-lang-yaml=&#34;`apply`&#34; pulumi-lang-java=&#34;`apply`&#34;&gt;`apply`&lt;/span&gt;.
      * 
      */
     @Import(name="inlinePolicies")
     private @Nullable Output<List<RoleInlinePolicyArgs>> inlinePolicies;
 
     /**
-     * @return Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+     * @return Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs=&#34;`inlinePolicy &#34; pulumi-lang-dotnet=&#34;`InlinePolicy &#34; pulumi-lang-go=&#34;`inlinePolicy &#34; pulumi-lang-python=&#34;`inline_policy &#34; pulumi-lang-yaml=&#34;`inlinePolicy &#34; pulumi-lang-java=&#34;`inlinePolicy &#34;&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs=&#34;`apply`&#34; pulumi-lang-dotnet=&#34;`Apply`&#34; pulumi-lang-go=&#34;`apply`&#34; pulumi-lang-python=&#34;`apply`&#34; pulumi-lang-yaml=&#34;`apply`&#34; pulumi-lang-java=&#34;`apply`&#34;&gt;`apply`&lt;/span&gt;.
      * 
      */
     public Optional<Output<List<RoleInlinePolicyArgs>>> inlinePolicies() {
@@ -70,14 +70,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+     * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs=&#34;`managedPolicyArns &#34; pulumi-lang-dotnet=&#34;`ManagedPolicyArns &#34; pulumi-lang-go=&#34;`managedPolicyArns &#34; pulumi-lang-python=&#34;`managed_policy_arns &#34; pulumi-lang-yaml=&#34;`managedPolicyArns &#34; pulumi-lang-java=&#34;`managedPolicyArns &#34;&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
      * 
      */
     @Import(name="managedPolicyArns")
     private @Nullable Output<List<String>> managedPolicyArns;
 
     /**
-     * @return Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+     * @return Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs=&#34;`managedPolicyArns &#34; pulumi-lang-dotnet=&#34;`ManagedPolicyArns &#34; pulumi-lang-go=&#34;`managedPolicyArns &#34; pulumi-lang-python=&#34;`managed_policy_arns &#34; pulumi-lang-yaml=&#34;`managedPolicyArns &#34; pulumi-lang-java=&#34;`managedPolicyArns &#34;&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
      * 
      */
     public Optional<Output<List<String>>> managedPolicyArns() {
@@ -115,14 +115,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+     * Creates a unique friendly name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
      * 
      */
     @Import(name="namePrefix")
     private @Nullable Output<String> namePrefix;
 
     /**
-     * @return Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+     * @return Creates a unique friendly name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> namePrefix() {
@@ -175,14 +175,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Key-value mapping of tags for the IAM role. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Key-value mapping of tags for the IAM role. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -245,7 +245,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param forceDetachPolicies Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+         * @param forceDetachPolicies Whether to force detaching any policies the role has before destroying it. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -256,7 +256,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param forceDetachPolicies Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+         * @param forceDetachPolicies Whether to force detaching any policies the role has before destroying it. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -266,7 +266,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs=&#34;`inlinePolicy &#34; pulumi-lang-dotnet=&#34;`InlinePolicy &#34; pulumi-lang-go=&#34;`inlinePolicy &#34; pulumi-lang-python=&#34;`inline_policy &#34; pulumi-lang-yaml=&#34;`inlinePolicy &#34; pulumi-lang-java=&#34;`inlinePolicy &#34;&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs=&#34;`apply`&#34; pulumi-lang-dotnet=&#34;`Apply`&#34; pulumi-lang-go=&#34;`apply`&#34; pulumi-lang-python=&#34;`apply`&#34; pulumi-lang-yaml=&#34;`apply`&#34; pulumi-lang-java=&#34;`apply`&#34;&gt;`apply`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -277,7 +277,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs=&#34;`inlinePolicy &#34; pulumi-lang-dotnet=&#34;`InlinePolicy &#34; pulumi-lang-go=&#34;`inlinePolicy &#34; pulumi-lang-python=&#34;`inline_policy &#34; pulumi-lang-yaml=&#34;`inlinePolicy &#34; pulumi-lang-java=&#34;`inlinePolicy &#34;&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs=&#34;`apply`&#34; pulumi-lang-dotnet=&#34;`Apply`&#34; pulumi-lang-go=&#34;`apply`&#34; pulumi-lang-python=&#34;`apply`&#34; pulumi-lang-yaml=&#34;`apply`&#34; pulumi-lang-java=&#34;`apply`&#34;&gt;`apply`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -287,7 +287,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., &lt;span pulumi-lang-nodejs=&#34;`inlinePolicy &#34; pulumi-lang-dotnet=&#34;`InlinePolicy &#34; pulumi-lang-go=&#34;`inlinePolicy &#34; pulumi-lang-python=&#34;`inline_policy &#34; pulumi-lang-yaml=&#34;`inlinePolicy &#34; pulumi-lang-java=&#34;`inlinePolicy &#34;&gt;`inline_policy &lt;/span&gt;{}`) will cause Pulumi to remove _all_ inline policies added out of band on &lt;span pulumi-lang-nodejs=&#34;`apply`&#34; pulumi-lang-dotnet=&#34;`Apply`&#34; pulumi-lang-go=&#34;`apply`&#34; pulumi-lang-python=&#34;`apply`&#34; pulumi-lang-yaml=&#34;`apply`&#34; pulumi-lang-java=&#34;`apply`&#34;&gt;`apply`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -297,7 +297,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs=&#34;`managedPolicyArns &#34; pulumi-lang-dotnet=&#34;`ManagedPolicyArns &#34; pulumi-lang-go=&#34;`managedPolicyArns &#34; pulumi-lang-python=&#34;`managed_policy_arns &#34; pulumi-lang-yaml=&#34;`managedPolicyArns &#34; pulumi-lang-java=&#34;`managedPolicyArns &#34;&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
          * 
          * @return builder
          * 
@@ -308,7 +308,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs=&#34;`managedPolicyArns &#34; pulumi-lang-dotnet=&#34;`ManagedPolicyArns &#34; pulumi-lang-go=&#34;`managedPolicyArns &#34; pulumi-lang-python=&#34;`managed_policy_arns &#34; pulumi-lang-yaml=&#34;`managedPolicyArns &#34; pulumi-lang-java=&#34;`managedPolicyArns &#34;&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
          * 
          * @return builder
          * 
@@ -318,7 +318,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., &lt;span pulumi-lang-nodejs=&#34;`managedPolicyArns &#34; pulumi-lang-dotnet=&#34;`ManagedPolicyArns &#34; pulumi-lang-go=&#34;`managedPolicyArns &#34; pulumi-lang-python=&#34;`managed_policy_arns &#34; pulumi-lang-yaml=&#34;`managedPolicyArns &#34; pulumi-lang-java=&#34;`managedPolicyArns &#34;&gt;`managed_policy_arns &lt;/span&gt;= []`) will cause Pulumi to remove _all_ managed policy attachments.
          * 
          * @return builder
          * 
@@ -370,7 +370,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param namePrefix Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+         * @param namePrefix Creates a unique friendly name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -381,7 +381,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param namePrefix Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+         * @param namePrefix Creates a unique friendly name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -454,7 +454,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param tags Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value mapping of tags for the IAM role. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -465,7 +465,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param tags Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value mapping of tags for the IAM role. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

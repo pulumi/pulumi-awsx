@@ -50,57 +50,57 @@ if not MYPY:
         acceleration_status: NotRequired[pulumi.Input[_builtins.str]]
         """
         Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketAccelerateConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
         """
         acl: NotRequired[pulumi.Input[_builtins.str]]
         """
-        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
         """
         bucket: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `<span pulumi-lang-nodejs="[bucketName]" pulumi-lang-dotnet="[BucketName]" pulumi-lang-go="[bucketName]" pulumi-lang-python="[bucket_name]" pulumi-lang-yaml="[bucketName]" pulumi-lang-java="[bucketName]">[bucket_name]</span>--[azid]--x-s3`. Use the <span pulumi-lang-nodejs="`aws.s3.DirectoryBucket`" pulumi-lang-dotnet="`aws.s3.DirectoryBucket`" pulumi-lang-go="`s3.DirectoryBucket`" pulumi-lang-python="`s3.DirectoryBucket`" pulumi-lang-yaml="`aws.s3.DirectoryBucket`" pulumi-lang-java="`aws.s3.DirectoryBucket`">`aws.s3.DirectoryBucket`</span> resource to manage S3 Express buckets.
         """
         bucket_prefix: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+        Creates a unique bucket name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`bucket`" pulumi-lang-dotnet="`Bucket`" pulumi-lang-go="`bucket`" pulumi-lang-python="`bucket`" pulumi-lang-yaml="`bucket`" pulumi-lang-java="`bucket`">`bucket`</span>. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
         """
         cors_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgsDict']]]]
         """
-        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfiguration` instead.
+        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketCorsConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketCorsConfiguration`" pulumi-lang-go="`s3.BucketCorsConfiguration`" pulumi-lang-python="`s3.BucketCorsConfiguration`" pulumi-lang-yaml="`aws.s3.BucketCorsConfiguration`" pulumi-lang-java="`aws.s3.BucketCorsConfiguration`">`aws.s3.BucketCorsConfiguration`</span> instead.
         """
         force_destroy: NotRequired[pulumi.Input[_builtins.bool]]
         """
-        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>. Once this parameter is set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
         """
         grants: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgsDict']]]]
         """
-        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with <span pulumi-lang-nodejs="`acl`" pulumi-lang-dotnet="`Acl`" pulumi-lang-go="`acl`" pulumi-lang-python="`acl`" pulumi-lang-yaml="`acl`" pulumi-lang-java="`acl`">`acl`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
         """
         lifecycle_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgsDict']]]]
         """
         Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketLifecycleConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-go="`s3.BucketLifecycleConfiguration`" pulumi-lang-python="`s3.BucketLifecycleConfiguration`" pulumi-lang-yaml="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-java="`aws.s3.BucketLifecycleConfiguration`">`aws.s3.BucketLifecycleConfiguration`</span> instead.
         """
         logging: NotRequired[pulumi.Input['pulumi_aws.s3.BucketLoggingArgsDict']]
         """
         Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketLogging` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLogging`" pulumi-lang-dotnet="`aws.s3.BucketLogging`" pulumi-lang-go="`s3.BucketLogging`" pulumi-lang-python="`s3.BucketLogging`" pulumi-lang-yaml="`aws.s3.BucketLogging`" pulumi-lang-java="`aws.s3.BucketLogging`">`aws.s3.BucketLogging`</span> instead.
         """
         object_lock_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgsDict']]
         """
         Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
         The provider wil only perform drift detection if a configuration value is provided.
-        Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfiguration` instead.
+        Use the <span pulumi-lang-nodejs="`objectLockEnabled`" pulumi-lang-dotnet="`ObjectLockEnabled`" pulumi-lang-go="`objectLockEnabled`" pulumi-lang-python="`object_lock_enabled`" pulumi-lang-yaml="`objectLockEnabled`" pulumi-lang-java="`objectLockEnabled`">`object_lock_enabled`</span> parameter and the resource <span pulumi-lang-nodejs="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-go="`s3.BucketObjectLockConfiguration`" pulumi-lang-python="`s3.BucketObjectLockConfiguration`" pulumi-lang-yaml="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-java="`aws.s3.BucketObjectLockConfiguration`">`aws.s3.BucketObjectLockConfiguration`</span> instead.
         """
         object_lock_enabled: NotRequired[pulumi.Input[_builtins.bool]]
         """
-        Indicates whether this bucket has an Object Lock configuration enabled. Valid values are `true` or `false`. This argument is not supported in all regions or partitions.
+        Indicates whether this bucket has an Object Lock configuration enabled. Valid values are <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span> or <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. This argument is not supported in all regions or partitions.
         """
         policy: NotRequired[pulumi.Input[_builtins.str]]
         """
         Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketPolicy` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketPolicy`" pulumi-lang-dotnet="`aws.s3.BucketPolicy`" pulumi-lang-go="`s3.BucketPolicy`" pulumi-lang-python="`s3.BucketPolicy`" pulumi-lang-yaml="`aws.s3.BucketPolicy`" pulumi-lang-java="`aws.s3.BucketPolicy`">`aws.s3.BucketPolicy`</span> instead.
         """
         region: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -109,7 +109,7 @@ if not MYPY:
         replication_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgsDict']]
         """
         Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketReplicationConfig` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketReplicationConfig`" pulumi-lang-dotnet="`aws.s3.BucketReplicationConfig`" pulumi-lang-go="`s3.BucketReplicationConfig`" pulumi-lang-python="`s3.BucketReplicationConfig`" pulumi-lang-yaml="`aws.s3.BucketReplicationConfig`" pulumi-lang-java="`aws.s3.BucketReplicationConfig`">`aws.s3.BucketReplicationConfig`</span> instead.
         """
         request_payer: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -117,28 +117,28 @@ if not MYPY:
         Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
         See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketRequestPaymentConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-go="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-python="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-yaml="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-java="`aws.s3.BucketRequestPaymentConfiguration`">`aws.s3.BucketRequestPaymentConfiguration`</span> instead.
         """
         server_side_encryption_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgsDict']]
         """
         Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketServerSideEncryptionConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-go="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-python="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-yaml="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-java="`aws.s3.BucketServerSideEncryptionConfiguration`">`aws.s3.BucketServerSideEncryptionConfiguration`</span> instead.
         """
         tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
         """
-        Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Map of tags to assign to the bucket. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 
         The following arguments are deprecated, and will be removed in a future major version:
         """
         versioning: NotRequired[pulumi.Input['pulumi_aws.s3.BucketVersioningArgsDict']]
         """
-        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioning` instead.
+        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketVersioning`" pulumi-lang-dotnet="`aws.s3.BucketVersioning`" pulumi-lang-go="`s3.BucketVersioning`" pulumi-lang-python="`s3.BucketVersioning`" pulumi-lang-yaml="`aws.s3.BucketVersioning`" pulumi-lang-java="`aws.s3.BucketVersioning`">`aws.s3.BucketVersioning`</span> instead.
         """
         website: NotRequired[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgsDict']]
         """
         Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketWebsiteConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-go="`s3.BucketWebsiteConfiguration`" pulumi-lang-python="`s3.BucketWebsiteConfiguration`" pulumi-lang-yaml="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-java="`aws.s3.BucketWebsiteConfiguration`">`aws.s3.BucketWebsiteConfiguration`</span> instead.
         """
 elif False:
     BucketArgsDict: TypeAlias = Mapping[str, Any]
@@ -168,45 +168,45 @@ class BucketArgs:
         """
         The set of arguments for constructing a Bucket resource.
         :param pulumi.Input[_builtins.str] acceleration_status: Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketAccelerateConfiguration` instead.
-        :param pulumi.Input[_builtins.str] acl: The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
-        :param pulumi.Input[_builtins.str] bucket: Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
-        :param pulumi.Input[_builtins.str] bucket_prefix: Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgs']]] cors_rules: Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfiguration` instead.
-        :param pulumi.Input[_builtins.bool] force_destroy: Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgs']]] grants: An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
+        :param pulumi.Input[_builtins.str] acl: The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
+        :param pulumi.Input[_builtins.str] bucket: Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `<span pulumi-lang-nodejs="[bucketName]" pulumi-lang-dotnet="[BucketName]" pulumi-lang-go="[bucketName]" pulumi-lang-python="[bucket_name]" pulumi-lang-yaml="[bucketName]" pulumi-lang-java="[bucketName]">[bucket_name]</span>--[azid]--x-s3`. Use the <span pulumi-lang-nodejs="`aws.s3.DirectoryBucket`" pulumi-lang-dotnet="`aws.s3.DirectoryBucket`" pulumi-lang-go="`s3.DirectoryBucket`" pulumi-lang-python="`s3.DirectoryBucket`" pulumi-lang-yaml="`aws.s3.DirectoryBucket`" pulumi-lang-java="`aws.s3.DirectoryBucket`">`aws.s3.DirectoryBucket`</span> resource to manage S3 Express buckets.
+        :param pulumi.Input[_builtins.str] bucket_prefix: Creates a unique bucket name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`bucket`" pulumi-lang-dotnet="`Bucket`" pulumi-lang-go="`bucket`" pulumi-lang-python="`bucket`" pulumi-lang-yaml="`bucket`" pulumi-lang-java="`bucket`">`bucket`</span>. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgs']]] cors_rules: Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketCorsConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketCorsConfiguration`" pulumi-lang-go="`s3.BucketCorsConfiguration`" pulumi-lang-python="`s3.BucketCorsConfiguration`" pulumi-lang-yaml="`aws.s3.BucketCorsConfiguration`" pulumi-lang-java="`aws.s3.BucketCorsConfiguration`">`aws.s3.BucketCorsConfiguration`</span> instead.
+        :param pulumi.Input[_builtins.bool] force_destroy: Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>. Once this parameter is set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgs']]] grants: An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with <span pulumi-lang-nodejs="`acl`" pulumi-lang-dotnet="`Acl`" pulumi-lang-go="`acl`" pulumi-lang-python="`acl`" pulumi-lang-yaml="`acl`" pulumi-lang-java="`acl`">`acl`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgs']]] lifecycle_rules: Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketLifecycleConfiguration` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-go="`s3.BucketLifecycleConfiguration`" pulumi-lang-python="`s3.BucketLifecycleConfiguration`" pulumi-lang-yaml="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-java="`aws.s3.BucketLifecycleConfiguration`">`aws.s3.BucketLifecycleConfiguration`</span> instead.
         :param pulumi.Input['pulumi_aws.s3.BucketLoggingArgs'] logging: Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketLogging` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLogging`" pulumi-lang-dotnet="`aws.s3.BucketLogging`" pulumi-lang-go="`s3.BucketLogging`" pulumi-lang-python="`s3.BucketLogging`" pulumi-lang-yaml="`aws.s3.BucketLogging`" pulumi-lang-java="`aws.s3.BucketLogging`">`aws.s3.BucketLogging`</span> instead.
         :param pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgs'] object_lock_configuration: Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
                The provider wil only perform drift detection if a configuration value is provided.
-               Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfiguration` instead.
-        :param pulumi.Input[_builtins.bool] object_lock_enabled: Indicates whether this bucket has an Object Lock configuration enabled. Valid values are `true` or `false`. This argument is not supported in all regions or partitions.
+               Use the <span pulumi-lang-nodejs="`objectLockEnabled`" pulumi-lang-dotnet="`ObjectLockEnabled`" pulumi-lang-go="`objectLockEnabled`" pulumi-lang-python="`object_lock_enabled`" pulumi-lang-yaml="`objectLockEnabled`" pulumi-lang-java="`objectLockEnabled`">`object_lock_enabled`</span> parameter and the resource <span pulumi-lang-nodejs="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-go="`s3.BucketObjectLockConfiguration`" pulumi-lang-python="`s3.BucketObjectLockConfiguration`" pulumi-lang-yaml="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-java="`aws.s3.BucketObjectLockConfiguration`">`aws.s3.BucketObjectLockConfiguration`</span> instead.
+        :param pulumi.Input[_builtins.bool] object_lock_enabled: Indicates whether this bucket has an Object Lock configuration enabled. Valid values are <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span> or <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. This argument is not supported in all regions or partitions.
         :param pulumi.Input[_builtins.str] policy: Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
                The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketPolicy` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketPolicy`" pulumi-lang-dotnet="`aws.s3.BucketPolicy`" pulumi-lang-go="`s3.BucketPolicy`" pulumi-lang-python="`s3.BucketPolicy`" pulumi-lang-yaml="`aws.s3.BucketPolicy`" pulumi-lang-java="`aws.s3.BucketPolicy`">`aws.s3.BucketPolicy`</span> instead.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgs'] replication_configuration: Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketReplicationConfig` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketReplicationConfig`" pulumi-lang-dotnet="`aws.s3.BucketReplicationConfig`" pulumi-lang-go="`s3.BucketReplicationConfig`" pulumi-lang-python="`s3.BucketReplicationConfig`" pulumi-lang-yaml="`aws.s3.BucketReplicationConfig`" pulumi-lang-java="`aws.s3.BucketReplicationConfig`">`aws.s3.BucketReplicationConfig`</span> instead.
         :param pulumi.Input[_builtins.str] request_payer: Specifies who should bear the cost of Amazon S3 data transfer.
                Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
                See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
                The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketRequestPaymentConfiguration` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-go="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-python="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-yaml="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-java="`aws.s3.BucketRequestPaymentConfiguration`">`aws.s3.BucketRequestPaymentConfiguration`</span> instead.
         :param pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgs'] server_side_encryption_configuration: Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
                The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketServerSideEncryptionConfiguration` instead.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-go="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-python="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-yaml="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-java="`aws.s3.BucketServerSideEncryptionConfiguration`">`aws.s3.BucketServerSideEncryptionConfiguration`</span> instead.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Map of tags to assign to the bucket. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
                
                The following arguments are deprecated, and will be removed in a future major version:
-        :param pulumi.Input['pulumi_aws.s3.BucketVersioningArgs'] versioning: Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioning` instead.
+        :param pulumi.Input['pulumi_aws.s3.BucketVersioningArgs'] versioning: Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketVersioning`" pulumi-lang-dotnet="`aws.s3.BucketVersioning`" pulumi-lang-go="`s3.BucketVersioning`" pulumi-lang-python="`s3.BucketVersioning`" pulumi-lang-yaml="`aws.s3.BucketVersioning`" pulumi-lang-java="`aws.s3.BucketVersioning`">`aws.s3.BucketVersioning`</span> instead.
         :param pulumi.Input['pulumi_aws.s3.BucketWebsiteArgs'] website: Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-               Use the resource `aws.s3.BucketWebsiteConfiguration` instead.
+               Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-go="`s3.BucketWebsiteConfiguration`" pulumi-lang-python="`s3.BucketWebsiteConfiguration`" pulumi-lang-yaml="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-java="`aws.s3.BucketWebsiteConfiguration`">`aws.s3.BucketWebsiteConfiguration`</span> instead.
         """
         if acceleration_status is not None:
-            warnings.warn("""acceleration_status is deprecated. Use the aws.s3.BucketAccelerateConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""acceleration_status is deprecated: acceleration_status is deprecated. Use the aws.s3.BucketAccelerateConfiguration resource instead.""")
+            warnings.warn("""acceleration_status is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-go=\" s3.BucketAccelerateConfiguration \" pulumi-lang-python=\" s3.BucketAccelerateConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-java=\" aws.s3.BucketAccelerateConfiguration \"> aws.s3.BucketAccelerateConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""acceleration_status is deprecated: acceleration_status is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-go=\" s3.BucketAccelerateConfiguration \" pulumi-lang-python=\" s3.BucketAccelerateConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-java=\" aws.s3.BucketAccelerateConfiguration \"> aws.s3.BucketAccelerateConfiguration </span>resource instead.""")
         if acceleration_status is not None:
             pulumi.set(__self__, "acceleration_status", acceleration_status)
         if acl is not None:
@@ -216,30 +216,30 @@ class BucketArgs:
         if bucket_prefix is not None:
             pulumi.set(__self__, "bucket_prefix", bucket_prefix)
         if cors_rules is not None:
-            warnings.warn("""cors_rule is deprecated. Use the aws.s3.BucketCorsConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""cors_rules is deprecated: cors_rule is deprecated. Use the aws.s3.BucketCorsConfiguration resource instead.""")
+            warnings.warn("""cors_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-go=\" s3.BucketCorsConfiguration \" pulumi-lang-python=\" s3.BucketCorsConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-java=\" aws.s3.BucketCorsConfiguration \"> aws.s3.BucketCorsConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""cors_rules is deprecated: cors_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-go=\" s3.BucketCorsConfiguration \" pulumi-lang-python=\" s3.BucketCorsConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-java=\" aws.s3.BucketCorsConfiguration \"> aws.s3.BucketCorsConfiguration </span>resource instead.""")
         if cors_rules is not None:
             pulumi.set(__self__, "cors_rules", cors_rules)
         if force_destroy is not None:
             pulumi.set(__self__, "force_destroy", force_destroy)
         if grants is not None:
-            warnings.warn("""grant is deprecated. Use the aws.s3.BucketAcl resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""grants is deprecated: grant is deprecated. Use the aws.s3.BucketAcl resource instead.""")
+            warnings.warn("""grant is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAcl \" pulumi-lang-dotnet=\" aws.s3.BucketAcl \" pulumi-lang-go=\" s3.BucketAcl \" pulumi-lang-python=\" s3.BucketAcl \" pulumi-lang-yaml=\" aws.s3.BucketAcl \" pulumi-lang-java=\" aws.s3.BucketAcl \"> aws.s3.BucketAcl </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""grants is deprecated: grant is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAcl \" pulumi-lang-dotnet=\" aws.s3.BucketAcl \" pulumi-lang-go=\" s3.BucketAcl \" pulumi-lang-python=\" s3.BucketAcl \" pulumi-lang-yaml=\" aws.s3.BucketAcl \" pulumi-lang-java=\" aws.s3.BucketAcl \"> aws.s3.BucketAcl </span>resource instead.""")
         if grants is not None:
             pulumi.set(__self__, "grants", grants)
         if lifecycle_rules is not None:
-            warnings.warn("""lifecycle_rule is deprecated. Use the aws.s3.BucketLifecycleConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""lifecycle_rules is deprecated: lifecycle_rule is deprecated. Use the aws.s3.BucketLifecycleConfiguration resource instead.""")
+            warnings.warn("""lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-go=\" s3.BucketLifecycleConfiguration \" pulumi-lang-python=\" s3.BucketLifecycleConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-java=\" aws.s3.BucketLifecycleConfiguration \"> aws.s3.BucketLifecycleConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""lifecycle_rules is deprecated: lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-go=\" s3.BucketLifecycleConfiguration \" pulumi-lang-python=\" s3.BucketLifecycleConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-java=\" aws.s3.BucketLifecycleConfiguration \"> aws.s3.BucketLifecycleConfiguration </span>resource instead.""")
         if lifecycle_rules is not None:
             pulumi.set(__self__, "lifecycle_rules", lifecycle_rules)
         if logging is not None:
-            warnings.warn("""logging is deprecated. Use the aws.s3.BucketLogging resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""logging is deprecated: logging is deprecated. Use the aws.s3.BucketLogging resource instead.""")
+            warnings.warn("""logging is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLogging \" pulumi-lang-dotnet=\" aws.s3.BucketLogging \" pulumi-lang-go=\" s3.BucketLogging \" pulumi-lang-python=\" s3.BucketLogging \" pulumi-lang-yaml=\" aws.s3.BucketLogging \" pulumi-lang-java=\" aws.s3.BucketLogging \"> aws.s3.BucketLogging </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""logging is deprecated: logging is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLogging \" pulumi-lang-dotnet=\" aws.s3.BucketLogging \" pulumi-lang-go=\" s3.BucketLogging \" pulumi-lang-python=\" s3.BucketLogging \" pulumi-lang-yaml=\" aws.s3.BucketLogging \" pulumi-lang-java=\" aws.s3.BucketLogging \"> aws.s3.BucketLogging </span>resource instead.""")
         if logging is not None:
             pulumi.set(__self__, "logging", logging)
         if object_lock_configuration is not None:
-            warnings.warn("""object_lock_configuration is deprecated. Use the top-level parameter object_lock_enabled and the aws.s3.BucketObjectLockConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""object_lock_configuration is deprecated: object_lock_configuration is deprecated. Use the top-level parameter object_lock_enabled and the aws.s3.BucketObjectLockConfiguration resource instead.""")
+            warnings.warn("""object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs=\" objectLockEnabled \" pulumi-lang-dotnet=\" ObjectLockEnabled \" pulumi-lang-go=\" objectLockEnabled \" pulumi-lang-python=\" object_lock_enabled \" pulumi-lang-yaml=\" objectLockEnabled \" pulumi-lang-java=\" objectLockEnabled \"> object_lock_enabled </span>and the<span pulumi-lang-nodejs=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-go=\" s3.BucketObjectLockConfiguration \" pulumi-lang-python=\" s3.BucketObjectLockConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-java=\" aws.s3.BucketObjectLockConfiguration \"> aws.s3.BucketObjectLockConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""object_lock_configuration is deprecated: object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs=\" objectLockEnabled \" pulumi-lang-dotnet=\" ObjectLockEnabled \" pulumi-lang-go=\" objectLockEnabled \" pulumi-lang-python=\" object_lock_enabled \" pulumi-lang-yaml=\" objectLockEnabled \" pulumi-lang-java=\" objectLockEnabled \"> object_lock_enabled </span>and the<span pulumi-lang-nodejs=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-go=\" s3.BucketObjectLockConfiguration \" pulumi-lang-python=\" s3.BucketObjectLockConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-java=\" aws.s3.BucketObjectLockConfiguration \"> aws.s3.BucketObjectLockConfiguration </span>resource instead.""")
         if object_lock_configuration is not None:
             pulumi.set(__self__, "object_lock_configuration", object_lock_configuration)
         if object_lock_enabled is not None:
@@ -249,40 +249,40 @@ class BucketArgs:
         if region is not None:
             pulumi.set(__self__, "region", region)
         if replication_configuration is not None:
-            warnings.warn("""replication_configuration is deprecated. Use the aws.s3.BucketReplicationConfig resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""replication_configuration is deprecated: replication_configuration is deprecated. Use the aws.s3.BucketReplicationConfig resource instead.""")
+            warnings.warn("""replication_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketReplicationConfig \" pulumi-lang-dotnet=\" aws.s3.BucketReplicationConfig \" pulumi-lang-go=\" s3.BucketReplicationConfig \" pulumi-lang-python=\" s3.BucketReplicationConfig \" pulumi-lang-yaml=\" aws.s3.BucketReplicationConfig \" pulumi-lang-java=\" aws.s3.BucketReplicationConfig \"> aws.s3.BucketReplicationConfig </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""replication_configuration is deprecated: replication_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketReplicationConfig \" pulumi-lang-dotnet=\" aws.s3.BucketReplicationConfig \" pulumi-lang-go=\" s3.BucketReplicationConfig \" pulumi-lang-python=\" s3.BucketReplicationConfig \" pulumi-lang-yaml=\" aws.s3.BucketReplicationConfig \" pulumi-lang-java=\" aws.s3.BucketReplicationConfig \"> aws.s3.BucketReplicationConfig </span>resource instead.""")
         if replication_configuration is not None:
             pulumi.set(__self__, "replication_configuration", replication_configuration)
         if request_payer is not None:
-            warnings.warn("""request_payer is deprecated. Use the aws.s3.BucketRequestPaymentConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""request_payer is deprecated: request_payer is deprecated. Use the aws.s3.BucketRequestPaymentConfiguration resource instead.""")
+            warnings.warn("""request_payer is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-go=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-python=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-java=\" aws.s3.BucketRequestPaymentConfiguration \"> aws.s3.BucketRequestPaymentConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""request_payer is deprecated: request_payer is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-go=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-python=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-java=\" aws.s3.BucketRequestPaymentConfiguration \"> aws.s3.BucketRequestPaymentConfiguration </span>resource instead.""")
         if request_payer is not None:
             pulumi.set(__self__, "request_payer", request_payer)
         if server_side_encryption_configuration is not None:
-            warnings.warn("""server_side_encryption_configuration is deprecated. Use the aws.s3.BucketServerSideEncryptionConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""server_side_encryption_configuration is deprecated: server_side_encryption_configuration is deprecated. Use the aws.s3.BucketServerSideEncryptionConfiguration resource instead.""")
+            warnings.warn("""server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-go=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-python=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-java=\" aws.s3.BucketServerSideEncryptionConfiguration \"> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""server_side_encryption_configuration is deprecated: server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-go=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-python=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-java=\" aws.s3.BucketServerSideEncryptionConfiguration \"> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead.""")
         if server_side_encryption_configuration is not None:
             pulumi.set(__self__, "server_side_encryption_configuration", server_side_encryption_configuration)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
         if versioning is not None:
-            warnings.warn("""versioning is deprecated. Use the aws.s3.BucketVersioning resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""versioning is deprecated: versioning is deprecated. Use the aws.s3.BucketVersioning resource instead.""")
+            warnings.warn("""versioning is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketVersioning \" pulumi-lang-dotnet=\" aws.s3.BucketVersioning \" pulumi-lang-go=\" s3.BucketVersioning \" pulumi-lang-python=\" s3.BucketVersioning \" pulumi-lang-yaml=\" aws.s3.BucketVersioning \" pulumi-lang-java=\" aws.s3.BucketVersioning \"> aws.s3.BucketVersioning </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""versioning is deprecated: versioning is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketVersioning \" pulumi-lang-dotnet=\" aws.s3.BucketVersioning \" pulumi-lang-go=\" s3.BucketVersioning \" pulumi-lang-python=\" s3.BucketVersioning \" pulumi-lang-yaml=\" aws.s3.BucketVersioning \" pulumi-lang-java=\" aws.s3.BucketVersioning \"> aws.s3.BucketVersioning </span>resource instead.""")
         if versioning is not None:
             pulumi.set(__self__, "versioning", versioning)
         if website is not None:
-            warnings.warn("""website is deprecated. Use the aws.s3.BucketWebsiteConfiguration resource instead.""", DeprecationWarning)
-            pulumi.log.warn("""website is deprecated: website is deprecated. Use the aws.s3.BucketWebsiteConfiguration resource instead.""")
+            warnings.warn("""website is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-go=\" s3.BucketWebsiteConfiguration \" pulumi-lang-python=\" s3.BucketWebsiteConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-java=\" aws.s3.BucketWebsiteConfiguration \"> aws.s3.BucketWebsiteConfiguration </span>resource instead.""", DeprecationWarning)
+            pulumi.log.warn("""website is deprecated: website is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-go=\" s3.BucketWebsiteConfiguration \" pulumi-lang-python=\" s3.BucketWebsiteConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-java=\" aws.s3.BucketWebsiteConfiguration \"> aws.s3.BucketWebsiteConfiguration </span>resource instead.""")
         if website is not None:
             pulumi.set(__self__, "website", website)
 
     @_builtins.property
     @pulumi.getter(name="accelerationStatus")
-    @_utilities.deprecated("""acceleration_status is deprecated. Use the aws.s3.BucketAccelerateConfiguration resource instead.""")
+    @_utilities.deprecated("""acceleration_status is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-go=\" s3.BucketAccelerateConfiguration \" pulumi-lang-python=\" s3.BucketAccelerateConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketAccelerateConfiguration \" pulumi-lang-java=\" aws.s3.BucketAccelerateConfiguration \"> aws.s3.BucketAccelerateConfiguration </span>resource instead.""")
     def acceleration_status(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
         Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketAccelerateConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
         """
         return pulumi.get(self, "acceleration_status")
 
@@ -294,7 +294,7 @@ class BucketArgs:
     @pulumi.getter
     def acl(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
         """
         return pulumi.get(self, "acl")
 
@@ -306,7 +306,7 @@ class BucketArgs:
     @pulumi.getter
     def bucket(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `[bucket_name]--[azid]--x-s3`. Use the `aws.s3.DirectoryBucket` resource to manage S3 Express buckets.
+        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `<span pulumi-lang-nodejs="[bucketName]" pulumi-lang-dotnet="[BucketName]" pulumi-lang-go="[bucketName]" pulumi-lang-python="[bucket_name]" pulumi-lang-yaml="[bucketName]" pulumi-lang-java="[bucketName]">[bucket_name]</span>--[azid]--x-s3`. Use the <span pulumi-lang-nodejs="`aws.s3.DirectoryBucket`" pulumi-lang-dotnet="`aws.s3.DirectoryBucket`" pulumi-lang-go="`s3.DirectoryBucket`" pulumi-lang-python="`s3.DirectoryBucket`" pulumi-lang-yaml="`aws.s3.DirectoryBucket`" pulumi-lang-java="`aws.s3.DirectoryBucket`">`aws.s3.DirectoryBucket`</span> resource to manage S3 Express buckets.
         """
         return pulumi.get(self, "bucket")
 
@@ -318,7 +318,7 @@ class BucketArgs:
     @pulumi.getter(name="bucketPrefix")
     def bucket_prefix(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+        Creates a unique bucket name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`bucket`" pulumi-lang-dotnet="`Bucket`" pulumi-lang-go="`bucket`" pulumi-lang-python="`bucket`" pulumi-lang-yaml="`bucket`" pulumi-lang-java="`bucket`">`bucket`</span>. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
         """
         return pulumi.get(self, "bucket_prefix")
 
@@ -328,10 +328,10 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="corsRules")
-    @_utilities.deprecated("""cors_rule is deprecated. Use the aws.s3.BucketCorsConfiguration resource instead.""")
+    @_utilities.deprecated("""cors_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-go=\" s3.BucketCorsConfiguration \" pulumi-lang-python=\" s3.BucketCorsConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-java=\" aws.s3.BucketCorsConfiguration \"> aws.s3.BucketCorsConfiguration </span>resource instead.""")
     def cors_rules(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgs']]]]:
         """
-        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketCorsConfiguration` instead.
+        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketCorsConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketCorsConfiguration`" pulumi-lang-go="`s3.BucketCorsConfiguration`" pulumi-lang-python="`s3.BucketCorsConfiguration`" pulumi-lang-yaml="`aws.s3.BucketCorsConfiguration`" pulumi-lang-java="`aws.s3.BucketCorsConfiguration`">`aws.s3.BucketCorsConfiguration`</span> instead.
         """
         return pulumi.get(self, "cors_rules")
 
@@ -343,7 +343,7 @@ class BucketArgs:
     @pulumi.getter(name="forceDestroy")
     def force_destroy(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to `true`. Once this parameter is set to `true`, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>. Once this parameter is set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
         """
         return pulumi.get(self, "force_destroy")
 
@@ -353,10 +353,10 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter
-    @_utilities.deprecated("""grant is deprecated. Use the aws.s3.BucketAcl resource instead.""")
+    @_utilities.deprecated("""grant is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketAcl \" pulumi-lang-dotnet=\" aws.s3.BucketAcl \" pulumi-lang-go=\" s3.BucketAcl \" pulumi-lang-python=\" s3.BucketAcl \" pulumi-lang-yaml=\" aws.s3.BucketAcl \" pulumi-lang-java=\" aws.s3.BucketAcl \"> aws.s3.BucketAcl </span>resource instead.""")
     def grants(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgs']]]]:
         """
-        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with `acl`. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketAcl` instead.
+        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with <span pulumi-lang-nodejs="`acl`" pulumi-lang-dotnet="`Acl`" pulumi-lang-go="`acl`" pulumi-lang-python="`acl`" pulumi-lang-yaml="`acl`" pulumi-lang-java="`acl`">`acl`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
         """
         return pulumi.get(self, "grants")
 
@@ -366,11 +366,11 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="lifecycleRules")
-    @_utilities.deprecated("""lifecycle_rule is deprecated. Use the aws.s3.BucketLifecycleConfiguration resource instead.""")
+    @_utilities.deprecated("""lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-go=\" s3.BucketLifecycleConfiguration \" pulumi-lang-python=\" s3.BucketLifecycleConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-java=\" aws.s3.BucketLifecycleConfiguration \"> aws.s3.BucketLifecycleConfiguration </span>resource instead.""")
     def lifecycle_rules(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgs']]]]:
         """
         Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketLifecycleConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-go="`s3.BucketLifecycleConfiguration`" pulumi-lang-python="`s3.BucketLifecycleConfiguration`" pulumi-lang-yaml="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-java="`aws.s3.BucketLifecycleConfiguration`">`aws.s3.BucketLifecycleConfiguration`</span> instead.
         """
         return pulumi.get(self, "lifecycle_rules")
 
@@ -380,11 +380,11 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter
-    @_utilities.deprecated("""logging is deprecated. Use the aws.s3.BucketLogging resource instead.""")
+    @_utilities.deprecated("""logging is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketLogging \" pulumi-lang-dotnet=\" aws.s3.BucketLogging \" pulumi-lang-go=\" s3.BucketLogging \" pulumi-lang-python=\" s3.BucketLogging \" pulumi-lang-yaml=\" aws.s3.BucketLogging \" pulumi-lang-java=\" aws.s3.BucketLogging \"> aws.s3.BucketLogging </span>resource instead.""")
     def logging(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketLoggingArgs']]:
         """
         Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketLogging` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLogging`" pulumi-lang-dotnet="`aws.s3.BucketLogging`" pulumi-lang-go="`s3.BucketLogging`" pulumi-lang-python="`s3.BucketLogging`" pulumi-lang-yaml="`aws.s3.BucketLogging`" pulumi-lang-java="`aws.s3.BucketLogging`">`aws.s3.BucketLogging`</span> instead.
         """
         return pulumi.get(self, "logging")
 
@@ -394,12 +394,12 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="objectLockConfiguration")
-    @_utilities.deprecated("""object_lock_configuration is deprecated. Use the top-level parameter object_lock_enabled and the aws.s3.BucketObjectLockConfiguration resource instead.""")
+    @_utilities.deprecated("""object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs=\" objectLockEnabled \" pulumi-lang-dotnet=\" ObjectLockEnabled \" pulumi-lang-go=\" objectLockEnabled \" pulumi-lang-python=\" object_lock_enabled \" pulumi-lang-yaml=\" objectLockEnabled \" pulumi-lang-java=\" objectLockEnabled \"> object_lock_enabled </span>and the<span pulumi-lang-nodejs=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-go=\" s3.BucketObjectLockConfiguration \" pulumi-lang-python=\" s3.BucketObjectLockConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-java=\" aws.s3.BucketObjectLockConfiguration \"> aws.s3.BucketObjectLockConfiguration </span>resource instead.""")
     def object_lock_configuration(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgs']]:
         """
         Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
         The provider wil only perform drift detection if a configuration value is provided.
-        Use the `object_lock_enabled` parameter and the resource `aws.s3.BucketObjectLockConfiguration` instead.
+        Use the <span pulumi-lang-nodejs="`objectLockEnabled`" pulumi-lang-dotnet="`ObjectLockEnabled`" pulumi-lang-go="`objectLockEnabled`" pulumi-lang-python="`object_lock_enabled`" pulumi-lang-yaml="`objectLockEnabled`" pulumi-lang-java="`objectLockEnabled`">`object_lock_enabled`</span> parameter and the resource <span pulumi-lang-nodejs="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-go="`s3.BucketObjectLockConfiguration`" pulumi-lang-python="`s3.BucketObjectLockConfiguration`" pulumi-lang-yaml="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-java="`aws.s3.BucketObjectLockConfiguration`">`aws.s3.BucketObjectLockConfiguration`</span> instead.
         """
         return pulumi.get(self, "object_lock_configuration")
 
@@ -411,7 +411,7 @@ class BucketArgs:
     @pulumi.getter(name="objectLockEnabled")
     def object_lock_enabled(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Indicates whether this bucket has an Object Lock configuration enabled. Valid values are `true` or `false`. This argument is not supported in all regions or partitions.
+        Indicates whether this bucket has an Object Lock configuration enabled. Valid values are <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span> or <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. This argument is not supported in all regions or partitions.
         """
         return pulumi.get(self, "object_lock_enabled")
 
@@ -425,7 +425,7 @@ class BucketArgs:
         """
         Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketPolicy` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketPolicy`" pulumi-lang-dotnet="`aws.s3.BucketPolicy`" pulumi-lang-go="`s3.BucketPolicy`" pulumi-lang-python="`s3.BucketPolicy`" pulumi-lang-yaml="`aws.s3.BucketPolicy`" pulumi-lang-java="`aws.s3.BucketPolicy`">`aws.s3.BucketPolicy`</span> instead.
         """
         return pulumi.get(self, "policy")
 
@@ -447,11 +447,11 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="replicationConfiguration")
-    @_utilities.deprecated("""replication_configuration is deprecated. Use the aws.s3.BucketReplicationConfig resource instead.""")
+    @_utilities.deprecated("""replication_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketReplicationConfig \" pulumi-lang-dotnet=\" aws.s3.BucketReplicationConfig \" pulumi-lang-go=\" s3.BucketReplicationConfig \" pulumi-lang-python=\" s3.BucketReplicationConfig \" pulumi-lang-yaml=\" aws.s3.BucketReplicationConfig \" pulumi-lang-java=\" aws.s3.BucketReplicationConfig \"> aws.s3.BucketReplicationConfig </span>resource instead.""")
     def replication_configuration(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgs']]:
         """
         Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketReplicationConfig` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketReplicationConfig`" pulumi-lang-dotnet="`aws.s3.BucketReplicationConfig`" pulumi-lang-go="`s3.BucketReplicationConfig`" pulumi-lang-python="`s3.BucketReplicationConfig`" pulumi-lang-yaml="`aws.s3.BucketReplicationConfig`" pulumi-lang-java="`aws.s3.BucketReplicationConfig`">`aws.s3.BucketReplicationConfig`</span> instead.
         """
         return pulumi.get(self, "replication_configuration")
 
@@ -461,14 +461,14 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="requestPayer")
-    @_utilities.deprecated("""request_payer is deprecated. Use the aws.s3.BucketRequestPaymentConfiguration resource instead.""")
+    @_utilities.deprecated("""request_payer is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-go=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-python=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-java=\" aws.s3.BucketRequestPaymentConfiguration \"> aws.s3.BucketRequestPaymentConfiguration </span>resource instead.""")
     def request_payer(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
         Specifies who should bear the cost of Amazon S3 data transfer.
         Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
         See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketRequestPaymentConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-go="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-python="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-yaml="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-java="`aws.s3.BucketRequestPaymentConfiguration`">`aws.s3.BucketRequestPaymentConfiguration`</span> instead.
         """
         return pulumi.get(self, "request_payer")
 
@@ -478,12 +478,12 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter(name="serverSideEncryptionConfiguration")
-    @_utilities.deprecated("""server_side_encryption_configuration is deprecated. Use the aws.s3.BucketServerSideEncryptionConfiguration resource instead.""")
+    @_utilities.deprecated("""server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-go=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-python=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-java=\" aws.s3.BucketServerSideEncryptionConfiguration \"> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead.""")
     def server_side_encryption_configuration(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgs']]:
         """
         Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
         The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketServerSideEncryptionConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-go="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-python="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-yaml="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-java="`aws.s3.BucketServerSideEncryptionConfiguration`">`aws.s3.BucketServerSideEncryptionConfiguration`</span> instead.
         """
         return pulumi.get(self, "server_side_encryption_configuration")
 
@@ -495,7 +495,7 @@ class BucketArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        Map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Map of tags to assign to the bucket. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 
         The following arguments are deprecated, and will be removed in a future major version:
         """
@@ -507,10 +507,10 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter
-    @_utilities.deprecated("""versioning is deprecated. Use the aws.s3.BucketVersioning resource instead.""")
+    @_utilities.deprecated("""versioning is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketVersioning \" pulumi-lang-dotnet=\" aws.s3.BucketVersioning \" pulumi-lang-go=\" s3.BucketVersioning \" pulumi-lang-python=\" s3.BucketVersioning \" pulumi-lang-yaml=\" aws.s3.BucketVersioning \" pulumi-lang-java=\" aws.s3.BucketVersioning \"> aws.s3.BucketVersioning </span>resource instead.""")
     def versioning(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketVersioningArgs']]:
         """
-        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource `aws.s3.BucketVersioning` instead.
+        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketVersioning`" pulumi-lang-dotnet="`aws.s3.BucketVersioning`" pulumi-lang-go="`s3.BucketVersioning`" pulumi-lang-python="`s3.BucketVersioning`" pulumi-lang-yaml="`aws.s3.BucketVersioning`" pulumi-lang-java="`aws.s3.BucketVersioning`">`aws.s3.BucketVersioning`</span> instead.
         """
         return pulumi.get(self, "versioning")
 
@@ -520,11 +520,11 @@ class BucketArgs:
 
     @_builtins.property
     @pulumi.getter
-    @_utilities.deprecated("""website is deprecated. Use the aws.s3.BucketWebsiteConfiguration resource instead.""")
+    @_utilities.deprecated("""website is deprecated. Use the<span pulumi-lang-nodejs=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-go=\" s3.BucketWebsiteConfiguration \" pulumi-lang-python=\" s3.BucketWebsiteConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-java=\" aws.s3.BucketWebsiteConfiguration \"> aws.s3.BucketWebsiteConfiguration </span>resource instead.""")
     def website(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgs']]:
         """
         Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource `aws.s3.BucketWebsiteConfiguration` instead.
+        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-go="`s3.BucketWebsiteConfiguration`" pulumi-lang-python="`s3.BucketWebsiteConfiguration`" pulumi-lang-yaml="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-java="`aws.s3.BucketWebsiteConfiguration`">`aws.s3.BucketWebsiteConfiguration`</span> instead.
         """
         return pulumi.get(self, "website")
 
@@ -914,7 +914,7 @@ if not MYPY:
         """
         name_prefix: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         region: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -924,7 +924,7 @@ if not MYPY:
         """
         Specifies the number of days
         you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
+        If you select 0, the events in the log group are always retained and never expire. If <span pulumi-lang-nodejs="`logGroupClass`" pulumi-lang-dotnet="`LogGroupClass`" pulumi-lang-go="`logGroupClass`" pulumi-lang-python="`log_group_class`" pulumi-lang-yaml="`logGroupClass`" pulumi-lang-java="`logGroupClass`">`log_group_class`</span> is set to `DELIVERY`, this argument is ignored and <span pulumi-lang-nodejs="`retentionInDays`" pulumi-lang-dotnet="`RetentionInDays`" pulumi-lang-go="`retentionInDays`" pulumi-lang-python="`retention_in_days`" pulumi-lang-yaml="`retentionInDays`" pulumi-lang-java="`retentionInDays`">`retention_in_days`</span> is forcibly set to 2.
         """
         skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
         """
@@ -932,7 +932,7 @@ if not MYPY:
         """
         tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
         """
-        A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        A map of tags to assign to the resource. .If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
 elif False:
     LogGroupArgsDict: TypeAlias = Mapping[str, Any]
@@ -955,13 +955,13 @@ class LogGroupArgs:
                permissions for the CMK whenever the encrypted data is requested.
         :param pulumi.Input[_builtins.str] log_group_class: Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
         :param pulumi.Input[_builtins.str] name: The name of the log group. If omitted, this provider will assign a random, unique name.
-        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         :param pulumi.Input[_builtins.int] retention_in_days: Specifies the number of days
                you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-               If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
+               If you select 0, the events in the log group are always retained and never expire. If <span pulumi-lang-nodejs="`logGroupClass`" pulumi-lang-dotnet="`LogGroupClass`" pulumi-lang-go="`logGroupClass`" pulumi-lang-python="`log_group_class`" pulumi-lang-yaml="`logGroupClass`" pulumi-lang-java="`logGroupClass`">`log_group_class`</span> is set to `DELIVERY`, this argument is ignored and <span pulumi-lang-nodejs="`retentionInDays`" pulumi-lang-dotnet="`RetentionInDays`" pulumi-lang-go="`retentionInDays`" pulumi-lang-python="`retention_in_days`" pulumi-lang-yaml="`retentionInDays`" pulumi-lang-java="`retentionInDays`">`retention_in_days`</span> is forcibly set to 2.
         :param pulumi.Input[_builtins.bool] skip_destroy: Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: A map of tags to assign to the resource. .If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if kms_key_id is not None:
             pulumi.set(__self__, "kms_key_id", kms_key_id)
@@ -1022,7 +1022,7 @@ class LogGroupArgs:
     @pulumi.getter(name="namePrefix")
     def name_prefix(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         return pulumi.get(self, "name_prefix")
 
@@ -1048,7 +1048,7 @@ class LogGroupArgs:
         """
         Specifies the number of days
         you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        If you select 0, the events in the log group are always retained and never expire. If `log_group_class` is set to `DELIVERY`, this argument is ignored and `retention_in_days` is forcibly set to 2.
+        If you select 0, the events in the log group are always retained and never expire. If <span pulumi-lang-nodejs="`logGroupClass`" pulumi-lang-dotnet="`LogGroupClass`" pulumi-lang-go="`logGroupClass`" pulumi-lang-python="`log_group_class`" pulumi-lang-yaml="`logGroupClass`" pulumi-lang-java="`logGroupClass`">`log_group_class`</span> is set to `DELIVERY`, this argument is ignored and <span pulumi-lang-nodejs="`retentionInDays`" pulumi-lang-dotnet="`RetentionInDays`" pulumi-lang-go="`retentionInDays`" pulumi-lang-python="`retention_in_days`" pulumi-lang-yaml="`retentionInDays`" pulumi-lang-java="`retentionInDays`">`retention_in_days`</span> is forcibly set to 2.
         """
         return pulumi.get(self, "retention_in_days")
 
@@ -1072,7 +1072,7 @@ class LogGroupArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        A map of tags to assign to the resource. .If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
@@ -1224,15 +1224,15 @@ if not MYPY:
         """
         force_detach_policies: NotRequired[pulumi.Input[_builtins.bool]]
         """
-        Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+        Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         inline_policies: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgsDict']]]]
         """
-        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
         """
         managed_policy_arns: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
         """
-        Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+        Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., <span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns ">`managed_policy_arns </span>= []`) will cause Pulumi to remove _all_ managed policy attachments.
         """
         max_session_duration: NotRequired[pulumi.Input[_builtins.int]]
         """
@@ -1244,7 +1244,7 @@ if not MYPY:
         """
         name_prefix: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique friendly name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         path: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -1260,7 +1260,7 @@ if not MYPY:
         """
         tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
         """
-        Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Key-value mapping of tags for the IAM role. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
 elif False:
     RoleWithPolicyArgsDict: TypeAlias = Mapping[str, Any]
@@ -1282,16 +1282,16 @@ class RoleWithPolicyArgs:
         """
         The set of arguments for constructing a Role resource and Policy attachments.
         :param pulumi.Input[_builtins.str] description: Description of the role.
-        :param pulumi.Input[_builtins.bool] force_detach_policies: Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]] inline_policies: Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
-        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] managed_policy_arns: Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+        :param pulumi.Input[_builtins.bool] force_detach_policies: Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]] inline_policies: Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
+        :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] managed_policy_arns: Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., <span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns ">`managed_policy_arns </span>= []`) will cause Pulumi to remove _all_ managed policy attachments.
         :param pulumi.Input[_builtins.int] max_session_duration: Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
         :param pulumi.Input[_builtins.str] name: Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
-        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique friendly name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         :param pulumi.Input[_builtins.str] path: Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         :param pulumi.Input[_builtins.str] permissions_boundary: ARN of the policy that is used to set the permissions boundary for the role.
         :param Sequence[_builtins.str] policy_arns: ARNs of the policies to attach to the created role.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value mapping of tags for the IAM role. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if description is not None:
             pulumi.set(__self__, "description", description)
@@ -1332,7 +1332,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter(name="forceDetachPolicies")
     def force_detach_policies(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+        Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         return pulumi.get(self, "force_detach_policies")
 
@@ -1344,7 +1344,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter(name="inlinePolicies")
     def inline_policies(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]]]:
         """
-        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause Pulumi to remove _all_ inline policies added out of band on `apply`.
+        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
         """
         return pulumi.get(self, "inline_policies")
 
@@ -1356,7 +1356,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter(name="managedPolicyArns")
     def managed_policy_arns(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
         """
-        Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause Pulumi to remove _all_ managed policy attachments.
+        Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., <span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns ">`managed_policy_arns </span>= []`) will cause Pulumi to remove _all_ managed policy attachments.
         """
         return pulumi.get(self, "managed_policy_arns")
 
@@ -1392,7 +1392,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter(name="namePrefix")
     def name_prefix(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique friendly name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         return pulumi.get(self, "name_prefix")
 
@@ -1440,7 +1440,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Key-value mapping of tags for the IAM role. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
@@ -1456,7 +1456,7 @@ if not MYPY:
         """
         description: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
+        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
         """
         egress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgsDict']]]]
         """
@@ -1472,7 +1472,7 @@ if not MYPY:
         """
         name_prefix: NotRequired[pulumi.Input[_builtins.str]]
         """
-        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         region: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -1480,11 +1480,11 @@ if not MYPY:
         """
         revoke_rules_on_delete: NotRequired[pulumi.Input[_builtins.bool]]
         """
-        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
         """
-        Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         vpc_id: NotRequired[pulumi.Input[_builtins.str]]
         """
@@ -1507,14 +1507,14 @@ class SecurityGroupArgs:
                  vpc_id: Optional[pulumi.Input[_builtins.str]] = None):
         """
         The set of arguments for constructing a Security Group resource.
-        :param pulumi.Input[_builtins.str] description: Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
+        :param pulumi.Input[_builtins.str] description: Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgs']]] egress: Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgs']]] ingress: Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
         :param pulumi.Input[_builtins.str] name: Name of the security group. If omitted, the provider will assign a random, unique name.
-        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        :param pulumi.Input[_builtins.str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        :param pulumi.Input[_builtins.bool] revoke_rules_on_delete: Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[_builtins.bool] revoke_rules_on_delete: Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[_builtins.str] vpc_id: VPC ID. Defaults to the region's default VPC.
         """
         if description is None:
@@ -1542,7 +1542,7 @@ class SecurityGroupArgs:
     @pulumi.getter
     def description(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
+        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
         """
         return pulumi.get(self, "description")
 
@@ -1590,7 +1590,7 @@ class SecurityGroupArgs:
     @pulumi.getter(name="namePrefix")
     def name_prefix(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
         """
         return pulumi.get(self, "name_prefix")
 
@@ -1614,7 +1614,7 @@ class SecurityGroupArgs:
     @pulumi.getter(name="revokeRulesOnDelete")
     def revoke_rules_on_delete(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         return pulumi.get(self, "revoke_rules_on_delete")
 
@@ -1626,7 +1626,7 @@ class SecurityGroupArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
