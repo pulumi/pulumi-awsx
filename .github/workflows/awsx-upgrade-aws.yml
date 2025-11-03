@@ -44,8 +44,15 @@ jobs:
           git config --local user.email 'bot@pulumi.com'
           git config --local user.name 'pulumi-bot'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: "7.6"
+
       - name: Upgrade pulumi-aws dependency
         id: upgrade
+        env:
+          GITHUB_TOKEN: ${{ steps.esc-secrets.outputs.PULUMI_BOT_TOKEN }}
         run: |
           VERSION=$(./scripts/get-latest-aws-version.sh)
           echo "Upgrading pulumi-aws to $VERSION"
