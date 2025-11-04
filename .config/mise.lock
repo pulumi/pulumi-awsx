@@ -33,6 +33,11 @@ checksum = "sha256:80899df77459e0b551d2eb8800ad6eb47023b99cccbf8129e7b5786770b94
 size = 73665098
 url = "https://dl.google.com/go/go1.23.11.linux-amd64.tar.gz"
 
+[tools.go.platforms.macos-arm64]
+checksum = "sha256:d3c2c69a79eb3e2a06e5d8bbca692c9166b27421f7251ccbafcada0ba35a05ee"
+size = 71665541
+url = "https://dl.google.com/go/go1.23.11.darwin-arm64.tar.gz"
+
 [[tools.golangci-lint]]
 version = "1.64.8"
 backend = "aqua:golangci/golangci-lint"
@@ -81,6 +86,11 @@ backend = "aqua:pulumi/pulumi"
 checksum = "sha512:41886b8bbde453983275a573160ff95631e3486229f305459d175f81bc3d8e90025415f39c31949edfe3121a91857241f90a336ef9367e2018689ccda6bd97fb"
 size = 93944514
 url = "https://github.com/pulumi/pulumi/releases/download/v3.200.0/pulumi-v3.200.0-linux-x64.tar.gz"
+
+[tools.pulumi.platforms.macos-arm64]
+checksum = "sha256:07d3e22b6a75b38be80acc39df5e2710899da437803e4290dd7c00d2bd9256ec"
+size = 85649803
+url = "https://github.com/pulumi/pulumi/releases/download/v3.200.0/pulumi-v3.200.0-darwin-arm64.tar.gz"
 
 [[tools.python]]
 version = "3.11.8"
