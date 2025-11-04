@@ -90,14 +90,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     @Import(name="enableFaultInjection")
     private @Nullable Output<Boolean> enableFaultInjection;
 
     /**
-     * @return Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+     * @return Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     public Optional<Output<Boolean>> enableFaultInjection() {
@@ -152,14 +152,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+     * IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     @Import(name="ipcMode")
     private @Nullable Output<String> ipcMode;
 
     /**
-     * @return IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+     * @return IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> ipcMode() {
@@ -199,14 +199,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+     * Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
      * 
      */
     @Import(name="pidMode")
     private @Nullable Output<String> pidMode;
 
     /**
-     * @return Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+     * @return Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> pidMode() {
@@ -214,14 +214,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+     * Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
      * 
      */
     @Import(name="placementConstraints")
     private @Nullable Output<List<TaskDefinitionPlacementConstraintArgs>> placementConstraints;
 
     /**
-     * @return Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+     * @return Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
      * 
      */
     public Optional<Output<List<TaskDefinitionPlacementConstraintArgs>>> placementConstraints() {
@@ -259,14 +259,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Configuration block for runtime_platform that containers in your task may use.
+     * Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
      * 
      */
     @Import(name="runtimePlatform")
     private @Nullable Output<TaskDefinitionRuntimePlatformArgs> runtimePlatform;
 
     /**
-     * @return Configuration block for runtime_platform that containers in your task may use.
+     * @return Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
      * 
      */
     public Optional<Output<TaskDefinitionRuntimePlatformArgs>> runtimePlatform() {
@@ -274,14 +274,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     * Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     @Import(name="skipDestroy")
     private @Nullable Output<Boolean> skipDestroy;
 
     /**
-     * @return Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     * @return Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     public Optional<Output<Boolean>> skipDestroy() {
@@ -289,14 +289,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -321,14 +321,14 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+     * Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Useful in the event the task definition is modified outside of this resource.
      * 
      */
     @Import(name="trackLatest")
     private @Nullable Output<Boolean> trackLatest;
 
     /**
-     * @return Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+     * @return Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Useful in the event the task definition is modified outside of this resource.
      * 
      */
     public Optional<Output<Boolean>> trackLatest() {
@@ -336,22 +336,22 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
     }
 
     /**
-     * Configuration block for volumes that containers in your task may use. Detailed below.
+     * Repeatable configuration block for volumes that containers in your task may use. Detailed below.
      * 
-     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as &lt;span pulumi-lang-nodejs=&#34;`environment`&#34; pulumi-lang-dotnet=&#34;`Environment`&#34; pulumi-lang-go=&#34;`environment`&#34; pulumi-lang-python=&#34;`environment`&#34; pulumi-lang-yaml=&#34;`environment`&#34; pulumi-lang-java=&#34;`environment`&#34;&gt;`environment`&lt;/span&gt; values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
      * 
-     * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+     * &gt; **Note:** Fault injection only works with tasks using the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; network modes. Fault injection isn&#39;t available on Windows.
      * 
      */
     @Import(name="volumes")
     private @Nullable Output<List<TaskDefinitionVolumeArgs>> volumes;
 
     /**
-     * @return Configuration block for volumes that containers in your task may use. Detailed below.
+     * @return Repeatable configuration block for volumes that containers in your task may use. Detailed below.
      * 
-     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+     * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as &lt;span pulumi-lang-nodejs=&#34;`environment`&#34; pulumi-lang-dotnet=&#34;`Environment`&#34; pulumi-lang-go=&#34;`environment`&#34; pulumi-lang-python=&#34;`environment`&#34; pulumi-lang-yaml=&#34;`environment`&#34; pulumi-lang-java=&#34;`environment`&#34;&gt;`environment`&lt;/span&gt; values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
      * 
-     * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+     * &gt; **Note:** Fault injection only works with tasks using the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; network modes. Fault injection isn&#39;t available on Windows.
      * 
      */
     public Optional<Output<List<TaskDefinitionVolumeArgs>>> volumes() {
@@ -451,7 +451,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -462,7 +462,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is `false`.
+         * @param enableFaultInjection Enables fault injection and allows for fault injection requests to be accepted from the task&#39;s containers. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -526,7 +526,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -537,7 +537,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -581,7 +581,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param pidMode Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+         * @param pidMode Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -592,7 +592,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param pidMode Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+         * @param pidMode Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -602,7 +602,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -613,7 +613,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -623,7 +623,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -675,7 +675,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param runtimePlatform Configuration block for runtime_platform that containers in your task may use.
+         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
          * 
          * @return builder
          * 
@@ -686,7 +686,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param runtimePlatform Configuration block for runtime_platform that containers in your task may use.
+         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
          * 
          * @return builder
          * 
@@ -696,7 +696,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -707,7 +707,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -717,7 +717,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -728,7 +728,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -750,7 +750,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Useful in the event the task definition is modified outside of this resource.
          * 
          * @return builder
          * 
@@ -761,7 +761,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+         * @param trackLatest Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Useful in the event the task definition is modified outside of this resource.
          * 
          * @return builder
          * 
@@ -771,11 +771,11 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
+         * @param volumes Repeatable configuration block for volumes that containers in your task may use. Detailed below.
          * 
-         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as &lt;span pulumi-lang-nodejs=&#34;`environment`&#34; pulumi-lang-dotnet=&#34;`Environment`&#34; pulumi-lang-go=&#34;`environment`&#34; pulumi-lang-python=&#34;`environment`&#34; pulumi-lang-yaml=&#34;`environment`&#34; pulumi-lang-java=&#34;`environment`&#34;&gt;`environment`&lt;/span&gt; values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
          * 
-         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * &gt; **Note:** Fault injection only works with tasks using the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; network modes. Fault injection isn&#39;t available on Windows.
          * 
          * @return builder
          * 
@@ -786,11 +786,11 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
+         * @param volumes Repeatable configuration block for volumes that containers in your task may use. Detailed below.
          * 
-         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as &lt;span pulumi-lang-nodejs=&#34;`environment`&#34; pulumi-lang-dotnet=&#34;`Environment`&#34; pulumi-lang-go=&#34;`environment`&#34; pulumi-lang-python=&#34;`environment`&#34; pulumi-lang-yaml=&#34;`environment`&#34; pulumi-lang-java=&#34;`environment`&#34;&gt;`environment`&lt;/span&gt; values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
          * 
-         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * &gt; **Note:** Fault injection only works with tasks using the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; network modes. Fault injection isn&#39;t available on Windows.
          * 
          * @return builder
          * 
@@ -800,11 +800,11 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param volumes Configuration block for volumes that containers in your task may use. Detailed below.
+         * @param volumes Repeatable configuration block for volumes that containers in your task may use. Detailed below.
          * 
-         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as `environment` values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
+         * &gt; **NOTE:** Proper escaping is required for JSON field values containing quotes (`&#34;`) such as &lt;span pulumi-lang-nodejs=&#34;`environment`&#34; pulumi-lang-dotnet=&#34;`Environment`&#34; pulumi-lang-go=&#34;`environment`&#34; pulumi-lang-python=&#34;`environment`&#34; pulumi-lang-yaml=&#34;`environment`&#34; pulumi-lang-java=&#34;`environment`&#34;&gt;`environment`&lt;/span&gt; values. If directly setting the JSON, they should be escaped as `\&#34;` in the JSON,  e.g., `&#34;value&#34;: &#34;I \&#34;love\&#34; escaped quotes&#34;`. If using a variable value, they should be escaped as `\\\&#34;` in the variable, e.g., `value = &#34;I \\\&#34;love\\\&#34; escaped quotes&#34;` in the variable and `&#34;value&#34;: &#34;${var.myvariable}&#34;` in the JSON.
          * 
-         * &gt; **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn&#39;t available on Windows.
+         * &gt; **Note:** Fault injection only works with tasks using the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; network modes. Fault injection isn&#39;t available on Windows.
          * 
          * @return builder
          * 

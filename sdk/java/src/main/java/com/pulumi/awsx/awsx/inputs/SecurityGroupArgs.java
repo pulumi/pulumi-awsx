@@ -26,14 +26,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     public static final SecurityGroupArgs Empty = new SecurityGroupArgs();
 
     /**
-     * Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
+     * Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use &lt;span pulumi-lang-nodejs=&#34;`tags`&#34; pulumi-lang-dotnet=&#34;`Tags`&#34; pulumi-lang-go=&#34;`tags`&#34; pulumi-lang-python=&#34;`tags`&#34; pulumi-lang-yaml=&#34;`tags`&#34; pulumi-lang-java=&#34;`tags`&#34;&gt;`tags`&lt;/span&gt;.
      * 
      */
     @Import(name="description")
     private @Nullable Output<String> description;
 
     /**
-     * @return Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
+     * @return Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use &lt;span pulumi-lang-nodejs=&#34;`tags`&#34; pulumi-lang-dotnet=&#34;`Tags`&#34; pulumi-lang-go=&#34;`tags`&#34; pulumi-lang-python=&#34;`tags`&#34; pulumi-lang-yaml=&#34;`tags`&#34; pulumi-lang-java=&#34;`tags`&#34;&gt;`tags`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> description() {
@@ -86,14 +86,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+     * Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
      * 
      */
     @Import(name="namePrefix")
     private @Nullable Output<String> namePrefix;
 
     /**
-     * @return Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+     * @return Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> namePrefix() {
@@ -116,14 +116,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+     * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     @Import(name="revokeRulesOnDelete")
     private @Nullable Output<Boolean> revokeRulesOnDelete;
 
     /**
-     * @return Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+     * @return Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
      * 
      */
     public Optional<Output<Boolean>> revokeRulesOnDelete() {
@@ -131,14 +131,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -193,7 +193,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
+         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use &lt;span pulumi-lang-nodejs=&#34;`tags`&#34; pulumi-lang-dotnet=&#34;`Tags`&#34; pulumi-lang-go=&#34;`tags`&#34; pulumi-lang-python=&#34;`tags`&#34; pulumi-lang-yaml=&#34;`tags`&#34; pulumi-lang-java=&#34;`tags`&#34;&gt;`tags`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -204,7 +204,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
+         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use &lt;span pulumi-lang-nodejs=&#34;`tags`&#34; pulumi-lang-dotnet=&#34;`Tags`&#34; pulumi-lang-go=&#34;`tags`&#34; pulumi-lang-python=&#34;`tags`&#34; pulumi-lang-yaml=&#34;`tags`&#34; pulumi-lang-java=&#34;`tags`&#34;&gt;`tags`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -297,7 +297,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -308,7 +308,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -339,7 +339,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -350,7 +350,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -360,7 +360,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -371,7 +371,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

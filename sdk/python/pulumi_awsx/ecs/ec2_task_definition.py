@@ -55,31 +55,31 @@ class EC2TaskDefinitionArgs:
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[_builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+        :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
         :param pulumi.Input[_builtins.str] family: An optional unique name for your task definition. If not specified, then a default will be created.
-        :param pulumi.Input[_builtins.str] ipc_mode: IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+        :param pulumi.Input[_builtins.str] ipc_mode: IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
         :param '_awsx.DefaultLogGroupArgs' log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.str] network_mode: Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. The valid values are `host` and `task`.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+        :param pulumi.Input[_builtins.str] network_mode: Docker networking mode to use for the containers in the task. Valid values are <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>, <span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`">`bridge`</span>, <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span>, and <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs'] runtime_platform: Configuration block for runtime_platform that containers in your task may use.
-        :param pulumi.Input[_builtins.bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs'] runtime_platform: Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
+        :param pulumi.Input[_builtins.bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param '_awsx.DefaultRoleWithPolicyArgs' task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
-        :param pulumi.Input[_builtins.bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
+        :param pulumi.Input[_builtins.bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Repeatable configuration block for volumes that containers in your task may use. Detailed below.
                
-               > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+               > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
                
-               > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+               > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
         """
         if container is not None:
             pulumi.set(__self__, "container", container)
@@ -170,7 +170,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="enableFaultInjection")
     def enable_fault_injection(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         return pulumi.get(self, "enable_fault_injection")
 
@@ -219,7 +219,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="ipcMode")
     def ipc_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+        IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
         """
         return pulumi.get(self, "ipc_mode")
 
@@ -256,7 +256,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="networkMode")
     def network_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+        Docker networking mode to use for the containers in the task. Valid values are <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>, <span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`">`bridge`</span>, <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span>, and <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>.
         """
         return pulumi.get(self, "network_mode")
 
@@ -268,7 +268,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="pidMode")
     def pid_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
         """
-        Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+        Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
         """
         return pulumi.get(self, "pid_mode")
 
@@ -280,7 +280,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="placementConstraints")
     def placement_constraints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]:
         """
-        Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+        Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
         """
         return pulumi.get(self, "placement_constraints")
 
@@ -316,7 +316,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="runtimePlatform")
     def runtime_platform(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]:
         """
-        Configuration block for runtime_platform that containers in your task may use.
+        Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
         """
         return pulumi.get(self, "runtime_platform")
 
@@ -328,7 +328,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="skipDestroy")
     def skip_destroy(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         """
         return pulumi.get(self, "skip_destroy")
 
@@ -340,7 +340,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
@@ -365,7 +365,7 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter(name="trackLatest")
     def track_latest(self) -> Optional[pulumi.Input[_builtins.bool]]:
         """
-        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
         """
         return pulumi.get(self, "track_latest")
 
@@ -377,11 +377,11 @@ class EC2TaskDefinitionArgs:
     @pulumi.getter
     def volumes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
         """
-        Configuration block for volumes that containers in your task may use. Detailed below.
+        Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
-        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
 
-        > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+        > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
         """
         return pulumi.get(self, "volumes")
 
@@ -434,31 +434,31 @@ class EC2TaskDefinition(pulumi.ComponentResource):
                
                Either [container] or [containers] must be provided.
         :param pulumi.Input[_builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+        :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
         :param pulumi.Input[_builtins.str] family: An optional unique name for your task definition. If not specified, then a default will be created.
-        :param pulumi.Input[_builtins.str] ipc_mode: IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+        :param pulumi.Input[_builtins.str] ipc_mode: IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
         :param Union['_awsx.DefaultLogGroupArgs', '_awsx.DefaultLogGroupArgsDict'] log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.str] network_mode: Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. The valid values are `host` and `task`.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+        :param pulumi.Input[_builtins.str] network_mode: Docker networking mode to use for the containers in the task. Valid values are <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>, <span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`">`bridge`</span>, <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span>, and <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] runtime_platform: Configuration block for runtime_platform that containers in your task may use.
-        :param pulumi.Input[_builtins.bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] runtime_platform: Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
+        :param pulumi.Input[_builtins.bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Union['_awsx.DefaultRoleWithPolicyArgs', '_awsx.DefaultRoleWithPolicyArgsDict'] task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
-        :param pulumi.Input[_builtins.bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
+        :param pulumi.Input[_builtins.bool] track_latest: Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] volumes: Repeatable configuration block for volumes that containers in your task may use. Detailed below.
                
-               > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+               > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
                
-               > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+               > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
         """
         ...
     @overload

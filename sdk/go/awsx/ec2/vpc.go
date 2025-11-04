@@ -112,7 +112,7 @@ func NewVpc(ctx *pulumi.Context,
 }
 
 type vpcArgs struct {
-	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
+	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Conflicts with <span pulumi-lang-nodejs="`ipv6IpamPoolId`" pulumi-lang-dotnet="`Ipv6IpamPoolId`" pulumi-lang-go="`ipv6IpamPoolId`" pulumi-lang-python="`ipv6_ipam_pool_id`" pulumi-lang-yaml="`ipv6IpamPoolId`" pulumi-lang-java="`ipv6IpamPoolId`">`ipv6_ipam_pool_id`</span>
 	AssignGeneratedIpv6CidrBlock *bool `pulumi:"assignGeneratedIpv6CidrBlock"`
 	// The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
 	AvailabilityZoneCidrMask *int `pulumi:"availabilityZoneCidrMask"`
@@ -126,19 +126,19 @@ type vpcArgs struct {
 	EnableDnsSupport *bool `pulumi:"enableDnsSupport"`
 	// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
 	EnableNetworkAddressUsageMetrics *bool `pulumi:"enableNetworkAddressUsageMetrics"`
-	// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+	// A tenancy option for instances launched into the VPC. Default is <span pulumi-lang-nodejs="`default`" pulumi-lang-dotnet="`Default`" pulumi-lang-go="`default`" pulumi-lang-python="`default`" pulumi-lang-yaml="`default`" pulumi-lang-java="`default`">`default`</span>, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is <span pulumi-lang-nodejs="`dedicated`" pulumi-lang-dotnet="`Dedicated`" pulumi-lang-go="`dedicated`" pulumi-lang-python="`dedicated`" pulumi-lang-yaml="`dedicated`" pulumi-lang-java="`dedicated`">`dedicated`</span>, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
 	InstanceTenancy *string `pulumi:"instanceTenancy"`
 	// The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
 	Ipv4IpamPoolId *string `pulumi:"ipv4IpamPoolId"`
-	// The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.
+	// The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a <span pulumi-lang-nodejs="`ipv4IpamPoolId`" pulumi-lang-dotnet="`Ipv4IpamPoolId`" pulumi-lang-go="`ipv4IpamPoolId`" pulumi-lang-python="`ipv4_ipam_pool_id`" pulumi-lang-yaml="`ipv4IpamPoolId`" pulumi-lang-java="`ipv4IpamPoolId`">`ipv4_ipam_pool_id`</span>.
 	Ipv4NetmaskLength *int `pulumi:"ipv4NetmaskLength"`
-	// IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.
+	// IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using <span pulumi-lang-nodejs="`ipv6NetmaskLength`" pulumi-lang-dotnet="`Ipv6NetmaskLength`" pulumi-lang-go="`ipv6NetmaskLength`" pulumi-lang-python="`ipv6_netmask_length`" pulumi-lang-yaml="`ipv6NetmaskLength`" pulumi-lang-java="`ipv6NetmaskLength`">`ipv6_netmask_length`</span>.
 	Ipv6CidrBlock *string `pulumi:"ipv6CidrBlock"`
-	// By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
+	// By default when an IPv6 CIDR is assigned to a VPC a default<span pulumi-lang-nodejs=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-dotnet=" Ipv6CidrBlockNetworkBorderGroup " pulumi-lang-go=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-python=" ipv6_cidr_block_network_border_group " pulumi-lang-yaml=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-java=" ipv6CidrBlockNetworkBorderGroup "> ipv6_cidr_block_network_border_group </span>will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
 	Ipv6CidrBlockNetworkBorderGroup *string `pulumi:"ipv6CidrBlockNetworkBorderGroup"`
-	// IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
+	// IPAM Pool ID for a IPv6 pool. Conflicts with <span pulumi-lang-nodejs="`assignGeneratedIpv6CidrBlock`" pulumi-lang-dotnet="`AssignGeneratedIpv6CidrBlock`" pulumi-lang-go="`assignGeneratedIpv6CidrBlock`" pulumi-lang-python="`assign_generated_ipv6_cidr_block`" pulumi-lang-yaml="`assignGeneratedIpv6CidrBlock`" pulumi-lang-java="`assignGeneratedIpv6CidrBlock`">`assign_generated_ipv6_cidr_block`</span>.
 	Ipv6IpamPoolId *string `pulumi:"ipv6IpamPoolId"`
-	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
+	// Netmask length to request from IPAM Pool. Conflicts with <span pulumi-lang-nodejs="`ipv6CidrBlock`" pulumi-lang-dotnet="`Ipv6CidrBlock`" pulumi-lang-go="`ipv6CidrBlock`" pulumi-lang-python="`ipv6_cidr_block`" pulumi-lang-yaml="`ipv6CidrBlock`" pulumi-lang-java="`ipv6CidrBlock`">`ipv6_cidr_block`</span>. This can be omitted if IPAM pool as a <span pulumi-lang-nodejs="`allocationDefaultNetmaskLength`" pulumi-lang-dotnet="`AllocationDefaultNetmaskLength`" pulumi-lang-go="`allocationDefaultNetmaskLength`" pulumi-lang-python="`allocation_default_netmask_length`" pulumi-lang-yaml="`allocationDefaultNetmaskLength`" pulumi-lang-java="`allocationDefaultNetmaskLength`">`allocation_default_netmask_length`</span> set. Valid values are from <span pulumi-lang-nodejs="`44`" pulumi-lang-dotnet="`44`" pulumi-lang-go="`44`" pulumi-lang-python="`44`" pulumi-lang-yaml="`44`" pulumi-lang-java="`44`">`44`</span> to <span pulumi-lang-nodejs="`60`" pulumi-lang-dotnet="`60`" pulumi-lang-go="`60`" pulumi-lang-python="`60`" pulumi-lang-yaml="`60`" pulumi-lang-java="`60`">`60`</span> in increments of 4.
 	Ipv6NetmaskLength *int `pulumi:"ipv6NetmaskLength"`
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfiguration `pulumi:"natGateways"`
@@ -150,7 +150,7 @@ type vpcArgs struct {
 	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
 	SubnetStrategy *SubnetAllocationStrategy `pulumi:"subnetStrategy"`
-	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// A map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// A list of VPC Endpoints specs to be deployed as part of the VPC
 	VpcEndpointSpecs []VpcEndpointSpec `pulumi:"vpcEndpointSpecs"`
@@ -158,7 +158,7 @@ type vpcArgs struct {
 
 // The set of arguments for constructing a Vpc resource.
 type VpcArgs struct {
-	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
+	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Conflicts with <span pulumi-lang-nodejs="`ipv6IpamPoolId`" pulumi-lang-dotnet="`Ipv6IpamPoolId`" pulumi-lang-go="`ipv6IpamPoolId`" pulumi-lang-python="`ipv6_ipam_pool_id`" pulumi-lang-yaml="`ipv6IpamPoolId`" pulumi-lang-java="`ipv6IpamPoolId`">`ipv6_ipam_pool_id`</span>
 	AssignGeneratedIpv6CidrBlock pulumi.BoolPtrInput
 	// The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
 	AvailabilityZoneCidrMask *int
@@ -172,19 +172,19 @@ type VpcArgs struct {
 	EnableDnsSupport pulumi.BoolPtrInput
 	// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
 	EnableNetworkAddressUsageMetrics pulumi.BoolPtrInput
-	// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+	// A tenancy option for instances launched into the VPC. Default is <span pulumi-lang-nodejs="`default`" pulumi-lang-dotnet="`Default`" pulumi-lang-go="`default`" pulumi-lang-python="`default`" pulumi-lang-yaml="`default`" pulumi-lang-java="`default`">`default`</span>, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is <span pulumi-lang-nodejs="`dedicated`" pulumi-lang-dotnet="`Dedicated`" pulumi-lang-go="`dedicated`" pulumi-lang-python="`dedicated`" pulumi-lang-yaml="`dedicated`" pulumi-lang-java="`dedicated`">`dedicated`</span>, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
 	InstanceTenancy pulumi.StringPtrInput
 	// The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
 	Ipv4IpamPoolId pulumi.StringPtrInput
-	// The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.
+	// The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a <span pulumi-lang-nodejs="`ipv4IpamPoolId`" pulumi-lang-dotnet="`Ipv4IpamPoolId`" pulumi-lang-go="`ipv4IpamPoolId`" pulumi-lang-python="`ipv4_ipam_pool_id`" pulumi-lang-yaml="`ipv4IpamPoolId`" pulumi-lang-java="`ipv4IpamPoolId`">`ipv4_ipam_pool_id`</span>.
 	Ipv4NetmaskLength pulumi.IntPtrInput
-	// IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.
+	// IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using <span pulumi-lang-nodejs="`ipv6NetmaskLength`" pulumi-lang-dotnet="`Ipv6NetmaskLength`" pulumi-lang-go="`ipv6NetmaskLength`" pulumi-lang-python="`ipv6_netmask_length`" pulumi-lang-yaml="`ipv6NetmaskLength`" pulumi-lang-java="`ipv6NetmaskLength`">`ipv6_netmask_length`</span>.
 	Ipv6CidrBlock pulumi.StringPtrInput
-	// By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
+	// By default when an IPv6 CIDR is assigned to a VPC a default<span pulumi-lang-nodejs=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-dotnet=" Ipv6CidrBlockNetworkBorderGroup " pulumi-lang-go=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-python=" ipv6_cidr_block_network_border_group " pulumi-lang-yaml=" ipv6CidrBlockNetworkBorderGroup " pulumi-lang-java=" ipv6CidrBlockNetworkBorderGroup "> ipv6_cidr_block_network_border_group </span>will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
 	Ipv6CidrBlockNetworkBorderGroup pulumi.StringPtrInput
-	// IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
+	// IPAM Pool ID for a IPv6 pool. Conflicts with <span pulumi-lang-nodejs="`assignGeneratedIpv6CidrBlock`" pulumi-lang-dotnet="`AssignGeneratedIpv6CidrBlock`" pulumi-lang-go="`assignGeneratedIpv6CidrBlock`" pulumi-lang-python="`assign_generated_ipv6_cidr_block`" pulumi-lang-yaml="`assignGeneratedIpv6CidrBlock`" pulumi-lang-java="`assignGeneratedIpv6CidrBlock`">`assign_generated_ipv6_cidr_block`</span>.
 	Ipv6IpamPoolId pulumi.StringPtrInput
-	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
+	// Netmask length to request from IPAM Pool. Conflicts with <span pulumi-lang-nodejs="`ipv6CidrBlock`" pulumi-lang-dotnet="`Ipv6CidrBlock`" pulumi-lang-go="`ipv6CidrBlock`" pulumi-lang-python="`ipv6_cidr_block`" pulumi-lang-yaml="`ipv6CidrBlock`" pulumi-lang-java="`ipv6CidrBlock`">`ipv6_cidr_block`</span>. This can be omitted if IPAM pool as a <span pulumi-lang-nodejs="`allocationDefaultNetmaskLength`" pulumi-lang-dotnet="`AllocationDefaultNetmaskLength`" pulumi-lang-go="`allocationDefaultNetmaskLength`" pulumi-lang-python="`allocation_default_netmask_length`" pulumi-lang-yaml="`allocationDefaultNetmaskLength`" pulumi-lang-java="`allocationDefaultNetmaskLength`">`allocation_default_netmask_length`</span> set. Valid values are from <span pulumi-lang-nodejs="`44`" pulumi-lang-dotnet="`44`" pulumi-lang-go="`44`" pulumi-lang-python="`44`" pulumi-lang-yaml="`44`" pulumi-lang-java="`44`">`44`</span> to <span pulumi-lang-nodejs="`60`" pulumi-lang-dotnet="`60`" pulumi-lang-go="`60`" pulumi-lang-python="`60`" pulumi-lang-yaml="`60`" pulumi-lang-java="`60`">`60`</span> in increments of 4.
 	Ipv6NetmaskLength pulumi.IntPtrInput
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfigurationArgs
@@ -196,7 +196,7 @@ type VpcArgs struct {
 	SubnetSpecs []SubnetSpecArgs
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
 	SubnetStrategy *SubnetAllocationStrategy
-	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// A map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// A list of VPC Endpoints specs to be deployed as part of the VPC
 	VpcEndpointSpecs []VpcEndpointSpecArgs

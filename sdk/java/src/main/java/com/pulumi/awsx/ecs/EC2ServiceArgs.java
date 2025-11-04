@@ -49,14 +49,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service&#39;s AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
      * 
      */
     @Import(name="availabilityZoneRebalancing")
     private @Nullable Output<String> availabilityZoneRebalancing;
 
     /**
-     * @return ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+     * @return ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service&#39;s AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
      * 
      */
     public Optional<Output<String>> availabilityZoneRebalancing() {
@@ -64,14 +64,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+     * Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment &#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment &#34; pulumi-lang-go=&#34;`forceNewDeployment &#34; pulumi-lang-python=&#34;`force_new_deployment &#34; pulumi-lang-yaml=&#34;`forceNewDeployment &#34; pulumi-lang-java=&#34;`forceNewDeployment &#34;&gt;`force_new_deployment &lt;/span&gt;= true`. See below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt;.
      * 
      */
     @Import(name="capacityProviderStrategies")
     private @Nullable Output<List<ServiceCapacityProviderStrategyArgs>> capacityProviderStrategies;
 
     /**
-     * @return Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+     * @return Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment &#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment &#34; pulumi-lang-go=&#34;`forceNewDeployment &#34; pulumi-lang-python=&#34;`force_new_deployment &#34; pulumi-lang-yaml=&#34;`forceNewDeployment &#34; pulumi-lang-java=&#34;`forceNewDeployment &#34;&gt;`force_new_deployment &lt;/span&gt;= true`. See below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt;.
      * 
      */
     public Optional<Output<List<ServiceCapacityProviderStrategyArgs>>> capacityProviderStrategies() {
@@ -244,7 +244,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; updates.
      * When using the forceNewDeployment property you also need to configure the triggers property.
      * 
      */
@@ -252,7 +252,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     private @Nullable Output<Boolean> forceNewDeployment;
 
     /**
-     * @return Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+     * @return Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; updates.
      * When using the forceNewDeployment property you also need to configure the triggers property.
      * 
      */
@@ -276,14 +276,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
+     * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode. If using &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
      * 
      */
     @Import(name="iamRole")
     private @Nullable Output<String> iamRole;
 
     /**
-     * @return ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
+     * @return ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode. If using &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
      * 
      */
     public Optional<Output<String>> iamRole() {
@@ -325,14 +325,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+     * Network configuration for the service. This parameter is required for task definitions that use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      * 
      */
     @Import(name="networkConfiguration")
     private @Nullable Output<ServiceNetworkConfigurationArgs> networkConfiguration;
 
     /**
-     * @return Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+     * @return Network configuration for the service. This parameter is required for task definitions that use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      * 
      */
     public Optional<Output<ServiceNetworkConfigurationArgs>> networkConfiguration() {
@@ -340,14 +340,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+     * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`5`&#34; pulumi-lang-dotnet=&#34;`5`&#34; pulumi-lang-go=&#34;`5`&#34; pulumi-lang-python=&#34;`5`&#34; pulumi-lang-yaml=&#34;`5`&#34; pulumi-lang-java=&#34;`5`&#34;&gt;`5`&lt;/span&gt;. See below.
      * 
      */
     @Import(name="orderedPlacementStrategies")
     private @Nullable Output<List<ServiceOrderedPlacementStrategyArgs>> orderedPlacementStrategies;
 
     /**
-     * @return Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+     * @return Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`5`&#34; pulumi-lang-dotnet=&#34;`5`&#34; pulumi-lang-go=&#34;`5`&#34; pulumi-lang-python=&#34;`5`&#34; pulumi-lang-yaml=&#34;`5`&#34; pulumi-lang-java=&#34;`5`&#34;&gt;`5`&lt;/span&gt;. See below.
      * 
      */
     public Optional<Output<List<ServiceOrderedPlacementStrategyArgs>>> orderedPlacementStrategies() {
@@ -355,14 +355,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+     * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. See below.
      * 
      */
     @Import(name="placementConstraints")
     private @Nullable Output<List<ServicePlacementConstraintArgs>> placementConstraints;
 
     /**
-     * @return Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+     * @return Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. See below.
      * 
      */
     public Optional<Output<List<ServicePlacementConstraintArgs>>> placementConstraints() {
@@ -370,14 +370,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+     * Platform version on which to run your service. Only applicable for &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt; set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
      * 
      */
     @Import(name="platformVersion")
     private @Nullable Output<String> platformVersion;
 
     /**
-     * @return Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+     * @return Platform version on which to run your service. Only applicable for &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt; set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
      * 
      */
     public Optional<Output<String>> platformVersion() {
@@ -445,14 +445,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+     * Service discovery registries for the service. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`serviceRegistries`&#34; pulumi-lang-dotnet=&#34;`ServiceRegistries`&#34; pulumi-lang-go=&#34;`serviceRegistries`&#34; pulumi-lang-python=&#34;`service_registries`&#34; pulumi-lang-yaml=&#34;`serviceRegistries`&#34; pulumi-lang-java=&#34;`serviceRegistries`&#34;&gt;`service_registries`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`1`&#34; pulumi-lang-dotnet=&#34;`1`&#34; pulumi-lang-go=&#34;`1`&#34; pulumi-lang-python=&#34;`1`&#34; pulumi-lang-yaml=&#34;`1`&#34; pulumi-lang-java=&#34;`1`&#34;&gt;`1`&lt;/span&gt;. See below.
      * 
      */
     @Import(name="serviceRegistries")
     private @Nullable Output<ServiceServiceRegistriesArgs> serviceRegistries;
 
     /**
-     * @return Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+     * @return Service discovery registries for the service. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`serviceRegistries`&#34; pulumi-lang-dotnet=&#34;`ServiceRegistries`&#34; pulumi-lang-go=&#34;`serviceRegistries`&#34; pulumi-lang-python=&#34;`service_registries`&#34; pulumi-lang-yaml=&#34;`serviceRegistries`&#34; pulumi-lang-java=&#34;`serviceRegistries`&#34;&gt;`service_registries`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`1`&#34; pulumi-lang-dotnet=&#34;`1`&#34; pulumi-lang-go=&#34;`1`&#34; pulumi-lang-python=&#34;`1`&#34; pulumi-lang-yaml=&#34;`1`&#34; pulumi-lang-java=&#34;`1`&#34;&gt;`1`&lt;/span&gt;. See below.
      * 
      */
     public Optional<Output<ServiceServiceRegistriesArgs>> serviceRegistries() {
@@ -460,14 +460,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+     * Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Only applicable when using `ECS` deployment controller and requires &lt;span pulumi-lang-nodejs=&#34;`waitForSteadyState &#34; pulumi-lang-dotnet=&#34;`WaitForSteadyState &#34; pulumi-lang-go=&#34;`waitForSteadyState &#34; pulumi-lang-python=&#34;`wait_for_steady_state &#34; pulumi-lang-yaml=&#34;`waitForSteadyState &#34; pulumi-lang-java=&#34;`waitForSteadyState &#34;&gt;`wait_for_steady_state &lt;/span&gt;= true`.
      * 
      */
     @Import(name="sigintRollback")
     private @Nullable Output<Boolean> sigintRollback;
 
     /**
-     * @return Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+     * @return Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Only applicable when using `ECS` deployment controller and requires &lt;span pulumi-lang-nodejs=&#34;`waitForSteadyState &#34; pulumi-lang-dotnet=&#34;`WaitForSteadyState &#34; pulumi-lang-go=&#34;`waitForSteadyState &#34; pulumi-lang-python=&#34;`wait_for_steady_state &#34; pulumi-lang-yaml=&#34;`waitForSteadyState &#34; pulumi-lang-java=&#34;`waitForSteadyState &#34;&gt;`wait_for_steady_state &lt;/span&gt;= true`.
      * 
      */
     public Optional<Output<Boolean>> sigintRollback() {
@@ -475,14 +475,14 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -644,7 +644,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service&#39;s AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
          * 
          * @return builder
          * 
@@ -655,7 +655,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. Defaults to `DISABLED`.
+         * @param availabilityZoneRebalancing ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service&#39;s AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
          * 
          * @return builder
          * 
@@ -665,7 +665,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment &#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment &#34; pulumi-lang-go=&#34;`forceNewDeployment &#34; pulumi-lang-python=&#34;`force_new_deployment &#34; pulumi-lang-yaml=&#34;`forceNewDeployment &#34; pulumi-lang-java=&#34;`forceNewDeployment &#34;&gt;`force_new_deployment &lt;/span&gt;= true`. See below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -676,7 +676,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment &#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment &#34; pulumi-lang-go=&#34;`forceNewDeployment &#34; pulumi-lang-python=&#34;`force_new_deployment &#34; pulumi-lang-yaml=&#34;`forceNewDeployment &#34; pulumi-lang-java=&#34;`forceNewDeployment &#34;&gt;`force_new_deployment &lt;/span&gt;= true`. See below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -686,7 +686,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below. Conflicts with `launch_type`.
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment &#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment &#34; pulumi-lang-go=&#34;`forceNewDeployment &#34; pulumi-lang-python=&#34;`force_new_deployment &#34; pulumi-lang-yaml=&#34;`forceNewDeployment &#34; pulumi-lang-java=&#34;`forceNewDeployment &#34;&gt;`force_new_deployment &lt;/span&gt;= true`. See below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -927,7 +927,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+         * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; updates.
          * When using the forceNewDeployment property you also need to configure the triggers property.
          * 
          * @return builder
@@ -939,7 +939,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
+         * @param forceNewDeployment Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; updates.
          * When using the forceNewDeployment property you also need to configure the triggers property.
          * 
          * @return builder
@@ -971,7 +971,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param iamRole ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
+         * @param iamRole ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode. If using &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
          * 
          * @return builder
          * 
@@ -982,7 +982,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param iamRole ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
+         * @param iamRole ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode. If using &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
          * 
          * @return builder
          * 
@@ -1048,7 +1048,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param networkConfiguration Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+         * @param networkConfiguration Network configuration for the service. This parameter is required for task definitions that use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
          * 
          * @return builder
          * 
@@ -1059,7 +1059,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param networkConfiguration Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+         * @param networkConfiguration Network configuration for the service. This parameter is required for task definitions that use the &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt; network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
          * 
          * @return builder
          * 
@@ -1069,7 +1069,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`5`&#34; pulumi-lang-dotnet=&#34;`5`&#34; pulumi-lang-go=&#34;`5`&#34; pulumi-lang-python=&#34;`5`&#34; pulumi-lang-yaml=&#34;`5`&#34; pulumi-lang-java=&#34;`5`&#34;&gt;`5`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1080,7 +1080,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`5`&#34; pulumi-lang-dotnet=&#34;`5`&#34; pulumi-lang-go=&#34;`5`&#34; pulumi-lang-python=&#34;`5`&#34; pulumi-lang-yaml=&#34;`5`&#34; pulumi-lang-java=&#34;`5`&#34;&gt;`5`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1090,7 +1090,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+         * @param orderedPlacementStrategies Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-dotnet=&#34;`OrderedPlacementStrategy`&#34; pulumi-lang-go=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-python=&#34;`ordered_placement_strategy`&#34; pulumi-lang-yaml=&#34;`orderedPlacementStrategy`&#34; pulumi-lang-java=&#34;`orderedPlacementStrategy`&#34;&gt;`ordered_placement_strategy`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`5`&#34; pulumi-lang-dotnet=&#34;`5`&#34; pulumi-lang-go=&#34;`5`&#34; pulumi-lang-python=&#34;`5`&#34; pulumi-lang-yaml=&#34;`5`&#34; pulumi-lang-java=&#34;`5`&#34;&gt;`5`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1100,7 +1100,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1111,7 +1111,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1121,7 +1121,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
+         * @param placementConstraints Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless &lt;span pulumi-lang-nodejs=&#34;`forceNewDeployment`&#34; pulumi-lang-dotnet=&#34;`ForceNewDeployment`&#34; pulumi-lang-go=&#34;`forceNewDeployment`&#34; pulumi-lang-python=&#34;`force_new_deployment`&#34; pulumi-lang-yaml=&#34;`forceNewDeployment`&#34; pulumi-lang-java=&#34;`forceNewDeployment`&#34;&gt;`force_new_deployment`&lt;/span&gt; is enabled. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1131,7 +1131,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param platformVersion Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+         * @param platformVersion Platform version on which to run your service. Only applicable for &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt; set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
          * 
          * @return builder
          * 
@@ -1142,7 +1142,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param platformVersion Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+         * @param platformVersion Platform version on which to run your service. Only applicable for &lt;span pulumi-lang-nodejs=&#34;`launchType`&#34; pulumi-lang-dotnet=&#34;`LaunchType`&#34; pulumi-lang-go=&#34;`launchType`&#34; pulumi-lang-python=&#34;`launch_type`&#34; pulumi-lang-yaml=&#34;`launchType`&#34; pulumi-lang-java=&#34;`launchType`&#34;&gt;`launch_type`&lt;/span&gt; set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
          * 
          * @return builder
          * 
@@ -1236,7 +1236,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param serviceRegistries Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+         * @param serviceRegistries Service discovery registries for the service. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`serviceRegistries`&#34; pulumi-lang-dotnet=&#34;`ServiceRegistries`&#34; pulumi-lang-go=&#34;`serviceRegistries`&#34; pulumi-lang-python=&#34;`service_registries`&#34; pulumi-lang-yaml=&#34;`serviceRegistries`&#34; pulumi-lang-java=&#34;`serviceRegistries`&#34;&gt;`service_registries`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`1`&#34; pulumi-lang-dotnet=&#34;`1`&#34; pulumi-lang-go=&#34;`1`&#34; pulumi-lang-python=&#34;`1`&#34; pulumi-lang-yaml=&#34;`1`&#34; pulumi-lang-java=&#34;`1`&#34;&gt;`1`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1247,7 +1247,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param serviceRegistries Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
+         * @param serviceRegistries Service discovery registries for the service. The maximum number of &lt;span pulumi-lang-nodejs=&#34;`serviceRegistries`&#34; pulumi-lang-dotnet=&#34;`ServiceRegistries`&#34; pulumi-lang-go=&#34;`serviceRegistries`&#34; pulumi-lang-python=&#34;`service_registries`&#34; pulumi-lang-yaml=&#34;`serviceRegistries`&#34; pulumi-lang-java=&#34;`serviceRegistries`&#34;&gt;`service_registries`&lt;/span&gt; blocks is &lt;span pulumi-lang-nodejs=&#34;`1`&#34; pulumi-lang-dotnet=&#34;`1`&#34; pulumi-lang-go=&#34;`1`&#34; pulumi-lang-python=&#34;`1`&#34; pulumi-lang-yaml=&#34;`1`&#34; pulumi-lang-java=&#34;`1`&#34;&gt;`1`&lt;/span&gt;. See below.
          * 
          * @return builder
          * 
@@ -1257,7 +1257,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Only applicable when using `ECS` deployment controller and requires &lt;span pulumi-lang-nodejs=&#34;`waitForSteadyState &#34; pulumi-lang-dotnet=&#34;`WaitForSteadyState &#34; pulumi-lang-go=&#34;`waitForSteadyState &#34; pulumi-lang-python=&#34;`wait_for_steady_state &#34; pulumi-lang-yaml=&#34;`waitForSteadyState &#34; pulumi-lang-java=&#34;`waitForSteadyState &#34;&gt;`wait_for_steady_state &lt;/span&gt;= true`.
          * 
          * @return builder
          * 
@@ -1268,7 +1268,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to `false`. Only applicable when using `ECS` deployment controller and requires `wait_for_steady_state = true`.
+         * @param sigintRollback Whether to enable graceful termination of deployments using SIGINT signals. When enabled, allows customers to safely cancel an in-progress deployment and automatically trigger a rollback to the previous stable state. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Only applicable when using `ECS` deployment controller and requires &lt;span pulumi-lang-nodejs=&#34;`waitForSteadyState &#34; pulumi-lang-dotnet=&#34;`WaitForSteadyState &#34; pulumi-lang-go=&#34;`waitForSteadyState &#34; pulumi-lang-python=&#34;`wait_for_steady_state &#34; pulumi-lang-yaml=&#34;`waitForSteadyState &#34; pulumi-lang-java=&#34;`waitForSteadyState &#34;&gt;`wait_for_steady_state &lt;/span&gt;= true`.
          * 
          * @return builder
          * 
@@ -1278,7 +1278,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -1289,7 +1289,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
