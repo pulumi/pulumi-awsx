@@ -61,6 +61,7 @@ jobs:
     with:
       version: ${{ needs.prerequisites.outputs.version }}
       isPrerelease: true
+      setLatestRelease: false
 
   test:
     uses: ./.github/workflows/test.yml
