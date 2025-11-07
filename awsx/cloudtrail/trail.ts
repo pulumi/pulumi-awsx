@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { optionalLogGroup } from "../cloudwatch/logGroup";
+import { defaultRoleWithPolicies } from "../role";
 import { BucketId, requiredBucket } from "../s3/bucket";
 import * as schema from "../schema-types";
 
@@ -37,11 +38,57 @@ export class Trail extends schema.Trail {
       { parent: this },
     );
     this.logGroup = logGroup;
+    const accountId = aws.getCallerIdentityOutput({}, { parent: this }).accountId;
 
-    const trailArgs = {
+    // create the arn for the stream that cloudtrail will write to
+    // see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/send-cloudtrail-events-to-cloudwatch-logs.html
+    const logStreamArn = pulumi.all([logGroupId, accountId]).apply(([id, accountId]) => {
+      if (id !== undefined) {
+        return `${id!.arn}:log-stream:${accountId}_CloudTrail_*`;
+      }
+    });
+
+    // if a log group is created, then we also need to create a role for cloudtrail to use
+    // to access the group
+    const logsRole = defaultRoleWithPolicies(
+      name,
+      {
+        skip: logGroup === undefined,
+        args: undefined,
+      },
+      {
+        assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
+          aws.iam.Principals.CloudtrailPrincipal,
+        ),
+        inlinePolicies: [
+          {
+            policy: pulumi.jsonStringify({
+              Version: "2012-10-17",
+              Statement: [
+                {
+                  Effect: "Allow",
+                  Action: ["logs:CreateLogStream"],
+                  Resource: [logStreamArn],
+                },
+                {
+                  Effect: "Allow",
+                  Action: ["logs:PutLogEvents"],
+                  Resource: [logStreamArn],
+                },
+              ],
+            }),
+          },
+        ],
+      },
+      { parent: this },
+    );
+
+    const trailArgs: aws.cloudtrail.TrailArgs = {
       ...trailCustomArgs,
       s3BucketName: bucketId.name,
-      cloudWatchLogGroupArn: logGroupId?.apply((arn) => arn + ":*"),
+      // the log group arn has to allow access to `:logs-stream`
+      cloudWatchLogsGroupArn: logGroupId?.apply((id) => `${id.arn}:*`),
+      cloudWatchLogsRoleArn: logsRole.roleArn,
     };
 
     this.trail = new aws.cloudtrail.Trail(name, trailArgs, {

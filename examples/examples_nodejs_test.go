@@ -42,6 +42,42 @@ func TestAccTrailTs(t *testing.T) {
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "cloudtrail", "nodejs"),
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				defaultTrailSSEAlgorithm, ok := stackInfo.Outputs["defaultTrailSSEAlgorithm"].(string)
+				require.True(t, ok)
+				require.Equal(t, "AES256", defaultTrailSSEAlgorithm)
+
+				aesEncryptedTrailSSEAlgorithm, ok := stackInfo.Outputs["aesEncryptedTrailSSEAlgorithm"].(string)
+				require.True(t, ok)
+				require.Equal(t, "AES256", aesEncryptedTrailSSEAlgorithm)
+
+				kmsEncryptedBucketTrailSSEAlgorithm, ok := stackInfo.Outputs["kmsEncryptedBucketTrailSSEAlgorithm"].(string)
+				require.True(t, ok)
+				require.Equal(t, "aws:kms", kmsEncryptedBucketTrailSSEAlgorithm)
+
+				defaultTrailCloudWatchLogsRoleArn, ok := stackInfo.Outputs["defaultTrailCloudWatchLogsRoleArn"].(string)
+				require.True(t, ok)
+				require.Empty(t, defaultTrailCloudWatchLogsRoleArn)
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "cloudtrail-with-logs", "nodejs"),
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				logGroupArn, ok := stackInfo.Outputs["logGroupArn"].(string)
+				require.True(t, ok)
+				require.NotEmpty(t, logGroupArn)
+				cloudWatchLogGroupArn, ok := stackInfo.Outputs["trailCloudWatchLogGroupArn"].(string)
+				require.True(t, ok)
+				require.NotEmpty(t, cloudWatchLogGroupArn)
+				assert.Equal(t, fmt.Sprintf("%s:*", logGroupArn), cloudWatchLogGroupArn)
+			},
 		})
 
 	integration.ProgramTest(t, &test)
