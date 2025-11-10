@@ -36,7 +36,7 @@
         },
         "java": {
             "dependencies": {
-                "com.pulumi:aws": "7.10.0",
+                "com.pulumi:aws": "7.11.0",
                 "com.pulumi:docker": "4.6.0",
                 "com.pulumi:docker-build": "0.0.14"
             }
@@ -44,7 +44,7 @@
         "nodejs": {
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
-                "@pulumi/aws": "^7.10.0",
+                "@pulumi/aws": "^7.11.0",
                 "@pulumi/docker": "^4.6.0",
                 "@pulumi/docker-build": "^0.0.14",
                 "@types/aws-lambda": "^8.10.23",
@@ -105,7 +105,7 @@
                 "corsRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
                     },
                     "description": "Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketCorsConfiguration`\" pulumi-lang-dotnet=\"`aws.s3.BucketCorsConfiguration`\" pulumi-lang-go=\"`s3.BucketCorsConfiguration`\" pulumi-lang-python=\"`s3.BucketCorsConfiguration`\" pulumi-lang-yaml=\"`aws.s3.BucketCorsConfiguration`\" pulumi-lang-java=\"`aws.s3.BucketCorsConfiguration`\"\u003e`aws.s3.BucketCorsConfiguration`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "cors_rule is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-go=\" s3.BucketCorsConfiguration \" pulumi-lang-python=\" s3.BucketCorsConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketCorsConfiguration \" pulumi-lang-java=\" aws.s3.BucketCorsConfiguration \"\u003e aws.s3.BucketCorsConfiguration \u003c/span\u003eresource instead."
@@ -117,7 +117,7 @@
                 "grants": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
                     },
                     "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with \u003cspan pulumi-lang-nodejs=\"`acl`\" pulumi-lang-dotnet=\"`Acl`\" pulumi-lang-go=\"`acl`\" pulumi-lang-python=\"`acl`\" pulumi-lang-yaml=\"`acl`\" pulumi-lang-java=\"`acl`\"\u003e`acl`\u003c/span\u003e. The provider will only perform drift detection if a configuration value is provided. Use the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketAcl`\" pulumi-lang-dotnet=\"`aws.s3.BucketAcl`\" pulumi-lang-go=\"`s3.BucketAcl`\" pulumi-lang-python=\"`s3.BucketAcl`\" pulumi-lang-yaml=\"`aws.s3.BucketAcl`\" pulumi-lang-java=\"`aws.s3.BucketAcl`\"\u003e`aws.s3.BucketAcl`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "grant is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketAcl \" pulumi-lang-dotnet=\" aws.s3.BucketAcl \" pulumi-lang-go=\" s3.BucketAcl \" pulumi-lang-python=\" s3.BucketAcl \" pulumi-lang-yaml=\" aws.s3.BucketAcl \" pulumi-lang-java=\" aws.s3.BucketAcl \"\u003e aws.s3.BucketAcl \u003c/span\u003eresource instead."
@@ -125,18 +125,18 @@
                 "lifecycleRules": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
                     },
                     "description": "Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketLifecycleConfiguration`\" pulumi-lang-dotnet=\"`aws.s3.BucketLifecycleConfiguration`\" pulumi-lang-go=\"`s3.BucketLifecycleConfiguration`\" pulumi-lang-python=\"`s3.BucketLifecycleConfiguration`\" pulumi-lang-yaml=\"`aws.s3.BucketLifecycleConfiguration`\" pulumi-lang-java=\"`aws.s3.BucketLifecycleConfiguration`\"\u003e`aws.s3.BucketLifecycleConfiguration`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "lifecycle_rule is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-go=\" s3.BucketLifecycleConfiguration \" pulumi-lang-python=\" s3.BucketLifecycleConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketLifecycleConfiguration \" pulumi-lang-java=\" aws.s3.BucketLifecycleConfiguration \"\u003e aws.s3.BucketLifecycleConfiguration \u003c/span\u003eresource instead."
                 },
                 "logging": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketLogging:BucketLogging",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketLogging:BucketLogging",
                     "description": "Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketLogging`\" pulumi-lang-dotnet=\"`aws.s3.BucketLogging`\" pulumi-lang-go=\"`s3.BucketLogging`\" pulumi-lang-python=\"`s3.BucketLogging`\" pulumi-lang-yaml=\"`aws.s3.BucketLogging`\" pulumi-lang-java=\"`aws.s3.BucketLogging`\"\u003e`aws.s3.BucketLogging`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "logging is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketLogging \" pulumi-lang-dotnet=\" aws.s3.BucketLogging \" pulumi-lang-go=\" s3.BucketLogging \" pulumi-lang-python=\" s3.BucketLogging \" pulumi-lang-yaml=\" aws.s3.BucketLogging \" pulumi-lang-java=\" aws.s3.BucketLogging \"\u003e aws.s3.BucketLogging \u003c/span\u003eresource instead."
                 },
                 "objectLockConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
                     "description": "Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.\nThe provider wil only perform drift detection if a configuration value is provided.\nUse the \u003cspan pulumi-lang-nodejs=\"`objectLockEnabled`\" pulumi-lang-dotnet=\"`ObjectLockEnabled`\" pulumi-lang-go=\"`objectLockEnabled`\" pulumi-lang-python=\"`object_lock_enabled`\" pulumi-lang-yaml=\"`objectLockEnabled`\" pulumi-lang-java=\"`objectLockEnabled`\"\u003e`object_lock_enabled`\u003c/span\u003e parameter and the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketObjectLockConfiguration`\" pulumi-lang-dotnet=\"`aws.s3.BucketObjectLockConfiguration`\" pulumi-lang-go=\"`s3.BucketObjectLockConfiguration`\" pulumi-lang-python=\"`s3.BucketObjectLockConfiguration`\" pulumi-lang-yaml=\"`aws.s3.BucketObjectLockConfiguration`\" pulumi-lang-java=\"`aws.s3.BucketObjectLockConfiguration`\"\u003e`aws.s3.BucketObjectLockConfiguration`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "object_lock_configuration is deprecated. Use the top-level parameter\u003cspan pulumi-lang-nodejs=\" objectLockEnabled \" pulumi-lang-dotnet=\" ObjectLockEnabled \" pulumi-lang-go=\" objectLockEnabled \" pulumi-lang-python=\" object_lock_enabled \" pulumi-lang-yaml=\" objectLockEnabled \" pulumi-lang-java=\" objectLockEnabled \"\u003e object_lock_enabled \u003c/span\u003eand the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-go=\" s3.BucketObjectLockConfiguration \" pulumi-lang-python=\" s3.BucketObjectLockConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketObjectLockConfiguration \" pulumi-lang-java=\" aws.s3.BucketObjectLockConfiguration \"\u003e aws.s3.BucketObjectLockConfiguration \u003c/span\u003eresource instead."
                 },
@@ -154,7 +154,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "replicationConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
                     "description": "Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketReplicationConfig`\" pulumi-lang-dotnet=\"`aws.s3.BucketReplicationConfig`\" pulumi-lang-go=\"`s3.BucketReplicationConfig`\" pulumi-lang-python=\"`s3.BucketReplicationConfig`\" pulumi-lang-yaml=\"`aws.s3.BucketReplicationConfig`\" pulumi-lang-java=\"`aws.s3.BucketReplicationConfig`\"\u003e`aws.s3.BucketReplicationConfig`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "replication_configuration is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketReplicationConfig \" pulumi-lang-dotnet=\" aws.s3.BucketReplicationConfig \" pulumi-lang-go=\" s3.BucketReplicationConfig \" pulumi-lang-python=\" s3.BucketReplicationConfig \" pulumi-lang-yaml=\" aws.s3.BucketReplicationConfig \" pulumi-lang-java=\" aws.s3.BucketReplicationConfig \"\u003e aws.s3.BucketReplicationConfig \u003c/span\u003eresource instead."
                 },
@@ -164,7 +164,7 @@
                     "deprecationMessage": "request_payer is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-go=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-python=\" s3.BucketRequestPaymentConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketRequestPaymentConfiguration \" pulumi-lang-java=\" aws.s3.BucketRequestPaymentConfiguration \"\u003e aws.s3.BucketRequestPaymentConfiguration \u003c/span\u003eresource instead."
                 },
                 "serverSideEncryptionConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
                     "description": "Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.\nThe provider will only perform drift detection if a configuration value is provided.\nUse the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketServerSideEncryptionConfiguration`\" pulumi-lang-dotnet=\"`aws.s3.BucketServerSideEncryptionConfiguration`\" pulumi-lang-go=\"`s3.BucketServerSideEncryptionConfiguration`\" pulumi-lang-python=\"`s3.BucketServerSideEncryptionConfiguration`\" pulumi-lang-yaml=\"`aws.s3.BucketServerSideEncryptionConfiguration`\" pulumi-lang-java=\"`aws.s3.BucketServerSideEncryptionConfiguration`\"\u003e`aws.s3.BucketServerSideEncryptionConfiguration`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "server_side_encryption_configuration is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-go=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-python=\" s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketServerSideEncryptionConfiguration \" pulumi-lang-java=\" aws.s3.BucketServerSideEncryptionConfiguration \"\u003e aws.s3.BucketServerSideEncryptionConfiguration \u003c/span\u003eresource instead."
                 },
@@ -176,12 +176,12 @@
                     "description": "Map of tags to assign to the bucket. If configured with a provider \u003cspan pulumi-lang-nodejs=\"`defaultTags`\" pulumi-lang-dotnet=\"`DefaultTags`\" pulumi-lang-go=\"`defaultTags`\" pulumi-lang-python=\"`default_tags`\" pulumi-lang-yaml=\"`defaultTags`\" pulumi-lang-java=\"`defaultTags`\"\u003e`default_tags`\u003c/span\u003e configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n\nThe following arguments are deprecated, and will be removed in a future major version:\n"
                 },
                 "versioning": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
                     "description": "Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketVersioning`\" pulumi-lang-dotnet=\"`aws.s3.BucketVersioning`\" pulumi-lang-go=\"`s3.BucketVersioning`\" pulumi-lang-python=\"`s3.BucketVersioning`\" pulumi-lang-yaml=\"`aws.s3.BucketVersioning`\" pulumi-lang-java=\"`aws.s3.BucketVersioning`\"\u003e`aws.s3.BucketVersioning`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "versioning is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketVersioning \" pulumi-lang-dotnet=\" aws.s3.BucketVersioning \" pulumi-lang-go=\" s3.BucketVersioning \" pulumi-lang-python=\" s3.BucketVersioning \" pulumi-lang-yaml=\" aws.s3.BucketVersioning \" pulumi-lang-java=\" aws.s3.BucketVersioning \"\u003e aws.s3.BucketVersioning \u003c/span\u003eresource instead."
                 },
                 "website": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
                     "description": "Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.\nUse the resource \u003cspan pulumi-lang-nodejs=\"`aws.s3.BucketWebsiteConfiguration`\" pulumi-lang-dotnet=\"`aws.s3.BucketWebsiteConfiguration`\" pulumi-lang-go=\"`s3.BucketWebsiteConfiguration`\" pulumi-lang-python=\"`s3.BucketWebsiteConfiguration`\" pulumi-lang-yaml=\"`aws.s3.BucketWebsiteConfiguration`\" pulumi-lang-java=\"`aws.s3.BucketWebsiteConfiguration`\"\u003e`aws.s3.BucketWebsiteConfiguration`\u003c/span\u003e instead.\n",
                     "deprecationMessage": "website is deprecated. Use the\u003cspan pulumi-lang-nodejs=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-dotnet=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-go=\" s3.BucketWebsiteConfiguration \" pulumi-lang-python=\" s3.BucketWebsiteConfiguration \" pulumi-lang-yaml=\" aws.s3.BucketWebsiteConfiguration \" pulumi-lang-java=\" aws.s3.BucketWebsiteConfiguration \"\u003e aws.s3.BucketWebsiteConfiguration \u003c/span\u003eresource instead."
                 }
@@ -413,7 +413,7 @@
                 "inlinePolicies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
                     },
                     "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., \u003cspan pulumi-lang-nodejs=\"`inlinePolicy \" pulumi-lang-dotnet=\"`InlinePolicy \" pulumi-lang-go=\"`inlinePolicy \" pulumi-lang-python=\"`inline_policy \" pulumi-lang-yaml=\"`inlinePolicy \" pulumi-lang-java=\"`inlinePolicy \"\u003e`inline_policy \u003c/span\u003e{}`) will cause Pulumi to remove _all_ inline policies added out of band on \u003cspan pulumi-lang-nodejs=\"`apply`\" pulumi-lang-dotnet=\"`Apply`\" pulumi-lang-go=\"`apply`\" pulumi-lang-python=\"`apply`\" pulumi-lang-yaml=\"`apply`\" pulumi-lang-java=\"`apply`\"\u003e`apply`\u003c/span\u003e.\n"
                 },
@@ -478,14 +478,14 @@
                 "egress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
                     },
                     "description": "Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
                 "ingress": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
                     },
                     "description": "Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.\n"
                 },
@@ -713,7 +713,7 @@
                     "description": "Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account)."
                 },
                 "dnsOptions": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ec2/VpcEndpointDnsOptions:VpcEndpointDnsOptions",
                     "description": "The DNS options for the endpoint. See\u003cspan pulumi-lang-nodejs=\" dnsOptions \" pulumi-lang-dotnet=\" DnsOptions \" pulumi-lang-go=\" dnsOptions \" pulumi-lang-python=\" dns_options \" pulumi-lang-yaml=\" dnsOptions \" pulumi-lang-java=\" dnsOptions \"\u003e dns_options \u003c/span\u003ebelow.\n"
                 },
                 "ipAddressType": {
@@ -770,7 +770,7 @@
                 "subnetConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ec2/VpcEndpointSubnetConfiguration:VpcEndpointSubnetConfiguration"
                     },
                     "description": "Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See\u003cspan pulumi-lang-nodejs=\" subnetConfiguration \" pulumi-lang-dotnet=\" SubnetConfiguration \" pulumi-lang-go=\" subnetConfiguration \" pulumi-lang-python=\" subnet_configuration \" pulumi-lang-yaml=\" subnetConfiguration \" pulumi-lang-java=\" subnetConfiguration \"\u003e subnet_configuration \u003c/span\u003ebelow.\n"
                 },
@@ -959,7 +959,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -999,13 +999,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1014,7 +1014,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for\u003cspan pulumi-lang-nodejs=\" runtimePlatform \" pulumi-lang-dotnet=\" RuntimePlatform \" pulumi-lang-go=\" runtimePlatform \" pulumi-lang-python=\" runtime_platform \" pulumi-lang-yaml=\" runtimePlatform \" pulumi-lang-java=\" runtimePlatform \"\u003e runtime_platform \u003c/span\u003ethat containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1041,7 +1041,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Repeatable configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as \u003cspan pulumi-lang-nodejs=\"`environment`\" pulumi-lang-dotnet=\"`Environment`\" pulumi-lang-go=\"`environment`\" pulumi-lang-python=\"`environment`\" pulumi-lang-yaml=\"`environment`\" pulumi-lang-java=\"`environment`\"\u003e`environment`\u003c/span\u003e values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`host`\" pulumi-lang-dotnet=\"`Host`\" pulumi-lang-go=\"`host`\" pulumi-lang-python=\"`host`\" pulumi-lang-yaml=\"`host`\" pulumi-lang-java=\"`host`\"\u003e`host`\u003c/span\u003e network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -1076,7 +1076,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1111,13 +1111,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1126,7 +1126,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for\u003cspan pulumi-lang-nodejs=\" runtimePlatform \" pulumi-lang-dotnet=\" RuntimePlatform \" pulumi-lang-go=\" runtimePlatform \" pulumi-lang-python=\" runtime_platform \" pulumi-lang-yaml=\" runtimePlatform \" pulumi-lang-java=\" runtimePlatform \"\u003e runtime_platform \u003c/span\u003ethat containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -1153,7 +1153,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Repeatable configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as \u003cspan pulumi-lang-nodejs=\"`environment`\" pulumi-lang-dotnet=\"`Environment`\" pulumi-lang-go=\"`environment`\" pulumi-lang-python=\"`environment`\" pulumi-lang-yaml=\"`environment`\" pulumi-lang-java=\"`environment`\"\u003e`environment`\u003c/span\u003e values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`host`\" pulumi-lang-dotnet=\"`Host`\" pulumi-lang-go=\"`host`\" pulumi-lang-python=\"`host`\" pulumi-lang-yaml=\"`host`\" pulumi-lang-java=\"`host`\"\u003e`host`\u003c/span\u003e network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -1550,7 +1550,7 @@
                     "type": "string"
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
                 }
             },
             "type": "object"
@@ -1685,12 +1685,12 @@
                 "defaultActions": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/ListenerDefaultAction:ListenerDefaultAction"
                     },
                     "description": "Configuration block for default actions. See below.\n"
                 },
                 "mutualAuthentication": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/ListenerMutualAuthentication:ListenerMutualAuthentication",
                     "description": "The mutual authentication configuration information. See below.\n"
                 },
                 "port": {
@@ -1811,7 +1811,7 @@
                     "description": "Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.\n"
                 },
                 "healthCheck": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/TargetGroupHealthCheck:TargetGroupHealthCheck",
                     "description": "Health Check configuration block. Detailed below.\n"
                 },
                 "ipAddressType": {
@@ -1877,7 +1877,7 @@
                     "description": "Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.\n"
                 },
                 "stickiness": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/TargetGroupStickiness:TargetGroupStickiness",
                     "description": "Stickiness configuration block. Detailed below.\n"
                 },
                 "tags": {
@@ -1890,18 +1890,18 @@
                 "targetFailovers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/TargetGroupTargetFailover:TargetGroupTargetFailover"
                     },
                     "description": "Target failover block. Only applicable for Gateway Load Balancer target groups. See\u003cspan pulumi-lang-nodejs=\" targetFailover \" pulumi-lang-dotnet=\" TargetFailover \" pulumi-lang-go=\" targetFailover \" pulumi-lang-python=\" target_failover \" pulumi-lang-yaml=\" targetFailover \" pulumi-lang-java=\" targetFailover \"\u003e target_failover \u003c/span\u003efor more information.\n"
                 },
                 "targetGroupHealth": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/TargetGroupTargetGroupHealth:TargetGroupTargetGroupHealth",
                     "description": "Target health requirements block. See\u003cspan pulumi-lang-nodejs=\" targetGroupHealth \" pulumi-lang-dotnet=\" TargetGroupHealth \" pulumi-lang-go=\" targetGroupHealth \" pulumi-lang-python=\" target_group_health \" pulumi-lang-yaml=\" targetGroupHealth \" pulumi-lang-java=\" targetGroupHealth \"\u003e target_group_health \u003c/span\u003efor more information.\n"
                 },
                 "targetHealthStates": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/TargetGroupTargetHealthState:TargetGroupTargetHealthState"
                     },
                     "description": "Target health state block. Only applicable for Network Load Balancer target groups when \u003cspan pulumi-lang-nodejs=\"`protocol`\" pulumi-lang-dotnet=\"`Protocol`\" pulumi-lang-go=\"`protocol`\" pulumi-lang-python=\"`protocol`\" pulumi-lang-yaml=\"`protocol`\" pulumi-lang-java=\"`protocol`\"\u003e`protocol`\u003c/span\u003e is `TCP` or `TLS`. See\u003cspan pulumi-lang-nodejs=\" targetHealthState \" pulumi-lang-dotnet=\" TargetHealthState \" pulumi-lang-go=\" targetHealthState \" pulumi-lang-python=\" target_health_state \" pulumi-lang-yaml=\" targetHealthState \" pulumi-lang-java=\" targetHealthState \"\u003e target_health_state \u003c/span\u003efor more information.\n"
                 },
@@ -1924,15 +1924,15 @@
         "awsx:cloudtrail:Trail": {
             "properties": {
                 "bucket": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:s3%2Fbucket:Bucket",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:s3%2Fbucket:Bucket",
                     "description": "The managed S3 Bucket where the Trail will place its logs."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "The managed Cloudwatch Log Group."
                 },
                 "trail": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
                     "description": "The CloudTrail Trail.",
                     "language": {
                         "csharp": {
@@ -1948,7 +1948,7 @@
                 "advancedEventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:cloudtrail/TrailAdvancedEventSelector:TrailAdvancedEventSelector"
                     },
                     "description": "Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with \u003cspan pulumi-lang-nodejs=\"`eventSelector`\" pulumi-lang-dotnet=\"`EventSelector`\" pulumi-lang-go=\"`eventSelector`\" pulumi-lang-python=\"`event_selector`\" pulumi-lang-yaml=\"`eventSelector`\" pulumi-lang-java=\"`eventSelector`\"\u003e`event_selector`\u003c/span\u003e.\n"
                 },
@@ -1968,7 +1968,7 @@
                 "eventSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:cloudtrail/TrailEventSelector:TrailEventSelector"
                     },
                     "description": "Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with \u003cspan pulumi-lang-nodejs=\"`advancedEventSelector`\" pulumi-lang-dotnet=\"`AdvancedEventSelector`\" pulumi-lang-go=\"`advancedEventSelector`\" pulumi-lang-python=\"`advanced_event_selector`\" pulumi-lang-yaml=\"`advancedEventSelector`\" pulumi-lang-java=\"`advancedEventSelector`\"\u003e`advanced_event_selector`\u003c/span\u003e.\n"
                 },
@@ -1979,7 +1979,7 @@
                 "insightSelectors": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:cloudtrail/TrailInsightSelector:TrailInsightSelector"
                     },
                     "description": "Configuration block for identifying unusual operational activity. See details below.\n"
                 },
@@ -2060,12 +2060,12 @@
                 "eips": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2feip:Eip"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2feip:Eip"
                     },
                     "description": "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
                 "internetGateway": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
                     "description": "The Internet Gateway for the VPC."
                 },
                 "isolatedSubnetIds": {
@@ -2077,7 +2077,7 @@
                 "natGateways": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
                     },
                     "description": "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
                 },
@@ -2096,21 +2096,21 @@
                 "routeTableAssociations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
                     },
                     "description": "The Route Table Associations for the VPC."
                 },
                 "routeTables": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
                     },
                     "description": "The Route Tables for the VPC."
                 },
                 "routes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2froute:Route"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2froute:Route"
                     },
                     "description": "The Routes for the VPC."
                 },
@@ -2124,12 +2124,12 @@
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's subnets."
                 },
                 "vpc": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fvpc:Vpc",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fvpc:Vpc",
                     "description": "The VPC.",
                     "language": {
                         "csharp": {
@@ -2140,7 +2140,7 @@
                 "vpcEndpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fvpcEndpoint:VpcEndpoint"
                     },
                     "description": "The VPC Endpoints that are enabled"
                 },
@@ -2399,11 +2399,11 @@
             "description": "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
             "properties": {
                 "lifecyclePolicy": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
                     "description": "Underlying repository lifecycle policy"
                 },
                 "repository": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecr%2frepository:Repository",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecr%2frepository:Repository",
                     "description": "Underlying Repository resource",
                     "language": {
                         "csharp": {
@@ -2425,7 +2425,7 @@
                 "encryptionConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
                     },
                     "description": "Encryption configuration for the repository. See below for schema.\n",
                     "willReplaceOnChanges": true
@@ -2435,7 +2435,7 @@
                     "description": "If \u003cspan pulumi-lang-nodejs=\"`true`\" pulumi-lang-dotnet=\"`True`\" pulumi-lang-go=\"`true`\" pulumi-lang-python=\"`true`\" pulumi-lang-yaml=\"`true`\" pulumi-lang-java=\"`true`\"\u003e`true`\u003c/span\u003e, will delete the repository even if it contains images.\nDefaults to \u003cspan pulumi-lang-nodejs=\"`false`\" pulumi-lang-dotnet=\"`False`\" pulumi-lang-go=\"`false`\" pulumi-lang-python=\"`false`\" pulumi-lang-yaml=\"`false`\" pulumi-lang-java=\"`false`\"\u003e`false`\u003c/span\u003e.\n"
                 },
                 "imageScanningConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
                     "description": "Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.\n"
                 },
                 "imageTagMutability": {
@@ -2445,7 +2445,7 @@
                 "imageTagMutabilityExclusionFilters": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecr/RepositoryImageTagMutabilityExclusionFilter:RepositoryImageTagMutabilityExclusionFilter"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecr/RepositoryImageTagMutabilityExclusionFilter:RepositoryImageTagMutabilityExclusionFilter"
                     },
                     "description": "Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when \u003cspan pulumi-lang-nodejs=\"`imageTagMutability`\" pulumi-lang-dotnet=\"`ImageTagMutability`\" pulumi-lang-go=\"`imageTagMutability`\" pulumi-lang-python=\"`image_tag_mutability`\" pulumi-lang-yaml=\"`imageTagMutability`\" pulumi-lang-java=\"`imageTagMutability`\"\u003e`image_tag_mutability`\u003c/span\u003e is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.\n"
                 },
@@ -2477,11 +2477,11 @@
             "description": "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying EC2 Task definition component resource if created from args"
                 }
             },
@@ -2490,7 +2490,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "availabilityZoneRebalancing": {
@@ -2500,7 +2500,7 @@
                 "capacityProviderStrategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
                     },
                     "description": "Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires \u003cspan pulumi-lang-nodejs=\"`forceNewDeployment \" pulumi-lang-dotnet=\"`ForceNewDeployment \" pulumi-lang-go=\"`forceNewDeployment \" pulumi-lang-python=\"`force_new_deployment \" pulumi-lang-yaml=\"`forceNewDeployment \" pulumi-lang-java=\"`forceNewDeployment \"\u003e`force_new_deployment \u003c/span\u003e= true`. See below. Conflicts with \u003cspan pulumi-lang-nodejs=\"`launchType`\" pulumi-lang-dotnet=\"`LaunchType`\" pulumi-lang-go=\"`launchType`\" pulumi-lang-python=\"`launch_type`\" pulumi-lang-yaml=\"`launchType`\" pulumi-lang-java=\"`launchType`\"\u003e`launch_type`\u003c/span\u003e.\n"
                 },
@@ -2514,15 +2514,15 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
                 "deploymentConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
                     "description": "Configuration block for deployment settings. See below.\n"
                 },
                 "deploymentController": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2565,7 +2565,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2575,20 +2575,20 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "orderedPlacementStrategies": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
                     },
                     "description": "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless \u003cspan pulumi-lang-nodejs=\"`forceNewDeployment`\" pulumi-lang-dotnet=\"`ForceNewDeployment`\" pulumi-lang-go=\"`forceNewDeployment`\" pulumi-lang-python=\"`force_new_deployment`\" pulumi-lang-yaml=\"`forceNewDeployment`\" pulumi-lang-java=\"`forceNewDeployment`\"\u003e`force_new_deployment`\u003c/span\u003e is enabled. The maximum number of \u003cspan pulumi-lang-nodejs=\"`orderedPlacementStrategy`\" pulumi-lang-dotnet=\"`OrderedPlacementStrategy`\" pulumi-lang-go=\"`orderedPlacementStrategy`\" pulumi-lang-python=\"`ordered_placement_strategy`\" pulumi-lang-yaml=\"`orderedPlacementStrategy`\" pulumi-lang-java=\"`orderedPlacementStrategy`\"\u003e`ordered_placement_strategy`\u003c/span\u003e blocks is \u003cspan pulumi-lang-nodejs=\"`5`\" pulumi-lang-dotnet=\"`5`\" pulumi-lang-go=\"`5`\" pulumi-lang-python=\"`5`\" pulumi-lang-yaml=\"`5`\" pulumi-lang-java=\"`5`\"\u003e`5`\u003c/span\u003e. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless \u003cspan pulumi-lang-nodejs=\"`forceNewDeployment`\" pulumi-lang-dotnet=\"`ForceNewDeployment`\" pulumi-lang-go=\"`forceNewDeployment`\" pulumi-lang-python=\"`force_new_deployment`\" pulumi-lang-yaml=\"`forceNewDeployment`\" pulumi-lang-java=\"`forceNewDeployment`\"\u003e`force_new_deployment`\u003c/span\u003e is enabled. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. See below.\n"
                 },
@@ -2610,11 +2610,11 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of \u003cspan pulumi-lang-nodejs=\"`serviceRegistries`\" pulumi-lang-dotnet=\"`ServiceRegistries`\" pulumi-lang-go=\"`serviceRegistries`\" pulumi-lang-python=\"`service_registries`\" pulumi-lang-yaml=\"`serviceRegistries`\" pulumi-lang-java=\"`serviceRegistries`\"\u003e`service_registries`\u003c/span\u003e blocks is \u003cspan pulumi-lang-nodejs=\"`1`\" pulumi-lang-dotnet=\"`1`\" pulumi-lang-go=\"`1`\" pulumi-lang-python=\"`1`\" pulumi-lang-yaml=\"`1`\" pulumi-lang-java=\"`1`\"\u003e`1`\u003c/span\u003e. See below.\n"
                 },
                 "sigintRollback": {
@@ -2645,13 +2645,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2662,26 +2662,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -2714,7 +2714,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2754,13 +2754,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2769,7 +2769,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for\u003cspan pulumi-lang-nodejs=\" runtimePlatform \" pulumi-lang-dotnet=\" RuntimePlatform \" pulumi-lang-go=\" runtimePlatform \" pulumi-lang-python=\" runtime_platform \" pulumi-lang-yaml=\" runtimePlatform \" pulumi-lang-java=\" runtimePlatform \"\u003e runtime_platform \u003c/span\u003ethat containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -2796,7 +2796,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Repeatable configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as \u003cspan pulumi-lang-nodejs=\"`environment`\" pulumi-lang-dotnet=\"`Environment`\" pulumi-lang-go=\"`environment`\" pulumi-lang-python=\"`environment`\" pulumi-lang-yaml=\"`environment`\" pulumi-lang-java=\"`environment`\"\u003e`environment`\u003c/span\u003e values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`host`\" pulumi-lang-dotnet=\"`Host`\" pulumi-lang-go=\"`host`\" pulumi-lang-python=\"`host`\" pulumi-lang-yaml=\"`host`\" pulumi-lang-java=\"`host`\"\u003e`host`\u003c/span\u003e network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -2808,11 +2808,11 @@
             "description": "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2fservice:Service",
                     "description": "Underlying ECS Service resource"
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying Fargate component resource if created from args"
                 }
             },
@@ -2821,7 +2821,7 @@
             ],
             "inputProperties": {
                 "alarms": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceAlarms:ServiceAlarms",
                     "description": "Information about the CloudWatch alarms. See below.\n"
                 },
                 "assignPublicIp": {
@@ -2842,15 +2842,15 @@
                     "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
                 },
                 "deploymentCircuitBreaker": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
                     "description": "Configuration block for deployment circuit breaker. See below.\n"
                 },
                 "deploymentConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentConfiguration:ServiceDeploymentConfiguration",
                     "description": "Configuration block for deployment settings. See below.\n"
                 },
                 "deploymentController": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
                     "description": "Configuration block for deployment controller configuration. See below.\n"
                 },
                 "deploymentMaximumPercent": {
@@ -2893,7 +2893,7 @@
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Configuration block for load balancers. See below.\n"
                 },
@@ -2903,13 +2903,13 @@
                     "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
                     "description": "Network configuration for the service. This parameter is required for task definitions that use the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
                     },
                     "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless \u003cspan pulumi-lang-nodejs=\"`forceNewDeployment`\" pulumi-lang-dotnet=\"`ForceNewDeployment`\" pulumi-lang-go=\"`forceNewDeployment`\" pulumi-lang-python=\"`force_new_deployment`\" pulumi-lang-yaml=\"`forceNewDeployment`\" pulumi-lang-java=\"`forceNewDeployment`\"\u003e`force_new_deployment`\u003c/span\u003e is enabled. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. See below.\n"
                 },
@@ -2931,11 +2931,11 @@
                     "willReplaceOnChanges": true
                 },
                 "serviceConnectConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceServiceConnectConfiguration:ServiceServiceConnectConfiguration",
                     "description": "ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.\n"
                 },
                 "serviceRegistries": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
                     "description": "Service discovery registries for the service. The maximum number of \u003cspan pulumi-lang-nodejs=\"`serviceRegistries`\" pulumi-lang-dotnet=\"`ServiceRegistries`\" pulumi-lang-go=\"`serviceRegistries`\" pulumi-lang-python=\"`service_registries`\" pulumi-lang-yaml=\"`serviceRegistries`\" pulumi-lang-java=\"`serviceRegistries`\"\u003e`service_registries`\u003c/span\u003e blocks is \u003cspan pulumi-lang-nodejs=\"`1`\" pulumi-lang-dotnet=\"`1`\" pulumi-lang-go=\"`1`\" pulumi-lang-python=\"`1`\" pulumi-lang-yaml=\"`1`\" pulumi-lang-java=\"`1`\"\u003e`1`\u003c/span\u003e. See below.\n"
                 },
                 "sigintRollback": {
@@ -2966,13 +2966,13 @@
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
                 "volumeConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
                 },
                 "vpcLatticeConfigurations": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/ServiceVpcLatticeConfiguration:ServiceVpcLatticeConfiguration"
                     },
                     "description": "The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.\n"
                 }
@@ -2983,26 +2983,26 @@
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
                 },
                 "loadBalancers": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
                     },
                     "description": "Computed load balancers from target groups specified of container port mappings."
                 },
                 "logGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "Auto-created Log Group resource for use by containers."
                 },
                 "taskDefinition": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
                     "description": "Underlying ECS Task Definition resource"
                 },
                 "taskRole": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:iam%2Frole:Role",
                     "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
                 }
             },
@@ -3035,7 +3035,7 @@
                     "willReplaceOnChanges": true
                 },
                 "ephemeralStorage": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3070,13 +3070,13 @@
                 "placementConstraints": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
                     "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of \u003cspan pulumi-lang-nodejs=\"`placementConstraints`\" pulumi-lang-dotnet=\"`PlacementConstraints`\" pulumi-lang-go=\"`placementConstraints`\" pulumi-lang-python=\"`placement_constraints`\" pulumi-lang-yaml=\"`placementConstraints`\" pulumi-lang-java=\"`placementConstraints`\"\u003e`placement_constraints`\u003c/span\u003e is \u003cspan pulumi-lang-nodejs=\"`10`\" pulumi-lang-dotnet=\"`10`\" pulumi-lang-go=\"`10`\" pulumi-lang-python=\"`10`\" pulumi-lang-yaml=\"`10`\" pulumi-lang-java=\"`10`\"\u003e`10`\u003c/span\u003e. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
                     "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3085,7 +3085,7 @@
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
                 },
                 "runtimePlatform": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
                     "description": "Configuration block for\u003cspan pulumi-lang-nodejs=\" runtimePlatform \" pulumi-lang-dotnet=\" RuntimePlatform \" pulumi-lang-go=\" runtimePlatform \" pulumi-lang-python=\" runtime_platform \" pulumi-lang-yaml=\" runtimePlatform \" pulumi-lang-java=\" runtimePlatform \"\u003e runtime_platform \u003c/span\u003ethat containers in your task may use.\n",
                     "willReplaceOnChanges": true
                 },
@@ -3112,7 +3112,7 @@
                 "volumes": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
                     "description": "Repeatable configuration block for volumes that containers in your task may use. Detailed below.\n\n\u003e **NOTE:** Proper escaping is required for JSON field values containing quotes (`\"`) such as \u003cspan pulumi-lang-nodejs=\"`environment`\" pulumi-lang-dotnet=\"`Environment`\" pulumi-lang-go=\"`environment`\" pulumi-lang-python=\"`environment`\" pulumi-lang-yaml=\"`environment`\" pulumi-lang-java=\"`environment`\"\u003e`environment`\u003c/span\u003e values. If directly setting the JSON, they should be escaped as `\\\"` in the JSON,  e.g., `\"value\": \"I \\\"love\\\" escaped quotes\"`. If using a variable value, they should be escaped as `\\\\\\\"` in the variable, e.g., `value = \"I \\\\\\\"love\\\\\\\" escaped quotes\"` in the variable and `\"value\": \"${var.myvariable}\"` in the JSON.\n\n\u003e **Note:** Fault injection only works with tasks using the \u003cspan pulumi-lang-nodejs=\"`awsvpc`\" pulumi-lang-dotnet=\"`Awsvpc`\" pulumi-lang-go=\"`awsvpc`\" pulumi-lang-python=\"`awsvpc`\" pulumi-lang-yaml=\"`awsvpc`\" pulumi-lang-java=\"`awsvpc`\"\u003e`awsvpc`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`host`\" pulumi-lang-dotnet=\"`Host`\" pulumi-lang-go=\"`host`\" pulumi-lang-python=\"`host`\" pulumi-lang-yaml=\"`host`\" pulumi-lang-java=\"`host`\"\u003e`host`\u003c/span\u003e network modes. Fault injection isn't available on Windows.\n",
                     "willReplaceOnChanges": true
@@ -3124,22 +3124,22 @@
             "description": "Provides an Application Load Balancer resource with listeners, default target group and default security group.",
             "properties": {
                 "defaultSecurityGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
                     "description": "Default security group, if auto-created"
                 },
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -3154,7 +3154,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3162,7 +3162,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3238,7 +3238,7 @@
                     "description": "Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: \u003cspan pulumi-lang-nodejs=\"`ipv4`\" pulumi-lang-dotnet=\"`Ipv4`\" pulumi-lang-go=\"`ipv4`\" pulumi-lang-python=\"`ipv4`\" pulumi-lang-yaml=\"`ipv4`\" pulumi-lang-java=\"`ipv4`\"\u003e`ipv4`\u003c/span\u003e (all load balancer types), \u003cspan pulumi-lang-nodejs=\"`dualstack`\" pulumi-lang-dotnet=\"`Dualstack`\" pulumi-lang-go=\"`dualstack`\" pulumi-lang-python=\"`dualstack`\" pulumi-lang-yaml=\"`dualstack`\" pulumi-lang-java=\"`dualstack`\"\u003e`dualstack`\u003c/span\u003e (all load balancer types), and `dualstack-without-public-ipv4` (type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e only).\n"
                 },
                 "ipamPools": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
                     "description": ". The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e. See\u003cspan pulumi-lang-nodejs=\" ipamPools \" pulumi-lang-dotnet=\" IpamPools \" pulumi-lang-go=\" ipamPools \" pulumi-lang-python=\" ipam_pools \" pulumi-lang-yaml=\" ipamPools \" pulumi-lang-java=\" ipamPools \"\u003e ipam_pools \u003c/span\u003efor more information.\n"
                 },
                 "listener": {
@@ -3256,7 +3256,7 @@
                     "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
                 },
                 "minimumLoadBalancerCapacity": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
                     "description": "Minimum capacity for a load balancer. Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`network`\" pulumi-lang-dotnet=\"`Network`\" pulumi-lang-go=\"`network`\" pulumi-lang-python=\"`network`\" pulumi-lang-yaml=\"`network`\" pulumi-lang-java=\"`network`\"\u003e`network`\u003c/span\u003e.\n"
                 },
                 "name": {
@@ -3298,14 +3298,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`network`\" pulumi-lang-dotnet=\"`Network`\" pulumi-lang-go=\"`network`\" pulumi-lang-python=\"`network`\" pulumi-lang-yaml=\"`network`\" pulumi-lang-java=\"`network`\"\u003e`network`\u003c/span\u003e subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3327,18 +3327,18 @@
             "description": "Provides a Network Load Balancer resource with listeners and default target group.",
             "properties": {
                 "defaultTargetGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
                 },
                 "listeners": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2flistener:Listener"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2flistener:Listener"
                     },
                     "description": "Listeners created as part of this load balancer"
                 },
                 "loadBalancer": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 },
                 "vpcId": {
@@ -3353,7 +3353,7 @@
             ],
             "inputProperties": {
                 "accessLogs": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
                     "description": "Access Logs block. See below.\n"
                 },
                 "clientKeepAlive": {
@@ -3361,7 +3361,7 @@
                     "description": "Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.\n"
                 },
                 "connectionLogs": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerConnectionLogs:LoadBalancerConnectionLogs",
                     "description": "Connection Logs block. See below. Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e.\n"
                 },
                 "customerOwnedIpv4Pool": {
@@ -3432,7 +3432,7 @@
                     "description": "Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: \u003cspan pulumi-lang-nodejs=\"`ipv4`\" pulumi-lang-dotnet=\"`Ipv4`\" pulumi-lang-go=\"`ipv4`\" pulumi-lang-python=\"`ipv4`\" pulumi-lang-yaml=\"`ipv4`\" pulumi-lang-java=\"`ipv4`\"\u003e`ipv4`\u003c/span\u003e (all load balancer types), \u003cspan pulumi-lang-nodejs=\"`dualstack`\" pulumi-lang-dotnet=\"`Dualstack`\" pulumi-lang-go=\"`dualstack`\" pulumi-lang-python=\"`dualstack`\" pulumi-lang-yaml=\"`dualstack`\" pulumi-lang-java=\"`dualstack`\"\u003e`dualstack`\u003c/span\u003e (all load balancer types), and `dualstack-without-public-ipv4` (type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e only).\n"
                 },
                 "ipamPools": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerIpamPools:LoadBalancerIpamPools",
                     "description": ". The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e. See\u003cspan pulumi-lang-nodejs=\" ipamPools \" pulumi-lang-dotnet=\" IpamPools \" pulumi-lang-go=\" ipamPools \" pulumi-lang-python=\" ipam_pools \" pulumi-lang-yaml=\" ipamPools \" pulumi-lang-java=\" ipamPools \"\u003e ipam_pools \u003c/span\u003efor more information.\n"
                 },
                 "listener": {
@@ -3450,7 +3450,7 @@
                     "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
                 },
                 "minimumLoadBalancerCapacity": {
-                    "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
+                    "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerMinimumLoadBalancerCapacity:LoadBalancerMinimumLoadBalancerCapacity",
                     "description": "Minimum capacity for a load balancer. Only valid for Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`application`\" pulumi-lang-dotnet=\"`Application`\" pulumi-lang-go=\"`application`\" pulumi-lang-python=\"`application`\" pulumi-lang-yaml=\"`application`\" pulumi-lang-java=\"`application`\"\u003e`application`\u003c/span\u003e or \u003cspan pulumi-lang-nodejs=\"`network`\" pulumi-lang-dotnet=\"`Network`\" pulumi-lang-go=\"`network`\" pulumi-lang-python=\"`network`\" pulumi-lang-yaml=\"`network`\" pulumi-lang-java=\"`network`\"\u003e`network`\u003c/span\u003e.\n"
                 },
                 "name": {
@@ -3492,14 +3492,14 @@
                 "subnetMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                        "$ref": "/aws/v7.11.0/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
                     "description": "Subnet mapping block. See below. For Load Balancers of type \u003cspan pulumi-lang-nodejs=\"`network`\" pulumi-lang-dotnet=\"`Network`\" pulumi-lang-go=\"`network`\" pulumi-lang-python=\"`network`\" pulumi-lang-yaml=\"`network`\" pulumi-lang-java=\"`network`\"\u003e`network`\u003c/span\u003e subnet mappings can only be added.\n"
                 },
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
@@ -3521,11 +3521,11 @@
             "description": "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
             "properties": {
                 "lambdaPermission": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
                     "description": "Auto-created Lambda permission, if targeting a Lambda function"
                 },
                 "targetGroupAttachment": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
                     "description": "Underlying Target Group Attachment resource",
                     "language": {
                         "csharp": {
@@ -3540,7 +3540,7 @@
             ],
             "inputProperties": {
                 "instance": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:ec2%2finstance:Instance",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:ec2%2finstance:Instance",
                     "description": "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "instanceId": {
@@ -3548,7 +3548,7 @@
                     "description": "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "lambda": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lambda%2ffunction:Function",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lambda%2ffunction:Function",
                     "description": "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
                     "language": {
                         "python": {
@@ -3561,7 +3561,7 @@
                     "description": "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
                 },
                 "targetGroup": {
-                    "$ref": "/aws/v7.10.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "$ref": "/aws/v7.11.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified."
                 },
                 "targetGroupArn": {
