@@ -154,10 +154,12 @@ github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 h1:vkHw5I/plNdTr435
 github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231/go.mod h1:murToZ2N9hNJzewjHBgfFdXhZKjY3z5cYC1VXk+lbFE=
 github.com/pulumi/esc v0.17.0 h1:oaVOIyFTENlYDuqc3pW75lQT9jb2cd6ie/4/Twxn66w=
 github.com/pulumi/esc v0.17.0/go.mod h1:XnSxlt5NkmuAj304l/gK4pRErFbtqq6XpfX1tYT9Jbc=
-github.com/pulumi/pulumi-aws/sdk/v6 v6.9.0 h1:lXAuHTQpahA/AOE7MstBsoQi4E6by1nKII1WRO3oq+w=
-github.com/pulumi/pulumi-aws/sdk/v6 v6.9.0/go.mod h1:j9uDjldfM/PmtXTpmRtHdsmsay3bW4pVYb4cI6OdAvw=
-github.com/pulumi/pulumi-awsx/sdk/v2 v2.4.0 h1:qg7/UT8SmfWiJemFWuVnMPu9CH+oj8UV2HB/NkbxjSI=
-github.com/pulumi/pulumi-awsx/sdk/v2 v2.4.0/go.mod h1:lv+hzv8kilWjMNOPcJS8cddJa51d3IdCOPY7cNd2NuU=
+github.com/pulumi/pulumi-aws/sdk/v7 v7.11.0 h1:hdcae3vPdxswMF3zS8eGBRWia4OmBlhGoUlTkA9toQI=
+github.com/pulumi/pulumi-aws/sdk/v7 v7.11.0/go.mod h1:4qpJdAOLlqT1l8uTAEc9RNhrRyh7DIw+XP6Fxo5YNdQ=
+github.com/pulumi/pulumi-awsx/sdk/v3 v3.1.0 h1:jphjwZoSnNyW4d3dpS++T+TlZFTy6vb9gJt33u6xf14=
+github.com/pulumi/pulumi-awsx/sdk/v3 v3.1.0/go.mod h1:ALZ8aBuwNtHkhFCY019gJOfgo7q2WYlsL1kM+0apbEA=
+github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3 h1:NxCXxRvzhUJP9dIvlpNlZKt/A3NHu3i9pC5XO+i8bR0=
+github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3/go.mod h1:jw9NcyRXjv5V2HHHJlqUBdXFCFiLfZoCChWEn38LR2A=
 github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8 h1:rik9L2SIpsoDenY51MkogR6GWgu/0Sy/XmyQmKWNUqU=
 github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8/go.mod h1:eph7BPNPkEIIK882/Ll4dbeHl5wZEc/UvTcUW0CK1UY=
 github.com/pulumi/pulumi/sdk/v3 v3.200.0 h1:YCNM1RgdENsdeCfT+C/L9K3NyE2Guf1nQIFgRZlViyk=
