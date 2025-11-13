@@ -1661,33 +1661,33 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-7.11.0.tgz#258f58d3b897948f047d42d885da234b4bc3a02e"
-  integrity sha512-LlK11UZRsN3vExnAAz6XRxTf6bQaeoghe9yK+U3eGUdaL7Fl5ifUBl1TvUHe7UhpGANprJHN406YH/RxKQwOQw==
+"@pulumi/aws@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-7.11.1.tgz#f9929e3e3c0981a4b6e9fc6e90e2d76584c0f375"
+  integrity sha512-2Dy0o2KwxOeeKWyJ7dSFuDpK4d3DU0eYrvMBAnovBvGVFSBRugvlZ6VjswbniLNiwh8ZkGSCWSGCBGKkEH+3qA==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     mime "^2.0.0"
 
-"@pulumi/docker-build@0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker-build/-/docker-build-0.0.14.tgz#6f48daf44fb47c33f2b318f4c4f253cce020f866"
-  integrity sha512-dLCta3BOrYRxHyp22QnVh06qlSiSORtmIypcQ6yb4+GZ2+ThbML06pINyERc5ClgJXGQFSVTtuWhMSiurTWU2w==
+"@pulumi/docker-build@0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker-build/-/docker-build-0.0.15.tgz#3f7a320806bf5448d675ae97c9d88facaac73674"
+  integrity sha512-abtz4zCbePBkpj73M7mJWqXktM9muEAUOxRu8PKErbsqv5M3NfALCMULsDxA1a9vEImHa6ZC9rAe1liXbsinFg==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
-"@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.npmjs.org/@pulumi/docker/-/docker-4.6.0.tgz"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
+"@pulumi/docker@4.10.0":
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.10.0.tgz#c29f7e6b94f89f952b5b9683802b76b75f531d37"
+  integrity sha512-uxJcalgY1uOH6ngGyh7mLRiF00vENRq9xfc4+H2/ea/ZkeLyv8If2jkIazqCwPgiT0oyP0+fzQZILwsxe0laow==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@3.200.0", "@pulumi/pulumi@^3.142.0":
-  version "3.200.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.200.0.tgz#a5092d62f6c98b2a54a2d6bb13db42f8970486f8"
-  integrity sha512-DnSGAo2AEnGIcuT70FYw++431eHn8jSPIscD1uQ8wRdYG3KIse0tSzyfAQTHwdZ1hqjjpdFMVYF5ZGZkLhd19g==
+"@pulumi/pulumi@3.207.0", "@pulumi/pulumi@^3.142.0":
+  version "3.207.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.207.0.tgz#506b2c4f9030eacf62bf8190e441412243d85f57"
+  integrity sha512-+23Mx9p2x569WuNw8V9LdiCS0h+8BZzYJoInleBcxB0rGVW4SQX9c9AVcrlhvD+lXFbB5FgX/JfT6dUC68B3TA==
   dependencies:
     "@grpc/grpc-js" "^1.10.1"
     "@logdna/tail-file" "^2.0.6"
@@ -2675,10 +2675,10 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-"docker-classic@npm:@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.npmjs.org/@pulumi/docker/-/docker-4.6.0.tgz"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
+"docker-classic@npm:@pulumi/docker@4.10.0":
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.10.0.tgz#c29f7e6b94f89f952b5b9683802b76b75f531d37"
+  integrity sha512-uxJcalgY1uOH6ngGyh7mLRiF00vENRq9xfc4+H2/ea/ZkeLyv8If2jkIazqCwPgiT0oyP0+fzQZILwsxe0laow==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     semver "^5.4.0"
