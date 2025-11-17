@@ -48,7 +48,7 @@ dependencies {
     implementation("com.pulumi:aws:7.11.0")
     implementation("com.pulumi:docker:4.6.0")
     implementation("com.pulumi:docker-build:0.0.14")
-    implementation("com.pulumi:pulumi:1.16.0")
+    implementation("com.pulumi:pulumi:1.0.0")
 }
 
 task sourcesJar(type: Jar) {
