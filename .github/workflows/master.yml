@@ -85,7 +85,7 @@ jobs:
   tag_release_if_labeled_needs_release:
     name: Tag release if labeled as needs-release
     needs: publish
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     permissions:
       contents: read
       id-token: write # For ESC secrets.

@@ -35,7 +35,7 @@ env:
 jobs:
   publish:
     name: publish
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     steps:
     - name: Validate prerelease
       if: inputs.isPrerelease == false && (contains(inputs.version, '-') || contains(inputs.version, '+'))
@@ -128,7 +128,7 @@ jobs:
   publish_sdk:
     name: publish_sdk
     needs: publish
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     outputs:
       python_version: ${{ steps.python_version.outputs.version }}
     steps:
@@ -221,7 +221,7 @@ jobs:
     needs: publish_sdk
     # Only run for non-prerelease and for non-backported releases, if the publish_go_sdk job was successful or skipped
     if: inputs.isPrerelease == false && inputs.setLatestRelease == true
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -255,7 +255,7 @@ jobs:
     if: inputs.isPrerelease == false
     needs: create_docs_build
     
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     steps:
     - name: Checkout Repo
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
