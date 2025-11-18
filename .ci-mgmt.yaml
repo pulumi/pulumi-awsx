@@ -5,6 +5,9 @@ template: generic
 buildProviderCmd: "OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build"
 testProviderCmd: "yarn --cwd awsx test"
 renovateCmd: "./scripts/renovate.sh"
+runner:
+    default: pulumi-ubuntu-8core
+    prerequisites: pulumi-ubuntu-8core
 env:
     ALT_AWS_ACCESS_KEY_ID: ${{ secrets.ALT_AWS_ACCESS_KEY_ID }}
     ALT_AWS_SECRET_ACCESS_KEY: ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }}
