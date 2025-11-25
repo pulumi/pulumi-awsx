@@ -58,6 +58,8 @@ jobs:
           tag: v2.1.5-procursus2
       - name: Setup mise
         uses: jdx/mise-action@v3
+        env:
+          MISE_FETCH_REMOTE_VERSIONS_TIMEOUT: 30s
         with:
           version: 2025.11.6
           github_token: ${{ secrets.GITHUB_TOKEN }}
