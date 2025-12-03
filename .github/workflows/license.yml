@@ -38,7 +38,7 @@ jobs:
         name: Fetch secrets from ESC
         uses: pulumi/esc-action@9eb774255b1a4afb7855678ae8d4a77359da0d9b
       - name: Setup mise
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3
         env:
           MISE_FETCH_REMOTE_VERSIONS_TIMEOUT: 30s
         with:
