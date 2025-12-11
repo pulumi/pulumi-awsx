@@ -11,7 +11,6 @@ permissions:
   pull-requests: write
   contents: write
 env:
-  GOVERSION: "1.21.x"
 jobs:
   weekly-pulumi-update:
     runs-on: ubuntu-latest
@@ -38,16 +37,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         cache_key: "mise-{{platform}}-{{file_hash}}"
         cache_save: false
-    - name: Install Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GOVERSION }}
-    - name: Install Yarn
-      run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
-    - name: Update PATH for Yarn
-      run: |
-        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
-        echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
     - name: Update Pulumi/Pulumi
       id: gomod
       run: |
@@ -79,29 +68,6 @@ jobs:
         if ! git diff-files --quiet; then
           echo changes=1 >> "$GITHUB_OUTPUT"
         fi
-    - name: Setup Node
-      if: steps.gomod.outputs.changes != 0
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{env.NODEVERSION}}
-        registry-url: https://registry.npmjs.org
-    - name: Install pulumictl
-      if: steps.gomod.outputs.changes != 0
-      uses: jaxxstorm/action-install-gh-release@v1.10.0
-      with:
-        repo: pulumi/pulumictl
-    - name: Install Pulumi CLI
-      if: steps.gomod.outputs.changes != 0
-      uses: pulumi/action-install-pulumi-cli@v2
-    - name: Update dependent files
-      if: steps.gomod.outputs.changes != 0
-      run: |
-        # Reusing the make renovate command here temporarily. This command will make sure that generated files are
-        # up-to-date with respect to dependency changes just made.
-        #
-        # In the future Renovate bot should be able to update pulumi dependencies by itself. Care should be taken that
-        # these are done as separate changes from regular dependencies as they are sensitive.
-        make renovate
     - name: Commit changes
       if: steps.gomod.outputs.changes != 0
       run: |
