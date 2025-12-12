@@ -110,7 +110,7 @@ jobs:
         # If the worktree is dirty and this is a Renovate PR to bump
         # dependencies, commit the updated SDK and push it back to the PR. The
         # job will still be marked as a failure.
-        if: failure() && steps.worktreeClean.outcome == 'failure' && contains(github.actor, 'renovate') && github.event_name == 'pull_request'
+        if: steps.worktreeClean.outcome == 'failure' && contains(github.actor, 'renovate') && github.event_name == 'pull_request'
         shell: bash
         run: |
           git diff --quiet -- sdk && echo "no changes to sdk" && exit
@@ -126,7 +126,7 @@ jobs:
           # Apply and add our changes, but don't commit any files we expect to
           # always change due to versioning.
           git stash pop
-          git add sdk
+          git add sdk provider/cmd/awsx/schema.json
           git reset \
               sdk/python/*/pulumi-plugin.json \
               sdk/python/pyproject.toml \
