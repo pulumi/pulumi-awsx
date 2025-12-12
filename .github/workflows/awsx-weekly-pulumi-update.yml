@@ -10,7 +10,7 @@ on:
 permissions:
   pull-requests: write
   contents: write
-env:
+env: []
 jobs:
   weekly-pulumi-update:
     runs-on: ubuntu-latest
