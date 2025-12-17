@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.32.7
 	github.com/aws/aws-sdk-go-v2/config v1.28.7
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.0
-	github.com/pulumi/providertest v0.1.4
+	github.com/pulumi/providertest v0.5.1
 	github.com/pulumi/pulumi/pkg/v3 v3.210.0
 	github.com/pulumi/pulumi/sdk/v3 v3.210.0
 	github.com/stretchr/testify v1.10.0
