@@ -810,8 +810,6 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// Using `pulumi import`, import Target Groups using their ARN. For example:
     /// 
-    /// console
-    /// 
     /// % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
     /// </summary>
     public sealed class TargetGroupArgs : global::Pulumi.ResourceArgs
@@ -938,6 +936,12 @@ namespace Pulumi.Awsx.Lb.Inputs
             get => _tags ?? (_tags = new InputMap<string>());
             set => _tags = value;
         }
+
+        /// <summary>
+        /// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`target_type`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt;.
+        /// </summary>
+        [Input("targetControlPort")]
+        public Input<int>? TargetControlPort { get; set; }
 
         [Input("targetFailovers")]
         private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>? _targetFailovers;

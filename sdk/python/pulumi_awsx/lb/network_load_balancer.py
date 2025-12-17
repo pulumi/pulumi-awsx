@@ -37,6 +37,7 @@ class NetworkLoadBalancerArgs:
                  enable_xff_client_port: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_zonal_shift: Optional[pulumi.Input[_builtins.bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[_builtins.str]] = None,
+                 health_check_logs: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']] = None,
                  idle_timeout: Optional[pulumi.Input[_builtins.int]] = None,
                  internal: Optional[pulumi.Input[_builtins.bool]] = None,
                  ip_address_type: Optional[pulumi.Input[_builtins.str]] = None,
@@ -73,6 +74,7 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input[_builtins.bool] enable_xff_client_port: Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span> load balancers. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.bool] enable_zonal_shift: Whether zonal shift is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`network`" pulumi-lang-dotnet="`Network`" pulumi-lang-go="`network`" pulumi-lang-python="`network`" pulumi-lang-yaml="`network`" pulumi-lang-java="`network`">`network`</span>. The possible values are <span pulumi-lang-nodejs="`on`" pulumi-lang-dotnet="`On`" pulumi-lang-go="`on`" pulumi-lang-python="`on`" pulumi-lang-yaml="`on`" pulumi-lang-java="`on`">`on`</span> and <span pulumi-lang-nodejs="`off`" pulumi-lang-dotnet="`Off`" pulumi-lang-go="`off`" pulumi-lang-python="`off`" pulumi-lang-yaml="`off`" pulumi-lang-java="`off`">`off`</span>.
+        :param pulumi.Input['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs'] health_check_logs: Health Check Logs block. See below. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>.
         :param pulumi.Input[_builtins.int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>. Default: 60.
         :param pulumi.Input[_builtins.bool] internal: If true, the LB will be internal. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: <span pulumi-lang-nodejs="`ipv4`" pulumi-lang-dotnet="`Ipv4`" pulumi-lang-go="`ipv4`" pulumi-lang-python="`ipv4`" pulumi-lang-yaml="`ipv4`" pulumi-lang-java="`ipv4`">`ipv4`</span> (all load balancer types), <span pulumi-lang-nodejs="`dualstack`" pulumi-lang-dotnet="`Dualstack`" pulumi-lang-go="`dualstack`" pulumi-lang-python="`dualstack`" pulumi-lang-yaml="`dualstack`" pulumi-lang-java="`dualstack`">`dualstack`</span> (all load balancer types), and `dualstack-without-public-ipv4` (type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span> only).
@@ -128,6 +130,8 @@ class NetworkLoadBalancerArgs:
             pulumi.set(__self__, "enable_zonal_shift", enable_zonal_shift)
         if enforce_security_group_inbound_rules_on_private_link_traffic is not None:
             pulumi.set(__self__, "enforce_security_group_inbound_rules_on_private_link_traffic", enforce_security_group_inbound_rules_on_private_link_traffic)
+        if health_check_logs is not None:
+            pulumi.set(__self__, "health_check_logs", health_check_logs)
         if idle_timeout is not None:
             pulumi.set(__self__, "idle_timeout", idle_timeout)
         if internal is not None:
@@ -356,6 +360,18 @@ class NetworkLoadBalancerArgs:
     @enforce_security_group_inbound_rules_on_private_link_traffic.setter
     def enforce_security_group_inbound_rules_on_private_link_traffic(self, value: Optional[pulumi.Input[_builtins.str]]):
         pulumi.set(self, "enforce_security_group_inbound_rules_on_private_link_traffic", value)
+
+    @_builtins.property
+    @pulumi.getter(name="healthCheckLogs")
+    def health_check_logs(self) -> Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']]:
+        """
+        Health Check Logs block. See below. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>.
+        """
+        return pulumi.get(self, "health_check_logs")
+
+    @health_check_logs.setter
+    def health_check_logs(self, value: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']]):
+        pulumi.set(self, "health_check_logs", value)
 
     @_builtins.property
     @pulumi.getter(name="idleTimeout")
@@ -600,6 +616,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  enable_xff_client_port: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_zonal_shift: Optional[pulumi.Input[_builtins.bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[_builtins.str]] = None,
+                 health_check_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']]] = None,
                  idle_timeout: Optional[pulumi.Input[_builtins.int]] = None,
                  internal: Optional[pulumi.Input[_builtins.bool]] = None,
                  ip_address_type: Optional[pulumi.Input[_builtins.str]] = None,
@@ -640,6 +657,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.bool] enable_xff_client_port: Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span> load balancers. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.bool] enable_zonal_shift: Whether zonal shift is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.str] enforce_security_group_inbound_rules_on_private_link_traffic: Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`network`" pulumi-lang-dotnet="`Network`" pulumi-lang-go="`network`" pulumi-lang-python="`network`" pulumi-lang-yaml="`network`" pulumi-lang-java="`network`">`network`</span>. The possible values are <span pulumi-lang-nodejs="`on`" pulumi-lang-dotnet="`On`" pulumi-lang-go="`on`" pulumi-lang-python="`on`" pulumi-lang-yaml="`on`" pulumi-lang-java="`on`">`on`</span> and <span pulumi-lang-nodejs="`off`" pulumi-lang-dotnet="`Off`" pulumi-lang-go="`off`" pulumi-lang-python="`off`" pulumi-lang-yaml="`off`" pulumi-lang-java="`off`">`off`</span>.
+        :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']] health_check_logs: Health Check Logs block. See below. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>.
         :param pulumi.Input[_builtins.int] idle_timeout: Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>. Default: 60.
         :param pulumi.Input[_builtins.bool] internal: If true, the LB will be internal. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[_builtins.str] ip_address_type: Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: <span pulumi-lang-nodejs="`ipv4`" pulumi-lang-dotnet="`Ipv4`" pulumi-lang-go="`ipv4`" pulumi-lang-python="`ipv4`" pulumi-lang-yaml="`ipv4`" pulumi-lang-java="`ipv4`">`ipv4`</span> (all load balancer types), <span pulumi-lang-nodejs="`dualstack`" pulumi-lang-dotnet="`Dualstack`" pulumi-lang-go="`dualstack`" pulumi-lang-python="`dualstack`" pulumi-lang-yaml="`dualstack`" pulumi-lang-java="`dualstack`">`dualstack`</span> (all load balancer types), and `dualstack-without-public-ipv4` (type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span> only).
@@ -703,6 +721,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  enable_xff_client_port: Optional[pulumi.Input[_builtins.bool]] = None,
                  enable_zonal_shift: Optional[pulumi.Input[_builtins.bool]] = None,
                  enforce_security_group_inbound_rules_on_private_link_traffic: Optional[pulumi.Input[_builtins.str]] = None,
+                 health_check_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerHealthCheckLogsArgs']]] = None,
                  idle_timeout: Optional[pulumi.Input[_builtins.int]] = None,
                  internal: Optional[pulumi.Input[_builtins.bool]] = None,
                  ip_address_type: Optional[pulumi.Input[_builtins.str]] = None,
@@ -748,6 +767,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["enable_xff_client_port"] = enable_xff_client_port
             __props__.__dict__["enable_zonal_shift"] = enable_zonal_shift
             __props__.__dict__["enforce_security_group_inbound_rules_on_private_link_traffic"] = enforce_security_group_inbound_rules_on_private_link_traffic
+            __props__.__dict__["health_check_logs"] = health_check_logs
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
             __props__.__dict__["ip_address_type"] = ip_address_type

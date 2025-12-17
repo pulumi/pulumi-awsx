@@ -335,6 +335,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly enableXffClientPort?: pulumi.Input<boolean>;
     readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
+    readonly healthCheckLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerHealthCheckLogs>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -380,6 +381,7 @@ export interface NetworkLoadBalancerArgs {
     readonly enableXffClientPort?: pulumi.Input<boolean>;
     readonly enableZonalShift?: pulumi.Input<boolean>;
     readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
+    readonly healthCheckLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerHealthCheckLogs>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -515,6 +517,7 @@ export interface ExistingLogGroupOutputs {
     readonly region?: pulumi.Output<string>;
 }
 export interface LogGroupInputs {
+    readonly deletionProtectionEnabled?: pulumi.Input<boolean>;
     readonly kmsKeyId?: pulumi.Input<string>;
     readonly logGroupClass?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
@@ -525,6 +528,7 @@ export interface LogGroupInputs {
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface LogGroupOutputs {
+    readonly deletionProtectionEnabled?: pulumi.Output<boolean>;
     readonly kmsKeyId?: pulumi.Output<string>;
     readonly logGroupClass?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
@@ -1190,6 +1194,7 @@ export interface TargetGroupInputs {
     readonly slowStart?: pulumi.Input<number>;
     readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly targetControlPort?: pulumi.Input<number>;
     readonly targetFailovers?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetFailover>[]>;
     readonly targetGroupHealth?: pulumi.Input<aws.types.input.lb.TargetGroupTargetGroupHealth>;
     readonly targetHealthStates?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetHealthState>[]>;
@@ -1216,6 +1221,7 @@ export interface TargetGroupOutputs {
     readonly slowStart?: pulumi.Output<number>;
     readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly targetControlPort?: pulumi.Output<number>;
     readonly targetFailovers?: pulumi.Output<aws.types.output.lb.TargetGroupTargetFailover[]>;
     readonly targetGroupHealth?: pulumi.Output<aws.types.output.lb.TargetGroupTargetGroupHealth>;
     readonly targetHealthStates?: pulumi.Output<aws.types.output.lb.TargetGroupTargetHealthState[]>;
