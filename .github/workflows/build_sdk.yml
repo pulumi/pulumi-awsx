@@ -119,8 +119,6 @@ jobs:
         if: steps.worktreeClean.outcome == 'failure' && contains(github.actor, 'renovate') && github.event_name == 'pull_request'
         shell: bash
         run: |
-          git diff --quiet -- sdk && echo "no changes to sdk" && exit
-
           git config --global user.email "bot@pulumi.com"
           git config --global user.name "pulumi-bot"
 
