@@ -17,7 +17,7 @@ on:
 jobs:
 
   upgrade-aws:
-    runs-on: ubuntu-latest
+    runs-on: pulumi-ubuntu-8core
     permissions: write-all
 
     steps:
