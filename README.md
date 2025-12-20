@@ -3,7 +3,7 @@
 [![NPM version](https://badge.fury.io/js/%40pulumi%2Fawsx.svg)](https://www.npmjs.com/package/@pulumi/awsx)
 [![Python version](https://badge.fury.io/py/pulumi-awsx.svg)](https://pypi.org/project/pulumi-awsx)
 [![NuGet version](https://badge.fury.io/nu/pulumi.awsx.svg)](https://badge.fury.io/nu/pulumi.awsx)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/pulumi/pulumi-awsx/sdk/go)](https://pkg.go.dev/github.com/pulumi/pulumi-awsx/sdk/go)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/pulumi/pulumi-awsx/sdk/v3/go)](https://pkg.go.dev/github.com/pulumi/pulumi-awsx/sdk/v3/go)
 [![License](https://img.shields.io/npm/l/%40pulumi%2Fawsx.svg)](https://github.com/pulumi/pulumi-awsx/blob/master/LICENSE)
 
 ## Pulumi AWS Infrastructure Components
