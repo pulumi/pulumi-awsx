@@ -62,7 +62,7 @@ pip install pulumi-awsx
 To use from Go, use `go get` to grab the latest version of the library
 
 ```bash
-go get github.com/pulumi/pulumi-awsx/sdk
+go get github.com/pulumi/pulumi-awsx/sdk/v3
 ```
 
 ### .NET
