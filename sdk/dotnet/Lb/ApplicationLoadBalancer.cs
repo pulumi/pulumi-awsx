@@ -176,6 +176,12 @@ namespace Pulumi.Awsx.Lb
         public Input<string>? EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic { get; set; }
 
         /// <summary>
+        /// Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`"&gt;`application`&lt;/span&gt;.
+        /// </summary>
+        [Input("healthCheckLogs")]
+        public Input<Pulumi.Aws.LB.Inputs.LoadBalancerHealthCheckLogsArgs>? HealthCheckLogs { get; set; }
+
+        /// <summary>
         /// Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`"&gt;`application`&lt;/span&gt;. Default: 60.
         /// </summary>
         [Input("idleTimeout")]

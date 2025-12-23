@@ -1437,6 +1437,289 @@ if not MYPY:
         ```
         <!--End PulumiCodeChooser -->
 
+        ### JWT Validation Action
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const test = new aws.lb.Listener("test", {
+            loadBalancerArn: testAwsLb.id,
+            protocol: "HTTPS",
+            port: 443,
+            sslPolicy: "ELBSecurityPolicy-2016-08",
+            certificateArn: testAwsIamServerCertificate.arn,
+            defaultActions: [
+                {
+                    type: "jwt-validation",
+                    jwtValidation: {
+                        issuer: "https://example.com",
+                        jwksEndpoint: "https://example.com/.well-known/jwks.json",
+                        additionalClaims: [
+                            {
+                                format: "string-array",
+                                name: "claim_name1",
+                                values: [
+                                    "value1",
+                                    "value2",
+                                ],
+                            },
+                            {
+                                format: "single-string",
+                                name: "claim_name2",
+                                values: ["value1"],
+                            },
+                        ],
+                    },
+                },
+                {
+                    targetGroupArn: testAwsLbTargetGroup.id,
+                    type: "forward",
+                },
+            ],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        test = aws.lb.Listener("test",
+            load_balancer_arn=test_aws_lb["id"],
+            protocol="HTTPS",
+            port=443,
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn=test_aws_iam_server_certificate["arn"],
+            default_actions=[
+                {
+                    "type": "jwt-validation",
+                    "jwt_validation": {
+                        "issuer": "https://example.com",
+                        "jwks_endpoint": "https://example.com/.well-known/jwks.json",
+                        "additional_claims": [
+                            {
+                                "format": "string-array",
+                                "name": "claim_name1",
+                                "values": [
+                                    "value1",
+                                    "value2",
+                                ],
+                            },
+                            {
+                                "format": "single-string",
+                                "name": "claim_name2",
+                                "values": ["value1"],
+                            },
+                        ],
+                    },
+                },
+                {
+                    "target_group_arn": test_aws_lb_target_group["id"],
+                    "type": "forward",
+                },
+            ])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var test = new Aws.LB.Listener("test", new()
+            {
+                LoadBalancerArn = testAwsLb.Id,
+                Protocol = "HTTPS",
+                Port = 443,
+                SslPolicy = "ELBSecurityPolicy-2016-08",
+                CertificateArn = testAwsIamServerCertificate.Arn,
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "jwt-validation",
+                        JwtValidation = new Aws.LB.Inputs.ListenerDefaultActionJwtValidationArgs
+                        {
+                            Issuer = "https://example.com",
+                            JwksEndpoint = "https://example.com/.well-known/jwks.json",
+                            AdditionalClaims = new[]
+                            {
+                                new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+                                {
+                                    Format = "string-array",
+                                    Name = "claim_name1",
+                                    Values = new[]
+                                    {
+                                        "value1",
+                                        "value2",
+                                    },
+                                },
+                                new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+                                {
+                                    Format = "single-string",
+                                    Name = "claim_name2",
+                                    Values = new[]
+                                    {
+                                        "value1",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        TargetGroupArn = testAwsLbTargetGroup.Id,
+                        Type = "forward",
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+        			LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+        			Protocol:        pulumi.String("HTTPS"),
+        			Port:            pulumi.Int(443),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+        			CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+        			DefaultActions: lb.ListenerDefaultActionArray{
+        				&lb.ListenerDefaultActionArgs{
+        					Type: pulumi.String("jwt-validation"),
+        					JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+        						Issuer:       pulumi.String("https://example.com"),
+        						JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+        						AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+        							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+        								Format: pulumi.String("string-array"),
+        								Name:   pulumi.String("claim_name1"),
+        								Values: pulumi.StringArray{
+        									pulumi.String("value1"),
+        									pulumi.String("value2"),
+        								},
+        							},
+        							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+        								Format: pulumi.String("single-string"),
+        								Name:   pulumi.String("claim_name2"),
+        								Values: pulumi.StringArray{
+        									pulumi.String("value1"),
+        								},
+        							},
+        						},
+        					},
+        				},
+        				&lb.ListenerDefaultActionArgs{
+        					TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+        					Type:           pulumi.String("forward"),
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var test = new Listener("test", ListenerArgs.builder()
+                    .loadBalancerArn(testAwsLb.id())
+                    .protocol("HTTPS")
+                    .port(443)
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
+                    .certificateArn(testAwsIamServerCertificate.arn())
+                    .defaultActions(            
+                        ListenerDefaultActionArgs.builder()
+                            .type("jwt-validation")
+                            .jwtValidation(ListenerDefaultActionJwtValidationArgs.builder()
+                                .issuer("https://example.com")
+                                .jwksEndpoint("https://example.com/.well-known/jwks.json")
+                                .additionalClaims(                        
+                                    ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+                                        .format("string-array")
+                                        .name("claim_name1")
+                                        .values(                                
+                                            "value1",
+                                            "value2")
+                                        .build(),
+                                    ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+                                        .format("single-string")
+                                        .name("claim_name2")
+                                        .values("value1")
+                                        .build())
+                                .build())
+                            .build(),
+                        ListenerDefaultActionArgs.builder()
+                            .targetGroupArn(testAwsLbTargetGroup.id())
+                            .type("forward")
+                            .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          test:
+            type: aws:lb:Listener
+            properties:
+              loadBalancerArn: ${testAwsLb.id}
+              protocol: HTTPS
+              port: '443'
+              sslPolicy: ELBSecurityPolicy-2016-08
+              certificateArn: ${testAwsIamServerCertificate.arn}
+              defaultActions:
+                - type: jwt-validation
+                  jwtValidation:
+                    issuer: https://example.com
+                    jwksEndpoint: https://example.com/.well-known/jwks.json
+                    additionalClaims:
+                      - format: string-array
+                        name: claim_name1
+                        values:
+                          - value1
+                          - value2
+                      - format: single-string
+                        name: claim_name2
+                        values:
+                          - value1
+                - targetGroupArn: ${testAwsLbTargetGroup.id}
+                  type: forward
+        ```
+        <!--End PulumiCodeChooser -->
+
         ### Gateway Load Balancer Listener
 
         <!--Start PulumiCodeChooser -->
@@ -1876,8 +2159,6 @@ if not MYPY:
         - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 
         Using `pulumi import`, import listeners using their ARN. For example:
-
-        console
 
         % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
         """
@@ -3445,6 +3726,289 @@ class ListenerArgs:
         ```
         <!--End PulumiCodeChooser -->
 
+        ### JWT Validation Action
+
+        <!--Start PulumiCodeChooser -->
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const test = new aws.lb.Listener("test", {
+            loadBalancerArn: testAwsLb.id,
+            protocol: "HTTPS",
+            port: 443,
+            sslPolicy: "ELBSecurityPolicy-2016-08",
+            certificateArn: testAwsIamServerCertificate.arn,
+            defaultActions: [
+                {
+                    type: "jwt-validation",
+                    jwtValidation: {
+                        issuer: "https://example.com",
+                        jwksEndpoint: "https://example.com/.well-known/jwks.json",
+                        additionalClaims: [
+                            {
+                                format: "string-array",
+                                name: "claim_name1",
+                                values: [
+                                    "value1",
+                                    "value2",
+                                ],
+                            },
+                            {
+                                format: "single-string",
+                                name: "claim_name2",
+                                values: ["value1"],
+                            },
+                        ],
+                    },
+                },
+                {
+                    targetGroupArn: testAwsLbTargetGroup.id,
+                    type: "forward",
+                },
+            ],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        test = aws.lb.Listener("test",
+            load_balancer_arn=test_aws_lb["id"],
+            protocol="HTTPS",
+            port=443,
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn=test_aws_iam_server_certificate["arn"],
+            default_actions=[
+                {
+                    "type": "jwt-validation",
+                    "jwt_validation": {
+                        "issuer": "https://example.com",
+                        "jwks_endpoint": "https://example.com/.well-known/jwks.json",
+                        "additional_claims": [
+                            {
+                                "format": "string-array",
+                                "name": "claim_name1",
+                                "values": [
+                                    "value1",
+                                    "value2",
+                                ],
+                            },
+                            {
+                                "format": "single-string",
+                                "name": "claim_name2",
+                                "values": ["value1"],
+                            },
+                        ],
+                    },
+                },
+                {
+                    "target_group_arn": test_aws_lb_target_group["id"],
+                    "type": "forward",
+                },
+            ])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var test = new Aws.LB.Listener("test", new()
+            {
+                LoadBalancerArn = testAwsLb.Id,
+                Protocol = "HTTPS",
+                Port = 443,
+                SslPolicy = "ELBSecurityPolicy-2016-08",
+                CertificateArn = testAwsIamServerCertificate.Arn,
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "jwt-validation",
+                        JwtValidation = new Aws.LB.Inputs.ListenerDefaultActionJwtValidationArgs
+                        {
+                            Issuer = "https://example.com",
+                            JwksEndpoint = "https://example.com/.well-known/jwks.json",
+                            AdditionalClaims = new[]
+                            {
+                                new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+                                {
+                                    Format = "string-array",
+                                    Name = "claim_name1",
+                                    Values = new[]
+                                    {
+                                        "value1",
+                                        "value2",
+                                    },
+                                },
+                                new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+                                {
+                                    Format = "single-string",
+                                    Name = "claim_name2",
+                                    Values = new[]
+                                    {
+                                        "value1",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        TargetGroupArn = testAwsLbTargetGroup.Id,
+                        Type = "forward",
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+        			LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+        			Protocol:        pulumi.String("HTTPS"),
+        			Port:            pulumi.Int(443),
+        			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+        			CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+        			DefaultActions: lb.ListenerDefaultActionArray{
+        				&lb.ListenerDefaultActionArgs{
+        					Type: pulumi.String("jwt-validation"),
+        					JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+        						Issuer:       pulumi.String("https://example.com"),
+        						JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+        						AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+        							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+        								Format: pulumi.String("string-array"),
+        								Name:   pulumi.String("claim_name1"),
+        								Values: pulumi.StringArray{
+        									pulumi.String("value1"),
+        									pulumi.String("value2"),
+        								},
+        							},
+        							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+        								Format: pulumi.String("single-string"),
+        								Name:   pulumi.String("claim_name2"),
+        								Values: pulumi.StringArray{
+        									pulumi.String("value1"),
+        								},
+        							},
+        						},
+        					},
+        				},
+        				&lb.ListenerDefaultActionArgs{
+        					TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+        					Type:           pulumi.String("forward"),
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var test = new Listener("test", ListenerArgs.builder()
+                    .loadBalancerArn(testAwsLb.id())
+                    .protocol("HTTPS")
+                    .port(443)
+                    .sslPolicy("ELBSecurityPolicy-2016-08")
+                    .certificateArn(testAwsIamServerCertificate.arn())
+                    .defaultActions(            
+                        ListenerDefaultActionArgs.builder()
+                            .type("jwt-validation")
+                            .jwtValidation(ListenerDefaultActionJwtValidationArgs.builder()
+                                .issuer("https://example.com")
+                                .jwksEndpoint("https://example.com/.well-known/jwks.json")
+                                .additionalClaims(                        
+                                    ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+                                        .format("string-array")
+                                        .name("claim_name1")
+                                        .values(                                
+                                            "value1",
+                                            "value2")
+                                        .build(),
+                                    ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+                                        .format("single-string")
+                                        .name("claim_name2")
+                                        .values("value1")
+                                        .build())
+                                .build())
+                            .build(),
+                        ListenerDefaultActionArgs.builder()
+                            .targetGroupArn(testAwsLbTargetGroup.id())
+                            .type("forward")
+                            .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          test:
+            type: aws:lb:Listener
+            properties:
+              loadBalancerArn: ${testAwsLb.id}
+              protocol: HTTPS
+              port: '443'
+              sslPolicy: ELBSecurityPolicy-2016-08
+              certificateArn: ${testAwsIamServerCertificate.arn}
+              defaultActions:
+                - type: jwt-validation
+                  jwtValidation:
+                    issuer: https://example.com
+                    jwksEndpoint: https://example.com/.well-known/jwks.json
+                    additionalClaims:
+                      - format: string-array
+                        name: claim_name1
+                        values:
+                          - value1
+                          - value2
+                      - format: single-string
+                        name: claim_name2
+                        values:
+                          - value1
+                - targetGroupArn: ${testAwsLbTargetGroup.id}
+                  type: forward
+        ```
+        <!--End PulumiCodeChooser -->
+
         ### Gateway Load Balancer Listener
 
         <!--Start PulumiCodeChooser -->
@@ -3884,8 +4448,6 @@ class ListenerArgs:
         - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 
         Using `pulumi import`, import listeners using their ARN. For example:
-
-        console
 
         % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 
@@ -5134,8 +5696,6 @@ if not MYPY:
 
         Using `pulumi import`, import Target Groups using their ARN. For example:
 
-        console
-
         % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
         """
         connection_termination: NotRequired[pulumi.Input[_builtins.bool]]
@@ -5217,6 +5777,10 @@ if not MYPY:
         """
         Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
+        target_control_port: NotRequired[pulumi.Input[_builtins.int]]
+        """
+        Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+        """
         target_failovers: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgsDict']]]]
         """
         Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
@@ -5272,6 +5836,7 @@ class TargetGroupArgs:
                  slow_start: Optional[pulumi.Input[_builtins.int]] = None,
                  stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 target_control_port: Optional[pulumi.Input[_builtins.int]] = None,
                  target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
                  target_group_health: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs']] = None,
                  target_health_states: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetHealthStateArgs']]]] = None,
@@ -6077,8 +6642,6 @@ class TargetGroupArgs:
 
         Using `pulumi import`, import Target Groups using their ARN. For example:
 
-        console
-
         % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 
 
@@ -6104,6 +6667,7 @@ class TargetGroupArgs:
         :param pulumi.Input[_builtins.int] slow_start: Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[_builtins.int] target_control_port: Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupTargetGroupHealthArgs'] target_group_health: Target health requirements block. See<span pulumi-lang-nodejs=" targetGroupHealth " pulumi-lang-dotnet=" TargetGroupHealth " pulumi-lang-go=" targetGroupHealth " pulumi-lang-python=" target_group_health " pulumi-lang-yaml=" targetGroupHealth " pulumi-lang-java=" targetGroupHealth "> target_group_health </span>for more information.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetHealthStateArgs']]] target_health_states: Target health state block. Only applicable for Network Load Balancer target groups when <span pulumi-lang-nodejs="`protocol`" pulumi-lang-dotnet="`Protocol`" pulumi-lang-go="`protocol`" pulumi-lang-python="`protocol`" pulumi-lang-yaml="`protocol`" pulumi-lang-java="`protocol`">`protocol`</span> is `TCP` or `TLS`. See<span pulumi-lang-nodejs=" targetHealthState " pulumi-lang-dotnet=" TargetHealthState " pulumi-lang-go=" targetHealthState " pulumi-lang-python=" target_health_state " pulumi-lang-yaml=" targetHealthState " pulumi-lang-java=" targetHealthState "> target_health_state </span>for more information.
@@ -6158,6 +6722,8 @@ class TargetGroupArgs:
             pulumi.set(__self__, "stickiness", stickiness)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if target_control_port is not None:
+            pulumi.set(__self__, "target_control_port", target_control_port)
         if target_failovers is not None:
             pulumi.set(__self__, "target_failovers", target_failovers)
         if target_group_health is not None:
@@ -6399,6 +6965,18 @@ class TargetGroupArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
+
+    @_builtins.property
+    @pulumi.getter(name="targetControlPort")
+    def target_control_port(self) -> Optional[pulumi.Input[_builtins.int]]:
+        """
+        Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+        """
+        return pulumi.get(self, "target_control_port")
+
+    @target_control_port.setter
+    def target_control_port(self, value: Optional[pulumi.Input[_builtins.int]]):
+        pulumi.set(self, "target_control_port", value)
 
     @_builtins.property
     @pulumi.getter(name="targetFailovers")

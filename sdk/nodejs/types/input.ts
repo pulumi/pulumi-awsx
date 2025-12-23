@@ -231,6 +231,10 @@ export namespace awsx {
      */
     export interface LogGroupArgs {
         /**
+         * Boolean to indicate whether deletion protection is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Once set, switching to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> requires explicitly specifying <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> rather than removing this argument.
+         */
+        deletionProtectionEnabled?: pulumi.Input<boolean>;
+        /**
          * The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
          * AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
          * permissions for the CMK whenever the encrypted data is requested.
@@ -666,6 +670,130 @@ export namespace ec2 {
      *     properties:
      *       vpcId: ${main.id}
      *       serviceName: com.amazonaws.us-west-2.s3
+     *       tags:
+     *         Environment: test
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
+     * ### Cross-region enabled AWS services
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const s3 = new aws.ec2.VpcEndpoint("s3", {
+     *     region: "us-west-2",
+     *     vpcId: main.id,
+     *     serviceName: "com.amazonaws.us-east-2.s3",
+     *     serviceRegion: "us-east-2",
+     *     tags: {
+     *         Environment: "test",
+     *     },
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * s3 = aws.ec2.VpcEndpoint("s3",
+     *     region="us-west-2",
+     *     vpc_id=main["id"],
+     *     service_name="com.amazonaws.us-east-2.s3",
+     *     service_region="us-east-2",
+     *     tags={
+     *         "Environment": "test",
+     *     })
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
+     *     {
+     *         Region = "us-west-2",
+     *         VpcId = main.Id,
+     *         ServiceName = "com.amazonaws.us-east-2.s3",
+     *         ServiceRegion = "us-east-2",
+     *         Tags = 
+     *         {
+     *             { "Environment", "test" },
+     *         },
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
+     * 			Region:        pulumi.String("us-west-2"),
+     * 			VpcId:         pulumi.Any(main.Id),
+     * 			ServiceName:   pulumi.String("com.amazonaws.us-east-2.s3"),
+     * 			ServiceRegion: pulumi.String("us-east-2"),
+     * 			Tags: pulumi.StringMap{
+     * 				"Environment": pulumi.String("test"),
+     * 			},
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()
+     *             .region("us-west-2")
+     *             .vpcId(main.id())
+     *             .serviceName("com.amazonaws.us-east-2.s3")
+     *             .serviceRegion("us-east-2")
+     *             .tags(Map.of("Environment", "test"))
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   s3:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       region: us-west-2
+     *       vpcId: ${main.id}
+     *       serviceName: com.amazonaws.us-east-2.s3
+     *       serviceRegion: us-east-2
      *       tags:
      *         Environment: test
      * ```
@@ -1385,6 +1513,259 @@ export namespace ec2 {
      *       vpcId: ${exampleAwsVpc.id}
      * ```
      * <!--End PulumiCodeChooser -->
+     *
+     * ### Non-AWS Service
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const ptfeService = new aws.ec2.VpcEndpoint("ptfe_service", {
+     *     vpcId: vpcId,
+     *     serviceName: ptfeServiceConfig,
+     *     vpcEndpointType: "Interface",
+     *     securityGroupIds: [ptfeServiceAwsSecurityGroup.id],
+     *     subnetIds: [subnetIds],
+     *     privateDnsEnabled: false,
+     * });
+     * const internal = aws.route53.getZone({
+     *     name: "vpc.internal.",
+     *     privateZone: true,
+     *     vpcId: vpcId,
+     * });
+     * const ptfeServiceRecord = new aws.route53.Record("ptfe_service", {
+     *     zoneId: internal.then(internal => internal.zoneId),
+     *     name: internal.then(internal => `ptfe.${internal.name}`),
+     *     type: aws.route53.RecordType.CNAME,
+     *     ttl: 300,
+     *     records: [ptfeService.dnsEntries[0].dns_name],
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * ptfe_service = aws.ec2.VpcEndpoint("ptfe_service",
+     *     vpc_id=vpc_id,
+     *     service_name=ptfe_service_config,
+     *     vpc_endpoint_type="Interface",
+     *     security_group_ids=[ptfe_service_aws_security_group["id"]],
+     *     subnet_ids=[subnet_ids],
+     *     private_dns_enabled=False)
+     * internal = aws.route53.get_zone(name="vpc.internal.",
+     *     private_zone=True,
+     *     vpc_id=vpc_id)
+     * ptfe_service_record = aws.route53.Record("ptfe_service",
+     *     zone_id=internal.zone_id,
+     *     name=f"ptfe.{internal.name}",
+     *     type=aws.route53.RecordType.CNAME,
+     *     ttl=300,
+     *     records=[ptfe_service.dns_entries[0].dns_name])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var ptfeService = new Aws.Ec2.VpcEndpoint("ptfe_service", new()
+     *     {
+     *         VpcId = vpcId,
+     *         ServiceName = ptfeServiceConfig,
+     *         VpcEndpointType = "Interface",
+     *         SecurityGroupIds = new[]
+     *         {
+     *             ptfeServiceAwsSecurityGroup.Id,
+     *         },
+     *         SubnetIds = new[]
+     *         {
+     *             subnetIds,
+     *         },
+     *         PrivateDnsEnabled = false,
+     *     });
+     *
+     *     var @internal = Aws.Route53.GetZone.Invoke(new()
+     *     {
+     *         Name = "vpc.internal.",
+     *         PrivateZone = true,
+     *         VpcId = vpcId,
+     *     });
+     *
+     *     var ptfeServiceRecord = new Aws.Route53.Record("ptfe_service", new()
+     *     {
+     *         ZoneId = @internal.Apply(@internal => @internal.Apply(getZoneResult => getZoneResult.ZoneId)),
+     *         Name = @internal.Apply(@internal => $"ptfe.{@internal.Apply(getZoneResult => getZoneResult.Name)}"),
+     *         Type = Aws.Route53.RecordType.CNAME,
+     *         Ttl = 300,
+     *         Records = new[]
+     *         {
+     *             ptfeService.DnsEntries.Apply(dnsEntries => dnsEntries[0].Dns_name),
+     *         },
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"fmt"
+     *
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     * func main() {
+     * pulumi.Run(func(ctx *pulumi.Context) error {
+     * ptfeService, err := ec2.NewVpcEndpoint(ctx, "ptfe_service", &ec2.VpcEndpointArgs{
+     * VpcId: pulumi.Any(vpcId),
+     * ServiceName: pulumi.Any(ptfeServiceConfig),
+     * VpcEndpointType: pulumi.String("Interface"),
+     * SecurityGroupIds: pulumi.StringArray{
+     * ptfeServiceAwsSecurityGroup.Id,
+     * },
+     * SubnetIds: pulumi.StringArray{
+     * subnetIds,
+     * },
+     * PrivateDnsEnabled: pulumi.Bool(false),
+     * })
+     * if err != nil {
+     * return err
+     * }
+     * internal, err := route53.LookupZone(ctx, &route53.LookupZoneArgs{
+     * Name: pulumi.StringRef("vpc.internal."),
+     * PrivateZone: pulumi.BoolRef(true),
+     * VpcId: pulumi.StringRef(vpcId),
+     * }, nil);
+     * if err != nil {
+     * return err
+     * }
+     * _, err = route53.NewRecord(ctx, "ptfe_service", &route53.RecordArgs{
+     * ZoneId: pulumi.String(internal.ZoneId),
+     * Name: pulumi.Sprintf("ptfe.%v", internal.Name),
+     * Type: pulumi.String(route53.RecordTypeCNAME),
+     * Ttl: pulumi.Int(300),
+     * Records: pulumi.StringArray{
+     * pulumi.String(ptfeService.DnsEntries.ApplyT(func(dnsEntries []ec2.VpcEndpointDnsEntry) (interface{}, error) {
+     * return dnsEntries[0].Dns_name, nil
+     * }).(pulumi.Interface{}Output)),
+     * },
+     * })
+     * if err != nil {
+     * return err
+     * }
+     * return nil
+     * })
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import com.pulumi.aws.route53.Route53Functions;
+     * import com.pulumi.aws.route53.inputs.GetZoneArgs;
+     * import com.pulumi.aws.route53.Record;
+     * import com.pulumi.aws.route53.RecordArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var ptfeService = new VpcEndpoint("ptfeService", VpcEndpointArgs.builder()
+     *             .vpcId(vpcId)
+     *             .serviceName(ptfeServiceConfig)
+     *             .vpcEndpointType("Interface")
+     *             .securityGroupIds(ptfeServiceAwsSecurityGroup.id())
+     *             .subnetIds(subnetIds)
+     *             .privateDnsEnabled(false)
+     *             .build());
+     *
+     *         final var internal = Route53Functions.getZone(GetZoneArgs.builder()
+     *             .name("vpc.internal.")
+     *             .privateZone(true)
+     *             .vpcId(vpcId)
+     *             .build());
+     *
+     *         var ptfeServiceRecord = new Record("ptfeServiceRecord", RecordArgs.builder()
+     *             .zoneId(internal.zoneId())
+     *             .name(String.format("ptfe.%s", internal.name()))
+     *             .type("CNAME")
+     *             .ttl(300)
+     *             .records(ptfeService.dnsEntries().applyValue(_dnsEntries -> _dnsEntries[0].dns_name()))
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   ptfeService:
+     *     type: aws:ec2:VpcEndpoint
+     *     name: ptfe_service
+     *     properties:
+     *       vpcId: ${vpcId}
+     *       serviceName: ${ptfeServiceConfig}
+     *       vpcEndpointType: Interface
+     *       securityGroupIds:
+     *         - ${ptfeServiceAwsSecurityGroup.id}
+     *       subnetIds:
+     *         - ${subnetIds}
+     *       privateDnsEnabled: false
+     *   ptfeServiceRecord:
+     *     type: aws:route53:Record
+     *     name: ptfe_service
+     *     properties:
+     *       zoneId: ${internal.zoneId}
+     *       name: ptfe.${internal.name}
+     *       type: CNAME
+     *       ttl: '300'
+     *       records:
+     *         - ${ptfeService.dnsEntries[0].dns_name}
+     * variables:
+     *   internal:
+     *     fn::invoke:
+     *       function: aws:route53:getZone
+     *       arguments:
+     *         name: vpc.internal.
+     *         privateZone: true
+     *         vpcId: ${vpcId}
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
+     * > **NOTE The <span pulumi-lang-nodejs="`dnsEntry`" pulumi-lang-dotnet="`DnsEntry`" pulumi-lang-go="`dnsEntry`" pulumi-lang-python="`dns_entry`" pulumi-lang-yaml="`dnsEntry`" pulumi-lang-java="`dnsEntry`">`dns_entry`</span> output is a list of maps:** This provider interpolation support for lists of maps requires the <span pulumi-lang-nodejs="`lookup`" pulumi-lang-dotnet="`Lookup`" pulumi-lang-go="`lookup`" pulumi-lang-python="`lookup`" pulumi-lang-yaml="`lookup`" pulumi-lang-java="`lookup`">`lookup`</span> and `[]` until full support of lists of maps is available
+     *
+     * ## Import
+     *
+     * ### Identity Schema
+     *
+     * #### Required
+     *
+     * * `id` - (String) ID of the VPC endpoint.
+     *
+     * #### Optional
+     *
+     * * `account_id` (String) AWS Account where this resource is managed.
+     *
+     * * `region` (String) Region where this resource is managed.
+     *
+     * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+     *
+     * % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
      */
     export interface VpcEndpointSpecArgs {
         /**
@@ -3310,6 +3691,289 @@ export namespace lb {
      * ```
      * <!--End PulumiCodeChooser -->
      *
+     * ### JWT Validation Action
+     *
+     * <!--Start PulumiCodeChooser -->
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const test = new aws.lb.Listener("test", {
+     *     loadBalancerArn: testAwsLb.id,
+     *     protocol: "HTTPS",
+     *     port: 443,
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
+     *     certificateArn: testAwsIamServerCertificate.arn,
+     *     defaultActions: [
+     *         {
+     *             type: "jwt-validation",
+     *             jwtValidation: {
+     *                 issuer: "https://example.com",
+     *                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
+     *                 additionalClaims: [
+     *                     {
+     *                         format: "string-array",
+     *                         name: "claim_name1",
+     *                         values: [
+     *                             "value1",
+     *                             "value2",
+     *                         ],
+     *                     },
+     *                     {
+     *                         format: "single-string",
+     *                         name: "claim_name2",
+     *                         values: ["value1"],
+     *                     },
+     *                 ],
+     *             },
+     *         },
+     *         {
+     *             targetGroupArn: testAwsLbTargetGroup.id,
+     *             type: "forward",
+     *         },
+     *     ],
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * test = aws.lb.Listener("test",
+     *     load_balancer_arn=test_aws_lb["id"],
+     *     protocol="HTTPS",
+     *     port=443,
+     *     ssl_policy="ELBSecurityPolicy-2016-08",
+     *     certificate_arn=test_aws_iam_server_certificate["arn"],
+     *     default_actions=[
+     *         {
+     *             "type": "jwt-validation",
+     *             "jwt_validation": {
+     *                 "issuer": "https://example.com",
+     *                 "jwks_endpoint": "https://example.com/.well-known/jwks.json",
+     *                 "additional_claims": [
+     *                     {
+     *                         "format": "string-array",
+     *                         "name": "claim_name1",
+     *                         "values": [
+     *                             "value1",
+     *                             "value2",
+     *                         ],
+     *                     },
+     *                     {
+     *                         "format": "single-string",
+     *                         "name": "claim_name2",
+     *                         "values": ["value1"],
+     *                     },
+     *                 ],
+     *             },
+     *         },
+     *         {
+     *             "target_group_arn": test_aws_lb_target_group["id"],
+     *             "type": "forward",
+     *         },
+     *     ])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var test = new Aws.LB.Listener("test", new()
+     *     {
+     *         LoadBalancerArn = testAwsLb.Id,
+     *         Protocol = "HTTPS",
+     *         Port = 443,
+     *         SslPolicy = "ELBSecurityPolicy-2016-08",
+     *         CertificateArn = testAwsIamServerCertificate.Arn,
+     *         DefaultActions = new[]
+     *         {
+     *             new Aws.LB.Inputs.ListenerDefaultActionArgs
+     *             {
+     *                 Type = "jwt-validation",
+     *                 JwtValidation = new Aws.LB.Inputs.ListenerDefaultActionJwtValidationArgs
+     *                 {
+     *                     Issuer = "https://example.com",
+     *                     JwksEndpoint = "https://example.com/.well-known/jwks.json",
+     *                     AdditionalClaims = new[]
+     *                     {
+     *                         new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+     *                         {
+     *                             Format = "string-array",
+     *                             Name = "claim_name1",
+     *                             Values = new[]
+     *                             {
+     *                                 "value1",
+     *                                 "value2",
+     *                             },
+     *                         },
+     *                         new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+     *                         {
+     *                             Format = "single-string",
+     *                             Name = "claim_name2",
+     *                             Values = new[]
+     *                             {
+     *                                 "value1",
+     *                             },
+     *                         },
+     *                     },
+     *                 },
+     *             },
+     *             new Aws.LB.Inputs.ListenerDefaultActionArgs
+     *             {
+     *                 TargetGroupArn = testAwsLbTargetGroup.Id,
+     *                 Type = "forward",
+     *             },
+     *         },
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+     * 			LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+     * 			Protocol:        pulumi.String("HTTPS"),
+     * 			Port:            pulumi.Int(443),
+     * 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+     * 			CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+     * 			DefaultActions: lb.ListenerDefaultActionArray{
+     * 				&lb.ListenerDefaultActionArgs{
+     * 					Type: pulumi.String("jwt-validation"),
+     * 					JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+     * 						Issuer:       pulumi.String("https://example.com"),
+     * 						JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+     * 						AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+     * 							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+     * 								Format: pulumi.String("string-array"),
+     * 								Name:   pulumi.String("claim_name1"),
+     * 								Values: pulumi.StringArray{
+     * 									pulumi.String("value1"),
+     * 									pulumi.String("value2"),
+     * 								},
+     * 							},
+     * 							&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+     * 								Format: pulumi.String("single-string"),
+     * 								Name:   pulumi.String("claim_name2"),
+     * 								Values: pulumi.StringArray{
+     * 									pulumi.String("value1"),
+     * 								},
+     * 							},
+     * 						},
+     * 					},
+     * 				},
+     * 				&lb.ListenerDefaultActionArgs{
+     * 					TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+     * 					Type:           pulumi.String("forward"),
+     * 				},
+     * 			},
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.lb.Listener;
+     * import com.pulumi.aws.lb.ListenerArgs;
+     * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+     * import com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var test = new Listener("test", ListenerArgs.builder()
+     *             .loadBalancerArn(testAwsLb.id())
+     *             .protocol("HTTPS")
+     *             .port(443)
+     *             .sslPolicy("ELBSecurityPolicy-2016-08")
+     *             .certificateArn(testAwsIamServerCertificate.arn())
+     *             .defaultActions(            
+     *                 ListenerDefaultActionArgs.builder()
+     *                     .type("jwt-validation")
+     *                     .jwtValidation(ListenerDefaultActionJwtValidationArgs.builder()
+     *                         .issuer("https://example.com")
+     *                         .jwksEndpoint("https://example.com/.well-known/jwks.json")
+     *                         .additionalClaims(                        
+     *                             ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+     *                                 .format("string-array")
+     *                                 .name("claim_name1")
+     *                                 .values(                                
+     *                                     "value1",
+     *                                     "value2")
+     *                                 .build(),
+     *                             ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+     *                                 .format("single-string")
+     *                                 .name("claim_name2")
+     *                                 .values("value1")
+     *                                 .build())
+     *                         .build())
+     *                     .build(),
+     *                 ListenerDefaultActionArgs.builder()
+     *                     .targetGroupArn(testAwsLbTargetGroup.id())
+     *                     .type("forward")
+     *                     .build())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   test:
+     *     type: aws:lb:Listener
+     *     properties:
+     *       loadBalancerArn: ${testAwsLb.id}
+     *       protocol: HTTPS
+     *       port: '443'
+     *       sslPolicy: ELBSecurityPolicy-2016-08
+     *       certificateArn: ${testAwsIamServerCertificate.arn}
+     *       defaultActions:
+     *         - type: jwt-validation
+     *           jwtValidation:
+     *             issuer: https://example.com
+     *             jwksEndpoint: https://example.com/.well-known/jwks.json
+     *             additionalClaims:
+     *               - format: string-array
+     *                 name: claim_name1
+     *                 values:
+     *                   - value1
+     *                   - value2
+     *               - format: single-string
+     *                 name: claim_name2
+     *                 values:
+     *                   - value1
+     *         - targetGroupArn: ${testAwsLbTargetGroup.id}
+     *           type: forward
+     * ```
+     * <!--End PulumiCodeChooser -->
+     *
      * ### Gateway Load Balancer Listener
      *
      * <!--Start PulumiCodeChooser -->
@@ -3749,8 +4413,6 @@ export namespace lb {
      * - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
      *
      * Using `pulumi import`, import listeners using their ARN. For example:
-     *
-     * console
      *
      * % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
      */
@@ -4675,8 +5337,6 @@ export namespace lb {
      *
      * Using `pulumi import`, import Target Groups using their ARN. For example:
      *
-     * console
-     *
      * % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
      */
     export interface TargetGroupArgs {
@@ -4759,6 +5419,10 @@ export namespace lb {
          * Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+         */
+        targetControlPort?: pulumi.Input<number>;
         /**
          * Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
          */

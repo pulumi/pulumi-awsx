@@ -1421,6 +1421,289 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
+    /// ### JWT Validation Action
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const test = new aws.lb.Listener("test", {
+    ///     loadBalancerArn: testAwsLb.id,
+    ///     protocol: "HTTPS",
+    ///     port: 443,
+    ///     sslPolicy: "ELBSecurityPolicy-2016-08",
+    ///     certificateArn: testAwsIamServerCertificate.arn,
+    ///     defaultActions: [
+    ///         {
+    ///             type: "jwt-validation",
+    ///             jwtValidation: {
+    ///                 issuer: "https://example.com",
+    ///                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
+    ///                 additionalClaims: [
+    ///                     {
+    ///                         format: "string-array",
+    ///                         name: "claim_name1",
+    ///                         values: [
+    ///                             "value1",
+    ///                             "value2",
+    ///                         ],
+    ///                     },
+    ///                     {
+    ///                         format: "single-string",
+    ///                         name: "claim_name2",
+    ///                         values: ["value1"],
+    ///                     },
+    ///                 ],
+    ///             },
+    ///         },
+    ///         {
+    ///             targetGroupArn: testAwsLbTargetGroup.id,
+    ///             type: "forward",
+    ///         },
+    ///     ],
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// test = aws.lb.Listener("test",
+    ///     load_balancer_arn=test_aws_lb["id"],
+    ///     protocol="HTTPS",
+    ///     port=443,
+    ///     ssl_policy="ELBSecurityPolicy-2016-08",
+    ///     certificate_arn=test_aws_iam_server_certificate["arn"],
+    ///     default_actions=[
+    ///         {
+    ///             "type": "jwt-validation",
+    ///             "jwt_validation": {
+    ///                 "issuer": "https://example.com",
+    ///                 "jwks_endpoint": "https://example.com/.well-known/jwks.json",
+    ///                 "additional_claims": [
+    ///                     {
+    ///                         "format": "string-array",
+    ///                         "name": "claim_name1",
+    ///                         "values": [
+    ///                             "value1",
+    ///                             "value2",
+    ///                         ],
+    ///                     },
+    ///                     {
+    ///                         "format": "single-string",
+    ///                         "name": "claim_name2",
+    ///                         "values": ["value1"],
+    ///                     },
+    ///                 ],
+    ///             },
+    ///         },
+    ///         {
+    ///             "target_group_arn": test_aws_lb_target_group["id"],
+    ///             "type": "forward",
+    ///         },
+    ///     ])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var test = new Aws.LB.Listener("test", new()
+    ///     {
+    ///         LoadBalancerArn = testAwsLb.Id,
+    ///         Protocol = "HTTPS",
+    ///         Port = 443,
+    ///         SslPolicy = "ELBSecurityPolicy-2016-08",
+    ///         CertificateArn = testAwsIamServerCertificate.Arn,
+    ///         DefaultActions = new[]
+    ///         {
+    ///             new Aws.LB.Inputs.ListenerDefaultActionArgs
+    ///             {
+    ///                 Type = "jwt-validation",
+    ///                 JwtValidation = new Aws.LB.Inputs.ListenerDefaultActionJwtValidationArgs
+    ///                 {
+    ///                     Issuer = "https://example.com",
+    ///                     JwksEndpoint = "https://example.com/.well-known/jwks.json",
+    ///                     AdditionalClaims = new[]
+    ///                     {
+    ///                         new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+    ///                         {
+    ///                             Format = "string-array",
+    ///                             Name = "claim_name1",
+    ///                             Values = new[]
+    ///                             {
+    ///                                 "value1",
+    ///                                 "value2",
+    ///                             },
+    ///                         },
+    ///                         new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs
+    ///                         {
+    ///                             Format = "single-string",
+    ///                             Name = "claim_name2",
+    ///                             Values = new[]
+    ///                             {
+    ///                                 "value1",
+    ///                             },
+    ///                         },
+    ///                     },
+    ///                 },
+    ///             },
+    ///             new Aws.LB.Inputs.ListenerDefaultActionArgs
+    ///             {
+    ///                 TargetGroupArn = testAwsLbTargetGroup.Id,
+    ///                 Type = "forward",
+    ///             },
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := lb.NewListener(ctx, "test", &amp;lb.ListenerArgs{
+    /// 			LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+    /// 			Protocol:        pulumi.String("HTTPS"),
+    /// 			Port:            pulumi.Int(443),
+    /// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+    /// 			CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+    /// 			DefaultActions: lb.ListenerDefaultActionArray{
+    /// 				&amp;lb.ListenerDefaultActionArgs{
+    /// 					Type: pulumi.String("jwt-validation"),
+    /// 					JwtValidation: &amp;lb.ListenerDefaultActionJwtValidationArgs{
+    /// 						Issuer:       pulumi.String("https://example.com"),
+    /// 						JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+    /// 						AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+    /// 							&amp;lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+    /// 								Format: pulumi.String("string-array"),
+    /// 								Name:   pulumi.String("claim_name1"),
+    /// 								Values: pulumi.StringArray{
+    /// 									pulumi.String("value1"),
+    /// 									pulumi.String("value2"),
+    /// 								},
+    /// 							},
+    /// 							&amp;lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+    /// 								Format: pulumi.String("single-string"),
+    /// 								Name:   pulumi.String("claim_name2"),
+    /// 								Values: pulumi.StringArray{
+    /// 									pulumi.String("value1"),
+    /// 								},
+    /// 							},
+    /// 						},
+    /// 					},
+    /// 				},
+    /// 				&amp;lb.ListenerDefaultActionArgs{
+    /// 					TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+    /// 					Type:           pulumi.String("forward"),
+    /// 				},
+    /// 			},
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.lb.Listener;
+    /// import com.pulumi.aws.lb.ListenerArgs;
+    /// import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+    /// import com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var test = new Listener("test", ListenerArgs.builder()
+    ///             .loadBalancerArn(testAwsLb.id())
+    ///             .protocol("HTTPS")
+    ///             .port(443)
+    ///             .sslPolicy("ELBSecurityPolicy-2016-08")
+    ///             .certificateArn(testAwsIamServerCertificate.arn())
+    ///             .defaultActions(            
+    ///                 ListenerDefaultActionArgs.builder()
+    ///                     .type("jwt-validation")
+    ///                     .jwtValidation(ListenerDefaultActionJwtValidationArgs.builder()
+    ///                         .issuer("https://example.com")
+    ///                         .jwksEndpoint("https://example.com/.well-known/jwks.json")
+    ///                         .additionalClaims(                        
+    ///                             ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+    ///                                 .format("string-array")
+    ///                                 .name("claim_name1")
+    ///                                 .values(                                
+    ///                                     "value1",
+    ///                                     "value2")
+    ///                                 .build(),
+    ///                             ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()
+    ///                                 .format("single-string")
+    ///                                 .name("claim_name2")
+    ///                                 .values("value1")
+    ///                                 .build())
+    ///                         .build())
+    ///                     .build(),
+    ///                 ListenerDefaultActionArgs.builder()
+    ///                     .targetGroupArn(testAwsLbTargetGroup.id())
+    ///                     .type("forward")
+    ///                     .build())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   test:
+    ///     type: aws:lb:Listener
+    ///     properties:
+    ///       loadBalancerArn: ${testAwsLb.id}
+    ///       protocol: HTTPS
+    ///       port: '443'
+    ///       sslPolicy: ELBSecurityPolicy-2016-08
+    ///       certificateArn: ${testAwsIamServerCertificate.arn}
+    ///       defaultActions:
+    ///         - type: jwt-validation
+    ///           jwtValidation:
+    ///             issuer: https://example.com
+    ///             jwksEndpoint: https://example.com/.well-known/jwks.json
+    ///             additionalClaims:
+    ///               - format: string-array
+    ///                 name: claim_name1
+    ///                 values:
+    ///                   - value1
+    ///                   - value2
+    ///               - format: single-string
+    ///                 name: claim_name2
+    ///                 values:
+    ///                   - value1
+    ///         - targetGroupArn: ${testAwsLbTargetGroup.id}
+    ///           type: forward
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### Gateway Load Balancer Listener
     /// 
     /// &lt;!--Start PulumiCodeChooser --&gt;
@@ -1860,8 +2143,6 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
     /// 
     /// Using `pulumi import`, import listeners using their ARN. For example:
-    /// 
-    /// console
     /// 
     /// % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
     /// </summary>

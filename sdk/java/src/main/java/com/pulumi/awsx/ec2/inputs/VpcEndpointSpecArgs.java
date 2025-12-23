@@ -103,6 +103,45 @@ import javax.annotation.Nullable;
  * </pre>
  * &lt;!--End PulumiCodeChooser --&gt;
  * 
+ * ### Cross-region enabled AWS services
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()
+ *             .region("us-west-2")
+ *             .vpcId(main.id())
+ *             .serviceName("com.amazonaws.us-east-2.s3")
+ *             .serviceRegion("us-east-2")
+ *             .tags(Map.of("Environment", "test"))
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
  * ### Interface Endpoint Type
  * 
  * &lt;!--Start PulumiCodeChooser --&gt;
@@ -318,6 +357,84 @@ import javax.annotation.Nullable;
  * }
  * </pre>
  * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * ### Non-AWS Service
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import com.pulumi.aws.route53.Route53Functions;
+ * import com.pulumi.aws.route53.inputs.GetZoneArgs;
+ * import com.pulumi.aws.route53.Record;
+ * import com.pulumi.aws.route53.RecordArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var ptfeService = new VpcEndpoint("ptfeService", VpcEndpointArgs.builder()
+ *             .vpcId(vpcId)
+ *             .serviceName(ptfeServiceConfig)
+ *             .vpcEndpointType("Interface")
+ *             .securityGroupIds(ptfeServiceAwsSecurityGroup.id())
+ *             .subnetIds(subnetIds)
+ *             .privateDnsEnabled(false)
+ *             .build());
+ * 
+ *         final var internal = Route53Functions.getZone(GetZoneArgs.builder()
+ *             .name("vpc.internal.")
+ *             .privateZone(true)
+ *             .vpcId(vpcId)
+ *             .build());
+ * 
+ *         var ptfeServiceRecord = new Record("ptfeServiceRecord", RecordArgs.builder()
+ *             .zoneId(internal.zoneId())
+ *             .name(String.format("ptfe.%s", internal.name()))
+ *             .type("CNAME")
+ *             .ttl(300)
+ *             .records(ptfeService.dnsEntries().applyValue(_dnsEntries -> _dnsEntries[0].dns_name()))
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
+ * &gt; **NOTE The &lt;span pulumi-lang-nodejs=&#34;`dnsEntry`&#34; pulumi-lang-dotnet=&#34;`DnsEntry`&#34; pulumi-lang-go=&#34;`dnsEntry`&#34; pulumi-lang-python=&#34;`dns_entry`&#34; pulumi-lang-yaml=&#34;`dnsEntry`&#34; pulumi-lang-java=&#34;`dnsEntry`&#34;&gt;`dns_entry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs=&#34;`lookup`&#34; pulumi-lang-dotnet=&#34;`Lookup`&#34; pulumi-lang-go=&#34;`lookup`&#34; pulumi-lang-python=&#34;`lookup`&#34; pulumi-lang-yaml=&#34;`lookup`&#34; pulumi-lang-java=&#34;`lookup`&#34;&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
+ * 
+ * ## Import
+ * 
+ * ### Identity Schema
+ * 
+ * #### Required
+ * 
+ * * `id` - (String) ID of the VPC endpoint.
+ * 
+ * #### Optional
+ * 
+ * * `account_id` (String) AWS Account where this resource is managed.
+ * 
+ * * `region` (String) Region where this resource is managed.
+ * 
+ * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+ * 
+ * % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
  * 
  */
 public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs {

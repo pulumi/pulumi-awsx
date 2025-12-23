@@ -294,8 +294,6 @@ import javax.annotation.Nullable;
  * 
  * Using `pulumi import`, import Target Groups using their ARN. For example:
  * 
- * console
- * 
  * % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
  * 
  */
@@ -595,6 +593,21 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs=&#34;`targetType`&#34; pulumi-lang-dotnet=&#34;`TargetType`&#34; pulumi-lang-go=&#34;`targetType`&#34; pulumi-lang-python=&#34;`target_type`&#34; pulumi-lang-yaml=&#34;`targetType`&#34; pulumi-lang-java=&#34;`targetType`&#34;&gt;`target_type`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`instance`&#34; pulumi-lang-dotnet=&#34;`Instance`&#34; pulumi-lang-go=&#34;`instance`&#34; pulumi-lang-python=&#34;`instance`&#34; pulumi-lang-yaml=&#34;`instance`&#34; pulumi-lang-java=&#34;`instance`&#34;&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`ip`&#34; pulumi-lang-dotnet=&#34;`Ip`&#34; pulumi-lang-go=&#34;`ip`&#34; pulumi-lang-python=&#34;`ip`&#34; pulumi-lang-yaml=&#34;`ip`&#34; pulumi-lang-java=&#34;`ip`&#34;&gt;`ip`&lt;/span&gt;.
+     * 
+     */
+    @Import(name="targetControlPort")
+    private @Nullable Output<Integer> targetControlPort;
+
+    /**
+     * @return Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs=&#34;`targetType`&#34; pulumi-lang-dotnet=&#34;`TargetType`&#34; pulumi-lang-go=&#34;`targetType`&#34; pulumi-lang-python=&#34;`target_type`&#34; pulumi-lang-yaml=&#34;`targetType`&#34; pulumi-lang-java=&#34;`targetType`&#34;&gt;`target_type`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`instance`&#34; pulumi-lang-dotnet=&#34;`Instance`&#34; pulumi-lang-go=&#34;`instance`&#34; pulumi-lang-python=&#34;`instance`&#34; pulumi-lang-yaml=&#34;`instance`&#34; pulumi-lang-java=&#34;`instance`&#34;&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`ip`&#34; pulumi-lang-dotnet=&#34;`Ip`&#34; pulumi-lang-go=&#34;`ip`&#34; pulumi-lang-python=&#34;`ip`&#34; pulumi-lang-yaml=&#34;`ip`&#34; pulumi-lang-java=&#34;`ip`&#34;&gt;`ip`&lt;/span&gt;.
+     * 
+     */
+    public Optional<Output<Integer>> targetControlPort() {
+        return Optional.ofNullable(this.targetControlPort);
+    }
+
+    /**
      * Target failover block. Only applicable for Gateway Load Balancer target groups. See&lt;span pulumi-lang-nodejs=&#34; targetFailover &#34; pulumi-lang-dotnet=&#34; TargetFailover &#34; pulumi-lang-go=&#34; targetFailover &#34; pulumi-lang-python=&#34; target_failover &#34; pulumi-lang-yaml=&#34; targetFailover &#34; pulumi-lang-java=&#34; targetFailover &#34;&gt; target_failover &lt;/span&gt;for more information.
      * 
      */
@@ -711,6 +724,7 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         this.slowStart = $.slowStart;
         this.stickiness = $.stickiness;
         this.tags = $.tags;
+        this.targetControlPort = $.targetControlPort;
         this.targetFailovers = $.targetFailovers;
         this.targetGroupHealth = $.targetGroupHealth;
         this.targetHealthStates = $.targetHealthStates;
@@ -1139,6 +1153,27 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
+        }
+
+        /**
+         * @param targetControlPort Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs=&#34;`targetType`&#34; pulumi-lang-dotnet=&#34;`TargetType`&#34; pulumi-lang-go=&#34;`targetType`&#34; pulumi-lang-python=&#34;`target_type`&#34; pulumi-lang-yaml=&#34;`targetType`&#34; pulumi-lang-java=&#34;`targetType`&#34;&gt;`target_type`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`instance`&#34; pulumi-lang-dotnet=&#34;`Instance`&#34; pulumi-lang-go=&#34;`instance`&#34; pulumi-lang-python=&#34;`instance`&#34; pulumi-lang-yaml=&#34;`instance`&#34; pulumi-lang-java=&#34;`instance`&#34;&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`ip`&#34; pulumi-lang-dotnet=&#34;`Ip`&#34; pulumi-lang-go=&#34;`ip`&#34; pulumi-lang-python=&#34;`ip`&#34; pulumi-lang-yaml=&#34;`ip`&#34; pulumi-lang-java=&#34;`ip`&#34;&gt;`ip`&lt;/span&gt;.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetControlPort(@Nullable Output<Integer> targetControlPort) {
+            $.targetControlPort = targetControlPort;
+            return this;
+        }
+
+        /**
+         * @param targetControlPort Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs=&#34;`targetType`&#34; pulumi-lang-dotnet=&#34;`TargetType`&#34; pulumi-lang-go=&#34;`targetType`&#34; pulumi-lang-python=&#34;`target_type`&#34; pulumi-lang-yaml=&#34;`targetType`&#34; pulumi-lang-java=&#34;`targetType`&#34;&gt;`target_type`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`instance`&#34; pulumi-lang-dotnet=&#34;`Instance`&#34; pulumi-lang-go=&#34;`instance`&#34; pulumi-lang-python=&#34;`instance`&#34; pulumi-lang-yaml=&#34;`instance`&#34; pulumi-lang-java=&#34;`instance`&#34;&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`ip`&#34; pulumi-lang-dotnet=&#34;`Ip`&#34; pulumi-lang-go=&#34;`ip`&#34; pulumi-lang-python=&#34;`ip`&#34; pulumi-lang-yaml=&#34;`ip`&#34; pulumi-lang-java=&#34;`ip`&#34;&gt;`ip`&lt;/span&gt;.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetControlPort(Integer targetControlPort) {
+            return targetControlPort(Output.of(targetControlPort));
         }
 
         /**
