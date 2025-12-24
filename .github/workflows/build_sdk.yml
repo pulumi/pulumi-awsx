@@ -130,7 +130,7 @@ jobs:
           # Apply and add our changes, but don't commit any files we expect to
           # always change due to versioning.
           git stash pop
-          git add sdk provider/cmd/awsx/schema.json
+          git add sdk provider/cmd/pulumi-resource-awsx/schema.json
           git reset \
               sdk/python/*/pulumi-plugin.json \
               sdk/python/pyproject.toml \
