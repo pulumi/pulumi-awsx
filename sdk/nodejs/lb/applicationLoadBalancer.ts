@@ -76,6 +76,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["enableXffClientPort"] = args?.enableXffClientPort;
             resourceInputs["enableZonalShift"] = args?.enableZonalShift;
             resourceInputs["enforceSecurityGroupInboundRulesOnPrivateLinkTraffic"] = args?.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+            resourceInputs["healthCheckLogs"] = args?.healthCheckLogs;
             resourceInputs["idleTimeout"] = args?.idleTimeout;
             resourceInputs["internal"] = args?.internal;
             resourceInputs["ipAddressType"] = args?.ipAddressType;
@@ -180,6 +181,10 @@ export interface ApplicationLoadBalancerArgs {
      * Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`network`" pulumi-lang-dotnet="`Network`" pulumi-lang-go="`network`" pulumi-lang-python="`network`" pulumi-lang-yaml="`network`" pulumi-lang-java="`network`">`network`</span>. The possible values are <span pulumi-lang-nodejs="`on`" pulumi-lang-dotnet="`On`" pulumi-lang-go="`on`" pulumi-lang-python="`on`" pulumi-lang-yaml="`on`" pulumi-lang-java="`on`">`on`</span> and <span pulumi-lang-nodejs="`off`" pulumi-lang-dotnet="`Off`" pulumi-lang-go="`off`" pulumi-lang-python="`off`" pulumi-lang-yaml="`off`" pulumi-lang-java="`off`">`off`</span>.
      */
     enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
+    /**
+     * Health Check Logs block. See below. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>.
+     */
+    healthCheckLogs?: pulumi.Input<pulumiAws.types.input.lb.LoadBalancerHealthCheckLogs>;
     /**
      * Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>. Default: 60.
      */

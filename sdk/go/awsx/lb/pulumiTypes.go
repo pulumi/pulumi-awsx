@@ -374,6 +374,68 @@ var _ = internal.GetEnvOrDefault
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### JWT Validation Action
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("jwt-validation"),
+//						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+//							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("string-array"),
+//									Name:   pulumi.String("claim_name1"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//										pulumi.String("value2"),
+//									},
+//								},
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("single-string"),
+//									Name:   pulumi.String("claim_name2"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//									},
+//								},
+//							},
+//						},
+//					},
+//					&lb.ListenerDefaultActionArgs{
+//						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+//						Type:           pulumi.String("forward"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Listener
 //
 // <!--Start PulumiCodeChooser -->
@@ -490,8 +552,6 @@ var _ = internal.GetEnvOrDefault
 // - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
-//
-// console
 //
 // % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 type Listener struct {
@@ -928,6 +988,68 @@ type ListenerInput interface {
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### JWT Validation Action
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("jwt-validation"),
+//						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+//							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("string-array"),
+//									Name:   pulumi.String("claim_name1"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//										pulumi.String("value2"),
+//									},
+//								},
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("single-string"),
+//									Name:   pulumi.String("claim_name2"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//									},
+//								},
+//							},
+//						},
+//					},
+//					&lb.ListenerDefaultActionArgs{
+//						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+//						Type:           pulumi.String("forward"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Listener
 //
 // <!--Start PulumiCodeChooser -->
@@ -1044,8 +1166,6 @@ type ListenerInput interface {
 // - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
-//
-// console
 //
 // % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 type ListenerArgs struct {
@@ -1549,6 +1669,68 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 // ```
 // <!--End PulumiCodeChooser -->
 //
+// ### JWT Validation Action
+//
+// <!--Start PulumiCodeChooser -->
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("jwt-validation"),
+//						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
+//							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("string-array"),
+//									Name:   pulumi.String("claim_name1"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//										pulumi.String("value2"),
+//									},
+//								},
+//								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
+//									Format: pulumi.String("single-string"),
+//									Name:   pulumi.String("claim_name2"),
+//									Values: pulumi.StringArray{
+//										pulumi.String("value1"),
+//									},
+//								},
+//							},
+//						},
+//					},
+//					&lb.ListenerDefaultActionArgs{
+//						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
+//						Type:           pulumi.String("forward"),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Listener
 //
 // <!--Start PulumiCodeChooser -->
@@ -1665,8 +1847,6 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 // - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
-//
-// console
 //
 // % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 type ListenerOutput struct{ *pulumi.OutputState }
@@ -2407,8 +2587,6 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
-// console
-//
 // % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 type TargetGroup struct {
 	// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
@@ -2452,6 +2630,8 @@ type TargetGroup struct {
 	Stickiness *lb.TargetGroupStickiness `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+	// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+	TargetControlPort *int `pulumi:"targetControlPort"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
 	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
 	// Target health requirements block. See<span pulumi-lang-nodejs=" targetGroupHealth " pulumi-lang-dotnet=" TargetGroupHealth " pulumi-lang-go=" targetGroupHealth " pulumi-lang-python=" target_group_health " pulumi-lang-yaml=" targetGroupHealth " pulumi-lang-java=" targetGroupHealth "> target_group_health </span>for more information.
@@ -2716,8 +2896,6 @@ type TargetGroupInput interface {
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
-// console
-//
 // % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 type TargetGroupArgs struct {
 	// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
@@ -2761,6 +2939,8 @@ type TargetGroupArgs struct {
 	Stickiness lb.TargetGroupStickinessPtrInput `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+	TargetControlPort pulumi.IntPtrInput `pulumi:"targetControlPort"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
 	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
 	// Target health requirements block. See<span pulumi-lang-nodejs=" targetGroupHealth " pulumi-lang-dotnet=" TargetGroupHealth " pulumi-lang-go=" targetGroupHealth " pulumi-lang-python=" target_group_health " pulumi-lang-yaml=" targetGroupHealth " pulumi-lang-java=" targetGroupHealth "> target_group_health </span>for more information.
@@ -3067,8 +3247,6 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
-// console
-//
 // % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 type TargetGroupOutput struct{ *pulumi.OutputState }
 
@@ -3190,6 +3368,11 @@ func (o TargetGroupOutput) Stickiness() lb.TargetGroupStickinessPtrOutput {
 // Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v TargetGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+func (o TargetGroupOutput) TargetControlPort() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *int { return v.TargetControlPort }).(pulumi.IntPtrOutput)
 }
 
 // Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.
@@ -3442,6 +3625,16 @@ func (o TargetGroupPtrOutput) Tags() pulumi.StringMapOutput {
 		}
 		return v.Tags
 	}).(pulumi.StringMapOutput)
+}
+
+// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when <span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`">`target_type`</span> is <span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`">`instance`</span> or <span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`">`ip`</span>.
+func (o TargetGroupPtrOutput) TargetControlPort() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *int {
+		if v == nil {
+			return nil
+		}
+		return v.TargetControlPort
+	}).(pulumi.IntPtrOutput)
 }
 
 // Target failover block. Only applicable for Gateway Load Balancer target groups. See<span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "> target_failover </span>for more information.

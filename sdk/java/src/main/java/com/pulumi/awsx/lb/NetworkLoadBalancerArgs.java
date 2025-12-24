@@ -6,6 +6,7 @@ package com.pulumi.awsx.lb;
 import com.pulumi.aws.ec2.Subnet;
 import com.pulumi.aws.lb.inputs.LoadBalancerAccessLogsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerConnectionLogsArgs;
+import com.pulumi.aws.lb.inputs.LoadBalancerHealthCheckLogsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerIpamPoolsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerMinimumLoadBalancerCapacityArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;
@@ -265,6 +266,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
      */
     public Optional<Output<String>> enforceSecurityGroupInboundRulesOnPrivateLinkTraffic() {
         return Optional.ofNullable(this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic);
+    }
+
+    /**
+     * Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * 
+     */
+    @Import(name="healthCheckLogs")
+    private @Nullable Output<LoadBalancerHealthCheckLogsArgs> healthCheckLogs;
+
+    /**
+     * @return Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * 
+     */
+    public Optional<Output<LoadBalancerHealthCheckLogsArgs>> healthCheckLogs() {
+        return Optional.ofNullable(this.healthCheckLogs);
     }
 
     /**
@@ -564,6 +580,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.enableXffClientPort = $.enableXffClientPort;
         this.enableZonalShift = $.enableZonalShift;
         this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = $.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+        this.healthCheckLogs = $.healthCheckLogs;
         this.idleTimeout = $.idleTimeout;
         this.internal = $.internal;
         this.ipAddressType = $.ipAddressType;
@@ -926,6 +943,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(String enforceSecurityGroupInboundRulesOnPrivateLinkTraffic) {
             return enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(Output.of(enforceSecurityGroupInboundRulesOnPrivateLinkTraffic));
+        }
+
+        /**
+         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder healthCheckLogs(@Nullable Output<LoadBalancerHealthCheckLogsArgs> healthCheckLogs) {
+            $.healthCheckLogs = healthCheckLogs;
+            return this;
+        }
+
+        /**
+         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder healthCheckLogs(LoadBalancerHealthCheckLogsArgs healthCheckLogs) {
+            return healthCheckLogs(Output.of(healthCheckLogs));
         }
 
         /**

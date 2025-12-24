@@ -231,6 +231,130 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
+    /// ### Cross-region enabled AWS services
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const s3 = new aws.ec2.VpcEndpoint("s3", {
+    ///     region: "us-west-2",
+    ///     vpcId: main.id,
+    ///     serviceName: "com.amazonaws.us-east-2.s3",
+    ///     serviceRegion: "us-east-2",
+    ///     tags: {
+    ///         Environment: "test",
+    ///     },
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// s3 = aws.ec2.VpcEndpoint("s3",
+    ///     region="us-west-2",
+    ///     vpc_id=main["id"],
+    ///     service_name="com.amazonaws.us-east-2.s3",
+    ///     service_region="us-east-2",
+    ///     tags={
+    ///         "Environment": "test",
+    ///     })
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
+    ///     {
+    ///         Region = "us-west-2",
+    ///         VpcId = main.Id,
+    ///         ServiceName = "com.amazonaws.us-east-2.s3",
+    ///         ServiceRegion = "us-east-2",
+    ///         Tags = 
+    ///         {
+    ///             { "Environment", "test" },
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := ec2.NewVpcEndpoint(ctx, "s3", &amp;ec2.VpcEndpointArgs{
+    /// 			Region:        pulumi.String("us-west-2"),
+    /// 			VpcId:         pulumi.Any(main.Id),
+    /// 			ServiceName:   pulumi.String("com.amazonaws.us-east-2.s3"),
+    /// 			ServiceRegion: pulumi.String("us-east-2"),
+    /// 			Tags: pulumi.StringMap{
+    /// 				"Environment": pulumi.String("test"),
+    /// 			},
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()
+    ///             .region("us-west-2")
+    ///             .vpcId(main.id())
+    ///             .serviceName("com.amazonaws.us-east-2.s3")
+    ///             .serviceRegion("us-east-2")
+    ///             .tags(Map.of("Environment", "test"))
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   s3:
+    ///     type: aws:ec2:VpcEndpoint
+    ///     properties:
+    ///       region: us-west-2
+    ///       vpcId: ${main.id}
+    ///       serviceName: com.amazonaws.us-east-2.s3
+    ///       serviceRegion: us-east-2
+    ///       tags:
+    ///         Environment: test
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### Interface Endpoint Type
     /// 
     /// &lt;!--Start PulumiCodeChooser --&gt;
@@ -945,6 +1069,259 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///       vpcId: ${exampleAwsVpc.id}
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
+    /// ### Non-AWS Service
+    /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const ptfeService = new aws.ec2.VpcEndpoint("ptfe_service", {
+    ///     vpcId: vpcId,
+    ///     serviceName: ptfeServiceConfig,
+    ///     vpcEndpointType: "Interface",
+    ///     securityGroupIds: [ptfeServiceAwsSecurityGroup.id],
+    ///     subnetIds: [subnetIds],
+    ///     privateDnsEnabled: false,
+    /// });
+    /// const internal = aws.route53.getZone({
+    ///     name: "vpc.internal.",
+    ///     privateZone: true,
+    ///     vpcId: vpcId,
+    /// });
+    /// const ptfeServiceRecord = new aws.route53.Record("ptfe_service", {
+    ///     zoneId: internal.then(internal =&gt; internal.zoneId),
+    ///     name: internal.then(internal =&gt; `ptfe.${internal.name}`),
+    ///     type: aws.route53.RecordType.CNAME,
+    ///     ttl: 300,
+    ///     records: [ptfeService.dnsEntries[0].dns_name],
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// ptfe_service = aws.ec2.VpcEndpoint("ptfe_service",
+    ///     vpc_id=vpc_id,
+    ///     service_name=ptfe_service_config,
+    ///     vpc_endpoint_type="Interface",
+    ///     security_group_ids=[ptfe_service_aws_security_group["id"]],
+    ///     subnet_ids=[subnet_ids],
+    ///     private_dns_enabled=False)
+    /// internal = aws.route53.get_zone(name="vpc.internal.",
+    ///     private_zone=True,
+    ///     vpc_id=vpc_id)
+    /// ptfe_service_record = aws.route53.Record("ptfe_service",
+    ///     zone_id=internal.zone_id,
+    ///     name=f"ptfe.{internal.name}",
+    ///     type=aws.route53.RecordType.CNAME,
+    ///     ttl=300,
+    ///     records=[ptfe_service.dns_entries[0].dns_name])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var ptfeService = new Aws.Ec2.VpcEndpoint("ptfe_service", new()
+    ///     {
+    ///         VpcId = vpcId,
+    ///         ServiceName = ptfeServiceConfig,
+    ///         VpcEndpointType = "Interface",
+    ///         SecurityGroupIds = new[]
+    ///         {
+    ///             ptfeServiceAwsSecurityGroup.Id,
+    ///         },
+    ///         SubnetIds = new[]
+    ///         {
+    ///             subnetIds,
+    ///         },
+    ///         PrivateDnsEnabled = false,
+    ///     });
+    /// 
+    ///     var @internal = Aws.Route53.GetZone.Invoke(new()
+    ///     {
+    ///         Name = "vpc.internal.",
+    ///         PrivateZone = true,
+    ///         VpcId = vpcId,
+    ///     });
+    /// 
+    ///     var ptfeServiceRecord = new Aws.Route53.Record("ptfe_service", new()
+    ///     {
+    ///         ZoneId = @internal.Apply(@internal =&gt; @internal.Apply(getZoneResult =&gt; getZoneResult.ZoneId)),
+    ///         Name = @internal.Apply(@internal =&gt; $"ptfe.{@internal.Apply(getZoneResult =&gt; getZoneResult.Name)}"),
+    ///         Type = Aws.Route53.RecordType.CNAME,
+    ///         Ttl = 300,
+    ///         Records = new[]
+    ///         {
+    ///             ptfeService.DnsEntries.Apply(dnsEntries =&gt; dnsEntries[0].Dns_name),
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"fmt"
+    /// 
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// func main() {
+    /// pulumi.Run(func(ctx *pulumi.Context) error {
+    /// ptfeService, err := ec2.NewVpcEndpoint(ctx, "ptfe_service", &amp;ec2.VpcEndpointArgs{
+    /// VpcId: pulumi.Any(vpcId),
+    /// ServiceName: pulumi.Any(ptfeServiceConfig),
+    /// VpcEndpointType: pulumi.String("Interface"),
+    /// SecurityGroupIds: pulumi.StringArray{
+    /// ptfeServiceAwsSecurityGroup.Id,
+    /// },
+    /// SubnetIds: pulumi.StringArray{
+    /// subnetIds,
+    /// },
+    /// PrivateDnsEnabled: pulumi.Bool(false),
+    /// })
+    /// if err != nil {
+    /// return err
+    /// }
+    /// internal, err := route53.LookupZone(ctx, &amp;route53.LookupZoneArgs{
+    /// Name: pulumi.StringRef("vpc.internal."),
+    /// PrivateZone: pulumi.BoolRef(true),
+    /// VpcId: pulumi.StringRef(vpcId),
+    /// }, nil);
+    /// if err != nil {
+    /// return err
+    /// }
+    /// _, err = route53.NewRecord(ctx, "ptfe_service", &amp;route53.RecordArgs{
+    /// ZoneId: pulumi.String(internal.ZoneId),
+    /// Name: pulumi.Sprintf("ptfe.%v", internal.Name),
+    /// Type: pulumi.String(route53.RecordTypeCNAME),
+    /// Ttl: pulumi.Int(300),
+    /// Records: pulumi.StringArray{
+    /// pulumi.String(ptfeService.DnsEntries.ApplyT(func(dnsEntries []ec2.VpcEndpointDnsEntry) (interface{}, error) {
+    /// return dnsEntries[0].Dns_name, nil
+    /// }).(pulumi.Interface{}Output)),
+    /// },
+    /// })
+    /// if err != nil {
+    /// return err
+    /// }
+    /// return nil
+    /// })
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import com.pulumi.aws.route53.Route53Functions;
+    /// import com.pulumi.aws.route53.inputs.GetZoneArgs;
+    /// import com.pulumi.aws.route53.Record;
+    /// import com.pulumi.aws.route53.RecordArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var ptfeService = new VpcEndpoint("ptfeService", VpcEndpointArgs.builder()
+    ///             .vpcId(vpcId)
+    ///             .serviceName(ptfeServiceConfig)
+    ///             .vpcEndpointType("Interface")
+    ///             .securityGroupIds(ptfeServiceAwsSecurityGroup.id())
+    ///             .subnetIds(subnetIds)
+    ///             .privateDnsEnabled(false)
+    ///             .build());
+    /// 
+    ///         final var internal = Route53Functions.getZone(GetZoneArgs.builder()
+    ///             .name("vpc.internal.")
+    ///             .privateZone(true)
+    ///             .vpcId(vpcId)
+    ///             .build());
+    /// 
+    ///         var ptfeServiceRecord = new Record("ptfeServiceRecord", RecordArgs.builder()
+    ///             .zoneId(internal.zoneId())
+    ///             .name(String.format("ptfe.%s", internal.name()))
+    ///             .type("CNAME")
+    ///             .ttl(300)
+    ///             .records(ptfeService.dnsEntries().applyValue(_dnsEntries -&gt; _dnsEntries[0].dns_name()))
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   ptfeService:
+    ///     type: aws:ec2:VpcEndpoint
+    ///     name: ptfe_service
+    ///     properties:
+    ///       vpcId: ${vpcId}
+    ///       serviceName: ${ptfeServiceConfig}
+    ///       vpcEndpointType: Interface
+    ///       securityGroupIds:
+    ///         - ${ptfeServiceAwsSecurityGroup.id}
+    ///       subnetIds:
+    ///         - ${subnetIds}
+    ///       privateDnsEnabled: false
+    ///   ptfeServiceRecord:
+    ///     type: aws:route53:Record
+    ///     name: ptfe_service
+    ///     properties:
+    ///       zoneId: ${internal.zoneId}
+    ///       name: ptfe.${internal.name}
+    ///       type: CNAME
+    ///       ttl: '300'
+    ///       records:
+    ///         - ${ptfeService.dnsEntries[0].dns_name}
+    /// variables:
+    ///   internal:
+    ///     fn::invoke:
+    ///       function: aws:route53:getZone
+    ///       arguments:
+    ///         name: vpc.internal.
+    ///         privateZone: true
+    ///         vpcId: ${vpcId}
+    /// ```
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
+    /// &gt; **NOTE The &lt;span pulumi-lang-nodejs="`dnsEntry`" pulumi-lang-dotnet="`DnsEntry`" pulumi-lang-go="`dnsEntry`" pulumi-lang-python="`dns_entry`" pulumi-lang-yaml="`dnsEntry`" pulumi-lang-java="`dnsEntry`"&gt;`dns_entry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs="`lookup`" pulumi-lang-dotnet="`Lookup`" pulumi-lang-go="`lookup`" pulumi-lang-python="`lookup`" pulumi-lang-yaml="`lookup`" pulumi-lang-java="`lookup`"&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
+    /// 
+    /// ## Import
+    /// 
+    /// ### Identity Schema
+    /// 
+    /// #### Required
+    /// 
+    /// * `id` - (String) ID of the VPC endpoint.
+    /// 
+    /// #### Optional
+    /// 
+    /// * `account_id` (String) AWS Account where this resource is managed.
+    /// 
+    /// * `region` (String) Region where this resource is managed.
+    /// 
+    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+    /// 
+    /// % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
     /// </summary>
     public sealed class VpcEndpointSpecArgs : global::Pulumi.ResourceArgs
     {
