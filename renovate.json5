@@ -12,5 +12,27 @@
         executionMode: "branch", // Only run once.
       },
     },
+    {
+      matchManagers: ["gomod"],
+      matchPackageNames: ["github.com/pulumi/pulumi/pkg/v3", "github.com/pulumi/pulumi/sdk/v3"],
+      postUpgradeTasks: {
+        commands: ["make renovate"],
+        executionMode: "branch", // Only run once. 
+      },
+      // automatically bump these, don't require manual trigger
+      dependencyDashboardApproval: false,
+    },
+    {
+      matchDatasources: ["npm", "gomod"],
+      matchPackageNames: ["@pulumi/aws", "github.com/pulumi/pulumi-aws/sdk/v7"],
+      postUpgradeTasks: {
+        commands: ["make renovate"],
+        executionMode: "branch", // Only run once. 
+      },
+      groupName: "upstream AWS dependencies",
+      groupSlug: "aws",
+      // automatically bump these, don't require manual trigger
+      dependencyDashboardApproval: false,
+    },
   ]
 }
