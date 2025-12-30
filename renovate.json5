@@ -19,6 +19,8 @@
         commands: ["make renovate"],
         executionMode: "branch", // Only run once. 
       },
+      groupName: "update Pulumi CLI",
+      groupSlug: "pulumi-cli",
       // automatically bump these, don't require manual trigger
       dependencyDashboardApproval: false,
     },
