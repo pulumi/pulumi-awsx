@@ -216,11 +216,15 @@ install_python_sdk:
 .PHONY: install_dotnet_sdk install_go_sdk install_java_sdk install_nodejs_sdk install_python_sdk
 
 lint_provider: upstream
+	git grep -l 'go:embed' -- provider | xargs perl -i -pe 's/go:embed/ goembed/g'
 	cd provider && golangci-lint run --path-prefix provider -c ../.golangci.yml
+	git grep -l 'goembed' -- provider | xargs perl -i -pe 's/ goembed/go:embed/g'
 # `lint_provider.fix` is a utility target meant to be run manually
 # that will run the linter and fix errors when possible.
 lint_provider.fix: upstream
+	git grep -l 'go:embed' -- provider | xargs perl -i -pe 's/go:embed/ goembed/g'
 	cd provider && golangci-lint run --path-prefix provider -c ../.golangci.yml --fix
+	git grep -l 'goembed' -- provider | xargs perl -i -pe 's/ goembed/go:embed/g'
 .PHONY: lint_provider lint_provider.fix
 build_provider_cmd = OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build
 
