@@ -135,6 +135,19 @@ function defaultSubnetInputsBare(): SubnetSpecInputs[] {
   return [{ type: "Private" }, { type: "Public" }];
 }
 
+/**
+ * Merges user-provided SubnetSpecs with the default specs for Auto strategy.
+ * Any default subnet types not present in the user's specs are added automatically.
+ * This allows users to customize specific subnet types (e.g., add tags to Public)
+ * without losing the other default subnet types (e.g., Private).
+ */
+export function mergeWithDefaultSubnetSpecs(userSpecs: SubnetSpecInputs[]): SubnetSpecInputs[] {
+  const defaults = defaultSubnetInputsBare();
+  const userTypes = new Set(userSpecs.map((s) => s.type.toLowerCase()));
+  const missingDefaults = defaults.filter((d) => !userTypes.has(d.type.toLowerCase()));
+  return [...userSpecs, ...missingDefaults];
+}
+
 export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
   // For a large VPC (up to /17), the layout will be:
   // Private:  /19 (10.0.0.0  - 10.0.31.255), 8190 addresses

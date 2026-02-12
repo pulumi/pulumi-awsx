@@ -21,6 +21,7 @@ import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./sub
 import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
@@ -444,8 +445,13 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
+    const effectiveSubnetSpecs =
+      subnetStrategy === "Auto" && args.subnetSpecs !== undefined
+        ? mergeWithDefaultSubnetSpecs(args.subnetSpecs)
+        : args.subnetSpecs;
+
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      args.subnetSpecs,
+      effectiveSubnetSpecs,
       availabilityZones.length,
     );
 
