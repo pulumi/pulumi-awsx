@@ -18,6 +18,7 @@ import {
   defaultSubnetInputs,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   nextNetmask,
   validSubnetSizes,
   validateAndNormalizeSubnetInputs,
@@ -430,6 +431,91 @@ describe("explicit subnet layouts", () => {
         type: "Private",
       },
     ]);
+  });
+});
+
+describe("merging SubnetSpecs with defaults for Auto strategy", () => {
+  it("should add missing default types when user only specifies Public with tags", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(2);
+    expect(merged).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }),
+        expect.objectContaining({ type: "Private" }),
+      ]),
+    );
+  });
+
+  it("should add missing default types when user only specifies Private with tags", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Private", tags: { "custom-tag": "value" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(2);
+    expect(merged).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "Private", tags: { "custom-tag": "value" } }),
+        expect.objectContaining({ type: "Public" }),
+      ]),
+    );
+  });
+
+  it("should not add duplicates when user specifies all default types", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      { type: "Private", tags: { "custom-tag": "value" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(2);
+    expect(merged).toEqual([
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      { type: "Private", tags: { "custom-tag": "value" } },
+    ]);
+  });
+
+  it("should preserve additional non-default types", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      { type: "Isolated" },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(3);
+    expect(merged).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }),
+        expect.objectContaining({ type: "Isolated" }),
+        expect.objectContaining({ type: "Private" }),
+      ]),
+    );
+  });
+
+  it("should produce correct subnet specs when used with getSubnetSpecs", () => {
+    // User only specifies Public with tags - Private should be auto-added
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    const result = getSubnetSpecs("vpcName", "10.0.0.0/16", ["us-east-1a", "us-east-1b"], merged);
+
+    validatePartialSubnetSpecs(result, (ss) => {
+      // Should have 4 subnets: 2 AZs * 2 types (Public + Private)
+      expect(ss).toHaveLength(4);
+      const publicSubnets = ss.filter((s) => s.type === "Public");
+      const privateSubnets = ss.filter((s) => s.type === "Private");
+      expect(publicSubnets).toHaveLength(2);
+      expect(privateSubnets).toHaveLength(2);
+      // Public subnets should have the user's tags
+      for (const pub of publicSubnets) {
+        expect(pub.tags).toEqual({ "kubernetes.io/role/elb": "1" });
+      }
+      // Private subnets should have no extra tags
+      for (const priv of privateSubnets) {
+        expect(priv.tags).toBeUndefined();
+      }
+    });
   });
 });
 

@@ -471,3 +471,96 @@ describe("child resource api", () => {
     }
   });
 });
+
+describe("Auto strategy merges partial SubnetSpecs with defaults (issue #1746)", () => {
+  function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
+    return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
+  }
+
+  beforeAll(async () => {
+    await runtime.setMocks({
+      call(args) {
+        switch (args.token) {
+          case "aws:index/getAvailabilityZones:getAvailabilityZones":
+            const result: pulumiAws.GetAvailabilityZonesResult = {
+              id: "mocked-az-result",
+              zoneIds: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              names: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              groupNames: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              region: pulumiAws.Region.USEast1,
+            };
+            return result;
+          default:
+            throw new Error(`Mock not implemented: ${args.token}`);
+        }
+      },
+      newResource(args) {
+        return {
+          id: `mocked::${args.type}::${args.name}-id`,
+          state: args.inputs,
+        };
+      },
+    });
+  });
+
+  it("should create both Public and Private subnets when only Public is specified with tags", async () => {
+    const vpc = new Vpc("tag-test", {
+      subnetStrategy: "Auto",
+      subnetSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    // Should have 6 subnets: 3 AZs * 2 types (Public + Private auto-added)
+    expect(subnets).toHaveLength(6);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      const subnetType = tags?.SubnetType;
+      if (subnetType === "Public") {
+        expect(tags?.["kubernetes.io/role/elb"]).toBe("1");
+      }
+    }
+  });
+
+  it("should apply tags only to the specified subnet type, not the auto-added ones", async () => {
+    const vpc = new Vpc("tag-test-2", {
+      subnetStrategy: "Auto",
+      subnetSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      const subnetType = tags?.SubnetType;
+      if (subnetType === "Private") {
+        // Private subnets should NOT have the Public-specific tag
+        expect(tags?.["kubernetes.io/role/elb"]).toBeUndefined();
+      }
+    }
+  });
+
+  it("should not merge defaults for explicit cidrBlocks layouts", async () => {
+    const vpc = new Vpc("explicit-cidr-auto-test", {
+      subnetStrategy: "Auto",
+      natGateways: { strategy: "None" },
+      subnetSpecs: [
+        {
+          type: "Public",
+          cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20", "10.0.32.0/20"],
+        },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(3);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.SubnetType).toBe("Public");
+    }
+  });
+});
