@@ -542,4 +542,25 @@ describe("Auto strategy merges partial SubnetSpecs with defaults (issue #1746)",
       }
     }
   });
+
+  it("should not merge defaults for explicit cidrBlocks layouts", async () => {
+    const vpc = new Vpc("explicit-cidr-auto-test", {
+      subnetStrategy: "Auto",
+      natGateways: { strategy: "None" },
+      subnetSpecs: [
+        {
+          type: "Public",
+          cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20", "10.0.32.0/20"],
+        },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(3);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.SubnetType).toBe("Public");
+    }
+  });
 });
