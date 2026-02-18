@@ -51,6 +51,7 @@ class ResolvedSubnetSpec(dict):
                  size: Optional[_builtins.int] = None):
         """
         Configuration for a VPC subnet spec.
+
         :param 'SubnetType' type: The type of subnet.
         :param Sequence[_builtins.str] cidr_blocks: An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
         :param _builtins.int cidr_mask: The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.

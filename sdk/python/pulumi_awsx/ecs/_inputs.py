@@ -64,114 +64,109 @@ __all__ = [
     'TaskDefinitionVolumeFromArgsDict',
 ]
 
-MYPY = False
+class EC2ServiceTaskDefinitionArgsDict(TypedDict):
+    """
+    Create a TaskDefinition resource with the given unique name, arguments, and options.
+    Creates required log-group and task & execution roles.
+    Presents required Service load balancers if target group included in port mappings.
+    """
+    container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
+    """
+    Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+    multiple containers, especially when creating a TaskDefinition to call [run] on.
 
-if not MYPY:
-    class EC2ServiceTaskDefinitionArgsDict(TypedDict):
-        """
-        Create a TaskDefinition resource with the given unique name, arguments, and options.
-        Creates required log-group and task & execution roles.
-        Presents required Service load balancers if target group included in port mappings.
-        """
-        container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
-        """
-        Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
-        multiple containers, especially when creating a TaskDefinition to call [run] on.
+    Either [container] or [containers] must be provided.
+    """
+    containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
+    """
+    All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+    contain many containers within.
 
-        Either [container] or [containers] must be provided.
-        """
-        containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
-        """
-        All the containers to make a TaskDefinition from.  Useful when creating a Service that will
-        contain many containers within.
+    Either [container] or [containers] must be provided.
+    """
+    cpu: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+    """
+    enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
+    """
+    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    """
+    execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+    Will be created automatically if not defined.
+    """
+    family: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    An optional unique name for your task definition. If not specified, then a default will be created.
+    """
+    ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
+    """
+    log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
+    """
+    A set of volume blocks that containers in your task may use.
+    """
+    memory: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+    based on the cumulative needs specified by [containerDefinitions]
+    """
+    network_mode: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Docker networking mode to use for the containers in the task. Valid values are <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>, <span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`">`bridge`</span>, <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span>, and <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>.
+    """
+    pid_mode: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
+    """
+    placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
+    """
+    Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
+    """
+    proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
+    """
+    Configuration block for the App Mesh proxy. Detailed below.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
+    """
+    Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
+    """
+    skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
+    task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+    Will be created automatically if not defined.
+    """
+    track_latest: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
+    """
+    volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
+    """
+    Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
-        Either [container] or [containers] must be provided.
-        """
-        cpu: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        """
-        enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
-        """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
-        """
-        execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-        Will be created automatically if not defined.
-        """
-        family: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        An optional unique name for your task definition. If not specified, then a default will be created.
-        """
-        ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
-        """
-        log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
-        """
-        A set of volume blocks that containers in your task may use.
-        """
-        memory: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-        based on the cumulative needs specified by [containerDefinitions]
-        """
-        network_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Docker networking mode to use for the containers in the task. Valid values are <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>, <span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`">`bridge`</span>, <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span>, and <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>.
-        """
-        pid_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
-        """
-        placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
-        """
-        Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
-        """
-        proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
-        """
-        Configuration block for the App Mesh proxy. Detailed below.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
-        """
-        Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
-        """
-        skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-        task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-        Will be created automatically if not defined.
-        """
-        track_latest: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
-        """
-        volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
-        """
-        Repeatable configuration block for volumes that containers in your task may use. Detailed below.
+    > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
 
-        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
-
-        > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
-        """
-elif False:
-    EC2ServiceTaskDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+    > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
+    """
 
 @pulumi.input_type
 class EC2ServiceTaskDefinitionArgs:
@@ -201,6 +196,7 @@ class EC2ServiceTaskDefinitionArgs:
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
+
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -545,108 +541,105 @@ class EC2ServiceTaskDefinitionArgs:
         pulumi.set(self, "volumes", value)
 
 
-if not MYPY:
-    class FargateServiceTaskDefinitionArgsDict(TypedDict):
-        """
-        Create a TaskDefinition resource with the given unique name, arguments, and options.
-        Creates required log-group and task & execution roles.
-        Presents required Service load balancers if target group included in port mappings.
-        """
-        container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
-        """
-        Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
-        multiple containers, especially when creating a TaskDefinition to call [run] on.
+class FargateServiceTaskDefinitionArgsDict(TypedDict):
+    """
+    Create a TaskDefinition resource with the given unique name, arguments, and options.
+    Creates required log-group and task & execution roles.
+    Presents required Service load balancers if target group included in port mappings.
+    """
+    container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
+    """
+    Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+    multiple containers, especially when creating a TaskDefinition to call [run] on.
 
-        Either [container] or [containers] must be provided.
-        """
-        containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
-        """
-        All the containers to make a TaskDefinition from.  Useful when creating a Service that will
-        contain many containers within.
+    Either [container] or [containers] must be provided.
+    """
+    containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
+    """
+    All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+    contain many containers within.
 
-        Either [container] or [containers] must be provided.
-        """
-        cpu: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        """
-        enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
-        """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
-        """
-        execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-        Will be created automatically if not defined.
-        """
-        family: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        An optional unique name for your task definition. If not specified, then a default will be created.
-        """
-        ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
-        """
-        log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
-        """
-        A set of volume blocks that containers in your task may use.
-        """
-        memory: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-        based on the cumulative needs specified by [containerDefinitions]
-        """
-        pid_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
-        """
-        placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
-        """
-        Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
-        """
-        proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
-        """
-        Configuration block for the App Mesh proxy. Detailed below.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
-        """
-        Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
-        """
-        skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-        task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-        Will be created automatically if not defined.
-        """
-        track_latest: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
-        """
-        volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
-        """
-        Repeatable configuration block for volumes that containers in your task may use. Detailed below.
+    Either [container] or [containers] must be provided.
+    """
+    cpu: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+    """
+    enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
+    """
+    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    """
+    execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+    Will be created automatically if not defined.
+    """
+    family: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    An optional unique name for your task definition. If not specified, then a default will be created.
+    """
+    ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    IPC resource namespace to be used for the containers in the task The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span>, <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>, and <span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`">`none`</span>.
+    """
+    log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
+    """
+    A set of volume blocks that containers in your task may use.
+    """
+    memory: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+    based on the cumulative needs specified by [containerDefinitions]
+    """
+    pid_mode: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Process namespace to use for the containers in the task. The valid values are <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> and <span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`">`task`</span>.
+    """
+    placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
+    """
+    Configuration block for rules that are taken into consideration during task placement. Maximum number of <span pulumi-lang-nodejs="`placementConstraints`" pulumi-lang-dotnet="`PlacementConstraints`" pulumi-lang-go="`placementConstraints`" pulumi-lang-python="`placement_constraints`" pulumi-lang-yaml="`placementConstraints`" pulumi-lang-java="`placementConstraints`">`placement_constraints`</span> is <span pulumi-lang-nodejs="`10`" pulumi-lang-dotnet="`10`" pulumi-lang-go="`10`" pulumi-lang-python="`10`" pulumi-lang-yaml="`10`" pulumi-lang-java="`10`">`10`</span>. Detailed below.
+    """
+    proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
+    """
+    Configuration block for the App Mesh proxy. Detailed below.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
+    """
+    Configuration block for<span pulumi-lang-nodejs=" runtimePlatform " pulumi-lang-dotnet=" RuntimePlatform " pulumi-lang-go=" runtimePlatform " pulumi-lang-python=" runtime_platform " pulumi-lang-yaml=" runtimePlatform " pulumi-lang-java=" runtimePlatform "> runtime_platform </span>that containers in your task may use.
+    """
+    skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Key-value map of resource tags. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
+    task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+    Will be created automatically if not defined.
+    """
+    track_latest: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Useful in the event the task definition is modified outside of this resource.
+    """
+    volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
+    """
+    Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
-        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+    > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as <span pulumi-lang-nodejs="`environment`" pulumi-lang-dotnet="`Environment`" pulumi-lang-go="`environment`" pulumi-lang-python="`environment`" pulumi-lang-yaml="`environment`" pulumi-lang-java="`environment`">`environment`</span> values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
 
-        > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
-        """
-elif False:
-    FargateServiceTaskDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+    > **Note:** Fault injection only works with tasks using the <span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`">`awsvpc`</span> or <span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`">`host`</span> network modes. Fault injection isn't available on Windows.
+    """
 
 @pulumi.input_type
 class FargateServiceTaskDefinitionArgs:
@@ -675,6 +668,7 @@ class FargateServiceTaskDefinitionArgs:
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
+
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -1004,70 +998,67 @@ class FargateServiceTaskDefinitionArgs:
         pulumi.set(self, "volumes", value)
 
 
-if not MYPY:
-    class TaskDefinitionContainerDefinitionArgsDict(TypedDict):
-        """
-        List of container definitions that are passed to the Docker daemon on a container instance
-        """
-        image: pulumi.Input[_builtins.str]
-        """
-        The image used to start a container. This string is passed directly to the Docker daemon.
-        """
-        name: pulumi.Input[_builtins.str]
-        """
-        The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
-        """
-        command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        cpu: NotRequired[pulumi.Input[_builtins.int]]
-        depends_on: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgsDict']]]]
-        disable_networking: NotRequired[pulumi.Input[_builtins.bool]]
-        dns_search_domains: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        dns_servers: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        docker_labels: NotRequired[Any]
-        docker_security_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        entry_point: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        environment: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgsDict']]]]
-        """
-        The environment variables to pass to a container
-        """
-        environment_files: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgsDict']]]]
-        """
-        The list of one or more files that contain the environment variables to pass to a container
-        """
-        essential: NotRequired[pulumi.Input[_builtins.bool]]
-        extra_hosts: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgsDict']]]]
-        firelens_configuration: NotRequired[pulumi.Input['TaskDefinitionFirelensConfigurationArgsDict']]
-        health_check: NotRequired[pulumi.Input['TaskDefinitionHealthCheckArgsDict']]
-        hostname: NotRequired[pulumi.Input[_builtins.str]]
-        interactive: NotRequired[pulumi.Input[_builtins.bool]]
-        links: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        linux_parameters: NotRequired[pulumi.Input['TaskDefinitionLinuxParametersArgsDict']]
-        log_configuration: NotRequired[pulumi.Input['TaskDefinitionLogConfigurationArgsDict']]
-        memory: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
-        """
-        memory_reservation: NotRequired[pulumi.Input[_builtins.int]]
-        mount_points: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgsDict']]]]
-        port_mappings: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgsDict']]]]
-        """
-        Port mappings allow containers to access ports on the host container instance to send or receive traffic.
-        """
-        privileged: NotRequired[pulumi.Input[_builtins.bool]]
-        pseudo_terminal: NotRequired[pulumi.Input[_builtins.bool]]
-        readonly_root_filesystem: NotRequired[pulumi.Input[_builtins.bool]]
-        repository_credentials: NotRequired[pulumi.Input['TaskDefinitionRepositoryCredentialsArgsDict']]
-        resource_requirements: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgsDict']]]]
-        secrets: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
-        start_timeout: NotRequired[pulumi.Input[_builtins.int]]
-        stop_timeout: NotRequired[pulumi.Input[_builtins.int]]
-        system_controls: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgsDict']]]]
-        ulimits: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgsDict']]]]
-        user: NotRequired[pulumi.Input[_builtins.str]]
-        volumes_from: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgsDict']]]]
-        working_directory: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionContainerDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionContainerDefinitionArgsDict(TypedDict):
+    """
+    List of container definitions that are passed to the Docker daemon on a container instance
+    """
+    image: pulumi.Input[_builtins.str]
+    """
+    The image used to start a container. This string is passed directly to the Docker daemon.
+    """
+    name: pulumi.Input[_builtins.str]
+    """
+    The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
+    """
+    command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    cpu: NotRequired[pulumi.Input[_builtins.int]]
+    depends_on: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgsDict']]]]
+    disable_networking: NotRequired[pulumi.Input[_builtins.bool]]
+    dns_search_domains: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    dns_servers: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    docker_labels: NotRequired[Any]
+    docker_security_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    entry_point: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    environment: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgsDict']]]]
+    """
+    The environment variables to pass to a container
+    """
+    environment_files: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgsDict']]]]
+    """
+    The list of one or more files that contain the environment variables to pass to a container
+    """
+    essential: NotRequired[pulumi.Input[_builtins.bool]]
+    extra_hosts: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgsDict']]]]
+    firelens_configuration: NotRequired[pulumi.Input['TaskDefinitionFirelensConfigurationArgsDict']]
+    health_check: NotRequired[pulumi.Input['TaskDefinitionHealthCheckArgsDict']]
+    hostname: NotRequired[pulumi.Input[_builtins.str]]
+    interactive: NotRequired[pulumi.Input[_builtins.bool]]
+    links: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    linux_parameters: NotRequired[pulumi.Input['TaskDefinitionLinuxParametersArgsDict']]
+    log_configuration: NotRequired[pulumi.Input['TaskDefinitionLogConfigurationArgsDict']]
+    memory: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
+    """
+    memory_reservation: NotRequired[pulumi.Input[_builtins.int]]
+    mount_points: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgsDict']]]]
+    port_mappings: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgsDict']]]]
+    """
+    Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+    """
+    privileged: NotRequired[pulumi.Input[_builtins.bool]]
+    pseudo_terminal: NotRequired[pulumi.Input[_builtins.bool]]
+    readonly_root_filesystem: NotRequired[pulumi.Input[_builtins.bool]]
+    repository_credentials: NotRequired[pulumi.Input['TaskDefinitionRepositoryCredentialsArgsDict']]
+    resource_requirements: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgsDict']]]]
+    secrets: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
+    start_timeout: NotRequired[pulumi.Input[_builtins.int]]
+    stop_timeout: NotRequired[pulumi.Input[_builtins.int]]
+    system_controls: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgsDict']]]]
+    ulimits: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgsDict']]]]
+    user: NotRequired[pulumi.Input[_builtins.str]]
+    volumes_from: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgsDict']]]]
+    working_directory: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionContainerDefinitionArgs:
@@ -1113,6 +1104,7 @@ class TaskDefinitionContainerDefinitionArgs:
                  working_directory: Optional[pulumi.Input[_builtins.str]] = None):
         """
         List of container definitions that are passed to the Docker daemon on a container instance
+
         :param pulumi.Input[_builtins.str] image: The image used to start a container. This string is passed directly to the Docker daemon.
         :param pulumi.Input[_builtins.str] name: The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
         :param pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]] environment: The environment variables to pass to a container
@@ -1567,12 +1559,9 @@ class TaskDefinitionContainerDefinitionArgs:
         pulumi.set(self, "working_directory", value)
 
 
-if not MYPY:
-    class TaskDefinitionContainerDependencyArgsDict(TypedDict):
-        condition: NotRequired[pulumi.Input[_builtins.str]]
-        container_name: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionContainerDependencyArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionContainerDependencyArgsDict(TypedDict):
+    condition: NotRequired[pulumi.Input[_builtins.str]]
+    container_name: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionContainerDependencyArgs:
@@ -1603,13 +1592,10 @@ class TaskDefinitionContainerDependencyArgs:
         pulumi.set(self, "container_name", value)
 
 
-if not MYPY:
-    class TaskDefinitionDeviceArgsDict(TypedDict):
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        host_path: NotRequired[pulumi.Input[_builtins.str]]
-        permissions: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionDeviceArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionDeviceArgsDict(TypedDict):
+    container_path: NotRequired[pulumi.Input[_builtins.str]]
+    host_path: NotRequired[pulumi.Input[_builtins.str]]
+    permissions: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
 
 @pulumi.input_type
 class TaskDefinitionDeviceArgs:
@@ -1652,12 +1638,9 @@ class TaskDefinitionDeviceArgs:
         pulumi.set(self, "permissions", value)
 
 
-if not MYPY:
-    class TaskDefinitionEnvironmentFileArgsDict(TypedDict):
-        type: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionEnvironmentFileArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionEnvironmentFileArgsDict(TypedDict):
+    type: NotRequired[pulumi.Input[_builtins.str]]
+    value: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionEnvironmentFileArgs:
@@ -1688,12 +1671,9 @@ class TaskDefinitionEnvironmentFileArgs:
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionFirelensConfigurationArgsDict(TypedDict):
-        options: NotRequired[Any]
-        type: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionFirelensConfigurationArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionFirelensConfigurationArgsDict(TypedDict):
+    options: NotRequired[Any]
+    type: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionFirelensConfigurationArgs:
@@ -1724,33 +1704,30 @@ class TaskDefinitionFirelensConfigurationArgs:
         pulumi.set(self, "type", value)
 
 
-if not MYPY:
-    class TaskDefinitionHealthCheckArgsDict(TypedDict):
-        """
-        The health check command and associated configuration parameters for the container.
-        """
-        command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        """
-        A string array representing the command that the container runs to determine if it is healthy.
-        """
-        interval: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
-        """
-        retries: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
-        """
-        start_period: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default.
-        """
-        timeout: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds.
-        """
-elif False:
-    TaskDefinitionHealthCheckArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionHealthCheckArgsDict(TypedDict):
+    """
+    The health check command and associated configuration parameters for the container.
+    """
+    command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    """
+    A string array representing the command that the container runs to determine if it is healthy.
+    """
+    interval: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
+    """
+    retries: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
+    """
+    start_period: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default.
+    """
+    timeout: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds.
+    """
 
 @pulumi.input_type
 class TaskDefinitionHealthCheckArgs:
@@ -1762,6 +1739,7 @@ class TaskDefinitionHealthCheckArgs:
                  timeout: Optional[pulumi.Input[_builtins.int]] = None):
         """
         The health check command and associated configuration parameters for the container.
+
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] command: A string array representing the command that the container runs to determine if it is healthy.
         :param pulumi.Input[_builtins.int] interval: The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
         :param pulumi.Input[_builtins.int] retries: The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
@@ -1840,12 +1818,9 @@ class TaskDefinitionHealthCheckArgs:
         pulumi.set(self, "timeout", value)
 
 
-if not MYPY:
-    class TaskDefinitionHostEntryArgsDict(TypedDict):
-        hostname: NotRequired[pulumi.Input[_builtins.str]]
-        ip_address: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionHostEntryArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionHostEntryArgsDict(TypedDict):
+    hostname: NotRequired[pulumi.Input[_builtins.str]]
+    ip_address: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionHostEntryArgs:
@@ -1876,12 +1851,9 @@ class TaskDefinitionHostEntryArgs:
         pulumi.set(self, "ip_address", value)
 
 
-if not MYPY:
-    class TaskDefinitionKernelCapabilitiesArgsDict(TypedDict):
-        add: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        drop: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionKernelCapabilitiesArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionKernelCapabilitiesArgsDict(TypedDict):
+    add: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    drop: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
 
 @pulumi.input_type
 class TaskDefinitionKernelCapabilitiesArgs:
@@ -1912,12 +1884,9 @@ class TaskDefinitionKernelCapabilitiesArgs:
         pulumi.set(self, "drop", value)
 
 
-if not MYPY:
-    class TaskDefinitionKeyValuePairArgsDict(TypedDict):
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionKeyValuePairArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionKeyValuePairArgsDict(TypedDict):
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    value: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionKeyValuePairArgs:
@@ -1948,17 +1917,14 @@ class TaskDefinitionKeyValuePairArgs:
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionLinuxParametersArgsDict(TypedDict):
-        capabilities: NotRequired[pulumi.Input['TaskDefinitionKernelCapabilitiesArgsDict']]
-        devices: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgsDict']]]]
-        init_process_enabled: NotRequired[pulumi.Input[_builtins.bool]]
-        max_swap: NotRequired[pulumi.Input[_builtins.int]]
-        shared_memory_size: NotRequired[pulumi.Input[_builtins.int]]
-        swappiness: NotRequired[pulumi.Input[_builtins.int]]
-        tmpfs: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgsDict']]]]
-elif False:
-    TaskDefinitionLinuxParametersArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionLinuxParametersArgsDict(TypedDict):
+    capabilities: NotRequired[pulumi.Input['TaskDefinitionKernelCapabilitiesArgsDict']]
+    devices: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgsDict']]]]
+    init_process_enabled: NotRequired[pulumi.Input[_builtins.bool]]
+    max_swap: NotRequired[pulumi.Input[_builtins.int]]
+    shared_memory_size: NotRequired[pulumi.Input[_builtins.int]]
+    swappiness: NotRequired[pulumi.Input[_builtins.int]]
+    tmpfs: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgsDict']]]]
 
 @pulumi.input_type
 class TaskDefinitionLinuxParametersArgs:
@@ -2049,13 +2015,10 @@ class TaskDefinitionLinuxParametersArgs:
         pulumi.set(self, "tmpfs", value)
 
 
-if not MYPY:
-    class TaskDefinitionLogConfigurationArgsDict(TypedDict):
-        log_driver: pulumi.Input[_builtins.str]
-        options: NotRequired[Any]
-        secret_options: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
-elif False:
-    TaskDefinitionLogConfigurationArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionLogConfigurationArgsDict(TypedDict):
+    log_driver: pulumi.Input[_builtins.str]
+    options: NotRequired[Any]
+    secret_options: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
 
 @pulumi.input_type
 class TaskDefinitionLogConfigurationArgs:
@@ -2097,13 +2060,10 @@ class TaskDefinitionLogConfigurationArgs:
         pulumi.set(self, "secret_options", value)
 
 
-if not MYPY:
-    class TaskDefinitionMountPointArgsDict(TypedDict):
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        read_only: NotRequired[pulumi.Input[_builtins.bool]]
-        source_volume: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionMountPointArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionMountPointArgsDict(TypedDict):
+    container_path: NotRequired[pulumi.Input[_builtins.str]]
+    read_only: NotRequired[pulumi.Input[_builtins.bool]]
+    source_volume: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionMountPointArgs:
@@ -2146,17 +2106,14 @@ class TaskDefinitionMountPointArgs:
         pulumi.set(self, "source_volume", value)
 
 
-if not MYPY:
-    class TaskDefinitionPortMappingArgsDict(TypedDict):
-        app_protocol: NotRequired[pulumi.Input['TaskDefinitionPortMappingAppProtocol']]
-        container_port: NotRequired[pulumi.Input[_builtins.int]]
-        container_port_range: NotRequired[pulumi.Input[_builtins.str]]
-        host_port: NotRequired[pulumi.Input[_builtins.int]]
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        protocol: NotRequired[pulumi.Input[_builtins.str]]
-        target_group: NotRequired[pulumi.Input['pulumi_aws.lb.TargetGroup']]
-elif False:
-    TaskDefinitionPortMappingArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionPortMappingArgsDict(TypedDict):
+    app_protocol: NotRequired[pulumi.Input['TaskDefinitionPortMappingAppProtocol']]
+    container_port: NotRequired[pulumi.Input[_builtins.int]]
+    container_port_range: NotRequired[pulumi.Input[_builtins.str]]
+    host_port: NotRequired[pulumi.Input[_builtins.int]]
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    protocol: NotRequired[pulumi.Input[_builtins.str]]
+    target_group: NotRequired[pulumi.Input['pulumi_aws.lb.TargetGroup']]
 
 @pulumi.input_type
 class TaskDefinitionPortMappingArgs:
@@ -2247,11 +2204,8 @@ class TaskDefinitionPortMappingArgs:
         pulumi.set(self, "target_group", value)
 
 
-if not MYPY:
-    class TaskDefinitionRepositoryCredentialsArgsDict(TypedDict):
-        credentials_parameter: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionRepositoryCredentialsArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionRepositoryCredentialsArgsDict(TypedDict):
+    credentials_parameter: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionRepositoryCredentialsArgs:
@@ -2270,12 +2224,9 @@ class TaskDefinitionRepositoryCredentialsArgs:
         pulumi.set(self, "credentials_parameter", value)
 
 
-if not MYPY:
-    class TaskDefinitionResourceRequirementArgsDict(TypedDict):
-        type: pulumi.Input[_builtins.str]
-        value: pulumi.Input[_builtins.str]
-elif False:
-    TaskDefinitionResourceRequirementArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionResourceRequirementArgsDict(TypedDict):
+    type: pulumi.Input[_builtins.str]
+    value: pulumi.Input[_builtins.str]
 
 @pulumi.input_type
 class TaskDefinitionResourceRequirementArgs:
@@ -2304,12 +2255,9 @@ class TaskDefinitionResourceRequirementArgs:
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionSecretArgsDict(TypedDict):
-        name: pulumi.Input[_builtins.str]
-        value_from: pulumi.Input[_builtins.str]
-elif False:
-    TaskDefinitionSecretArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionSecretArgsDict(TypedDict):
+    name: pulumi.Input[_builtins.str]
+    value_from: pulumi.Input[_builtins.str]
 
 @pulumi.input_type
 class TaskDefinitionSecretArgs:
@@ -2338,12 +2286,9 @@ class TaskDefinitionSecretArgs:
         pulumi.set(self, "value_from", value)
 
 
-if not MYPY:
-    class TaskDefinitionSystemControlArgsDict(TypedDict):
-        namespace: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionSystemControlArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionSystemControlArgsDict(TypedDict):
+    namespace: NotRequired[pulumi.Input[_builtins.str]]
+    value: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionSystemControlArgs:
@@ -2374,13 +2319,10 @@ class TaskDefinitionSystemControlArgs:
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionTmpfsArgsDict(TypedDict):
-        size: pulumi.Input[_builtins.int]
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        mount_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionTmpfsArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionTmpfsArgsDict(TypedDict):
+    size: pulumi.Input[_builtins.int]
+    container_path: NotRequired[pulumi.Input[_builtins.str]]
+    mount_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
 
 @pulumi.input_type
 class TaskDefinitionTmpfsArgs:
@@ -2422,13 +2364,10 @@ class TaskDefinitionTmpfsArgs:
         pulumi.set(self, "mount_options", value)
 
 
-if not MYPY:
-    class TaskDefinitionUlimitArgsDict(TypedDict):
-        hard_limit: pulumi.Input[_builtins.int]
-        name: pulumi.Input[_builtins.str]
-        soft_limit: pulumi.Input[_builtins.int]
-elif False:
-    TaskDefinitionUlimitArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionUlimitArgsDict(TypedDict):
+    hard_limit: pulumi.Input[_builtins.int]
+    name: pulumi.Input[_builtins.str]
+    soft_limit: pulumi.Input[_builtins.int]
 
 @pulumi.input_type
 class TaskDefinitionUlimitArgs:
@@ -2468,12 +2407,9 @@ class TaskDefinitionUlimitArgs:
         pulumi.set(self, "soft_limit", value)
 
 
-if not MYPY:
-    class TaskDefinitionVolumeFromArgsDict(TypedDict):
-        read_only: NotRequired[pulumi.Input[_builtins.bool]]
-        source_container: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionVolumeFromArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionVolumeFromArgsDict(TypedDict):
+    read_only: NotRequired[pulumi.Input[_builtins.bool]]
+    source_container: NotRequired[pulumi.Input[_builtins.str]]
 
 @pulumi.input_type
 class TaskDefinitionVolumeFromArgs:

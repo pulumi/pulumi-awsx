@@ -45,6 +45,7 @@ class FargateTaskDefinitionArgs:
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
         The set of arguments for constructing a FargateTaskDefinition resource.
+
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -406,6 +407,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict'] container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -452,6 +454,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
+
 
         :param str resource_name: The name of the resource.
         :param FargateTaskDefinitionArgs args: The arguments to use to populate this resource's properties.
