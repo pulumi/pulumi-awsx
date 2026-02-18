@@ -25,7 +25,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
+	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet" //nolint:staticcheck
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
@@ -70,7 +70,7 @@ func parseLanguage(text string) (Language, error) {
 			allLangStrings = append(allLangStrings, string(lang))
 		}
 		all := strings.Join(allLangStrings, ", ")
-		return "", fmt.Errorf(`Invalid language: %q, supported values include: %s`, text, all)
+		return "", fmt.Errorf(`invalid language: %q, supported values include: %s`, text, all)
 	}
 }
 
@@ -125,7 +125,7 @@ func generate(language Language, cwd, outDir string) error {
 	case Nodejs:
 		return genNodejs(schema, outDir)
 	default:
-		return fmt.Errorf("Unrecognized language %q", language)
+		return fmt.Errorf("unrecognized language %q", language)
 	}
 }
 

@@ -1,5 +1,4 @@
 //go:build !go && !yaml && !python && !java && !dotnet
-// +build !go,!yaml,!python,!java,!dotnet
 
 // Copyright 2016-2024, Pulumi Corporation.
 //
