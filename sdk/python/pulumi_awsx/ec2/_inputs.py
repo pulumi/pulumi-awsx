@@ -1377,8 +1377,6 @@ if not MYPY:
         package main
 
         import (
-        	"fmt"
-
         	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
         	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -1520,17 +1518,19 @@ if not MYPY:
 
         #### Required
 
-        * `id` - (String) ID of the VPC endpoint.
+        * <span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`">`id`</span> - (String) ID of the VPC endpoint.
 
         #### Optional
 
-        * `account_id` (String) AWS Account where this resource is managed.
+        * <span pulumi-lang-nodejs="`accountId`" pulumi-lang-dotnet="`AccountId`" pulumi-lang-go="`accountId`" pulumi-lang-python="`account_id`" pulumi-lang-yaml="`accountId`" pulumi-lang-java="`accountId`">`account_id`</span> (String) AWS Account where this resource is managed.
+        * <span pulumi-lang-nodejs="`region`" pulumi-lang-dotnet="`Region`" pulumi-lang-go="`region`" pulumi-lang-python="`region`" pulumi-lang-yaml="`region`" pulumi-lang-java="`region`">`region`</span> (String) Region where this resource is managed.
 
-        * `region` (String) Region where this resource is managed.
 
-        Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+        Using `pulumi import`, import VPC Endpoints using the VPC endpoint <span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`">`id`</span>. For example:
 
-        % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
+        ```sh
+        $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
+        ```
         """
         service_name: _builtins.str
         """
@@ -2777,8 +2777,6 @@ class VpcEndpointSpecArgs:
         package main
 
         import (
-        	"fmt"
-
         	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
         	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -2920,17 +2918,19 @@ class VpcEndpointSpecArgs:
 
         #### Required
 
-        * `id` - (String) ID of the VPC endpoint.
+        * <span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`">`id`</span> - (String) ID of the VPC endpoint.
 
         #### Optional
 
-        * `account_id` (String) AWS Account where this resource is managed.
+        * <span pulumi-lang-nodejs="`accountId`" pulumi-lang-dotnet="`AccountId`" pulumi-lang-go="`accountId`" pulumi-lang-python="`account_id`" pulumi-lang-yaml="`accountId`" pulumi-lang-java="`accountId`">`account_id`</span> (String) AWS Account where this resource is managed.
+        * <span pulumi-lang-nodejs="`region`" pulumi-lang-dotnet="`Region`" pulumi-lang-go="`region`" pulumi-lang-python="`region`" pulumi-lang-yaml="`region`" pulumi-lang-java="`region`">`region`</span> (String) Region where this resource is managed.
 
-        * `region` (String) Region where this resource is managed.
 
-        Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+        Using `pulumi import`, import VPC Endpoints using the VPC endpoint <span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`">`id`</span>. For example:
 
-        % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
+        ```sh
+        $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
+        ```
 
 
         :param _builtins.str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
