@@ -28,6 +28,7 @@ class RegistryImageArgs:
                  triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a RegistryImage resource.
+
         :param pulumi.Input[_builtins.str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         :param pulumi.Input[_builtins.str] source_image: The source image to push to the registry.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
@@ -148,6 +149,7 @@ class RegistryImage(pulumi.ComponentResource):
             source_image="my-awesome-image:v1.0.0")
         ```
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
@@ -178,6 +180,7 @@ class RegistryImage(pulumi.ComponentResource):
             repository_url=repository.url,
             source_image="my-awesome-image:v1.0.0")
         ```
+
 
         :param str resource_name: The name of the resource.
         :param RegistryImageArgs args: The arguments to use to populate this resource's properties.

@@ -28,6 +28,7 @@ class TargetGroupAttachmentArgs:
                  target_group_arn: Optional[pulumi.Input[_builtins.str]] = None):
         """
         The set of arguments for constructing a TargetGroupAttachment resource.
+
         :param pulumi.Input['pulumi_aws.ec2.Instance'] instance: EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input[_builtins.str] instance_id: ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input['pulumi_aws.lambda_.Function'] lambda_: Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
@@ -137,6 +138,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
         """
         Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input['pulumi_aws.ec2.Instance'] instance: EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
@@ -154,6 +156,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.
+
 
         :param str resource_name: The name of the resource.
         :param TargetGroupAttachmentArgs args: The arguments to use to populate this resource's properties.

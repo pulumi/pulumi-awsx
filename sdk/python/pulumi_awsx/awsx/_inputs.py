@@ -40,108 +40,103 @@ __all__ = [
     'SecurityGroupArgsDict',
 ]
 
-MYPY = False
+class BucketArgsDict(TypedDict):
+    """
+    The set of arguments for constructing a Bucket resource.
+    """
+    acceleration_status: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
+    """
+    acl: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
+    """
+    bucket: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `<span pulumi-lang-nodejs="[bucketName]" pulumi-lang-dotnet="[BucketName]" pulumi-lang-go="[bucketName]" pulumi-lang-python="[bucket_name]" pulumi-lang-yaml="[bucketName]" pulumi-lang-java="[bucketName]">[bucket_name]</span>--[azid]--x-s3`. Use the <span pulumi-lang-nodejs="`aws.s3.DirectoryBucket`" pulumi-lang-dotnet="`aws.s3.DirectoryBucket`" pulumi-lang-go="`s3.DirectoryBucket`" pulumi-lang-python="`s3.DirectoryBucket`" pulumi-lang-yaml="`aws.s3.DirectoryBucket`" pulumi-lang-java="`aws.s3.DirectoryBucket`">`aws.s3.DirectoryBucket`</span> resource to manage S3 Express buckets.
+    """
+    bucket_prefix: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Creates a unique bucket name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`bucket`" pulumi-lang-dotnet="`Bucket`" pulumi-lang-go="`bucket`" pulumi-lang-python="`bucket`" pulumi-lang-yaml="`bucket`" pulumi-lang-java="`bucket`">`bucket`</span>. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+    """
+    cors_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgsDict']]]]
+    """
+    Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketCorsConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketCorsConfiguration`" pulumi-lang-go="`s3.BucketCorsConfiguration`" pulumi-lang-python="`s3.BucketCorsConfiguration`" pulumi-lang-yaml="`aws.s3.BucketCorsConfiguration`" pulumi-lang-java="`aws.s3.BucketCorsConfiguration`">`aws.s3.BucketCorsConfiguration`</span> instead.
+    """
+    force_destroy: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>. Once this parameter is set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
+    """
+    grants: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgsDict']]]]
+    """
+    An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with <span pulumi-lang-nodejs="`acl`" pulumi-lang-dotnet="`Acl`" pulumi-lang-go="`acl`" pulumi-lang-python="`acl`" pulumi-lang-yaml="`acl`" pulumi-lang-java="`acl`">`acl`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
+    """
+    lifecycle_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgsDict']]]]
+    """
+    Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-go="`s3.BucketLifecycleConfiguration`" pulumi-lang-python="`s3.BucketLifecycleConfiguration`" pulumi-lang-yaml="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-java="`aws.s3.BucketLifecycleConfiguration`">`aws.s3.BucketLifecycleConfiguration`</span> instead.
+    """
+    logging: NotRequired[pulumi.Input['pulumi_aws.s3.BucketLoggingArgsDict']]
+    """
+    Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLogging`" pulumi-lang-dotnet="`aws.s3.BucketLogging`" pulumi-lang-go="`s3.BucketLogging`" pulumi-lang-python="`s3.BucketLogging`" pulumi-lang-yaml="`aws.s3.BucketLogging`" pulumi-lang-java="`aws.s3.BucketLogging`">`aws.s3.BucketLogging`</span> instead.
+    """
+    object_lock_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgsDict']]
+    """
+    Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
+    The provider wil only perform drift detection if a configuration value is provided.
+    Use the <span pulumi-lang-nodejs="`objectLockEnabled`" pulumi-lang-dotnet="`ObjectLockEnabled`" pulumi-lang-go="`objectLockEnabled`" pulumi-lang-python="`object_lock_enabled`" pulumi-lang-yaml="`objectLockEnabled`" pulumi-lang-java="`objectLockEnabled`">`object_lock_enabled`</span> parameter and the resource <span pulumi-lang-nodejs="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-go="`s3.BucketObjectLockConfiguration`" pulumi-lang-python="`s3.BucketObjectLockConfiguration`" pulumi-lang-yaml="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-java="`aws.s3.BucketObjectLockConfiguration`">`aws.s3.BucketObjectLockConfiguration`</span> instead.
+    """
+    object_lock_enabled: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Indicates whether this bucket has an Object Lock configuration enabled. Valid values are <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span> or <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. This argument is not supported in all regions or partitions.
+    """
+    policy: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
+    The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketPolicy`" pulumi-lang-dotnet="`aws.s3.BucketPolicy`" pulumi-lang-go="`s3.BucketPolicy`" pulumi-lang-python="`s3.BucketPolicy`" pulumi-lang-yaml="`aws.s3.BucketPolicy`" pulumi-lang-java="`aws.s3.BucketPolicy`">`aws.s3.BucketPolicy`</span> instead.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    replication_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgsDict']]
+    """
+    Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketReplicationConfig`" pulumi-lang-dotnet="`aws.s3.BucketReplicationConfig`" pulumi-lang-go="`s3.BucketReplicationConfig`" pulumi-lang-python="`s3.BucketReplicationConfig`" pulumi-lang-yaml="`aws.s3.BucketReplicationConfig`" pulumi-lang-java="`aws.s3.BucketReplicationConfig`">`aws.s3.BucketReplicationConfig`</span> instead.
+    """
+    request_payer: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Specifies who should bear the cost of Amazon S3 data transfer.
+    Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
+    See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
+    The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-go="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-python="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-yaml="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-java="`aws.s3.BucketRequestPaymentConfiguration`">`aws.s3.BucketRequestPaymentConfiguration`</span> instead.
+    """
+    server_side_encryption_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgsDict']]
+    """
+    Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
+    The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-go="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-python="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-yaml="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-java="`aws.s3.BucketServerSideEncryptionConfiguration`">`aws.s3.BucketServerSideEncryptionConfiguration`</span> instead.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Map of tags to assign to the bucket. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 
-if not MYPY:
-    class BucketArgsDict(TypedDict):
-        """
-        The set of arguments for constructing a Bucket resource.
-        """
-        acceleration_status: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
-        """
-        acl: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
-        """
-        bucket: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `<span pulumi-lang-nodejs="[bucketName]" pulumi-lang-dotnet="[BucketName]" pulumi-lang-go="[bucketName]" pulumi-lang-python="[bucket_name]" pulumi-lang-yaml="[bucketName]" pulumi-lang-java="[bucketName]">[bucket_name]</span>--[azid]--x-s3`. Use the <span pulumi-lang-nodejs="`aws.s3.DirectoryBucket`" pulumi-lang-dotnet="`aws.s3.DirectoryBucket`" pulumi-lang-go="`s3.DirectoryBucket`" pulumi-lang-python="`s3.DirectoryBucket`" pulumi-lang-yaml="`aws.s3.DirectoryBucket`" pulumi-lang-java="`aws.s3.DirectoryBucket`">`aws.s3.DirectoryBucket`</span> resource to manage S3 Express buckets.
-        """
-        bucket_prefix: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Creates a unique bucket name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`bucket`" pulumi-lang-dotnet="`Bucket`" pulumi-lang-go="`bucket`" pulumi-lang-python="`bucket`" pulumi-lang-yaml="`bucket`" pulumi-lang-java="`bucket`">`bucket`</span>. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-        """
-        cors_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgsDict']]]]
-        """
-        Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketCorsConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketCorsConfiguration`" pulumi-lang-go="`s3.BucketCorsConfiguration`" pulumi-lang-python="`s3.BucketCorsConfiguration`" pulumi-lang-yaml="`aws.s3.BucketCorsConfiguration`" pulumi-lang-java="`aws.s3.BucketCorsConfiguration`">`aws.s3.BucketCorsConfiguration`</span> instead.
-        """
-        force_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>. Once this parameter is set to <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-        """
-        grants: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgsDict']]]]
-        """
-        An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with <span pulumi-lang-nodejs="`acl`" pulumi-lang-dotnet="`Acl`" pulumi-lang-go="`acl`" pulumi-lang-python="`acl`" pulumi-lang-yaml="`acl`" pulumi-lang-java="`acl`">`acl`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
-        """
-        lifecycle_rules: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgsDict']]]]
-        """
-        Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-go="`s3.BucketLifecycleConfiguration`" pulumi-lang-python="`s3.BucketLifecycleConfiguration`" pulumi-lang-yaml="`aws.s3.BucketLifecycleConfiguration`" pulumi-lang-java="`aws.s3.BucketLifecycleConfiguration`">`aws.s3.BucketLifecycleConfiguration`</span> instead.
-        """
-        logging: NotRequired[pulumi.Input['pulumi_aws.s3.BucketLoggingArgsDict']]
-        """
-        Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketLogging`" pulumi-lang-dotnet="`aws.s3.BucketLogging`" pulumi-lang-go="`s3.BucketLogging`" pulumi-lang-python="`s3.BucketLogging`" pulumi-lang-yaml="`aws.s3.BucketLogging`" pulumi-lang-java="`aws.s3.BucketLogging`">`aws.s3.BucketLogging`</span> instead.
-        """
-        object_lock_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgsDict']]
-        """
-        Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
-        The provider wil only perform drift detection if a configuration value is provided.
-        Use the <span pulumi-lang-nodejs="`objectLockEnabled`" pulumi-lang-dotnet="`ObjectLockEnabled`" pulumi-lang-go="`objectLockEnabled`" pulumi-lang-python="`object_lock_enabled`" pulumi-lang-yaml="`objectLockEnabled`" pulumi-lang-java="`objectLockEnabled`">`object_lock_enabled`</span> parameter and the resource <span pulumi-lang-nodejs="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-go="`s3.BucketObjectLockConfiguration`" pulumi-lang-python="`s3.BucketObjectLockConfiguration`" pulumi-lang-yaml="`aws.s3.BucketObjectLockConfiguration`" pulumi-lang-java="`aws.s3.BucketObjectLockConfiguration`">`aws.s3.BucketObjectLockConfiguration`</span> instead.
-        """
-        object_lock_enabled: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Indicates whether this bucket has an Object Lock configuration enabled. Valid values are <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span> or <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. This argument is not supported in all regions or partitions.
-        """
-        policy: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
-        The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketPolicy`" pulumi-lang-dotnet="`aws.s3.BucketPolicy`" pulumi-lang-go="`s3.BucketPolicy`" pulumi-lang-python="`s3.BucketPolicy`" pulumi-lang-yaml="`aws.s3.BucketPolicy`" pulumi-lang-java="`aws.s3.BucketPolicy`">`aws.s3.BucketPolicy`</span> instead.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        replication_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgsDict']]
-        """
-        Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketReplicationConfig`" pulumi-lang-dotnet="`aws.s3.BucketReplicationConfig`" pulumi-lang-go="`s3.BucketReplicationConfig`" pulumi-lang-python="`s3.BucketReplicationConfig`" pulumi-lang-yaml="`aws.s3.BucketReplicationConfig`" pulumi-lang-java="`aws.s3.BucketReplicationConfig`">`aws.s3.BucketReplicationConfig`</span> instead.
-        """
-        request_payer: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Specifies who should bear the cost of Amazon S3 data transfer.
-        Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur the costs of any data transfer.
-        See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
-        The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-go="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-python="`s3.BucketRequestPaymentConfiguration`" pulumi-lang-yaml="`aws.s3.BucketRequestPaymentConfiguration`" pulumi-lang-java="`aws.s3.BucketRequestPaymentConfiguration`">`aws.s3.BucketRequestPaymentConfiguration`</span> instead.
-        """
-        server_side_encryption_configuration: NotRequired[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgsDict']]
-        """
-        Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
-        The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-go="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-python="`s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-yaml="`aws.s3.BucketServerSideEncryptionConfiguration`" pulumi-lang-java="`aws.s3.BucketServerSideEncryptionConfiguration`">`aws.s3.BucketServerSideEncryptionConfiguration`</span> instead.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Map of tags to assign to the bucket. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-
-        The following arguments are deprecated, and will be removed in a future major version:
-        """
-        versioning: NotRequired[pulumi.Input['pulumi_aws.s3.BucketVersioningArgsDict']]
-        """
-        Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketVersioning`" pulumi-lang-dotnet="`aws.s3.BucketVersioning`" pulumi-lang-go="`s3.BucketVersioning`" pulumi-lang-python="`s3.BucketVersioning`" pulumi-lang-yaml="`aws.s3.BucketVersioning`" pulumi-lang-java="`aws.s3.BucketVersioning`">`aws.s3.BucketVersioning`</span> instead.
-        """
-        website: NotRequired[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgsDict']]
-        """
-        Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
-        Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-go="`s3.BucketWebsiteConfiguration`" pulumi-lang-python="`s3.BucketWebsiteConfiguration`" pulumi-lang-yaml="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-java="`aws.s3.BucketWebsiteConfiguration`">`aws.s3.BucketWebsiteConfiguration`</span> instead.
-        """
-elif False:
-    BucketArgsDict: TypeAlias = Mapping[str, Any]
+    The following arguments are deprecated, and will be removed in a future major version:
+    """
+    versioning: NotRequired[pulumi.Input['pulumi_aws.s3.BucketVersioningArgsDict']]
+    """
+    Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketVersioning`" pulumi-lang-dotnet="`aws.s3.BucketVersioning`" pulumi-lang-go="`s3.BucketVersioning`" pulumi-lang-python="`s3.BucketVersioning`" pulumi-lang-yaml="`aws.s3.BucketVersioning`" pulumi-lang-java="`aws.s3.BucketVersioning`">`aws.s3.BucketVersioning`</span> instead.
+    """
+    website: NotRequired[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgsDict']]
+    """
+    Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
+    Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-go="`s3.BucketWebsiteConfiguration`" pulumi-lang-python="`s3.BucketWebsiteConfiguration`" pulumi-lang-yaml="`aws.s3.BucketWebsiteConfiguration`" pulumi-lang-java="`aws.s3.BucketWebsiteConfiguration`">`aws.s3.BucketWebsiteConfiguration`</span> instead.
+    """
 
 @pulumi.input_type
 class BucketArgs:
@@ -167,6 +162,7 @@ class BucketArgs:
                  website: Optional[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgs']] = None):
         """
         The set of arguments for constructing a Bucket resource.
+
         :param pulumi.Input[_builtins.str] acceleration_status: Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
                Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-dotnet="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-go="`s3.BucketAccelerateConfiguration`" pulumi-lang-python="`s3.BucketAccelerateConfiguration`" pulumi-lang-yaml="`aws.s3.BucketAccelerateConfiguration`" pulumi-lang-java="`aws.s3.BucketAccelerateConfiguration`">`aws.s3.BucketAccelerateConfiguration`</span> instead.
         :param pulumi.Input[_builtins.str] acl: The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to <span pulumi-lang-nodejs="`private`" pulumi-lang-dotnet="`Private`" pulumi-lang-go="`private`" pulumi-lang-python="`private`" pulumi-lang-yaml="`private`" pulumi-lang-java="`private`">`private`</span>.  Conflicts with <span pulumi-lang-nodejs="`grant`" pulumi-lang-dotnet="`Grant`" pulumi-lang-go="`grant`" pulumi-lang-python="`grant`" pulumi-lang-yaml="`grant`" pulumi-lang-java="`grant`">`grant`</span>. The provider will only perform drift detection if a configuration value is provided. Use the resource <span pulumi-lang-nodejs="`aws.s3.BucketAcl`" pulumi-lang-dotnet="`aws.s3.BucketAcl`" pulumi-lang-go="`s3.BucketAcl`" pulumi-lang-python="`s3.BucketAcl`" pulumi-lang-yaml="`aws.s3.BucketAcl`" pulumi-lang-java="`aws.s3.BucketAcl`">`aws.s3.BucketAcl`</span> instead.
@@ -533,25 +529,22 @@ class BucketArgs:
         pulumi.set(self, "website", value)
 
 
-if not MYPY:
-    class DefaultLogGroupArgsDict(TypedDict):
-        """
-        Log group with default setup unless explicitly skipped.
-        """
-        args: NotRequired['LogGroupArgsDict']
-        """
-        Arguments to use instead of the default values during creation.
-        """
-        existing: NotRequired['ExistingLogGroupArgsDict']
-        """
-        Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
-        """
-        skip: NotRequired[_builtins.bool]
-        """
-        Skip creation of the log group.
-        """
-elif False:
-    DefaultLogGroupArgsDict: TypeAlias = Mapping[str, Any]
+class DefaultLogGroupArgsDict(TypedDict):
+    """
+    Log group with default setup unless explicitly skipped.
+    """
+    args: NotRequired['LogGroupArgsDict']
+    """
+    Arguments to use instead of the default values during creation.
+    """
+    existing: NotRequired['ExistingLogGroupArgsDict']
+    """
+    Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+    """
+    skip: NotRequired[_builtins.bool]
+    """
+    Skip creation of the log group.
+    """
 
 @pulumi.input_type
 class DefaultLogGroupArgs:
@@ -561,6 +554,7 @@ class DefaultLogGroupArgs:
                  skip: Optional[_builtins.bool] = None):
         """
         Log group with default setup unless explicitly skipped.
+
         :param 'LogGroupArgs' args: Arguments to use instead of the default values during creation.
         :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
         :param _builtins.bool skip: Skip creation of the log group.
@@ -609,25 +603,22 @@ class DefaultLogGroupArgs:
         pulumi.set(self, "skip", value)
 
 
-if not MYPY:
-    class DefaultRoleWithPolicyArgsDict(TypedDict):
-        """
-        Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
-        """
-        args: NotRequired['RoleWithPolicyArgsDict']
-        """
-        Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
-        """
-        role_arn: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
-        """
-        skip: NotRequired[_builtins.bool]
-        """
-        Skips creation of the role if set to `true`.
-        """
-elif False:
-    DefaultRoleWithPolicyArgsDict: TypeAlias = Mapping[str, Any]
+class DefaultRoleWithPolicyArgsDict(TypedDict):
+    """
+    Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+    """
+    args: NotRequired['RoleWithPolicyArgsDict']
+    """
+    Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+    """
+    role_arn: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+    """
+    skip: NotRequired[_builtins.bool]
+    """
+    Skips creation of the role if set to `true`.
+    """
 
 @pulumi.input_type
 class DefaultRoleWithPolicyArgs:
@@ -637,6 +628,7 @@ class DefaultRoleWithPolicyArgs:
                  skip: Optional[_builtins.bool] = None):
         """
         Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+
         :param 'RoleWithPolicyArgs' args: Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
         :param pulumi.Input[_builtins.str] role_arn: ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
         :param _builtins.bool skip: Skips creation of the role if set to `true`.
@@ -685,25 +677,22 @@ class DefaultRoleWithPolicyArgs:
         pulumi.set(self, "skip", value)
 
 
-if not MYPY:
-    class DefaultSecurityGroupArgsDict(TypedDict):
-        """
-        Security Group with default setup unless explicitly skipped or an existing security group id provided.
-        """
-        args: NotRequired['SecurityGroupArgsDict']
-        """
-        Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
-        """
-        security_group_id: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
-        """
-        skip: NotRequired[_builtins.bool]
-        """
-        Skips creation of the security group if set to `true`.
-        """
-elif False:
-    DefaultSecurityGroupArgsDict: TypeAlias = Mapping[str, Any]
+class DefaultSecurityGroupArgsDict(TypedDict):
+    """
+    Security Group with default setup unless explicitly skipped or an existing security group id provided.
+    """
+    args: NotRequired['SecurityGroupArgsDict']
+    """
+    Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+    """
+    security_group_id: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+    """
+    skip: NotRequired[_builtins.bool]
+    """
+    Skips creation of the security group if set to `true`.
+    """
 
 @pulumi.input_type
 class DefaultSecurityGroupArgs:
@@ -713,6 +702,7 @@ class DefaultSecurityGroupArgs:
                  skip: Optional[_builtins.bool] = None):
         """
         Security Group with default setup unless explicitly skipped or an existing security group id provided.
+
         :param 'SecurityGroupArgs' args: Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
         :param pulumi.Input[_builtins.str] security_group_id: Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
         :param _builtins.bool skip: Skips creation of the security group if set to `true`.
@@ -761,21 +751,18 @@ class DefaultSecurityGroupArgs:
         pulumi.set(self, "skip", value)
 
 
-if not MYPY:
-    class ExistingBucketArgsDict(TypedDict):
-        """
-        Reference to an existing bucket.
-        """
-        arn: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Arn of the bucket. Only one of [arn] or [name] can be specified.
-        """
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Name of the bucket. Only one of [arn] or [name] can be specified.
-        """
-elif False:
-    ExistingBucketArgsDict: TypeAlias = Mapping[str, Any]
+class ExistingBucketArgsDict(TypedDict):
+    """
+    Reference to an existing bucket.
+    """
+    arn: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Arn of the bucket. Only one of [arn] or [name] can be specified.
+    """
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Name of the bucket. Only one of [arn] or [name] can be specified.
+    """
 
 @pulumi.input_type
 class ExistingBucketArgs:
@@ -784,6 +771,7 @@ class ExistingBucketArgs:
                  name: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Reference to an existing bucket.
+
         :param pulumi.Input[_builtins.str] arn: Arn of the bucket. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[_builtins.str] name: Name of the bucket. Only one of [arn] or [name] can be specified.
         """
@@ -817,25 +805,22 @@ class ExistingBucketArgs:
         pulumi.set(self, "name", value)
 
 
-if not MYPY:
-    class ExistingLogGroupArgsDict(TypedDict):
-        """
-        Reference to an existing log group.
-        """
-        arn: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Arn of the log group. Only one of [arn] or [name] can be specified.
-        """
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Name of the log group. Only one of [arn] or [name] can be specified.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region of the log group. If not specified, the provider region will be used.
-        """
-elif False:
-    ExistingLogGroupArgsDict: TypeAlias = Mapping[str, Any]
+class ExistingLogGroupArgsDict(TypedDict):
+    """
+    Reference to an existing log group.
+    """
+    arn: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Arn of the log group. Only one of [arn] or [name] can be specified.
+    """
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Name of the log group. Only one of [arn] or [name] can be specified.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region of the log group. If not specified, the provider region will be used.
+    """
 
 @pulumi.input_type
 class ExistingLogGroupArgs:
@@ -845,6 +830,7 @@ class ExistingLogGroupArgs:
                  region: Optional[pulumi.Input[_builtins.str]] = None):
         """
         Reference to an existing log group.
+
         :param pulumi.Input[_builtins.str] arn: Arn of the log group. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[_builtins.str] name: Name of the log group. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[_builtins.str] region: Region of the log group. If not specified, the provider region will be used.
@@ -893,53 +879,50 @@ class ExistingLogGroupArgs:
         pulumi.set(self, "region", value)
 
 
-if not MYPY:
-    class LogGroupArgsDict(TypedDict):
-        """
-        The set of arguments for constructing a LogGroup resource.
-        """
-        deletion_protection_enabled: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Boolean to indicate whether deletion protection is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Once set, switching to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> requires explicitly specifying <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> rather than removing this argument.
-        """
-        kms_key_id: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
-        AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
-        permissions for the CMK whenever the encrypted data is requested.
-        """
-        log_group_class: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
-        """
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The name of the log group. If omitted, this provider will assign a random, unique name.
-        """
-        name_prefix: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        retention_in_days: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        Specifies the number of days
-        you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-        If you select 0, the events in the log group are always retained and never expire. If <span pulumi-lang-nodejs="`logGroupClass`" pulumi-lang-dotnet="`LogGroupClass`" pulumi-lang-go="`logGroupClass`" pulumi-lang-python="`log_group_class`" pulumi-lang-yaml="`logGroupClass`" pulumi-lang-java="`logGroupClass`">`log_group_class`</span> is set to `DELIVERY`, this argument is ignored and <span pulumi-lang-nodejs="`retentionInDays`" pulumi-lang-dotnet="`RetentionInDays`" pulumi-lang-go="`retentionInDays`" pulumi-lang-python="`retention_in_days`" pulumi-lang-yaml="`retentionInDays`" pulumi-lang-java="`retentionInDays`">`retention_in_days`</span> is forcibly set to 2.
-        """
-        skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        A map of tags to assign to the resource. .If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-elif False:
-    LogGroupArgsDict: TypeAlias = Mapping[str, Any]
+class LogGroupArgsDict(TypedDict):
+    """
+    The set of arguments for constructing a LogGroup resource.
+    """
+    deletion_protection_enabled: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Boolean to indicate whether deletion protection is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Once set, switching to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> requires explicitly specifying <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> rather than removing this argument.
+    """
+    kms_key_id: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
+    AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
+    permissions for the CMK whenever the encrypted data is requested.
+    """
+    log_group_class: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Specified the log class of the log group. Possible values are: `STANDARD`, `INFREQUENT_ACCESS`, or `DELIVERY`.
+    """
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    The name of the log group. If omitted, this provider will assign a random, unique name.
+    """
+    name_prefix: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    retention_in_days: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    Specifies the number of days
+    you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+    If you select 0, the events in the log group are always retained and never expire. If <span pulumi-lang-nodejs="`logGroupClass`" pulumi-lang-dotnet="`LogGroupClass`" pulumi-lang-go="`logGroupClass`" pulumi-lang-python="`log_group_class`" pulumi-lang-yaml="`logGroupClass`" pulumi-lang-java="`logGroupClass`">`log_group_class`</span> is set to `DELIVERY`, this argument is ignored and <span pulumi-lang-nodejs="`retentionInDays`" pulumi-lang-dotnet="`RetentionInDays`" pulumi-lang-go="`retentionInDays`" pulumi-lang-python="`retention_in_days`" pulumi-lang-yaml="`retentionInDays`" pulumi-lang-java="`retentionInDays`">`retention_in_days`</span> is forcibly set to 2.
+    """
+    skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    A map of tags to assign to the resource. .If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
 
 @pulumi.input_type
 class LogGroupArgs:
@@ -955,6 +938,7 @@ class LogGroupArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a LogGroup resource.
+
         :param pulumi.Input[_builtins.bool] deletion_protection_enabled: Boolean to indicate whether deletion protection is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Once set, switching to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> requires explicitly specifying <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span> rather than removing this argument.
         :param pulumi.Input[_builtins.str] kms_key_id: The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
                AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
@@ -1101,25 +1085,22 @@ class LogGroupArgs:
         pulumi.set(self, "tags", value)
 
 
-if not MYPY:
-    class OptionalLogGroupArgsDict(TypedDict):
-        """
-        Log group which is only created if enabled.
-        """
-        args: NotRequired['LogGroupArgsDict']
-        """
-        Arguments to use instead of the default values during creation.
-        """
-        enable: NotRequired[_builtins.bool]
-        """
-        Enable creation of the log group.
-        """
-        existing: NotRequired['ExistingLogGroupArgsDict']
-        """
-        Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
-        """
-elif False:
-    OptionalLogGroupArgsDict: TypeAlias = Mapping[str, Any]
+class OptionalLogGroupArgsDict(TypedDict):
+    """
+    Log group which is only created if enabled.
+    """
+    args: NotRequired['LogGroupArgsDict']
+    """
+    Arguments to use instead of the default values during creation.
+    """
+    enable: NotRequired[_builtins.bool]
+    """
+    Enable creation of the log group.
+    """
+    existing: NotRequired['ExistingLogGroupArgsDict']
+    """
+    Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+    """
 
 @pulumi.input_type
 class OptionalLogGroupArgs:
@@ -1129,6 +1110,7 @@ class OptionalLogGroupArgs:
                  existing: Optional['ExistingLogGroupArgs'] = None):
         """
         Log group which is only created if enabled.
+
         :param 'LogGroupArgs' args: Arguments to use instead of the default values during creation.
         :param _builtins.bool enable: Enable creation of the log group.
         :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
@@ -1177,21 +1159,18 @@ class OptionalLogGroupArgs:
         pulumi.set(self, "existing", value)
 
 
-if not MYPY:
-    class RequiredBucketArgsDict(TypedDict):
-        """
-        Bucket with default setup.
-        """
-        args: NotRequired['BucketArgsDict']
-        """
-        Arguments to use instead of the default values during creation.
-        """
-        existing: NotRequired['ExistingBucketArgsDict']
-        """
-        Identity of an existing bucket to use. Cannot be used in combination with `args`.
-        """
-elif False:
-    RequiredBucketArgsDict: TypeAlias = Mapping[str, Any]
+class RequiredBucketArgsDict(TypedDict):
+    """
+    Bucket with default setup.
+    """
+    args: NotRequired['BucketArgsDict']
+    """
+    Arguments to use instead of the default values during creation.
+    """
+    existing: NotRequired['ExistingBucketArgsDict']
+    """
+    Identity of an existing bucket to use. Cannot be used in combination with `args`.
+    """
 
 @pulumi.input_type
 class RequiredBucketArgs:
@@ -1200,6 +1179,7 @@ class RequiredBucketArgs:
                  existing: Optional['ExistingBucketArgs'] = None):
         """
         Bucket with default setup.
+
         :param 'BucketArgs' args: Arguments to use instead of the default values during creation.
         :param 'ExistingBucketArgs' existing: Identity of an existing bucket to use. Cannot be used in combination with `args`.
         """
@@ -1233,57 +1213,54 @@ class RequiredBucketArgs:
         pulumi.set(self, "existing", value)
 
 
-if not MYPY:
-    class RoleWithPolicyArgsDict(TypedDict):
-        """
-        The set of arguments for constructing a Role resource and Policy attachments.
-        """
-        description: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Description of the role.
-        """
-        force_detach_policies: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        inline_policies: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgsDict']]]]
-        """
-        Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
-        """
-        managed_policy_arns: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        """
-        Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., <span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns ">`managed_policy_arns </span>= []`) will cause Pulumi to remove _all_ managed policy attachments.
-        """
-        max_session_duration: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
-        """
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
-        """
-        name_prefix: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Creates a unique friendly name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
-        """
-        path: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
-        """
-        permissions_boundary: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        ARN of the policy that is used to set the permissions boundary for the role.
-        """
-        policy_arns: NotRequired[Sequence[_builtins.str]]
-        """
-        ARNs of the policies to attach to the created role.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Key-value mapping of tags for the IAM role. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-elif False:
-    RoleWithPolicyArgsDict: TypeAlias = Mapping[str, Any]
+class RoleWithPolicyArgsDict(TypedDict):
+    """
+    The set of arguments for constructing a Role resource and Policy attachments.
+    """
+    description: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Description of the role.
+    """
+    force_detach_policies: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    inline_policies: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgsDict']]]]
+    """
+    Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
+    """
+    managed_policy_arns: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
+    """
+    Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, Pulumi will ignore policy attachments to this resource. When configured, Pulumi will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., <span pulumi-lang-nodejs="`managedPolicyArns " pulumi-lang-dotnet="`ManagedPolicyArns " pulumi-lang-go="`managedPolicyArns " pulumi-lang-python="`managed_policy_arns " pulumi-lang-yaml="`managedPolicyArns " pulumi-lang-java="`managedPolicyArns ">`managed_policy_arns </span>= []`) will cause Pulumi to remove _all_ managed policy attachments.
+    """
+    max_session_duration: NotRequired[pulumi.Input[_builtins.int]]
+    """
+    Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+    """
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+    """
+    name_prefix: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Creates a unique friendly name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
+    """
+    path: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+    """
+    permissions_boundary: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    ARN of the policy that is used to set the permissions boundary for the role.
+    """
+    policy_arns: NotRequired[Sequence[_builtins.str]]
+    """
+    ARNs of the policies to attach to the created role.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Key-value mapping of tags for the IAM role. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
 
 @pulumi.input_type
 class RoleWithPolicyArgs:
@@ -1301,6 +1278,7 @@ class RoleWithPolicyArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a Role resource and Policy attachments.
+
         :param pulumi.Input[_builtins.str] description: Description of the role.
         :param pulumi.Input[_builtins.bool] force_detach_policies: Whether to force detaching any policies the role has before destroying it. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]] inline_policies: Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, Pulumi will not manage any inline policies in this resource. Configuring one empty block (i.e., <span pulumi-lang-nodejs="`inlinePolicy " pulumi-lang-dotnet="`InlinePolicy " pulumi-lang-go="`inlinePolicy " pulumi-lang-python="`inline_policy " pulumi-lang-yaml="`inlinePolicy " pulumi-lang-java="`inlinePolicy ">`inline_policy </span>{}`) will cause Pulumi to remove _all_ inline policies added out of band on <span pulumi-lang-nodejs="`apply`" pulumi-lang-dotnet="`Apply`" pulumi-lang-go="`apply`" pulumi-lang-python="`apply`" pulumi-lang-yaml="`apply`" pulumi-lang-java="`apply`">`apply`</span>.
@@ -1469,49 +1447,46 @@ class RoleWithPolicyArgs:
         pulumi.set(self, "tags", value)
 
 
-if not MYPY:
-    class SecurityGroupArgsDict(TypedDict):
-        """
-        The set of arguments for constructing a Security Group resource.
-        """
-        description: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
-        """
-        egress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgsDict']]]]
-        """
-        Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
-        """
-        ingress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgsDict']]]]
-        """
-        Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
-        """
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Name of the security group. If omitted, the provider will assign a random, unique name.
-        """
-        name_prefix: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        revoke_rules_on_delete: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-        vpc_id: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        VPC ID. Defaults to the region's default VPC.
-        """
-elif False:
-    SecurityGroupArgsDict: TypeAlias = Mapping[str, Any]
+class SecurityGroupArgsDict(TypedDict):
+    """
+    The set of arguments for constructing a Security Group resource.
+    """
+    description: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
+    """
+    egress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgsDict']]]]
+    """
+    Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+    """
+    ingress: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgsDict']]]]
+    """
+    Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+    """
+    name: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Name of the security group. If omitted, the provider will assign a random, unique name.
+    """
+    name_prefix: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Creates a unique name beginning with the specified prefix. Conflicts with <span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`">`name`</span>.
+    """
+    region: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    revoke_rules_on_delete: NotRequired[pulumi.Input[_builtins.bool]]
+    """
+    Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
+    """
+    tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
+    """
+    Map of tags to assign to the resource. If configured with a provider <span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`">`default_tags`</span> configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
+    vpc_id: NotRequired[pulumi.Input[_builtins.str]]
+    """
+    VPC ID. Defaults to the region's default VPC.
+    """
 
 @pulumi.input_type
 class SecurityGroupArgs:
@@ -1527,6 +1502,7 @@ class SecurityGroupArgs:
                  vpc_id: Optional[pulumi.Input[_builtins.str]] = None):
         """
         The set of arguments for constructing a Security Group resource.
+
         :param pulumi.Input[_builtins.str] description: Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use <span pulumi-lang-nodejs="`tags`" pulumi-lang-dotnet="`Tags`" pulumi-lang-go="`tags`" pulumi-lang-python="`tags`" pulumi-lang-yaml="`tags`" pulumi-lang-java="`tags`">`tags`</span>.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgs']]] egress: Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgs']]] ingress: Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.

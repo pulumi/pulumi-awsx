@@ -60,6 +60,7 @@ class ApplicationLoadBalancerArgs:
                  xff_header_processing_mode: Optional[pulumi.Input[_builtins.str]] = None):
         """
         The set of arguments for constructing a ApplicationLoadBalancer resource.
+
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs'] access_logs: Access Logs block. See below.
         :param pulumi.Input[_builtins.int] client_keep_alive: Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerConnectionLogsArgs'] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type <span pulumi-lang-nodejs="`application`" pulumi-lang-dotnet="`Application`" pulumi-lang-go="`application`" pulumi-lang-python="`application`" pulumi-lang-yaml="`application`" pulumi-lang-java="`application`">`application`</span>.
@@ -657,6 +658,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         """
         Provides an Application Load Balancer resource with listeners, default target group and default security group.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: Access Logs block. See below.
@@ -708,6 +710,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Provides an Application Load Balancer resource with listeners, default target group and default security group.
+
 
         :param str resource_name: The name of the resource.
         :param ApplicationLoadBalancerArgs args: The arguments to use to populate this resource's properties.

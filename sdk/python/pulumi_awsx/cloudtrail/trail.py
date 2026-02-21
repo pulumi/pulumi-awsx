@@ -39,6 +39,7 @@ class TrailArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a Trail resource.
+
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]] advanced_event_selectors: Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with <span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`">`event_selector`</span>.
         :param '_awsx.OptionalLogGroupArgs' cloud_watch_logs_group: Log group to which CloudTrail logs will be delivered.
         :param pulumi.Input[_builtins.bool] enable_log_file_validation: Whether log file integrity validation is enabled. Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
@@ -307,6 +308,7 @@ class Trail(pulumi.ComponentResource):
                  __props__=None):
         """
         Create a Trail resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]]] advanced_event_selectors: Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with <span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`">`event_selector`</span>.
@@ -334,6 +336,7 @@ class Trail(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a Trail resource with the given unique name, props, and options.
+
         :param str resource_name: The name of the resource.
         :param TrailArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

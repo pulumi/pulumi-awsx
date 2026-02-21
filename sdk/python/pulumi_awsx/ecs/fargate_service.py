@@ -59,6 +59,7 @@ class FargateServiceArgs:
                  vpc_lattice_configurations: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] = None):
         """
         The set of arguments for constructing a FargateService resource.
+
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[_builtins.bool] assign_public_ip: Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
@@ -623,6 +624,7 @@ class FargateService(pulumi.ComponentResource):
         Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
@@ -672,6 +674,7 @@ class FargateService(pulumi.ComponentResource):
         """
         Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
+
 
         :param str resource_name: The name of the resource.
         :param FargateServiceArgs args: The arguments to use to populate this resource's properties.

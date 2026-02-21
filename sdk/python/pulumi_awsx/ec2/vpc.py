@@ -46,6 +46,7 @@ class VpcArgs:
                  vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None):
         """
         The set of arguments for constructing a Vpc resource.
+
         :param pulumi.Input[_builtins.bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Conflicts with <span pulumi-lang-nodejs="`ipv6IpamPoolId`" pulumi-lang-dotnet="`Ipv6IpamPoolId`" pulumi-lang-go="`ipv6IpamPoolId`" pulumi-lang-python="`ipv6_ipam_pool_id`" pulumi-lang-yaml="`ipv6IpamPoolId`" pulumi-lang-java="`ipv6IpamPoolId`">`ipv6_ipam_pool_id`</span>
         :param _builtins.int availability_zone_cidr_mask: The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
         :param Sequence[_builtins.str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
@@ -433,6 +434,7 @@ class Vpc(pulumi.ComponentResource):
 
         The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the public subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[_builtins.bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>. Conflicts with <span pulumi-lang-nodejs="`ipv6IpamPoolId`" pulumi-lang-dotnet="`Ipv6IpamPoolId`" pulumi-lang-go="`ipv6IpamPoolId`" pulumi-lang-python="`ipv6_ipam_pool_id`" pulumi-lang-yaml="`ipv6IpamPoolId`" pulumi-lang-java="`ipv6IpamPoolId`">`ipv6_ipam_pool_id`</span>
@@ -503,6 +505,7 @@ class Vpc(pulumi.ComponentResource):
         ### Legacy
 
         The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the public subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
+
 
         :param str resource_name: The name of the resource.
         :param VpcArgs args: The arguments to use to populate this resource's properties.

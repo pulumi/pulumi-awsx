@@ -60,6 +60,7 @@ class EC2ServiceArgs:
                  vpc_lattice_configurations: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] = None):
         """
         The set of arguments for constructing a EC2Service resource.
+
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires <span pulumi-lang-nodejs="`forceNewDeployment " pulumi-lang-dotnet="`ForceNewDeployment " pulumi-lang-go="`forceNewDeployment " pulumi-lang-python="`force_new_deployment " pulumi-lang-yaml="`forceNewDeployment " pulumi-lang-java="`forceNewDeployment ">`force_new_deployment </span>= true`. See below. Conflicts with <span pulumi-lang-nodejs="`launchType`" pulumi-lang-dotnet="`LaunchType`" pulumi-lang-go="`launchType`" pulumi-lang-python="`launch_type`" pulumi-lang-yaml="`launchType`" pulumi-lang-java="`launchType`">`launch_type`</span>.
@@ -640,6 +641,7 @@ class EC2Service(pulumi.ComponentResource):
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
@@ -690,6 +692,7 @@ class EC2Service(pulumi.ComponentResource):
         """
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
+
 
         :param str resource_name: The name of the resource.
         :param EC2ServiceArgs args: The arguments to use to populate this resource's properties.

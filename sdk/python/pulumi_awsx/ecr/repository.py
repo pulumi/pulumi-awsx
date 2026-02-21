@@ -33,6 +33,7 @@ class RepositoryArgs:
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a Repository resource.
+
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]] encryption_configurations: Encryption configuration for the repository. See below for schema.
         :param pulumi.Input[_builtins.bool] force_delete: If <span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`">`true`</span>, will delete the repository even if it contains images.
                Defaults to <span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`">`false`</span>.
@@ -194,6 +195,7 @@ class Repository(pulumi.ComponentResource):
 
         Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]]] encryption_configurations: Encryption configuration for the repository. See below for schema.
@@ -217,6 +219,7 @@ class Repository(pulumi.ComponentResource):
         A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
 
         Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+
 
         :param str resource_name: The name of the resource.
         :param RepositoryArgs args: The arguments to use to populate this resource's properties.
