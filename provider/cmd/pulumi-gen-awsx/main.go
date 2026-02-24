@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package main is the entry point for the pulumi-gen-awsx code generation tool.
 package main
 
 import (
@@ -35,6 +36,7 @@ import (
 	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/version"
 )
 
+// Tool is the name of the code generation tool.
 const (
 	Tool       = "pulumi-gen-awsx"
 	packageDir = "awsx"
@@ -43,6 +45,7 @@ const (
 // Language is the SDK language.
 type Language string
 
+// Supported SDK language targets.
 const (
 	DotNet Language = "dotnet"
 	Go     Language = "go"
@@ -70,7 +73,7 @@ func parseLanguage(text string) (Language, error) {
 			allLangStrings = append(allLangStrings, string(lang))
 		}
 		all := strings.Join(allLangStrings, ", ")
-		return "", fmt.Errorf(`Invalid language: %q, supported values include: %s`, text, all)
+		return "", fmt.Errorf(`invalid language: %q, supported values include: %s`, text, all)
 	}
 }
 
@@ -125,7 +128,7 @@ func generate(language Language, cwd, outDir string) error {
 	case Nodejs:
 		return genNodejs(schema, outDir)
 	default:
-		return fmt.Errorf("Unrecognized language %q", language)
+		return fmt.Errorf("unrecognized language %q", language)
 	}
 }
 
@@ -180,7 +183,7 @@ func genNodejs(pkg *schema.Package, outdir string) error {
 				return nil
 			}
 		}
-		content, err := os.ReadFile(path)
+		content, err := os.ReadFile(path) //nolint:gosec
 		if err != nil {
 			return err
 		}
@@ -213,7 +216,7 @@ func writeFiles(rootDir string, files map[string][]byte) error {
 
 func writeFile(rootDir, filename string, contents []byte) error {
 	outPath := filepath.Join(rootDir, filename)
-	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(outPath), 0750); err != nil {
 		return err
 	}
 	err := os.WriteFile(outPath, contents, 0600)

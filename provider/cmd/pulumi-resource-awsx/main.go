@@ -14,4 +14,5 @@
 
 //go:generate go run ./generate.go
 
+// Package main is the entry point for the pulumi-resource-awsx provider.
 package main

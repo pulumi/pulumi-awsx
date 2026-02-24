@@ -18,9 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -32,7 +32,7 @@ const (
 	awsNativeTypesVersion = "0.72.0"
 )
 
-// nolint: lll
+// GenerateSchema generates the Pulumi package schema for awsx.
 func GenerateSchema(packageDir string) schema.PackageSpec {
 	dependencies := readPackageDependencies(packageDir)
 	awsSpec := getPackageSpec("aws", dependencies.Aws)
@@ -140,8 +140,11 @@ func getPackageSpec(name, version string) schema.PackageSpec {
 		urlVersion = before
 	}
 
-	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, urlVersion, name)
-	spec := getSpecFromUrl(url)
+	url := fmt.Sprintf( //nolint:lll
+		"https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json",
+		name, urlVersion, name,
+	)
+	spec := getSpecFromURL(url)
 	if spec.Version == "" {
 		// Version is rarely included, so we'll just add it.
 		spec.Version = "v" + version
@@ -149,8 +152,8 @@ func getPackageSpec(name, version string) schema.PackageSpec {
 	return spec
 }
 
-func getSpecFromUrl(url string) schema.PackageSpec {
-	resp, err := http.Get(url)
+func getSpecFromURL(url string) schema.PackageSpec {
+	resp, err := http.Get(url) //nolint:gosec
 	if err != nil {
 		log.Fatalf("Could not GET %s: %v", url, err)
 	}
@@ -168,62 +171,69 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 }
 
 // Perform a simple string replacement on Refs in all sub-specs
-func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.ComplexTypeSpec {
-	spec.Properties = renamePropertiesRefs(spec.Properties, old, new)
+func renameComplexRefs(spec schema.ComplexTypeSpec, old, replacement string) schema.ComplexTypeSpec {
+	spec.Properties = renamePropertiesRefs(spec.Properties, old, replacement)
 	return spec
 }
 
-func renameAwsPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+func renameAwsPropertiesRefs( //nolint:lll
+	spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec,
+) map[string]schema.PropertySpec {
 	return renamePropertiesRefs(propertySpec, "#/types/aws:", packageRef(spec, "/types/aws:"))
 }
 
-func renameDockerPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+func renameDockerPropertiesRefs( //nolint:lll
+	spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec,
+) map[string]schema.PropertySpec {
 	return renamePropertiesRefs(propertySpec, "#/types/docker:", packageRef(spec, "/types/docker:"))
 }
 
-func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new string) map[string]schema.PropertySpec {
+func renamePropertiesRefs(
+	propertySpec map[string]schema.PropertySpec, old, replacement string,
+) map[string]schema.PropertySpec {
 	properties := map[string]schema.PropertySpec{}
 	for k, v := range propertySpec {
-		properties[k] = renamePropertyRefs(v, old, new)
+		properties[k] = renamePropertyRefs(v, old, replacement)
 	}
 	return properties
 }
 
-func renamePropertyRefs(propSpec schema.PropertySpec, old, new string) schema.PropertySpec {
+func renamePropertyRefs(propSpec schema.PropertySpec, old, replacement string) schema.PropertySpec {
 	if propSpec.Ref != "" {
-		propSpec.Ref = strings.Replace(propSpec.Ref, old, new, 1)
+		propSpec.Ref = strings.Replace(propSpec.Ref, old, replacement, 1)
 	}
 	if propSpec.AdditionalProperties != nil {
-		additionalProperties := renameTypeSpecRefs(*propSpec.AdditionalProperties, old, new)
+		additionalProperties := renameTypeSpecRefs(*propSpec.AdditionalProperties, old, replacement)
 		propSpec.AdditionalProperties = &additionalProperties
 	}
 	if propSpec.Items != nil {
-		items := renameTypeSpecRefs(*propSpec.Items, old, new)
+		items := renameTypeSpecRefs(*propSpec.Items, old, replacement)
 		propSpec.Items = &items
 	}
 	if propSpec.OneOf != nil {
-		propSpec.OneOf = renameTypeSpecsRefs(propSpec.OneOf, old, new)
+		propSpec.OneOf = renameTypeSpecsRefs(propSpec.OneOf, old, replacement)
 	}
 	return propSpec
 }
 
-func renameTypeSpecsRefs(typeSpec []schema.TypeSpec, old, new string) []schema.TypeSpec {
+func renameTypeSpecsRefs(typeSpec []schema.TypeSpec, old, replacement string) []schema.TypeSpec {
 	newSpecs := make([]schema.TypeSpec, len(typeSpec))
 	for i, spec := range typeSpec {
-		newSpecs[i] = renameTypeSpecRefs(spec, old, new)
+		newSpecs[i] = renameTypeSpecRefs(spec, old, replacement)
 	}
 	return newSpecs
 }
-func renameTypeSpecRefs(typeSpec schema.TypeSpec, old, new string) schema.TypeSpec {
+
+func renameTypeSpecRefs(typeSpec schema.TypeSpec, old, replacement string) schema.TypeSpec {
 	if typeSpec.Ref != "" {
-		typeSpec.Ref = strings.Replace(typeSpec.Ref, old, new, 1)
+		typeSpec.Ref = strings.Replace(typeSpec.Ref, old, replacement, 1)
 	}
 	if typeSpec.AdditionalProperties != nil {
-		additionalProperties := renameTypeSpecRefs(*typeSpec.AdditionalProperties, old, new)
+		additionalProperties := renameTypeSpecRefs(*typeSpec.AdditionalProperties, old, replacement)
 		typeSpec.AdditionalProperties = &additionalProperties
 	}
 	if typeSpec.Items != nil {
-		items := renameTypeSpecRefs(*typeSpec.Items, old, new)
+		items := renameTypeSpecRefs(*typeSpec.Items, old, replacement)
 		typeSpec.Items = &items
 	}
 	return typeSpec
@@ -258,10 +268,11 @@ func extendSchemas(spec schema.PackageSpec, extensions ...schema.PackageSpec) sc
 
 func rawMessage(v interface{}) schema.RawMessage {
 	bytes, err := json.Marshal(v)
-	contract.Assert(err == nil)
+	contract.Assertf(err == nil, "json.Marshal failed: %v", err)
 	return bytes
 }
 
+// Dependencies holds the versions of Pulumi package dependencies.
 type Dependencies struct {
 	Aws         string `json:"@pulumi/aws"`
 	Docker      string `json:"@pulumi/docker"`
@@ -269,17 +280,18 @@ type Dependencies struct {
 	Pulumi      string `json:"@pulumi/pulumi"`
 }
 
-type PackageJson struct {
+// PackageJSON represents the structure of a package.json file.
+type PackageJSON struct {
 	Dependencies Dependencies
 }
 
 func readPackageDependencies(packageDir string) Dependencies {
-	content, err := ioutil.ReadFile(path.Join(packageDir, "package.json"))
+	content, err := os.ReadFile(path.Join(packageDir, "package.json")) //nolint:gosec
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
 	}
 
-	var payload PackageJson
+	var payload PackageJSON
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
 		log.Fatal("Error during Unmarshal(): ", err)
