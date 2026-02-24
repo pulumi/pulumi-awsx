@@ -32,3 +32,4 @@ sdk/java/gradlew.bat
 .envrc
 go.work
 go.work.sum
+.golangci.bck.yml
