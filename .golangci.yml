@@ -2,12 +2,24 @@
 
 version: "2"
 
+formatters:
+  enable:
+  - gci
+  - gofmt
+  settings:
+    gci:
+      sections:
+        - standard # Standard section: captures all standard library packages.
+        - blank # Blank section: contains all blank imports.
+        - default # Default section: contains all imports that could not be matched to another section type.
+        - prefix(github.com/pulumi/) # Custom section: groups all imports with the github.com/pulumi/ prefix.
+        - prefix(github.com/pulumi/pulumi-awsx) # Custom section: local imports
+      custom-order: true
+
 linters:
   enable:
   - errcheck
-  - gci
   - goconst
-  - gofmt
   - gosec
   - govet
   - ineffassign
@@ -18,15 +30,6 @@ linters:
   - revive
   - unconvert
   - unused
-  settings:
-    gci:
-      sections:
-        - standard # Standard section: captures all standard library packages.
-        - blank # Blank section: contains all blank imports.
-        - default # Default section: contains all imports that could not be matched to another section type.
-        - prefix(github.com/pulumi/) # Custom section: groups all imports with the github.com/pulumi/ prefix.
-        - prefix(github.com/pulumi/pulumi-awsx) # Custom section: local imports
-      custom-order: true
 issues:
   exclude-dirs:
   - pkg/vendored
