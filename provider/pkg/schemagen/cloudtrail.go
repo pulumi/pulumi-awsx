@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package gen provides schema generation utilities for the awsx provider.
 package gen
 
 import (
