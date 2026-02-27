@@ -27,6 +27,7 @@ import {
   ExplicitSubnetSpecInputs,
 } from "./subnetDistributorNew";
 import { Netmask } from "netmask";
+import { isIPv6 } from "net";
 
 interface VpcData {
   vpc: aws.ec2.Vpc;
@@ -94,6 +95,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
+    const assignGeneratedIpv6CidrBlock = args.assignGeneratedIpv6CidrBlock ?? false;
 
     const sharedTags = { Name: name, ...args.tags };
 
@@ -161,10 +163,22 @@ export class Vpc extends schema.Vpc<VpcData> {
     });
 
     for (let i = 0; i < availabilityZones.length; i++) {
+      let subnetIndex = i;
       subnetSpecs
         .filter((x) => x.azName === availabilityZones[i] && x.type !== "Unused")
         .sort(compareSubnetSpecs)
         .forEach((spec) => {
+          const assignIpv6AddressOnCreation = resolveAssignIpv6AddressOnCreation(
+            spec.assignIpv6AddressOnCreation,
+            assignGeneratedIpv6CidrBlock,
+          );
+          // IPv6 CIDR assignment happens here (not in subnet distributors) because VPC IPv6 CIDR may only
+          // be known after the VPC resource resolves.
+          const subnetIpv6CidrBlock = handleIpv6Cidr(
+            vpc.ipv6CidrBlock,
+            assignIpv6AddressOnCreation,
+            subnetIndex,
+          );
           const subnet = new aws.ec2.Subnet(
             spec.subnetName,
             {
@@ -172,6 +186,9 @@ export class Vpc extends schema.Vpc<VpcData> {
               availabilityZone: spec.azName,
               mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
               cidrBlock: spec.cidrBlock,
+              assignIpv6AddressOnCreation,
+              // This output can resolve to undefined when assignment is disabled.
+              ipv6CidrBlock: subnetIpv6CidrBlock as pulumi.Input<string>,
               tags: {
                 ...sharedTags,
                 ...spec.tags,
@@ -181,6 +198,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             },
             { parent: vpc, dependsOn: [vpc] },
           );
+          subnetIndex += availabilityZones.length;
           subnets.push(subnet);
           if (spec.type.toLowerCase() === "public") {
             publicSubnetIds.push(subnet.id);
@@ -588,6 +606,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
       type: subnet.type,
       ...extractName(subnet.subnetName, subnet.type),
       cidrMask: netmask.bitmask,
+      assignIpv6AddressOnCreation: subnet.assignIpv6AddressOnCreation,
       ...(subnet.tags ? { tags: subnet.tags } : {}),
     });
     previousNetmask = netmask;
@@ -797,4 +816,65 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
   throw new Error(
     `There are gaps in the subnet ranges. Please fix the following gaps: ${gaps.join(", ")}`,
   );
+}
+
+export function resolveAssignIpv6AddressOnCreation(
+  subnetAssignIpv6AddressOnCreation: pulumi.Input<boolean> | undefined,
+  vpcAssignGeneratedIpv6CidrBlock: pulumi.Input<boolean> | undefined,
+): pulumi.Output<boolean> {
+  return pulumi
+    .all([subnetAssignIpv6AddressOnCreation, vpcAssignGeneratedIpv6CidrBlock])
+    .apply(([subnetAssign, vpcAssign]) => subnetAssign ?? vpcAssign ?? false);
+}
+
+export function createIpv6SubnetCidrBlock(vpcCidr: string, index: number): string {
+  // This logic is adapted from awsx-classic/ec2/vpcTopology.ts#createIpv6CidrBlock
+  // and preserved for compatibility with classic /56 -> /64 subnet mapping.
+  const [addr, mask] = vpcCidr.split("/");
+  if (!addr || !mask) {
+    throw new TypeError(`"${vpcCidr}" is not a valid IPv6 CIDR block`);
+  }
+  if (!isIPv6(addr)) {
+    throw new TypeError(`"${addr}" is not a valid IPv6 address`);
+  }
+  if (mask !== "56") {
+    throw new RangeError(`VPC must be a /56 block (got /${mask})`);
+  }
+  if (!Number.isInteger(index) || index < 0 || index > 0xff) {
+    throw new RangeError("index must be an integer from 0-255");
+  }
+
+  const hextets = addr.split(":");
+  if (hextets.length < 4 || hextets[3] === "") {
+    throw new TypeError(`Vpc ipv6 cidr block was not in an expected form: ${vpcCidr}`);
+  }
+
+  const prefix = hextets.slice(0, 3).join(":");
+  const existing = Number.parseInt(hextets[3], 16);
+  if (Number.isNaN(existing)) {
+    throw new TypeError(`Vpc ipv6 cidr block was not in an expected form: ${vpcCidr}`);
+  }
+
+  const updated = (existing & 0xff00) | index;
+  return `${prefix}:${updated.toString(16)}::/64`;
+}
+
+export function handleIpv6Cidr(
+  ipv6CidrBlock: pulumi.Input<string | undefined>,
+  assignIpv6AddressOnCreation: pulumi.Input<boolean>,
+  subnetIndex: number,
+): pulumi.Output<string | undefined> {
+  return pulumi
+    .all([ipv6CidrBlock, assignIpv6AddressOnCreation])
+    .apply(([cidrBlock, shouldAssign]) => {
+      if (!shouldAssign) {
+        return undefined;
+      }
+      if (!cidrBlock) {
+        throw new Error(
+          "Subnets with assignIpv6AddressOnCreation=true require the VPC to have an IPv6 CIDR block. Set assignGeneratedIpv6CidrBlock=true or provide ipv6CidrBlock.",
+        );
+      }
+      return createIpv6SubnetCidrBlock(cidrBlock, subnetIndex);
+    });
 }

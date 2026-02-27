@@ -21,6 +21,7 @@ export interface SubnetSpec {
   type: SubnetTypeInputs;
   azName: string;
   subnetName: string;
+  assignIpv6AddressOnCreation?: boolean;
   tags?: pulumi.Input<{
     [key: string]: pulumi.Input<string>;
   }>;
