@@ -188,7 +188,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               cidrBlock: spec.cidrBlock,
               assignIpv6AddressOnCreation,
               // This output can resolve to undefined when assignment is disabled.
-              ipv6CidrBlock: subnetIpv6CidrBlock as pulumi.Input<string>,
+              ipv6CidrBlock: subnetIpv6CidrBlock.apply((t) => t!),
               tags: {
                 ...sharedTags,
                 ...spec.tags,
@@ -465,7 +465,8 @@ export class Vpc extends schema.Vpc<VpcData> {
   } {
     // Explicit cidrBlocks means user controls the full subnet layout.
     // Merging in bare defaults would create mixed explicit/non-explicit specs and fail validation.
-    const hasExplicitCidrBlocks = args.subnetSpecs?.some((spec) => spec.cidrBlocks !== undefined) ?? false;
+    const hasExplicitCidrBlocks =
+      args.subnetSpecs?.some((spec) => spec.cidrBlocks !== undefined) ?? false;
     const shouldMergeWithDefaultSubnetSpecs =
       subnetStrategy === "Auto" && args.subnetSpecs !== undefined && !hasExplicitCidrBlocks;
     const effectiveSubnetSpecs = shouldMergeWithDefaultSubnetSpecs
@@ -540,7 +541,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     const desiredCount = azCount ?? 3;
     const result = await aws.getAvailabilityZones(undefined, { parent: this });
     if (!result.names) {
-      throw new Error("Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.");
+      throw new Error(
+        "Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.",
+      );
     }
     if (result.names.length < desiredCount) {
       throw new Error(
@@ -860,7 +863,7 @@ export function createIpv6SubnetCidrBlock(vpcCidr: string, index: number): strin
 }
 
 export function handleIpv6Cidr(
-  ipv6CidrBlock: pulumi.Input<string | undefined>,
+  ipv6CidrBlock: pulumi.Input<string>,
   assignIpv6AddressOnCreation: pulumi.Input<boolean>,
   subnetIndex: number,
 ): pulumi.Output<string | undefined> {
