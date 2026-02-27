@@ -249,6 +249,8 @@ func (o ResolvedSubnetSpecArrayOutput) Index(i pulumi.IntInput) ResolvedSubnetSp
 
 // Configuration for a VPC subnet.
 type SubnetSpec struct {
+	// Indicates whether a network interface created in this subnet receives an IPv6 address.
+	AssignIpv6AddressOnCreation *bool `pulumi:"assignIpv6AddressOnCreation"`
 	// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
 	CidrBlocks []string `pulumi:"cidrBlocks"`
 	// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
@@ -276,6 +278,8 @@ type SubnetSpecInput interface {
 
 // Configuration for a VPC subnet.
 type SubnetSpecArgs struct {
+	// Indicates whether a network interface created in this subnet receives an IPv6 address.
+	AssignIpv6AddressOnCreation *bool `pulumi:"assignIpv6AddressOnCreation"`
 	// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
 	CidrBlocks []string `pulumi:"cidrBlocks"`
 	// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
@@ -340,6 +344,11 @@ func (o SubnetSpecOutput) ToSubnetSpecOutput() SubnetSpecOutput {
 
 func (o SubnetSpecOutput) ToSubnetSpecOutputWithContext(ctx context.Context) SubnetSpecOutput {
 	return o
+}
+
+// Indicates whether a network interface created in this subnet receives an IPv6 address.
+func (o SubnetSpecOutput) AssignIpv6AddressOnCreation() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v SubnetSpec) *bool { return v.AssignIpv6AddressOnCreation }).(pulumi.BoolPtrOutput)
 }
 
 // An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
