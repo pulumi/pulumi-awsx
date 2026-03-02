@@ -651,6 +651,7 @@ export interface ResolvedSubnetSpecOutputs {
 export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
 export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";
 export interface SubnetSpecInputs {
+    readonly assignIpv6AddressOnCreation?: boolean;
     readonly cidrBlocks?: string[];
     readonly cidrMask?: number;
     readonly name?: string;
@@ -659,6 +660,7 @@ export interface SubnetSpecInputs {
     readonly type: SubnetTypeInputs;
 }
 export interface SubnetSpecOutputs {
+    readonly assignIpv6AddressOnCreation?: boolean;
     readonly cidrBlocks?: string[];
     readonly cidrMask?: number;
     readonly name?: string;

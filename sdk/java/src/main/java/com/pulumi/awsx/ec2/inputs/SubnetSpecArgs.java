@@ -7,6 +7,7 @@ import com.pulumi.awsx.ec2.enums.SubnetType;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
+import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.String;
 import java.util.List;
@@ -23,6 +24,21 @@ import javax.annotation.Nullable;
 public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final SubnetSpecArgs Empty = new SubnetSpecArgs();
+
+    /**
+     * Indicates whether a network interface created in this subnet receives an IPv6 address.
+     * 
+     */
+    @Import(name="assignIpv6AddressOnCreation")
+    private @Nullable Boolean assignIpv6AddressOnCreation;
+
+    /**
+     * @return Indicates whether a network interface created in this subnet receives an IPv6 address.
+     * 
+     */
+    public Optional<Boolean> assignIpv6AddressOnCreation() {
+        return Optional.ofNullable(this.assignIpv6AddressOnCreation);
+    }
 
     /**
      * An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
@@ -117,6 +133,7 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
     private SubnetSpecArgs() {}
 
     private SubnetSpecArgs(SubnetSpecArgs $) {
+        this.assignIpv6AddressOnCreation = $.assignIpv6AddressOnCreation;
         this.cidrBlocks = $.cidrBlocks;
         this.cidrMask = $.cidrMask;
         this.name = $.name;
@@ -141,6 +158,17 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
 
         public Builder(SubnetSpecArgs defaults) {
             $ = new SubnetSpecArgs(Objects.requireNonNull(defaults));
+        }
+
+        /**
+         * @param assignIpv6AddressOnCreation Indicates whether a network interface created in this subnet receives an IPv6 address.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder assignIpv6AddressOnCreation(@Nullable Boolean assignIpv6AddressOnCreation) {
+            $.assignIpv6AddressOnCreation = assignIpv6AddressOnCreation;
+            return this;
         }
 
         /**

@@ -49,6 +49,7 @@ export function getSubnetSpecs(
         type: subnetSpec.type,
         azName,
         subnetName: subnetName(vpcName, subnetSpec, azNum),
+        assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       };
     });
@@ -205,6 +206,7 @@ export function getSubnetSpecsExplicit(
         type: subnetSpec.type,
         azName,
         subnetName: subnetName(vpcName, subnetSpec, azNum),
+        assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       });
     }

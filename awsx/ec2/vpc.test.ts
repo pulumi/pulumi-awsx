@@ -22,6 +22,7 @@ import {
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
   compareSubnetSpecs,
+  createIpv6SubnetCidrBlock,
   findSubnetGap,
   OverlappingSubnet,
   shouldCreateNatGateway,
@@ -166,6 +167,34 @@ describe("compareSubnetSpecs", () => {
     const result = specs.sort(compareSubnetSpecs).map((x) => x.type);
 
     expect(result).toEqual(data.expected.map((x) => x as SubnetTypeInputs));
+  });
+});
+
+describe("createIpv6SubnetCidrBlock", () => {
+  it("index 0 keeps the trailing 00 byte", () => {
+    expect(createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 0)).toBe("2600:1f14:82a:ab00::/64");
+  });
+
+  it("index 42 yields 0x2a in fourth hextet", () => {
+    expect(createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 42)).toBe(
+      "2600:1f14:82a:ab2a::/64",
+    );
+  });
+
+  it("throws on non-IPv6 input", () => {
+    expect(() => createIpv6SubnetCidrBlock("10.0.0.0/56", 0)).toThrow(TypeError);
+  });
+
+  it("throws on non-/56 VPC block", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/48", 0)).toThrow(RangeError);
+  });
+
+  it("throws when index < 0", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", -1)).toThrow(RangeError);
+  });
+
+  it("throws when index > 255", () => {
+    expect(() => createIpv6SubnetCidrBlock("2600:1f14:82a:ab00::/56", 300)).toThrow(RangeError);
   });
 });
 
@@ -390,6 +419,15 @@ describe("child resource api", () => {
         }
       },
       newResource(args) {
+        if (args.type === "aws:ec2/vpc:Vpc" && args.inputs.assignGeneratedIpv6CidrBlock) {
+          return {
+            id: `mocked::${args.type}::${args.name}-id`,
+            state: {
+              ...args.inputs,
+              ipv6CidrBlock: "2600:1f14:82a:ab00::/56",
+            },
+          };
+        }
         return {
           id: `mocked::${args.type}::${args.name}-id`,
           state: args.inputs,
@@ -470,6 +508,34 @@ describe("child resource api", () => {
       expect(tags?.share2).toBe("parent");
     }
   });
+
+  it("defaults subnet IPv6 assignment from VPC and honors explicit false", async () => {
+    const ipv6Vpc = new Vpc("test-ipv6-defaulting", {
+      assignGeneratedIpv6CidrBlock: true,
+      subnetStrategy: "Auto",
+      subnetSpecs: [
+        { type: "Public" },
+        { type: "Private", assignIpv6AddressOnCreation: false },
+      ],
+    });
+
+    const subnets = await unwrap(ipv6Vpc.subnets);
+    expect(subnets).toHaveLength(6);
+    for (const subnet of subnets) {
+      const subnetType = (await unwrap(subnet.tags))?.SubnetType;
+      const assignIpv6 = await unwrap(subnet.assignIpv6AddressOnCreation);
+      const ipv6Cidr = await unwrap(subnet.ipv6CidrBlock);
+
+      if (subnetType === "Public") {
+        expect(assignIpv6).toBe(true);
+        expect(ipv6Cidr).toBeTruthy();
+      } else if (subnetType === "Private") {
+        expect(assignIpv6).toBe(false);
+        expect(ipv6Cidr).toBeUndefined();
+      }
+    }
+  });
+
 });
 
 describe("Auto strategy merges partial SubnetSpecs with defaults (issue #1746)", () => {

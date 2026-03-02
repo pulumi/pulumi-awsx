@@ -429,6 +429,10 @@ export namespace ec2 {
      */
     export interface SubnetSpecArgs {
         /**
+         * Indicates whether a network interface created in this subnet receives an IPv6 address.
+         */
+        assignIpv6AddressOnCreation?: boolean;
+        /**
          * An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
          */
         cidrBlocks?: string[];

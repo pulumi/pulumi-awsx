@@ -644,6 +644,11 @@
         "awsx:ec2:SubnetSpec": {
             "description": "Configuration for a VPC subnet.",
             "properties": {
+                "assignIpv6AddressOnCreation": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Indicates whether a network interface created in this subnet receives an IPv6 address."
+                },
                 "cidrBlocks": {
                     "type": "array",
                     "items": {
