@@ -1,5 +1,5 @@
 ## Summary
-<!-- What changed and why. Link issue/task/bead if relevant. -->
+<!-- What changed and why. Link issue/task if relevant. -->
 
 ## Compatibility
 - [ ] No public behavior/API change
