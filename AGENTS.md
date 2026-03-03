@@ -1,7 +1,7 @@
 # Agent Instructions
 
 ## What this repo is
-Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` (TypeScript) and `provider/` (Go schema generation). Most files in `sdk/` and several workflow files are generated artifacts.
+Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` (TypeScript) and `provider/` (Go schema generation). The repo also contains legacy TypeScript components in `awsx-classic/`. Most files in `sdk/` and several workflow files are generated artifacts.
 
 ## Start Here
 - `Makefile` - canonical local command surface.
@@ -9,6 +9,7 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - `provider/pkg/schemagen/` - schema generation logic.
 - `provider/cmd/pulumi-resource-awsx/` - provider schema output and embedding.
 - `awsx/` - TypeScript provider implementation + Jest tests.
+- `awsx-classic/` - legacy TypeScript components and compatibility surface.
 - `examples/` - integration/acceptance tests (real AWS resources).
 - `CONTRIBUTING.md` and `DEVELOPMENT.md` - contributor docs.
 
@@ -35,6 +36,7 @@ Use source files + regeneration commands instead.
 
 ## If You Change...
 - `awsx/**` -> run `make test_provider`
+- `awsx-classic/**` -> run `yarn --cwd awsx-classic lint`
 - `provider/pkg/schemagen/**` -> run `make schema && make generate`
 - `.ci-mgmt.yaml` -> run `make ci-mgmt`
 - `examples/**` -> run targeted tests first, then full `make test` only if needed
