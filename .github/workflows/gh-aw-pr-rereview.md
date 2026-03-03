@@ -7,7 +7,7 @@ on:
     name: review-again
     events: [pull_request_comment, pull_request_review_comment]
 imports:
-  - ../agents/code-review.md
+  - ../snippets/code-review.md
 permissions:
   contents: read
   pull-requests: read
@@ -62,7 +62,7 @@ This workflow runs when a maintainer posts `/review-again` as the first token in
 
 Review context text: `${{ needs.activation.outputs.text }}`
 
-This workflow imports `../agents/code-review.md` for the baseline review rubric.
+This workflow imports `../snippets/code-review.md` for the baseline review rubric.
 
 ## Trust Model
 

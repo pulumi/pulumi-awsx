@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 imports:
-  - ../agents/code-review.md
+  - ../snippets/code-review.md
 permissions:
   contents: read
   pull-requests: read
@@ -64,7 +64,7 @@ safe-outputs:
 # AWSX Trusted PR Reviewer
 
 Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in `${{ github.repository }}`.
-This workflow imports `../agents/code-review.md` for the baseline review rubric.
+This workflow imports `../snippets/code-review.md` for the baseline review rubric.
 
 ## Trust Model
 
