@@ -14,7 +14,7 @@ permissions:
 engine:
   id: claude
   env:
-    ANTHROPIC_API_KEY: ${{ steps.esc-secrets.outputs.ANTHROPIC_API_KEY }}
+    ANTHROPIC_API_KEY: ${{ steps.esc-secrets.outputs.ANTHROPIC_API_KEY || '__GH_AW_ACTIVATION_PLACEHOLDER__' }}
 steps:
   - env:
       ESC_ACTION_ENVIRONMENT: github-secrets/${{ github.repository_owner }}-${{ github.event.repository.name }}
@@ -25,6 +25,14 @@ steps:
     id: esc-secrets
     name: Fetch secrets from ESC
     uses: pulumi/esc-action@9eb774255b1a4afb7855678ae8d4a77359da0d9b
+  - name: Validate ESC secret output
+    env:
+      ANTHROPIC_API_KEY_FROM_ESC: ${{ steps.esc-secrets.outputs.ANTHROPIC_API_KEY }}
+    run: |
+      test -n "$ANTHROPIC_API_KEY_FROM_ESC" || {
+        echo "ESC did not return ANTHROPIC_API_KEY";
+        exit 1;
+      }
 tools:
   github:
     lockdown: false
