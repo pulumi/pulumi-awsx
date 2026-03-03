@@ -5,7 +5,7 @@
 This change fixes a regression in `awsx.classic.apigateway.API` where generated
 `aws.lambda.Permission.sourceArn` is malformed after v2->v3 upgrade paths. The
 current template omits a slash between `restAPI.executionArn` and the wildcard
-stage segment, yielding `...<apiId>* /<METHOD>/<path>` semantics instead of the
+stage segment, yielding `...<apiId>*/<METHOD>/<path>` semantics instead of the
 required API Gateway execute-api form.
 
 Goal: produce correctly formatted permission ARNs so API Gateway invocations are
@@ -19,6 +19,7 @@ Primary source issue: https://github.com/pulumi/pulumi-awsx/issues/1884
 
 - File: `awsx-classic/apigateway/api.ts`
 - Location: lambda permission construction in `createLambdaPermissions`
+- Current code anchor: `pulumi.interpolate\`${restAPI.executionArn}*/${methodAndPath}\``
 - Change ARN interpolation from:
   - ``${restAPI.executionArn}*/${methodAndPath}``
   to:
@@ -78,6 +79,7 @@ Every material trade-off from the session is serialized below.
 | D-3 | Compatibility stance | No behavior change except ARN format fix | Allow minor behavior adjustments; include replacement-reduction improvements | Keep bug fix safe and narrowly scoped | Resolved |
 | D-4 | Implementation strategy | Fix + add apigateway unit tests | Minimal surgical fix without tests; fix + adjacent cleanup | Add regression protection while preserving tight scope | Resolved |
 | D-5 | Regeneration command | `make build` | Other regeneration flows | Explicit user preference and full regeneration path | Resolved |
+| D-6 | Regression test delivery strategy for awsx-classic | Deferred | Add minimal runner wiring + test now; fix now + follow-up harness | Feasibility uncertainty around current runnable classic apigateway test entrypoint; human explicitly deferred | Deferred |
 
 ## Traceability
 
@@ -95,11 +97,15 @@ Every material trade-off from the session is serialized below.
 |------|--------|------------|
 | Unexpected generated diff churn after `make build` | Medium | Keep source diff minimal, inspect generated deltas for expected mirrors |
 | Hidden behavior coupling in permission/deployment flow | Medium | Restrict logic change to ARN interpolation and add focused regression test |
+| No obvious runnable `awsx-classic` apigateway test entrypoint/script today | Medium | Add minimal runner wiring if small; otherwise create follow-up bead and document the gap explicitly |
 
 ## Testing
 
 - Add/update unit test(s) in `awsx-classic/tests` for permission sourceArn formatting.
 - Run `yarn --cwd awsx-classic lint`.
-- Run targeted tests for affected area when feasible.
+- Run focused checks for affected area; if no runnable classic test entrypoint is available in this session, record that constraint explicitly and validate via lint + build.
 - Run `make build` to regenerate and verify outputs.
 
+## Open Questions
+
+- [D-6] Should this session include minimal `awsx-classic` test-runner wiring to execute new apigateway regression tests, or should runner wiring and runnable regression coverage be delivered in a follow-up bead?
