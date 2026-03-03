@@ -29,6 +29,7 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 Never hand-edit generated outputs as the source of truth:
 - `sdk/**`
 - `provider/cmd/pulumi-resource-awsx/schema.json`
+- `provider/cmd/pulumi-resource-awsx/schema-embed.json`
 - `.github/workflows/**`
 - `Makefile`
 

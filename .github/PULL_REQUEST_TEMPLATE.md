@@ -12,6 +12,7 @@
 ## Validation
 - [ ] `make test_provider`
 - [ ] `make lint`
+- [ ] `yarn --cwd awsx-classic lint` (if `awsx-classic/**` changed)
 - [ ] `make test` (if integration-impacting; requires AWS creds/resources)
 - [ ] Other targeted checks listed in PR body
 

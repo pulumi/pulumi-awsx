@@ -15,7 +15,7 @@ For building the SDKs:
 
 ## Project Structure
 
-- `awsx`: the provider, written in Typescript
+- `awsx`: the provider, written in TypeScript
 - `awsx-classic`: the original typescript-only version of AWSX
 - `examples`: multi-lang examples which are executed as acceptance tests
 - `examples_legacy`: examples of awsx-classic (no longer run as acceptance tests)
@@ -57,9 +57,9 @@ The SDKs are also generated from the `schema.json` using the `schemagen` program
 
 Before testing, make sure you are authenticated with Pulumi and AWS in your terminal.
 
-For running Typescript examples locally:
+For running TypeScript examples locally:
 
 1. `make provider install_nodejs_sdk` - prep provider and Node.js SDK for local use
 1. `cd examples/YOUR_EXAMPLE`
-1. `yarn && yarn link @pulumi/awsx` - install dependencies, but use local version of
+1. `yarn && yarn link @pulumi/awsx` - install dependencies, but use local version of `@pulumi/awsx`
 1. `PATH=~/YOUR_DEV_FOLDER/pulumi-awsx/bin/:$PATH pulumi up`

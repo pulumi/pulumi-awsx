@@ -28,15 +28,15 @@ $ devbox shell
 
 Alternatively, you can develop in a preconfigured container environment using 
 [an editor or service that supports the devcontainer standard](https://containers.dev/supporting#editors)
-such as [VS Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) or [Github Codespaces](https://codespaces.new/pulumi/pulumi-awsx). Please note that building this project can be fairly memory intensive, if you are having trouble building in a container, please ensure you have at least 12GB of memory available for the container.
+such as [VS Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) or [GitHub Codespaces](https://codespaces.new/pulumi/pulumi-awsx). Please note that building this project can be fairly memory intensive, if you are having trouble building in a container, please ensure you have at least 12GB of memory available for the container.
 
 ## Committing Generated Code
 
 You must generate and check in SDK updates on pull requests that change schema generation or provider API shape (for example changes under `provider/pkg/schemagen/`).
 
-1. Run `make build_sdks` from the root of this repository
+1. Run `make generate` from the root of this repository
 1. Open a pull request containing all changes
-1. *Note:* If a large number of seemingly-unrelated diffs are produced by `make build_sdks` (for example, lots of changes to comments unrelated to the change you are making), ensure that the latest dependencies for the provider are installed by running `go mod tidy` in the `provider/` directory of this repository.
+1. *Note:* If a large number of seemingly-unrelated diffs are produced by `make generate` (for example, lots of changes to comments unrelated to the change you are making), ensure that the latest dependencies for the provider are installed by running `go mod tidy` in the `provider/` directory of this repository.
 
 ## Running Integration Tests
 
