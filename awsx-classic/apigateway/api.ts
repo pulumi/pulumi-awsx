@@ -686,7 +686,7 @@ function createLambdaPermissions(
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
                 // deployed by Pulumi because the API Gateway console "Test" feature invokes the route
                 // handler with the fake stage `test-invoke-stage`.
-                sourceArn: pulumi.interpolate`${restAPI.executionArn}*/${methodAndPath}`,
+                sourceArn: pulumi.interpolate`${restAPI.executionArn}/*/${methodAndPath}`,
             }, { parent }));
         }
     }
