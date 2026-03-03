@@ -27,7 +27,7 @@
 #   Imports:
 #     - ../agents/code-review.md
 #
-# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"e6e4d0c9cb3d6c92a9980ff41884d22814c33fdf2bd39f230db4ed0c56ecb38f","compiler_version":"v0.51.5"}
+# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"26d9191712bc80c3eed3f3788b5746de63d657de12921cb59ed490683e2daac3","compiler_version":"v0.51.5"}
 
 name: "AWSX PR Re-Review (Slash Command)"
 "on":
@@ -92,9 +92,6 @@ jobs:
           GH_AW_INFO_AWF_VERSION: "v0.23.0"
           GH_AW_INFO_AWMG_VERSION: ""
           GH_AW_INFO_FIREWALL_TYPE: "squid"
-          GITHUB_MCP_LOCKDOWN_EXPLICIT: "true"
-          GH_AW_GITHUB_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN }}
-          GH_AW_GITHUB_MCP_SERVER_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN }}
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
@@ -698,7 +695,6 @@ jobs:
               "github": {
                 "container": "ghcr.io/github/github-mcp-server:v0.31.0",
                 "env": {
-                  "GITHUB_LOCKDOWN_MODE": "1",
                   "GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_MCP_SERVER_TOKEN",
                   "GITHUB_READ_ONLY": "1",
                   "GITHUB_TOOLSETS": "pull_requests,repos"

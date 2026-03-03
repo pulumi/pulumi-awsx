@@ -27,7 +27,7 @@ steps:
     uses: pulumi/esc-action@9eb774255b1a4afb7855678ae8d4a77359da0d9b
 tools:
   github:
-    lockdown: true
+    lockdown: false
     toolsets: [pull_requests, repos]
 safe-outputs:
   create-pull-request-review-comment:
@@ -55,7 +55,7 @@ This workflow imports `../agents/code-review.md` for the baseline review rubric.
 ## Trust Model
 
 This workflow is `pull_request` triggered and uses gh-aw default fork filtering (same-repository PRs only unless `forks` is explicitly configured).
-`tools.github.lockdown: true` is enabled.
+`tools.github.lockdown: false` is set to avoid requiring a custom GitHub MCP token.
 If required PR context cannot be read in this trust model, call `noop` with a brief reason and stop.
 
 ## Workflow-Specific Rules

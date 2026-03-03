@@ -27,7 +27,7 @@
 #   Imports:
 #     - ../agents/code-review.md
 #
-# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"95bf3bf4dc4e01f52bb2e075cefc91f64cc969a4f5246d631682864e838887d7","compiler_version":"v0.51.5"}
+# gh-aw-metadata: {"schema_version":"v1","frontmatter_hash":"a7f259c4b31707c8fe0fe93993b4a59acb266faf6127db0bf1041605961bc167","compiler_version":"v0.51.5"}
 
 name: "AWSX Trusted PR Reviewer"
 "on":
@@ -82,9 +82,6 @@ jobs:
           GH_AW_INFO_AWF_VERSION: "v0.23.0"
           GH_AW_INFO_AWMG_VERSION: ""
           GH_AW_INFO_FIREWALL_TYPE: "squid"
-          GITHUB_MCP_LOCKDOWN_EXPLICIT: "true"
-          GH_AW_GITHUB_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN }}
-          GH_AW_GITHUB_MCP_SERVER_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN }}
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
@@ -678,7 +675,6 @@ jobs:
               "github": {
                 "container": "ghcr.io/github/github-mcp-server:v0.31.0",
                 "env": {
-                  "GITHUB_LOCKDOWN_MODE": "1",
                   "GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_MCP_SERVER_TOKEN",
                   "GITHUB_READ_ONLY": "1",
                   "GITHUB_TOOLSETS": "pull_requests,repos"

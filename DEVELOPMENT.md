@@ -76,7 +76,7 @@ They compile to:
 Behavior:
 - Auto review runs on `pull_request` opened events.
 - Re-review runs on maintainer slash command `/review-again` in PR comment/review-comment context.
-- Uses gh-aw pull request defaults (same-repo PRs unless `forks` is configured) with GitHub MCP lockdown enabled.
+- Uses gh-aw pull request defaults (same-repo PRs unless `forks` is configured) with GitHub MCP lockdown disabled.
 - Uses Claude as the engine and posts GitHub-native PR review artifacts via safe outputs.
 
 When updating the workflow source, recompile and validate:
