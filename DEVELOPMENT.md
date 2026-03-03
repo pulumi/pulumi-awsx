@@ -62,3 +62,22 @@ For running Typescript examples locally:
 1. `cd examples/YOUR_EXAMPLE`
 1. `yarn && yarn link @pulumi/awsx` - install dependencies, but use local version of
 1. `PATH=~/YOUR_DEV_FOLDER/pulumi-awsx/bin/:$PATH pulumi up`
+
+## AI Review Workflow
+
+This repository includes these gh-aw workflow sources:
+- `.github/workflows/gh-aw-pr-review.md`
+- `.github/workflows/gh-aw-pr-rereview.md`
+
+They compile to:
+- `.github/workflows/gh-aw-pr-review.lock.yml`
+- `.github/workflows/gh-aw-pr-rereview.lock.yml`
+
+Behavior:
+- Auto review runs on `pull_request` opened events.
+- Re-review runs on maintainer slash command `/review-again` in PR comment/review-comment context.
+- Uses gh-aw pull request defaults (same-repo PRs unless `forks` is configured) with GitHub MCP lockdown enabled.
+- Uses Claude as the engine and posts GitHub-native PR review artifacts via safe outputs.
+
+When updating the workflow source, recompile and validate:
+- `gh aw compile --validate .github/workflows/gh-aw-pr-review.md .github/workflows/gh-aw-pr-rereview.md`
