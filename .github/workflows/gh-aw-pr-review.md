@@ -5,6 +5,12 @@ strict: true
 on:
   pull_request:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to review"
+        required: true
+        type: string
 imports:
   - ../agents/code-review.md
 permissions:
@@ -41,34 +47,35 @@ safe-outputs:
   create-pull-request-review-comment:
     max: 12
     side: "RIGHT"
-    target: "${{ github.event.pull_request.number }}"
+    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
     target-repo: "${{ github.repository }}"
   submit-pull-request-review:
     max: 1
-    target: "${{ github.event.pull_request.number }}"
+    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
   noop:
     max: 1
   messages:
     footer: "> Reviewed by [{workflow_name}]({run_url})"
-    run-started: "Started automated PR review for #${{ github.event.pull_request.number }}."
-    run-success: "Finished automated PR review for #${{ github.event.pull_request.number }}."
-    run-failure: "Automated PR review failed for #${{ github.event.pull_request.number }} ({status})."
+    run-started: "Started automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
+    run-success: "Finished automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
+    run-failure: "Automated PR review failed for #${{ github.event.pull_request.number || github.event.inputs.pr_number }} ({status})."
 ---
 
 # AWSX Trusted PR Reviewer
 
-Review pull request #${{ github.event.pull_request.number }} in `${{ github.repository }}`.
+Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in `${{ github.repository }}`.
 This workflow imports `../agents/code-review.md` for the baseline review rubric.
 
 ## Trust Model
 
-This workflow is `pull_request` triggered and uses gh-aw default fork filtering (same-repository PRs only unless `forks` is explicitly configured).
+This workflow supports both `pull_request` and manual `workflow_dispatch` triggers.
+For `pull_request`, it uses gh-aw default fork filtering (same-repository PRs only unless `forks` is explicitly configured).
 `tools.github.lockdown: false` is set to avoid requiring a custom GitHub MCP token.
 If required PR context cannot be read in this trust model, call `noop` with a brief reason and stop.
 
 ## Workflow-Specific Rules
 
-- Use the PR number from the event context (`${{ github.event.pull_request.number }}`) as the authoritative target.
+- Use `${{ github.event.pull_request.number || github.event.inputs.pr_number }}` as the authoritative PR target.
 - Ignore discovery steps intended for runs without PR context.
 - Use `create-pull-request-review-comment` for actionable inline findings on changed lines.
 - Submit exactly one final review with `submit-pull-request-review`:
