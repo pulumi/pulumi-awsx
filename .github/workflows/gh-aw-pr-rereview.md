@@ -42,11 +42,11 @@ safe-outputs:
   create-pull-request-review-comment:
     max: 12
     side: "RIGHT"
-    target: "*"
+    target: "${{ github.event.pull_request.number || github.event.issue.number }}"
     target-repo: "${{ github.repository }}"
   submit-pull-request-review:
     max: 1
-    target: "*"
+    target: "${{ github.event.pull_request.number || github.event.issue.number }}"
   noop:
     max: 1
   messages:
