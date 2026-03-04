@@ -7,7 +7,7 @@ on:
     name: review-again
     events: [pull_request_comment, pull_request_review_comment]
 imports:
-  - ../snippets/code-review.md
+  - pulumi-labs/gh-aw-internal/.github/snippets/code-review.md@main
 permissions:
   contents: read
   pull-requests: read
@@ -18,7 +18,7 @@ engine:
     ANTHROPIC_API_KEY: ${{ steps.esc-secrets.outputs.ANTHROPIC_API_KEY || '__GH_AW_ACTIVATION_PLACEHOLDER__' }}
 steps:
   - env:
-      ESC_ACTION_ENVIRONMENT: github-secrets/${{ github.repository_owner }}-${{ github.event.repository.name }}
+      ESC_ACTION_ENVIRONMENT: imports/github-secrets
       ESC_ACTION_EXPORT_ENVIRONMENT_VARIABLES: "false"
       ESC_ACTION_OIDC_AUTH: "true"
       ESC_ACTION_OIDC_ORGANIZATION: pulumi
@@ -54,15 +54,16 @@ safe-outputs:
     run-started: "Started slash-command PR re-review."
     run-success: "Finished slash-command PR re-review."
     run-failure: "Slash-command PR re-review failed ({status})."
+source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-rereview.md@41c36433320e2e0bc933ed57d08eae0805faf546
 ---
 
-# AWSX PR Re-Review (Slash Command)
+# Internal PR Re-Review (Slash Command)
 
 This workflow runs when a maintainer posts `/review-again` as the first token in a PR comment or review comment.
 
 Review context text: `${{ needs.activation.outputs.text }}`
 
-This workflow imports `../snippets/code-review.md` for the baseline review rubric.
+This workflow imports `pulumi-labs/gh-aw-internal/.github/snippets/code-review.md@main` for the baseline review rubric.
 
 ## Trust Model
 

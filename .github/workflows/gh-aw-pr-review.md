@@ -1,5 +1,5 @@
 ---
-description: Automated PR review for trusted internal authors.
+description: Automated PR review for trusted internal contributors.
 timeout-minutes: 15
 strict: true
 on:
@@ -12,7 +12,7 @@ on:
         required: true
         type: string
 imports:
-  - ../snippets/code-review.md
+  - pulumi-labs/gh-aw-internal/.github/snippets/code-review.md@main
 permissions:
   contents: read
   pull-requests: read
@@ -23,7 +23,7 @@ engine:
     ANTHROPIC_API_KEY: ${{ steps.esc-secrets.outputs.ANTHROPIC_API_KEY || '__GH_AW_ACTIVATION_PLACEHOLDER__' }}
 steps:
   - env:
-      ESC_ACTION_ENVIRONMENT: github-secrets/${{ github.repository_owner }}-${{ github.event.repository.name }}
+      ESC_ACTION_ENVIRONMENT: imports/github-secrets
       ESC_ACTION_EXPORT_ENVIRONMENT_VARIABLES: "false"
       ESC_ACTION_OIDC_AUTH: "true"
       ESC_ACTION_OIDC_ORGANIZATION: pulumi
@@ -59,12 +59,13 @@ safe-outputs:
     run-started: "Started automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
     run-success: "Finished automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
     run-failure: "Automated PR review failed for #${{ github.event.pull_request.number || github.event.inputs.pr_number }} ({status})."
+source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-review.md@41c36433320e2e0bc933ed57d08eae0805faf546
 ---
 
-# AWSX Trusted PR Reviewer
+# Internal Trusted PR Reviewer
 
-Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in `${{ github.repository }}`.
-This workflow imports `../snippets/code-review.md` for the baseline review rubric.
+Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in repository `${{ github.repository }}`.
+This workflow imports `pulumi-labs/gh-aw-internal/.github/snippets/code-review.md@main` for the baseline review rubric.
 
 ## Trust Model
 

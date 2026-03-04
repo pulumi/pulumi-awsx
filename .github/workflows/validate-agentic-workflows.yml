@@ -5,8 +5,24 @@ on:
     paths:
       - '.github/workflows/*.md'
       - '.github/workflows/*.lock.yml'
+      - '.github/agents/*.md'
+      - '.github/snippets/*.md'
       - '.github/aw/actions-lock.json'
       - '.gitattributes'
+      - 'mise.toml'
+      - '.github/workflows/validate-agentic-workflows.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/*.md'
+      - '.github/workflows/*.lock.yml'
+      - '.github/agents/*.md'
+      - '.github/snippets/*.md'
+      - '.github/aw/actions-lock.json'
+      - '.gitattributes'
+      - 'mise.toml'
+      - '.github/workflows/validate-agentic-workflows.yml'
 
 jobs:
   validate:
@@ -15,26 +31,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install or upgrade gh-aw
+      - name: Install tools via mise
+        uses: jdx/mise-action@v3
+        with:
+          install: true
+
+      - name: Show gh-aw version
         run: |
           set -euo pipefail
-          if gh aw version >/dev/null 2>&1; then
-            gh extension upgrade aw
-          else
-            curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
-          fi
-          gh aw version
+          gh-aw version
 
-      - name: Validate and compile gh-aw workflows
+      - name: Validate and compile workflows
         run: |
           set -euo pipefail
-          gh aw compile --validate \
-            .github/workflows/gh-aw-pr-review.md \
-            .github/workflows/gh-aw-pr-rereview.md
+          gh-aw validate
+          gh-aw compile
 
-      - name: Ensure compiled lock file is up to date
+      - name: Verify lockfiles are up to date
         run: |
-          git diff --exit-code -- \
-            .github/workflows/gh-aw-pr-review.lock.yml \
-            .github/workflows/gh-aw-pr-rereview.lock.yml \
-            .github/aw/actions-lock.json
+          set -euo pipefail
+          git diff --exit-code
