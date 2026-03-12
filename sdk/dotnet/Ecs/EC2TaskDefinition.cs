@@ -131,7 +131,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? Family { get; set; }
 
         /// <summary>
-        /// IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`"&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`"&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`"&gt;`none`&lt;/span&gt;.
+        /// IPC resource namespace to be used for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`"&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`"&gt;`task`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`"&gt;`none`&lt;/span&gt;.
         /// </summary>
         [Input("ipcMode")]
         public Input<string>? IpcMode { get; set; }
@@ -150,13 +150,13 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? Memory { get; set; }
 
         /// <summary>
-        /// Docker networking mode to use for the containers in the task. Valid values are &lt;span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`"&gt;`none`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`"&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`"&gt;`awsvpc`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`"&gt;`host`&lt;/span&gt;.
+        /// Docker networking mode to use for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs="`awsvpc`" pulumi-lang-dotnet="`Awsvpc`" pulumi-lang-go="`awsvpc`" pulumi-lang-python="`awsvpc`" pulumi-lang-yaml="`awsvpc`" pulumi-lang-java="`awsvpc`"&gt;`awsvpc`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`bridge`" pulumi-lang-dotnet="`Bridge`" pulumi-lang-go="`bridge`" pulumi-lang-python="`bridge`" pulumi-lang-yaml="`bridge`" pulumi-lang-java="`bridge`"&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`"&gt;`host`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs="`none`" pulumi-lang-dotnet="`None`" pulumi-lang-go="`none`" pulumi-lang-python="`none`" pulumi-lang-yaml="`none`" pulumi-lang-java="`none`"&gt;`none`&lt;/span&gt;.
         /// </summary>
         [Input("networkMode")]
         public Input<string>? NetworkMode { get; set; }
 
         /// <summary>
-        /// Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs="`host`" pulumi-lang-dotnet="`Host`" pulumi-lang-go="`host`" pulumi-lang-python="`host`" pulumi-lang-yaml="`host`" pulumi-lang-java="`host`"&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`"&gt;`task`&lt;/span&gt;.
+        /// Process namespace to use for the containers in the task. Valid values: host`, &lt;span pulumi-lang-nodejs="`task`" pulumi-lang-dotnet="`Task`" pulumi-lang-go="`task`" pulumi-lang-python="`task`" pulumi-lang-yaml="`task`" pulumi-lang-java="`task`"&gt;`task`&lt;/span&gt;.
         /// </summary>
         [Input("pidMode")]
         public Input<string>? PidMode { get; set; }
