@@ -18,7 +18,7 @@ on:
 imports:
   - shared/review.md
   - shared/plugins/code-review/code-review.md
-source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-review.md@d0818ff576b2db07efcadedb0c37526b978844fe
+source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-review.md@fcc1c7863be902c1ec6165ec1ac9b029a98043a3
 ---
 
 # Internal Trusted PR Reviewer
