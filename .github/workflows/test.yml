@@ -13,6 +13,7 @@ on:
 env:
   PR_COMMIT_SHA: ${{ github.event.client_payload.pull_request.head.sha }}
   MISE_ENV: test
+  GO_TEST_EXEC: "gotestsum --format github-actions --"
 
   AWS_REGION: us-west-2
   PROVIDER: awsx
@@ -64,7 +65,7 @@ jobs:
         MISE_ENV: test
         MISE_FETCH_REMOTE_VERSIONS_TIMEOUT: 30s
       with:
-        version: 2026.3.7
+        version: 2026.2.15
         github_token: ${{ steps.app-auth.outputs.token }}
         # also save this cache since we are using a different mise env.
         cache_save: true
@@ -114,14 +115,14 @@ jobs:
       run: make install_${{ matrix.language}}_sdk
     - name: Run tests
       if: matrix.testTarget == 'local'
-      run: cd examples && go test -v -count=1 -cover -timeout 2h -tags=${{ matrix.language }} -skip TestPulumiExamples -parallel 4 .
+      run: make TESTTAGS=${{ matrix.language }} GOTESTARGS="-count=1 -cover -skip TestPulumiExamples" test
       env:
         ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
         ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Run pulumi/examples tests
       if: matrix.testTarget == 'pulumiExamples'
-      run: cd examples && go test -v -count=1 -cover -timeout 2h -tags=${{ matrix.language }} -run TestPulumiExamples -parallel 4 .
+      run: make TESTTAGS=${{ matrix.language }} GOTESTARGS="-count=1 -cover -run TestPulumiExamples" test
       env:
         ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
         ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
