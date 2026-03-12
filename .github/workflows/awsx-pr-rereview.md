@@ -13,7 +13,7 @@ permissions:
   contents: read
   pull-requests: read
   id-token: write
-source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-rereview.md@11378a6b3ecf9de40ec73f53e078964ec567f5f0
+source: pulumi-labs/gh-aw-internal/.github/workflows/gh-aw-pr-rereview.md@d0818ff576b2db07efcadedb0c37526b978844fe
 ---
 
 # Internal PR Re-Review (Slash Command)

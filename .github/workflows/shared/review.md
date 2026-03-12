@@ -34,22 +34,22 @@ safe-outputs:
   create-pull-request-review-comment:
     max: 12
     side: "RIGHT"
-    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
+    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}"
     target-repo: "${{ github.repository }}"
   submit-pull-request-review:
     max: 1
-    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number }}"
+    target: "${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}"
   noop:
     max: 1
   messages:
     footer: "> Reviewed by [{workflow_name}]({run_url})"
-    run-started: "Started automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
-    run-success: "Finished automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number }}."
-    run-failure: "Automated PR review failed for #${{ github.event.pull_request.number || github.event.inputs.pr_number }} ({status})."
+    run-started: "Started automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}."
+    run-success: "Finished automated PR review for #${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}."
+    run-failure: "Automated PR review failed for #${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }} ({status})."
 ---
 
 
-Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number }} in repository `${{ github.repository }}`.
+Review pull request #${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }} in repository `${{ github.repository }}`.
 
 Workflow-specific rules:
 - Use `${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}` as the authoritative PR target.
