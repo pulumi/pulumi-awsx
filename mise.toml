@@ -1,11 +1,8 @@
-[env]
-GH_AW_VERSION = "0.53.1"
-
 [tools]
 golangci-lint = "2.7.0"
 
 [tools."github:github/gh-aw"]
-version = "{{ env.GH_AW_VERSION }}"
+version = "0.57.2"
 bin = "gh-aw"
 
 [tasks.aw-version]
