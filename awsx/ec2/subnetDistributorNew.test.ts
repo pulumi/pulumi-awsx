@@ -530,6 +530,58 @@ describe("valid subnet sizes", () => {
 });
 
 describe("validating and normalizing inputs", () => {
+  it("detects duplicate subnet types without unique names", () => {
+    expect(() =>
+      validateAndNormalizeSubnetInputs(
+        [
+          { type: "Isolated", cidrMask: 24 },
+          { type: "Isolated", cidrMask: 24 },
+        ],
+        2,
+      ),
+    ).toThrowError(/Multiple subnet specs of type "isolated" found without unique names/);
+  });
+  it("detects duplicate subnet types with some unnamed", () => {
+    expect(() =>
+      validateAndNormalizeSubnetInputs(
+        [
+          { type: "Private", name: "my-private" },
+          { type: "Private" }, // No name
+        ],
+        2,
+      ),
+    ).toThrowError(/Multiple subnet specs of type "private" found without unique names/);
+  });
+  it("detects duplicate subnet types with duplicate names", () => {
+    expect(() =>
+      validateAndNormalizeSubnetInputs(
+        [
+          { type: "Public", name: "my-public" },
+          { type: "Public", name: "my-public" },
+        ],
+        2,
+      ),
+    ).toThrowError(/Multiple subnet specs of type "public" found without unique names/);
+  });
+  it("allows duplicate subnet types with unique names", () => {
+    const result = validateAndNormalizeSubnetInputs(
+      [
+        { type: "Isolated", name: "isolated-1", cidrMask: 24 },
+        { type: "Isolated", name: "isolated-2", cidrMask: 24 },
+      ],
+      2,
+    );
+    expect(result).toBeDefined();
+    expect(result!.normalizedSpecs).toHaveLength(2);
+  });
+  it("allows single subnet of each type without names", () => {
+    const result = validateAndNormalizeSubnetInputs(
+      [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
+      2,
+    );
+    expect(result).toBeDefined();
+    expect(result!.normalizedSpecs).toHaveLength(3);
+  });
   it("detects invalid sizes", () => {
     expect(() => validateAndNormalizeSubnetInputs([{ type: "Public", size: 100 }], 1)).toThrowError(
       "The following subnet sizes are invalid: 100. Valid sizes are: ",
