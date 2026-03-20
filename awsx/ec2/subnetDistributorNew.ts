@@ -238,6 +238,34 @@ export function validateAndNormalizeSubnetInputs(
 
   const issues: string[] = [];
 
+  // Check for duplicate subnet types without unique names.
+  const typeGroups = new Map<string, SubnetSpecInputs[]>();
+  for (const spec of subnetArgs) {
+    const typeKey = spec.type.toLowerCase();
+    if (!typeGroups.has(typeKey)) {
+      typeGroups.set(typeKey, []);
+    }
+    typeGroups.get(typeKey)!.push(spec);
+  }
+
+  for (const [type, specs] of typeGroups) {
+    if (specs.length > 1) {
+      // Count unnamed specs and check for unique names among named specs
+      const names = specs.map((s) => s.name);
+      const unnamedCount = names.filter((n) => n === undefined).length;
+      const namedSpecs = names.filter((n) => n !== undefined);
+      const uniqueNamedSpecs = new Set(namedSpecs);
+
+      // Rule: At most one unnamed spec per type, and all named specs must have unique names
+      if (unnamedCount > 1 || uniqueNamedSpecs.size < namedSpecs.length) {
+        issues.push(
+          `Multiple subnet specs of type "${type}" require unique names. ` +
+          `You can have at most one unnamed subnet per type. All other subnets of the same type must have unique "name" properties to avoid duplicate resource names.`,
+        );
+      }
+    }
+  }
+
   // All sizes must be valid.
   const invalidSizes = subnetArgs.filter(
     (spec) => spec.size !== undefined && !validSubnetSizes.includes(spec.size),
