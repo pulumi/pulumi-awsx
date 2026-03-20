@@ -250,15 +250,17 @@ export function validateAndNormalizeSubnetInputs(
 
   for (const [type, specs] of typeGroups) {
     if (specs.length > 1) {
-      // Check if all specs have unique names
+      // Count unnamed specs and check for unique names among named specs
       const names = specs.map((s) => s.name);
-      const hasUnnamedSpecs = names.some((n) => n === undefined);
-      const uniqueNames = new Set(names.filter((n) => n !== undefined));
+      const unnamedCount = names.filter((n) => n === undefined).length;
+      const namedSpecs = names.filter((n) => n !== undefined);
+      const uniqueNamedSpecs = new Set(namedSpecs);
 
-      if (hasUnnamedSpecs || uniqueNames.size < specs.length) {
+      // Rule: At most one unnamed spec per type, and all named specs must have unique names
+      if (unnamedCount > 1 || uniqueNamedSpecs.size < namedSpecs.length) {
         issues.push(
-          `Multiple subnet specs of type "${type}" found without unique names. ` +
-          `When you have more than one subnet of the same type, each must have a unique "name" property to avoid duplicate resource names.`,
+          `Multiple subnet specs of type "${type}" require unique names. ` +
+          `You can have at most one unnamed subnet per type. All other subnets of the same type must have unique "name" properties to avoid duplicate resource names.`,
         );
       }
     }

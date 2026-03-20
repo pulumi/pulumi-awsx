@@ -539,18 +539,29 @@ describe("validating and normalizing inputs", () => {
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "isolated" found without unique names/);
+    ).toThrowError(/Multiple subnet specs of type "isolated" require unique names/);
   });
-  it("detects duplicate subnet types with some unnamed", () => {
+  it("allows one named and one unnamed subnet of the same type", () => {
+    const result = validateAndNormalizeSubnetInputs(
+      [
+        { type: "Private", name: "my-private" },
+        { type: "Private" }, // No name - this is allowed (at most one unnamed)
+      ],
+      2,
+    );
+    expect(result).toBeDefined();
+    expect(result!.normalizedSpecs).toHaveLength(2);
+  });
+  it("detects more than one unnamed subnet of the same type", () => {
     expect(() =>
       validateAndNormalizeSubnetInputs(
         [
-          { type: "Private", name: "my-private" },
-          { type: "Private" }, // No name
+          { type: "Public" }, // No name
+          { type: "Public" }, // No name - error, second unnamed
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "private" found without unique names/);
+    ).toThrowError(/Multiple subnet specs of type "public" require unique names/);
   });
   it("detects duplicate subnet types with duplicate names", () => {
     expect(() =>
@@ -561,7 +572,7 @@ describe("validating and normalizing inputs", () => {
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "public" found without unique names/);
+    ).toThrowError(/Multiple subnet specs of type "public" require unique names/);
   });
   it("allows duplicate subnet types with unique names", () => {
     const result = validateAndNormalizeSubnetInputs(
@@ -648,12 +659,14 @@ describe("validating and normalizing inputs", () => {
         [
           {
             type: "Public",
+            name: "public-1",
             cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20"],
             size: 4096,
             cidrMask: 20,
           },
           {
             type: "Public",
+            name: "public-2",
             cidrBlocks: ["10.0.32.0/21", "10.0.40.0/21"],
             size: 2048,
             cidrMask: 21,
