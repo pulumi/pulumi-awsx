@@ -70,6 +70,10 @@ namespace Pulumi.Awsx.Ec2
         /// </summary>
         public static SubnetAllocationStrategy Auto { get; } = new SubnetAllocationStrategy("Auto");
         /// <summary>
+        /// Start from the default auto-generated public/private layout and merge user-provided subnet settings into matching subnet types.
+        /// </summary>
+        public static SubnetAllocationStrategy AutoMerge { get; } = new SubnetAllocationStrategy("AutoMerge");
+        /// <summary>
         /// Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
         /// </summary>
         public static SubnetAllocationStrategy Exact { get; } = new SubnetAllocationStrategy("Exact");

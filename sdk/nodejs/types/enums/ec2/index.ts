@@ -32,6 +32,10 @@ export const SubnetAllocationStrategy = {
      */
     Auto: "Auto",
     /**
+     * Start from the default auto-generated public/private layout and merge user-provided subnet settings into matching subnet types.
+     */
+    AutoMerge: "AutoMerge",
+    /**
      * Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
      */
     Exact: "Exact",
