@@ -15,9 +15,11 @@
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import {
+  assertAutoMergeCompatibleSubnetSpecs,
   defaultSubnetInputs,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   nextNetmask,
   validSubnetSizes,
   validateAndNormalizeSubnetInputs,
@@ -430,6 +432,37 @@ describe("explicit subnet layouts", () => {
         type: "Private",
       },
     ]);
+  });
+});
+
+describe("merging SubnetSpecs with defaults for AutoMerge", () => {
+  it("should add missing default types when user only specifies Public with tags", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(2);
+    expect(merged).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }),
+        expect.objectContaining({ type: "Private" }),
+      ]),
+    );
+  });
+
+  it("should preserve subnet sizing for user-provided types while adding defaults", () => {
+    const userSpecs: SubnetSpecInputs[] = [{ type: "Public", cidrMask: 20 }];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+
+    expect(merged).toEqual([{ type: "Public", cidrMask: 20 }, { type: "Private" }]);
+  });
+
+  it("should reject explicit cidrBlocks for AutoMerge", () => {
+    expect(() =>
+      assertAutoMergeCompatibleSubnetSpecs([
+        { type: "Public", cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20"] },
+      ]),
+    ).toThrow(/subnetStrategy="AutoMerge" does not support subnetSpecs with explicit cidrBlocks/);
   });
 });
 

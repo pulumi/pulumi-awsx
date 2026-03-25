@@ -19,8 +19,10 @@ import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import * as vpcConverters from "./vpcConverters";
 import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
+  assertAutoMergeCompatibleSubnetSpecs,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
@@ -462,8 +464,17 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
+    if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
+      assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
+    }
+
+    const effectiveSubnetSpecs =
+      subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined
+        ? mergeWithDefaultSubnetSpecs(args.subnetSpecs)
+        : args.subnetSpecs;
+
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      args.subnetSpecs,
+      effectiveSubnetSpecs,
       availabilityZones.length,
     );
 
@@ -550,7 +561,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     | { allocator: "LegacyAllocator" | "NewAllocator" }
     | { allocator: "ExplicitAllocator"; specs: ExplicitSubnetSpecInputs[] } {
     if (parsedSpecs === undefined) {
-      return subnetStrategy === "Auto"
+      return subnetStrategy === "Auto" || subnetStrategy === "AutoMerge"
         ? { allocator: "NewAllocator" }
         : { allocator: "LegacyAllocator" };
     }

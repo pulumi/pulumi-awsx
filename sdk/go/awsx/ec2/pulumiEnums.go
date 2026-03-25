@@ -189,6 +189,8 @@ const (
 	SubnetAllocationStrategyLegacy = SubnetAllocationStrategy("Legacy")
 	// Order remains as specified by specs, allowing gaps where required.
 	SubnetAllocationStrategyAuto = SubnetAllocationStrategy("Auto")
+	// Start from the default auto-generated public/private layout and merge user-provided subnet settings into matching subnet types.
+	SubnetAllocationStrategyAutoMerge = SubnetAllocationStrategy("AutoMerge")
 	// Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
 	SubnetAllocationStrategyExact = SubnetAllocationStrategy("Exact")
 )
@@ -317,6 +319,7 @@ func (o SubnetAllocationStrategyPtrOutput) ToStringPtrOutputWithContext(ctx cont
 //
 //	SubnetAllocationStrategyLegacy
 //	SubnetAllocationStrategyAuto
+//	SubnetAllocationStrategyAutoMerge
 //	SubnetAllocationStrategyExact
 type SubnetAllocationStrategyInput interface {
 	pulumi.Input
