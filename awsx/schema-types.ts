@@ -648,8 +648,8 @@ export interface ResolvedSubnetSpecOutputs {
     readonly size?: pulumi.Output<number>;
     readonly type: pulumi.Output<SubnetTypeOutputs>;
 }
-export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
-export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";
+export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "AutoMerge" | "Exact";
+export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "AutoMerge" | "Exact";
 export interface SubnetSpecInputs {
     readonly assignIpv6AddressOnCreation?: boolean;
     readonly cidrBlocks?: string[];

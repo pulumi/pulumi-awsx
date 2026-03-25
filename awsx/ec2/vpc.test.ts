@@ -593,6 +593,23 @@ describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
     }
   });
 
+  it("keeps Auto backward-compatible for the #1913 public-only cidrMask case", async () => {
+    const vpc = new Vpc("auto-public-cidr-only", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public", cidrMask: 20 }],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(2);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.SubnetType).toBe("Public");
+    }
+  });
+
   it("creates both Public and Private subnets when only Public is specified with tags", async () => {
     const vpc = new Vpc("tag-test", {
       subnetStrategy: "AutoMerge",
