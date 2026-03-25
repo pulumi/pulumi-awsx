@@ -21,7 +21,6 @@ import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./sub
 import {
   getSubnetSpecs,
   getSubnetSpecsExplicit,
-  mergeWithDefaultSubnetSpecs,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
@@ -463,18 +462,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
-    // Explicit cidrBlocks means user controls the full subnet layout.
-    // Merging in bare defaults would create mixed explicit/non-explicit specs and fail validation.
-    const hasExplicitCidrBlocks =
-      args.subnetSpecs?.some((spec) => spec.cidrBlocks !== undefined) ?? false;
-    const shouldMergeWithDefaultSubnetSpecs =
-      subnetStrategy === "Auto" && args.subnetSpecs !== undefined && !hasExplicitCidrBlocks;
-    const effectiveSubnetSpecs = shouldMergeWithDefaultSubnetSpecs
-      ? mergeWithDefaultSubnetSpecs(args.subnetSpecs)
-      : args.subnetSpecs;
-
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      effectiveSubnetSpecs,
+      args.subnetSpecs,
       availabilityZones.length,
     );
 
