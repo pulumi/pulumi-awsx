@@ -15,9 +15,12 @@
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import {
+  assertAutoMergeCompatibleSubnetSpecs,
   defaultSubnetInputs,
+  getSubnetSpecsAutoMerge,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   nextNetmask,
   validSubnetSizes,
   validateAndNormalizeSubnetInputs,
@@ -430,6 +433,79 @@ describe("explicit subnet layouts", () => {
         type: "Private",
       },
     ]);
+  });
+});
+
+describe("merging SubnetSpecs with defaults for AutoMerge", () => {
+  it("should add missing default types when user only specifies Public with tags", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+    expect(merged).toHaveLength(2);
+    expect(merged[0]).toEqual({ type: "Private" });
+    expect(merged[1]).toEqual({
+      type: "Public",
+      tags: { "kubernetes.io/role/elb": "1" },
+    });
+  });
+
+  it("should preserve subnet sizing for user-provided types while adding defaults", () => {
+    const userSpecs: SubnetSpecInputs[] = [{ type: "Public", cidrMask: 20 }];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
+
+    expect(merged).toEqual([{ type: "Private" }, { type: "Public", cidrMask: 20 }]);
+  });
+
+  it("should preserve default cidr sizing when merging onto concrete defaults", () => {
+    const userSpecs: SubnetSpecInputs[] = [
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+    ];
+    const merged = mergeWithDefaultSubnetSpecs(userSpecs, defaultSubnetInputs(17));
+
+    expect(merged).toEqual([
+      { type: "Private", cidrMask: 18 },
+      { type: "Public", cidrMask: 19, tags: { "kubernetes.io/role/elb": "1" } },
+    ]);
+  });
+
+  it("should reject explicit cidrBlocks for AutoMerge", () => {
+    expect(() =>
+      assertAutoMergeCompatibleSubnetSpecs([
+        { type: "Public", cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20"] },
+      ]),
+    ).toThrow(/subnetStrategy="AutoMerge" does not support subnetSpecs with explicit cidrBlocks/);
+  });
+
+  it("should preserve default layout semantics when used with getSubnetSpecsAutoMerge", () => {
+    const result = getSubnetSpecsAutoMerge(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      [{ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
+    );
+
+    validatePartialSubnetSpecs(result, (ss) => {
+      expect(ss).toHaveLength(4);
+      expect(ss[0]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.0.0/18",
+      });
+      expect(ss[1]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.64.0/19",
+        tags: { "kubernetes.io/role/elb": "1" },
+      });
+      expect(ss[2]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.128.0/18",
+      });
+      expect(ss[3]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.192.0/19",
+        tags: { "kubernetes.io/role/elb": "1" },
+      });
+    });
   });
 });
 

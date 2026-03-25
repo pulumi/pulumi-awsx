@@ -56,6 +56,49 @@ export function getSubnetSpecs(
   });
 }
 
+export function getSubnetSpecsAutoMerge(
+  vpcName: string,
+  vpcCidr: pulumi.Input<string>,
+  azNames: string[],
+  userSubnetInputs: SubnetSpecInputs[] | undefined,
+  azCidrMask?: number,
+): SubnetSpecPartial[] {
+  const allocatedCidrBlocks = inputApply(
+    vpcCidr,
+    (actualVpcCidr) =>
+      allocateSubnetCidrBlocksAutoMerge(
+        vpcName,
+        actualVpcCidr,
+        azNames,
+        userSubnetInputs,
+        azCidrMask,
+      ),
+    (x) => x,
+    (x) => x,
+  );
+  const subnetSpecs = mergeWithDefaultSubnetSpecs(userSubnetInputs ?? [], defaultSubnetInputsBare());
+  return azNames.flatMap((azName, azIndex) => {
+    const azNum = azIndex + 1;
+    return subnetSpecs.map((subnetSpec, subnetIndex) => {
+      const subnetAllocID = subnetAllocationID(vpcName, subnetSpec, azNum, subnetIndex);
+      const cidrBlock = inputApply(
+        allocatedCidrBlocks,
+        (t) => t[subnetAllocID].cidrBlock,
+        (x) => x,
+        (x) => x,
+      );
+      return {
+        cidrBlock,
+        type: subnetSpec.type,
+        azName,
+        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
+        tags: subnetSpec.tags,
+      };
+    });
+  });
+}
+
 type SubnetAllocationID = string;
 
 function subnetAllocationID(
@@ -132,8 +175,65 @@ function allocateSubnetCidrBlocks(
   return allocation;
 }
 
+function allocateSubnetCidrBlocksAutoMerge(
+  vpcName: string,
+  vpcCidr: string,
+  azNames: string[],
+  userSubnetInputs: SubnetSpecInputs[] | undefined,
+  azCidrMask?: number,
+): Record<SubnetAllocationID, { cidrBlock: pulumi.Input<string> }> {
+  const vpcNetmask = new Netmask(vpcCidr);
+  const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
+  const mergedSubnetInputs = mergeWithDefaultSubnetSpecs(
+    userSubnetInputs ?? [],
+    defaultSubnetInputs(azBitmask),
+  );
+  return allocateSubnetCidrBlocks(vpcName, vpcCidr, azNames, mergedSubnetInputs, azCidrMask);
+}
+
 function defaultSubnetInputsBare(): SubnetSpecInputs[] {
   return [{ type: "Private" }, { type: "Public" }];
+}
+
+/**
+ * Merges user-provided SubnetSpecs with the default specs for AutoMerge.
+ * Any default subnet types not present in the user's specs are added automatically.
+ * This allows users to customize specific subnet types (e.g., add tags to Public)
+ * without losing the other default subnet types (e.g., Private).
+ */
+export function mergeWithDefaultSubnetSpecs(
+  userSpecs: SubnetSpecInputs[],
+  defaultSpecs: SubnetSpecInputs[] = defaultSubnetInputsBare(),
+): SubnetSpecInputs[] {
+  const overridesByType = new Map<string, SubnetSpecInputs>();
+  const extraSpecs: SubnetSpecInputs[] = [];
+
+  for (const spec of userSpecs) {
+    const defaultMatch = defaultSpecs.find(
+      (candidate) => candidate.type.toLowerCase() === spec.type.toLowerCase(),
+    );
+    if (defaultMatch !== undefined && spec.name === undefined) {
+      overridesByType.set(spec.type.toLowerCase(), spec);
+      continue;
+    }
+    extraSpecs.push(spec);
+  }
+
+  const mergedDefaults = defaultSpecs.map((defaultSpec) => ({
+    ...defaultSpec,
+    ...overridesByType.get(defaultSpec.type.toLowerCase()),
+  }));
+
+  return [...mergedDefaults, ...extraSpecs];
+}
+
+export function assertAutoMergeCompatibleSubnetSpecs(userSpecs: SubnetSpecInputs[]): void {
+  if (userSpecs.some((spec) => spec.cidrBlocks !== undefined)) {
+    throw new Error(
+      `subnetStrategy="AutoMerge" does not support subnetSpecs with explicit cidrBlocks. ` +
+        `Use subnetStrategy="Auto" or "Exact" to fully specify the subnet layout.`,
+    );
+  }
 }
 
 export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {

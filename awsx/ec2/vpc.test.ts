@@ -340,6 +340,11 @@ describe("picking subnet allocator", () => {
     expect(a.allocator).toBe("NewAllocator");
   });
 
+  it("picks NewAllocator for the auto-merge strategy with no specs", () => {
+    const a = Vpc.pickSubnetAllocator(undefined, "AutoMerge");
+    expect(a.allocator).toBe("NewAllocator");
+  });
+
   // This behavior looks like a degenerate case perhaps marking the strategy as invalid and failing could be preferable.
   it("picks legacy allocator for the exact strategy with no specs", () => {
     const a = Vpc.pickSubnetAllocator(undefined, "Exact");
@@ -371,6 +376,7 @@ describe("picking subnet allocator", () => {
       ).allocator;
     expect(f("Legacy")).toBe("LegacyAllocator");
     expect(f("Auto")).toBe("NewAllocator");
+    expect(f("AutoMerge")).toBe("NewAllocator");
     expect(f("Exact")).toBe("NewAllocator"); // this case is a bit suspect
   });
 });
@@ -534,6 +540,132 @@ describe("child resource api", () => {
         expect(ipv6Cidr).toBeUndefined();
       }
     }
+  });
+
+});
+
+describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
+  function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
+    return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
+  }
+
+  beforeAll(async () => {
+    await runtime.setMocks({
+      call(args) {
+        switch (args.token) {
+          case "aws:index/getAvailabilityZones:getAvailabilityZones":
+            const result: pulumiAws.GetAvailabilityZonesResult = {
+              id: "mocked-az-result",
+              zoneIds: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              names: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              groupNames: [1, 2, 3].map((i) => `${pulumiAws.Region.USEast1}${i}`),
+              region: pulumiAws.Region.USEast1,
+            };
+            return result;
+          default:
+            throw new Error(`Mock not implemented: ${args.token}`);
+        }
+      },
+      newResource(args) {
+        return {
+          id: `mocked::${args.type}::${args.name}-id`,
+          state: args.inputs,
+        };
+      },
+    });
+  });
+
+  it("keeps Auto backward-compatible when only Public is specified", async () => {
+    const vpc = new Vpc("auto-public-only", {
+      subnetStrategy: "Auto",
+      natGateways: { strategy: "None" },
+      subnetSpecs: [{ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(3);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.SubnetType).toBe("Public");
+      expect(tags?.["kubernetes.io/role/elb"]).toBe("1");
+    }
+  });
+
+  it("keeps Auto backward-compatible for the #1913 public-only cidrMask case", async () => {
+    const vpc = new Vpc("auto-public-cidr-only", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public", cidrMask: 20 }],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(2);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.SubnetType).toBe("Public");
+    }
+  });
+
+  it("creates both Public and Private subnets when only Public is specified with tags", async () => {
+    const vpc = new Vpc("tag-test", {
+      subnetStrategy: "AutoMerge",
+      subnetSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(6);
+
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      const subnetType = tags?.SubnetType;
+      if (subnetType === "Public") {
+        expect(tags?.["kubernetes.io/role/elb"]).toBe("1");
+      }
+    }
+  });
+
+  it("applies tags only to the specified subnet type, not the auto-added ones", async () => {
+    const vpc = new Vpc("tag-test-2", {
+      subnetStrategy: "AutoMerge",
+      subnetSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    for (const subnet of subnets) {
+      const tags = await unwrap(subnet.tags);
+      const subnetType = tags?.SubnetType;
+      if (subnetType === "Private") {
+        expect(tags?.["kubernetes.io/role/elb"]).toBeUndefined();
+      }
+    }
+  });
+
+  it("creates the default layout and preserves user sizing overrides", async () => {
+    const vpc = new Vpc("auto-merge-sizing", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "AutoMerge",
+      subnetSpecs: [{ type: "Public", cidrMask: 20 }],
+    });
+
+    const subnets = await unwrap(vpc.subnets);
+    expect(subnets).toHaveLength(4);
+
+    const subnetTypes = await Promise.all(
+      subnets.map(async (subnet) => {
+        const tags = await unwrap(subnet.tags);
+        return tags?.SubnetType;
+      }),
+    );
+    expect(subnetTypes.filter((type) => type === "Public")).toHaveLength(2);
+    expect(subnetTypes.filter((type) => type === "Private")).toHaveLength(2);
   });
 
 });

@@ -475,6 +475,11 @@ func subnetAllocationStrategy() schema.ComplexTypeSpec {
 				Description: "Order remains as specified by specs, allowing gaps where required.",
 			},
 			{
+				Value: "AutoMerge",
+				Description: "Start from the default auto-generated public/private " +
+					"layout and merge user-provided subnet settings into matching subnet types.",
+			},
+			{
 				Value:       "Exact",
 				Description: "Whole range of VPC must be accounted for, using \"Unused\" spec types for deliberate gaps.",
 			},

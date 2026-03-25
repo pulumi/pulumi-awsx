@@ -19,8 +19,11 @@ import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import * as vpcConverters from "./vpcConverters";
 import { SubnetSpec, SubnetSpecPartial, validatePartialSubnetSpecs } from "./subnetSpecs";
 import {
+  assertAutoMergeCompatibleSubnetSpecs,
+  getSubnetSpecsAutoMerge,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
@@ -462,8 +465,17 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
+    if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
+      assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
+    }
+
+    const effectiveSubnetSpecs =
+      subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined
+        ? mergeWithDefaultSubnetSpecs(args.subnetSpecs)
+        : args.subnetSpecs;
+
     const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      args.subnetSpecs,
+      effectiveSubnetSpecs,
       availabilityZones.length,
     );
 
@@ -488,18 +500,28 @@ export class Vpc extends schema.Vpc<VpcData> {
           return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
         case "NewAllocator":
         default:
-          return getSubnetSpecs(
-            name,
-            cidrBlock,
-            availabilityZones,
-            parsedSpecs?.normalizedSpecs,
-            args.availabilityZoneCidrMask,
-          );
+          return subnetStrategy === "AutoMerge"
+            ? getSubnetSpecsAutoMerge(
+                name,
+                cidrBlock,
+                availabilityZones,
+                args.subnetSpecs,
+                args.availabilityZoneCidrMask,
+              )
+            : getSubnetSpecs(
+                name,
+                cidrBlock,
+                availabilityZones,
+                parsedSpecs?.normalizedSpecs,
+                args.availabilityZoneCidrMask,
+              );
       }
     })();
 
     const subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]> =
-      subnetStrategy === "Legacy" || parsedSpecs?.normalizedSpecs === undefined
+      subnetStrategy === "Legacy" ||
+      subnetStrategy === "AutoMerge" ||
+      parsedSpecs?.normalizedSpecs === undefined
         ? pulumi
             .output(subnetSpecs)
             .apply((ss) => extractSubnetSpecInputFromLegacyLayout(ss, name, availabilityZones))
@@ -550,7 +572,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     | { allocator: "LegacyAllocator" | "NewAllocator" }
     | { allocator: "ExplicitAllocator"; specs: ExplicitSubnetSpecInputs[] } {
     if (parsedSpecs === undefined) {
-      return subnetStrategy === "Auto"
+      return subnetStrategy === "Auto" || subnetStrategy === "AutoMerge"
         ? { allocator: "NewAllocator" }
         : { allocator: "LegacyAllocator" };
     }
