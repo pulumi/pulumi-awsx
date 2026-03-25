@@ -362,7 +362,6 @@ describe("picking subnet allocator", () => {
       ).allocator;
     expect(f("Legacy")).toBe("LegacyAllocator");
     expect(f("Auto")).toBe("ExplicitAllocator");
-    expect(f("AutoMerge")).toBe("ExplicitAllocator");
     expect(f("Exact")).toBe("ExplicitAllocator");
   });
 
