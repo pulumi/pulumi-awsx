@@ -1168,8 +1168,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"fmt"
-    /// 
     /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -1311,17 +1309,19 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     /// #### Required
     /// 
-    /// * `id` - (String) ID of the VPC endpoint.
+    /// * &lt;span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`"&gt;`id`&lt;/span&gt; - (String) ID of the VPC endpoint.
     /// 
     /// #### Optional
     /// 
-    /// * `account_id` (String) AWS Account where this resource is managed.
+    /// * &lt;span pulumi-lang-nodejs="`accountId`" pulumi-lang-dotnet="`AccountId`" pulumi-lang-go="`accountId`" pulumi-lang-python="`account_id`" pulumi-lang-yaml="`accountId`" pulumi-lang-java="`accountId`"&gt;`account_id`&lt;/span&gt; (String) AWS Account where this resource is managed.
+    /// * &lt;span pulumi-lang-nodejs="`region`" pulumi-lang-dotnet="`Region`" pulumi-lang-go="`region`" pulumi-lang-python="`region`" pulumi-lang-yaml="`region`" pulumi-lang-java="`region`"&gt;`region`&lt;/span&gt; (String) Region where this resource is managed.
     /// 
-    /// * `region` (String) Region where this resource is managed.
     /// 
-    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint &lt;span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`"&gt;`id`&lt;/span&gt;. For example:
     /// 
-    /// % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
+    /// ```sh
+    /// $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
+    /// ```
     /// </summary>
     public sealed class VpcEndpointSpecArgs : global::Pulumi.ResourceArgs
     {
