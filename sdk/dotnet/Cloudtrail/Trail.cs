@@ -62,7 +62,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs>? _advancedEventSelectors;
 
         /// <summary>
-        /// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`"&gt;`event_selector`&lt;/span&gt;.
+        /// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs="`eventSelector`" pulumi-lang-dotnet="`EventSelector`" pulumi-lang-go="`eventSelector`" pulumi-lang-python="`event_selector`" pulumi-lang-yaml="`eventSelector`" pulumi-lang-java="`eventSelector`"&gt;`eventSelector`&lt;/span&gt;.
         /// </summary>
         public InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs> AdvancedEventSelectors
         {
@@ -92,7 +92,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailEventSelectorArgs>? _eventSelectors;
 
         /// <summary>
-        /// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs="`advancedEventSelector`" pulumi-lang-dotnet="`AdvancedEventSelector`" pulumi-lang-go="`advancedEventSelector`" pulumi-lang-python="`advanced_event_selector`" pulumi-lang-yaml="`advancedEventSelector`" pulumi-lang-java="`advancedEventSelector`"&gt;`advanced_event_selector`&lt;/span&gt;.
+        /// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs="`advancedEventSelector`" pulumi-lang-dotnet="`AdvancedEventSelector`" pulumi-lang-go="`advancedEventSelector`" pulumi-lang-python="`advanced_event_selector`" pulumi-lang-yaml="`advancedEventSelector`" pulumi-lang-java="`advancedEventSelector`"&gt;`advancedEventSelector`&lt;/span&gt;.
         /// </summary>
         public InputList<Pulumi.Aws.CloudTrail.Inputs.TrailEventSelectorArgs> EventSelectors
         {
@@ -170,7 +170,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {

@@ -14,10 +14,10 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// Provides a VPC Endpoint resource.
     /// 
     /// &gt; **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
-    /// Route Tables - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`routeTableId`" pulumi-lang-dotnet="`RouteTableId`" pulumi-lang-go="`routeTableId`" pulumi-lang-python="`route_table_id`" pulumi-lang-yaml="`routeTableId`" pulumi-lang-java="`routeTableId`"&gt;`route_table_id`&lt;/span&gt;),
-    /// Security Groups - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`securityGroupId`" pulumi-lang-dotnet="`SecurityGroupId`" pulumi-lang-go="`securityGroupId`" pulumi-lang-python="`security_group_id`" pulumi-lang-yaml="`securityGroupId`" pulumi-lang-java="`securityGroupId`"&gt;`security_group_id`&lt;/span&gt;),
-    /// and Subnets - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`subnetId`" pulumi-lang-dotnet="`SubnetId`" pulumi-lang-go="`subnetId`" pulumi-lang-python="`subnet_id`" pulumi-lang-yaml="`subnetId`" pulumi-lang-java="`subnetId`"&gt;`subnet_id`&lt;/span&gt;) and
-    /// a VPC Endpoint resource with &lt;span pulumi-lang-nodejs="`routeTableIds`" pulumi-lang-dotnet="`RouteTableIds`" pulumi-lang-go="`routeTableIds`" pulumi-lang-python="`route_table_ids`" pulumi-lang-yaml="`routeTableIds`" pulumi-lang-java="`routeTableIds`"&gt;`route_table_ids`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`subnetIds`" pulumi-lang-dotnet="`SubnetIds`" pulumi-lang-go="`subnetIds`" pulumi-lang-python="`subnet_ids`" pulumi-lang-yaml="`subnetIds`" pulumi-lang-java="`subnetIds`"&gt;`subnet_ids`&lt;/span&gt; attributes.
+    /// Route Tables - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`routeTableId`" pulumi-lang-dotnet="`RouteTableId`" pulumi-lang-go="`routeTableId`" pulumi-lang-python="`route_table_id`" pulumi-lang-yaml="`routeTableId`" pulumi-lang-java="`routeTableId`"&gt;`routeTableId`&lt;/span&gt;),
+    /// Security Groups - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`securityGroupId`" pulumi-lang-dotnet="`SecurityGroupId`" pulumi-lang-go="`securityGroupId`" pulumi-lang-python="`security_group_id`" pulumi-lang-yaml="`securityGroupId`" pulumi-lang-java="`securityGroupId`"&gt;`securityGroupId`&lt;/span&gt;),
+    /// and Subnets - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs="`subnetId`" pulumi-lang-dotnet="`SubnetId`" pulumi-lang-go="`subnetId`" pulumi-lang-python="`subnet_id`" pulumi-lang-yaml="`subnetId`" pulumi-lang-java="`subnetId`"&gt;`subnetId`&lt;/span&gt;) and
+    /// a VPC Endpoint resource with &lt;span pulumi-lang-nodejs="`routeTableIds`" pulumi-lang-dotnet="`RouteTableIds`" pulumi-lang-go="`routeTableIds`" pulumi-lang-python="`route_table_ids`" pulumi-lang-yaml="`routeTableIds`" pulumi-lang-java="`routeTableIds`"&gt;`routeTableIds`&lt;/span&gt; and &lt;span pulumi-lang-nodejs="`subnetIds`" pulumi-lang-dotnet="`SubnetIds`" pulumi-lang-go="`subnetIds`" pulumi-lang-python="`subnet_ids`" pulumi-lang-yaml="`subnetIds`" pulumi-lang-java="`subnetIds`"&gt;`subnetIds`&lt;/span&gt; attributes.
     /// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
     /// Doing so will cause a conflict of associations and will overwrite the association.
     /// 
@@ -747,7 +747,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 		example, err := ec2.NewVpcEndpointService(ctx, "example", &amp;ec2.VpcEndpointServiceArgs{
     /// 			AcceptanceRequired: pulumi.Bool(false),
     /// 			AllowedPrincipals: pulumi.StringArray{
-    /// 				pulumi.String(current.Arn),
+    /// 				pulumi.String(pulumi.String(current.Arn)),
     /// 			},
     /// 			GatewayLoadBalancerArns: pulumi.StringArray{
     /// 				exampleAwsLb.Arn,
@@ -1168,8 +1168,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"fmt"
-    /// 
     /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/route53"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -1200,7 +1198,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// return err
     /// }
     /// _, err = route53.NewRecord(ctx, "ptfe_service", &amp;route53.RecordArgs{
-    /// ZoneId: pulumi.String(internal.ZoneId),
+    /// ZoneId: pulumi.String(pulumi.String(internal.ZoneId)),
     /// Name: pulumi.Sprintf("ptfe.%v", internal.Name),
     /// Type: pulumi.String(route53.RecordTypeCNAME),
     /// Ttl: pulumi.Int(300),
@@ -1303,7 +1301,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
-    /// &gt; **NOTE The &lt;span pulumi-lang-nodejs="`dnsEntry`" pulumi-lang-dotnet="`DnsEntry`" pulumi-lang-go="`dnsEntry`" pulumi-lang-python="`dns_entry`" pulumi-lang-yaml="`dnsEntry`" pulumi-lang-java="`dnsEntry`"&gt;`dns_entry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs="`lookup`" pulumi-lang-dotnet="`Lookup`" pulumi-lang-go="`lookup`" pulumi-lang-python="`lookup`" pulumi-lang-yaml="`lookup`" pulumi-lang-java="`lookup`"&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
+    /// &gt; **NOTE The &lt;span pulumi-lang-nodejs="`dnsEntry`" pulumi-lang-dotnet="`DnsEntry`" pulumi-lang-go="`dnsEntry`" pulumi-lang-python="`dns_entry`" pulumi-lang-yaml="`dnsEntry`" pulumi-lang-java="`dnsEntry`"&gt;`dnsEntry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs="`lookup`" pulumi-lang-dotnet="`Lookup`" pulumi-lang-go="`lookup`" pulumi-lang-python="`lookup`" pulumi-lang-yaml="`lookup`" pulumi-lang-java="`lookup`"&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
     /// 
     /// ## Import
     /// 
@@ -1311,17 +1309,19 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     /// #### Required
     /// 
-    /// * `id` - (String) ID of the VPC endpoint.
+    /// * &lt;span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`"&gt;`id`&lt;/span&gt; - (String) ID of the VPC endpoint.
     /// 
     /// #### Optional
     /// 
-    /// * `account_id` (String) AWS Account where this resource is managed.
+    /// * &lt;span pulumi-lang-nodejs="`accountId`" pulumi-lang-dotnet="`AccountId`" pulumi-lang-go="`accountId`" pulumi-lang-python="`account_id`" pulumi-lang-yaml="`accountId`" pulumi-lang-java="`accountId`"&gt;`accountId`&lt;/span&gt; (String) AWS Account where this resource is managed.
+    /// * &lt;span pulumi-lang-nodejs="`region`" pulumi-lang-dotnet="`Region`" pulumi-lang-go="`region`" pulumi-lang-python="`region`" pulumi-lang-yaml="`region`" pulumi-lang-java="`region`"&gt;`region`&lt;/span&gt; (String) Region where this resource is managed.
     /// 
-    /// * `region` (String) Region where this resource is managed.
     /// 
-    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
+    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint &lt;span pulumi-lang-nodejs="`id`" pulumi-lang-dotnet="`Id`" pulumi-lang-go="`id`" pulumi-lang-python="`id`" pulumi-lang-yaml="`id`" pulumi-lang-java="`id`"&gt;`id`&lt;/span&gt;. For example:
     /// 
-    /// % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
+    /// ```sh
+    /// $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
+    /// ```
     /// </summary>
     public sealed class VpcEndpointSpecArgs : global::Pulumi.ResourceArgs
     {
@@ -1332,7 +1332,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public bool? AutoAccept { get; set; }
 
         /// <summary>
-        /// The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=" dnsOptions " pulumi-lang-dotnet=" DnsOptions " pulumi-lang-go=" dnsOptions " pulumi-lang-python=" dns_options " pulumi-lang-yaml=" dnsOptions " pulumi-lang-java=" dnsOptions "&gt; dns_options &lt;/span&gt;below.
+        /// The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=" dnsOptions " pulumi-lang-dotnet=" DnsOptions " pulumi-lang-go=" dnsOptions " pulumi-lang-python=" dns_options " pulumi-lang-yaml=" dnsOptions " pulumi-lang-java=" dnsOptions "&gt; dnsOptions &lt;/span&gt;below.
         /// </summary>
         [Input("dnsOptions")]
         public Input<Pulumi.Aws.Ec2.Inputs.VpcEndpointDnsOptionsArgs>? DnsOptions { get; set; }
@@ -1362,7 +1362,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public Input<string>? Region { get; set; }
 
         /// <summary>
-        /// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs="`resourceConfigurationArn`" pulumi-lang-dotnet="`ResourceConfigurationArn`" pulumi-lang-go="`resourceConfigurationArn`" pulumi-lang-python="`resource_configuration_arn`" pulumi-lang-yaml="`resourceConfigurationArn`" pulumi-lang-java="`resourceConfigurationArn`"&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`serviceName`" pulumi-lang-dotnet="`ServiceName`" pulumi-lang-go="`serviceName`" pulumi-lang-python="`service_name`" pulumi-lang-yaml="`serviceName`" pulumi-lang-java="`serviceName`"&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`serviceNetworkArn`" pulumi-lang-dotnet="`ServiceNetworkArn`" pulumi-lang-go="`serviceNetworkArn`" pulumi-lang-python="`service_network_arn`" pulumi-lang-yaml="`serviceNetworkArn`" pulumi-lang-java="`serviceNetworkArn`"&gt;`service_network_arn`&lt;/span&gt; is required.
+        /// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs="`resourceConfigurationArn`" pulumi-lang-dotnet="`ResourceConfigurationArn`" pulumi-lang-go="`resourceConfigurationArn`" pulumi-lang-python="`resource_configuration_arn`" pulumi-lang-yaml="`resourceConfigurationArn`" pulumi-lang-java="`resourceConfigurationArn`"&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`serviceName`" pulumi-lang-dotnet="`ServiceName`" pulumi-lang-go="`serviceName`" pulumi-lang-python="`service_name`" pulumi-lang-yaml="`serviceName`" pulumi-lang-java="`serviceName`"&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`serviceNetworkArn`" pulumi-lang-dotnet="`ServiceNetworkArn`" pulumi-lang-go="`serviceNetworkArn`" pulumi-lang-python="`service_network_arn`" pulumi-lang-yaml="`serviceNetworkArn`" pulumi-lang-java="`serviceNetworkArn`"&gt;`serviceNetworkArn`&lt;/span&gt; is required.
         /// </summary>
         [Input("resourceConfigurationArn")]
         public Input<string>? ResourceConfigurationArn { get; set; }
@@ -1399,7 +1399,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public string ServiceName { get; set; } = null!;
 
         /// <summary>
-        /// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs="`resourceConfigurationArn`" pulumi-lang-dotnet="`ResourceConfigurationArn`" pulumi-lang-go="`resourceConfigurationArn`" pulumi-lang-python="`resource_configuration_arn`" pulumi-lang-yaml="`resourceConfigurationArn`" pulumi-lang-java="`resourceConfigurationArn`"&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`serviceName`" pulumi-lang-dotnet="`ServiceName`" pulumi-lang-go="`serviceName`" pulumi-lang-python="`service_name`" pulumi-lang-yaml="`serviceName`" pulumi-lang-java="`serviceName`"&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`serviceNetworkArn`" pulumi-lang-dotnet="`ServiceNetworkArn`" pulumi-lang-go="`serviceNetworkArn`" pulumi-lang-python="`service_network_arn`" pulumi-lang-yaml="`serviceNetworkArn`" pulumi-lang-java="`serviceNetworkArn`"&gt;`service_network_arn`&lt;/span&gt; is required.
+        /// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs="`resourceConfigurationArn`" pulumi-lang-dotnet="`ResourceConfigurationArn`" pulumi-lang-go="`resourceConfigurationArn`" pulumi-lang-python="`resource_configuration_arn`" pulumi-lang-yaml="`resourceConfigurationArn`" pulumi-lang-java="`resourceConfigurationArn`"&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`serviceName`" pulumi-lang-dotnet="`ServiceName`" pulumi-lang-go="`serviceName`" pulumi-lang-python="`service_name`" pulumi-lang-yaml="`serviceName`" pulumi-lang-java="`serviceName`"&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`serviceNetworkArn`" pulumi-lang-dotnet="`ServiceNetworkArn`" pulumi-lang-go="`serviceNetworkArn`" pulumi-lang-python="`service_network_arn`" pulumi-lang-yaml="`serviceNetworkArn`" pulumi-lang-java="`serviceNetworkArn`"&gt;`serviceNetworkArn`&lt;/span&gt; is required.
         /// </summary>
         [Input("serviceNetworkArn")]
         public Input<string>? ServiceNetworkArn { get; set; }
@@ -1414,7 +1414,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputList<Pulumi.Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs>? _subnetConfigurations;
 
         /// <summary>
-        /// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=" subnetConfiguration " pulumi-lang-dotnet=" SubnetConfiguration " pulumi-lang-go=" subnetConfiguration " pulumi-lang-python=" subnet_configuration " pulumi-lang-yaml=" subnetConfiguration " pulumi-lang-java=" subnetConfiguration "&gt; subnet_configuration &lt;/span&gt;below.
+        /// Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=" subnetConfiguration " pulumi-lang-dotnet=" SubnetConfiguration " pulumi-lang-go=" subnetConfiguration " pulumi-lang-python=" subnet_configuration " pulumi-lang-yaml=" subnetConfiguration " pulumi-lang-java=" subnetConfiguration "&gt; subnetConfiguration &lt;/span&gt;below.
         /// </summary>
         public InputList<Pulumi.Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs> SubnetConfigurations
         {
@@ -1438,7 +1438,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
