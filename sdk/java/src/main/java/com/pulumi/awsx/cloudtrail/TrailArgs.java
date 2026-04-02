@@ -24,14 +24,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     public static final TrailArgs Empty = new TrailArgs();
 
     /**
-     * Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`event_selector`&lt;/span&gt;.
+     * Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
      * 
      */
     @Import(name="advancedEventSelectors")
     private @Nullable Output<List<TrailAdvancedEventSelectorArgs>> advancedEventSelectors;
 
     /**
-     * @return Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`event_selector`&lt;/span&gt;.
+     * @return Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
      * 
      */
     public Optional<Output<List<TrailAdvancedEventSelectorArgs>>> advancedEventSelectors() {
@@ -84,14 +84,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advanced_event_selector`&lt;/span&gt;.
+     * Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
      * 
      */
     @Import(name="eventSelectors")
     private @Nullable Output<List<TrailEventSelectorArgs>> eventSelectors;
 
     /**
-     * @return Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advanced_event_selector`&lt;/span&gt;.
+     * @return Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
      * 
      */
     public Optional<Output<List<TrailEventSelectorArgs>>> eventSelectors() {
@@ -249,14 +249,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -303,7 +303,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`event_selector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -314,7 +314,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`event_selector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -324,7 +324,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`event_selector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -387,7 +387,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advanced_event_selector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -398,7 +398,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advanced_event_selector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -408,7 +408,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advanced_event_selector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -628,7 +628,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -639,7 +639,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

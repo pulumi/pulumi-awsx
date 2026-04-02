@@ -152,14 +152,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
+     * IPC resource namespace to be used for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     @Import(name="ipcMode")
     private @Nullable Output<String> ipcMode;
 
     /**
-     * @return IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
+     * @return IPC resource namespace to be used for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> ipcMode() {
@@ -199,14 +199,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * Docker networking mode to use for the containers in the task. Valid values are &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;.
+     * Docker networking mode to use for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     @Import(name="networkMode")
     private @Nullable Output<String> networkMode;
 
     /**
-     * @return Docker networking mode to use for the containers in the task. Valid values are &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;.
+     * @return Docker networking mode to use for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> networkMode() {
@@ -214,14 +214,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
+     * Process namespace to use for the containers in the task. Valid values: host`, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
      * 
      */
     @Import(name="pidMode")
     private @Nullable Output<String> pidMode;
 
     /**
-     * @return Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
+     * @return Process namespace to use for the containers in the task. Valid values: host`, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
      * 
      */
     public Optional<Output<String>> pidMode() {
@@ -229,14 +229,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
+     * Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placementConstraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
      * 
      */
     @Import(name="placementConstraints")
     private @Nullable Output<List<TaskDefinitionPlacementConstraintArgs>> placementConstraints;
 
     /**
-     * @return Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
+     * @return Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placementConstraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
      * 
      */
     public Optional<Output<List<TaskDefinitionPlacementConstraintArgs>>> placementConstraints() {
@@ -274,14 +274,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
+     * Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtimePlatform &lt;/span&gt;that containers in your task may use.
      * 
      */
     @Import(name="runtimePlatform")
     private @Nullable Output<TaskDefinitionRuntimePlatformArgs> runtimePlatform;
 
     /**
-     * @return Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
+     * @return Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtimePlatform &lt;/span&gt;that containers in your task may use.
      * 
      */
     public Optional<Output<TaskDefinitionRuntimePlatformArgs>> runtimePlatform() {
@@ -304,14 +304,14 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
     }
 
     /**
-     * Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -542,7 +542,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
+         * @param ipcMode IPC resource namespace to be used for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -553,7 +553,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param ipcMode IPC resource namespace to be used for the containers in the task The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
+         * @param ipcMode IPC resource namespace to be used for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -597,7 +597,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param networkMode Docker networking mode to use for the containers in the task. Valid values are &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;.
+         * @param networkMode Docker networking mode to use for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -608,7 +608,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param networkMode Docker networking mode to use for the containers in the task. Valid values are &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;.
+         * @param networkMode Docker networking mode to use for the containers in the task. Valid values: &lt;span pulumi-lang-nodejs=&#34;`awsvpc`&#34; pulumi-lang-dotnet=&#34;`Awsvpc`&#34; pulumi-lang-go=&#34;`awsvpc`&#34; pulumi-lang-python=&#34;`awsvpc`&#34; pulumi-lang-yaml=&#34;`awsvpc`&#34; pulumi-lang-java=&#34;`awsvpc`&#34;&gt;`awsvpc`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`bridge`&#34; pulumi-lang-dotnet=&#34;`Bridge`&#34; pulumi-lang-go=&#34;`bridge`&#34; pulumi-lang-python=&#34;`bridge`&#34; pulumi-lang-yaml=&#34;`bridge`&#34; pulumi-lang-java=&#34;`bridge`&#34;&gt;`bridge`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`none`&#34; pulumi-lang-dotnet=&#34;`None`&#34; pulumi-lang-go=&#34;`none`&#34; pulumi-lang-python=&#34;`none`&#34; pulumi-lang-yaml=&#34;`none`&#34; pulumi-lang-java=&#34;`none`&#34;&gt;`none`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -618,7 +618,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param pidMode Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
+         * @param pidMode Process namespace to use for the containers in the task. Valid values: host`, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -629,7 +629,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param pidMode Process namespace to use for the containers in the task. The valid values are &lt;span pulumi-lang-nodejs=&#34;`host`&#34; pulumi-lang-dotnet=&#34;`Host`&#34; pulumi-lang-go=&#34;`host`&#34; pulumi-lang-python=&#34;`host`&#34; pulumi-lang-yaml=&#34;`host`&#34; pulumi-lang-java=&#34;`host`&#34;&gt;`host`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
+         * @param pidMode Process namespace to use for the containers in the task. Valid values: host`, &lt;span pulumi-lang-nodejs=&#34;`task`&#34; pulumi-lang-dotnet=&#34;`Task`&#34; pulumi-lang-go=&#34;`task`&#34; pulumi-lang-python=&#34;`task`&#34; pulumi-lang-yaml=&#34;`task`&#34; pulumi-lang-java=&#34;`task`&#34;&gt;`task`&lt;/span&gt;.
          * 
          * @return builder
          * 
@@ -639,7 +639,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placementConstraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -650,7 +650,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placementConstraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -660,7 +660,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placement_constraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
+         * @param placementConstraints Configuration block for rules that are taken into consideration during task placement. Maximum number of &lt;span pulumi-lang-nodejs=&#34;`placementConstraints`&#34; pulumi-lang-dotnet=&#34;`PlacementConstraints`&#34; pulumi-lang-go=&#34;`placementConstraints`&#34; pulumi-lang-python=&#34;`placement_constraints`&#34; pulumi-lang-yaml=&#34;`placementConstraints`&#34; pulumi-lang-java=&#34;`placementConstraints`&#34;&gt;`placementConstraints`&lt;/span&gt; is &lt;span pulumi-lang-nodejs=&#34;`10`&#34; pulumi-lang-dotnet=&#34;`10`&#34; pulumi-lang-go=&#34;`10`&#34; pulumi-lang-python=&#34;`10`&#34; pulumi-lang-yaml=&#34;`10`&#34; pulumi-lang-java=&#34;`10`&#34;&gt;`10`&lt;/span&gt;. Detailed below.
          * 
          * @return builder
          * 
@@ -712,7 +712,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
+         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtimePlatform &lt;/span&gt;that containers in your task may use.
          * 
          * @return builder
          * 
@@ -723,7 +723,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtime_platform &lt;/span&gt;that containers in your task may use.
+         * @param runtimePlatform Configuration block for&lt;span pulumi-lang-nodejs=&#34; runtimePlatform &#34; pulumi-lang-dotnet=&#34; RuntimePlatform &#34; pulumi-lang-go=&#34; runtimePlatform &#34; pulumi-lang-python=&#34; runtime_platform &#34; pulumi-lang-yaml=&#34; runtimePlatform &#34; pulumi-lang-java=&#34; runtimePlatform &#34;&gt; runtimePlatform &lt;/span&gt;that containers in your task may use.
          * 
          * @return builder
          * 
@@ -754,7 +754,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -765,7 +765,7 @@ public final class EC2ServiceTaskDefinitionArgs extends com.pulumi.resources.Res
         }
 
         /**
-         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Key-value map of resource tags. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

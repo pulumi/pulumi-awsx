@@ -85,14 +85,14 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`image_tag_mutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+     * Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
      * 
      */
     @Import(name="imageTagMutabilityExclusionFilters")
     private @Nullable Output<List<RepositoryImageTagMutabilityExclusionFilterArgs>> imageTagMutabilityExclusionFilters;
 
     /**
-     * @return Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`image_tag_mutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+     * @return Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
      * 
      */
     public Optional<Output<List<RepositoryImageTagMutabilityExclusionFilterArgs>>> imageTagMutabilityExclusionFilters() {
@@ -145,14 +145,14 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -288,7 +288,7 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`image_tag_mutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
          * 
          * @return builder
          * 
@@ -299,7 +299,7 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`image_tag_mutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
          * 
          * @return builder
          * 
@@ -309,7 +309,7 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`image_tag_mutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+         * @param imageTagMutabilityExclusionFilters Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs=&#34;`imageTagMutability`&#34; pulumi-lang-dotnet=&#34;`ImageTagMutability`&#34; pulumi-lang-go=&#34;`imageTagMutability`&#34; pulumi-lang-python=&#34;`image_tag_mutability`&#34; pulumi-lang-yaml=&#34;`imageTagMutability`&#34; pulumi-lang-java=&#34;`imageTagMutability`&#34;&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
          * 
          * @return builder
          * 
@@ -372,7 +372,7 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -383,7 +383,7 @@ public final class RepositoryArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
