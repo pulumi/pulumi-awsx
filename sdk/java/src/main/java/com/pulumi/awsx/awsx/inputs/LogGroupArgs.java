@@ -23,14 +23,14 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     public static final LogGroupArgs Empty = new LogGroupArgs();
 
     /**
-     * Boolean to indicate whether deletion protection is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Once set, switching to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; requires explicitly specifying &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; rather than removing this argument.
+     * Boolean to indicate whether deletion protection is enabled. Defaults to `false`. Once set, switching to `false` requires explicitly specifying `false` rather than removing this argument.
      * 
      */
     @Import(name="deletionProtectionEnabled")
     private @Nullable Output<Boolean> deletionProtectionEnabled;
 
     /**
-     * @return Boolean to indicate whether deletion protection is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Once set, switching to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; requires explicitly specifying &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; rather than removing this argument.
+     * @return Boolean to indicate whether deletion protection is enabled. Defaults to `false`. Once set, switching to `false` requires explicitly specifying `false` rather than removing this argument.
      * 
      */
     public Optional<Output<Boolean>> deletionProtectionEnabled() {
@@ -87,14 +87,14 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+     * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      * 
      */
     @Import(name="namePrefix")
     private @Nullable Output<String> namePrefix;
 
     /**
-     * @return Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+     * @return Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      * 
      */
     public Optional<Output<String>> namePrefix() {
@@ -119,7 +119,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Specifies the number of days
      * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-     * If you select 0, the events in the log group are always retained and never expire. If &lt;span pulumi-lang-nodejs=&#34;`logGroupClass`&#34; pulumi-lang-dotnet=&#34;`LogGroupClass`&#34; pulumi-lang-go=&#34;`logGroupClass`&#34; pulumi-lang-python=&#34;`log_group_class`&#34; pulumi-lang-yaml=&#34;`logGroupClass`&#34; pulumi-lang-java=&#34;`logGroupClass`&#34;&gt;`logGroupClass`&lt;/span&gt; is set to `DELIVERY`, this argument is ignored and &lt;span pulumi-lang-nodejs=&#34;`retentionInDays`&#34; pulumi-lang-dotnet=&#34;`RetentionInDays`&#34; pulumi-lang-go=&#34;`retentionInDays`&#34; pulumi-lang-python=&#34;`retention_in_days`&#34; pulumi-lang-yaml=&#34;`retentionInDays`&#34; pulumi-lang-java=&#34;`retentionInDays`&#34;&gt;`retentionInDays`&lt;/span&gt; is forcibly set to 2.
+     * If you select 0, the events in the log group are always retained and never expire. If `logGroupClass` is set to `DELIVERY`, this argument is ignored and `retentionInDays` is forcibly set to 2.
      * 
      */
     @Import(name="retentionInDays")
@@ -128,7 +128,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Specifies the number of days
      * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-     * If you select 0, the events in the log group are always retained and never expire. If &lt;span pulumi-lang-nodejs=&#34;`logGroupClass`&#34; pulumi-lang-dotnet=&#34;`LogGroupClass`&#34; pulumi-lang-go=&#34;`logGroupClass`&#34; pulumi-lang-python=&#34;`log_group_class`&#34; pulumi-lang-yaml=&#34;`logGroupClass`&#34; pulumi-lang-java=&#34;`logGroupClass`&#34;&gt;`logGroupClass`&lt;/span&gt; is set to `DELIVERY`, this argument is ignored and &lt;span pulumi-lang-nodejs=&#34;`retentionInDays`&#34; pulumi-lang-dotnet=&#34;`RetentionInDays`&#34; pulumi-lang-go=&#34;`retentionInDays`&#34; pulumi-lang-python=&#34;`retention_in_days`&#34; pulumi-lang-yaml=&#34;`retentionInDays`&#34; pulumi-lang-java=&#34;`retentionInDays`&#34;&gt;`retentionInDays`&lt;/span&gt; is forcibly set to 2.
+     * If you select 0, the events in the log group are always retained and never expire. If `logGroupClass` is set to `DELIVERY`, this argument is ignored and `retentionInDays` is forcibly set to 2.
      * 
      */
     public Optional<Output<Integer>> retentionInDays() {
@@ -151,14 +151,14 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A map of tags to assign to the resource. .If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * A map of tags to assign to the resource. .If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return A map of tags to assign to the resource. .If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return A map of tags to assign to the resource. .If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -198,7 +198,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param deletionProtectionEnabled Boolean to indicate whether deletion protection is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Once set, switching to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; requires explicitly specifying &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; rather than removing this argument.
+         * @param deletionProtectionEnabled Boolean to indicate whether deletion protection is enabled. Defaults to `false`. Once set, switching to `false` requires explicitly specifying `false` rather than removing this argument.
          * 
          * @return builder
          * 
@@ -209,7 +209,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param deletionProtectionEnabled Boolean to indicate whether deletion protection is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. Once set, switching to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; requires explicitly specifying &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt; rather than removing this argument.
+         * @param deletionProtectionEnabled Boolean to indicate whether deletion protection is enabled. Defaults to `false`. Once set, switching to `false` requires explicitly specifying `false` rather than removing this argument.
          * 
          * @return builder
          * 
@@ -286,7 +286,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
          * 
          * @return builder
          * 
@@ -297,7 +297,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
          * 
          * @return builder
          * 
@@ -330,7 +330,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param retentionInDays Specifies the number of days
          * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-         * If you select 0, the events in the log group are always retained and never expire. If &lt;span pulumi-lang-nodejs=&#34;`logGroupClass`&#34; pulumi-lang-dotnet=&#34;`LogGroupClass`&#34; pulumi-lang-go=&#34;`logGroupClass`&#34; pulumi-lang-python=&#34;`log_group_class`&#34; pulumi-lang-yaml=&#34;`logGroupClass`&#34; pulumi-lang-java=&#34;`logGroupClass`&#34;&gt;`logGroupClass`&lt;/span&gt; is set to `DELIVERY`, this argument is ignored and &lt;span pulumi-lang-nodejs=&#34;`retentionInDays`&#34; pulumi-lang-dotnet=&#34;`RetentionInDays`&#34; pulumi-lang-go=&#34;`retentionInDays`&#34; pulumi-lang-python=&#34;`retention_in_days`&#34; pulumi-lang-yaml=&#34;`retentionInDays`&#34; pulumi-lang-java=&#34;`retentionInDays`&#34;&gt;`retentionInDays`&lt;/span&gt; is forcibly set to 2.
+         * If you select 0, the events in the log group are always retained and never expire. If `logGroupClass` is set to `DELIVERY`, this argument is ignored and `retentionInDays` is forcibly set to 2.
          * 
          * @return builder
          * 
@@ -343,7 +343,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param retentionInDays Specifies the number of days
          * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
-         * If you select 0, the events in the log group are always retained and never expire. If &lt;span pulumi-lang-nodejs=&#34;`logGroupClass`&#34; pulumi-lang-dotnet=&#34;`LogGroupClass`&#34; pulumi-lang-go=&#34;`logGroupClass`&#34; pulumi-lang-python=&#34;`log_group_class`&#34; pulumi-lang-yaml=&#34;`logGroupClass`&#34; pulumi-lang-java=&#34;`logGroupClass`&#34;&gt;`logGroupClass`&lt;/span&gt; is set to `DELIVERY`, this argument is ignored and &lt;span pulumi-lang-nodejs=&#34;`retentionInDays`&#34; pulumi-lang-dotnet=&#34;`RetentionInDays`&#34; pulumi-lang-go=&#34;`retentionInDays`&#34; pulumi-lang-python=&#34;`retention_in_days`&#34; pulumi-lang-yaml=&#34;`retentionInDays`&#34; pulumi-lang-java=&#34;`retentionInDays`&#34;&gt;`retentionInDays`&lt;/span&gt; is forcibly set to 2.
+         * If you select 0, the events in the log group are always retained and never expire. If `logGroupClass` is set to `DELIVERY`, this argument is ignored and `retentionInDays` is forcibly set to 2.
          * 
          * @return builder
          * 
@@ -374,7 +374,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. .If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. .If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -385,7 +385,7 @@ public final class LogGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. .If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. .If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

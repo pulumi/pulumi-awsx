@@ -24,14 +24,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     public static final TrailArgs Empty = new TrailArgs();
 
     /**
-     * Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
+     * Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `eventSelector`.
      * 
      */
     @Import(name="advancedEventSelectors")
     private @Nullable Output<List<TrailAdvancedEventSelectorArgs>> advancedEventSelectors;
 
     /**
-     * @return Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
+     * @return Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `eventSelector`.
      * 
      */
     public Optional<Output<List<TrailAdvancedEventSelectorArgs>>> advancedEventSelectors() {
@@ -54,14 +54,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Whether log file integrity validation is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether log file integrity validation is enabled. Defaults to `false`.
      * 
      */
     @Import(name="enableLogFileValidation")
     private @Nullable Output<Boolean> enableLogFileValidation;
 
     /**
-     * @return Whether log file integrity validation is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether log file integrity validation is enabled. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableLogFileValidation() {
@@ -69,14 +69,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Enables logging for the trail. When set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * Enables logging for the trail. When set to `true`, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to `false`, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to `true`.
      * 
      */
     @Import(name="enableLogging")
     private @Nullable Output<Boolean> enableLogging;
 
     /**
-     * @return Enables logging for the trail. When set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * @return Enables logging for the trail. When set to `true`, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to `false`, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to `true`.
      * 
      */
     public Optional<Output<Boolean>> enableLogging() {
@@ -84,14 +84,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
+     * Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advancedEventSelector`.
      * 
      */
     @Import(name="eventSelectors")
     private @Nullable Output<List<TrailEventSelectorArgs>> eventSelectors;
 
     /**
-     * @return Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
+     * @return Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advancedEventSelector`.
      * 
      */
     public Optional<Output<List<TrailEventSelectorArgs>>> eventSelectors() {
@@ -99,14 +99,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Whether the trail is publishing events from global services such as IAM to the log files. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
      * 
      */
     @Import(name="includeGlobalServiceEvents")
     private @Nullable Output<Boolean> includeGlobalServiceEvents;
 
     /**
-     * @return Whether the trail is publishing events from global services such as IAM to the log files. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * @return Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
      * 
      */
     public Optional<Output<Boolean>> includeGlobalServiceEvents() {
@@ -129,14 +129,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Whether the trail is created in the current region or in all regions. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether the trail is created in the current region or in all regions. Defaults to `false`.
      * 
      */
     @Import(name="isMultiRegionTrail")
     private @Nullable Output<Boolean> isMultiRegionTrail;
 
     /**
-     * @return Whether the trail is created in the current region or in all regions. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether the trail is created in the current region or in all regions. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> isMultiRegionTrail() {
@@ -144,14 +144,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
      * 
      */
     @Import(name="isOrganizationTrail")
     private @Nullable Output<Boolean> isOrganizationTrail;
 
     /**
-     * @return Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> isOrganizationTrail() {
@@ -249,14 +249,14 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the trail. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Map of tags to assign to the trail. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -303,7 +303,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `eventSelector`.
          * 
          * @return builder
          * 
@@ -314,7 +314,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `eventSelector`.
          * 
          * @return builder
          * 
@@ -324,7 +324,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`eventSelector`&#34; pulumi-lang-dotnet=&#34;`EventSelector`&#34; pulumi-lang-go=&#34;`eventSelector`&#34; pulumi-lang-python=&#34;`event_selector`&#34; pulumi-lang-yaml=&#34;`eventSelector`&#34; pulumi-lang-java=&#34;`eventSelector`&#34;&gt;`eventSelector`&lt;/span&gt;.
+         * @param advancedEventSelectors Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `eventSelector`.
          * 
          * @return builder
          * 
@@ -345,7 +345,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableLogFileValidation Whether log file integrity validation is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableLogFileValidation Whether log file integrity validation is enabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -356,7 +356,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableLogFileValidation Whether log file integrity validation is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableLogFileValidation Whether log file integrity validation is enabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -366,7 +366,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableLogging Enables logging for the trail. When set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param enableLogging Enables logging for the trail. When set to `true`, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to `false`, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -377,7 +377,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableLogging Enables logging for the trail. When set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param enableLogging Enables logging for the trail. When set to `true`, logging is started by calling the [`StartLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StartLogging.html) API. When set to `false`, logging is stopped by calling the [`StopLogging`](https://docs.aws.amazon.com/awscloudtrail/latest/APIReference/API_StopLogging.html) API. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -387,7 +387,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advancedEventSelector`.
          * 
          * @return builder
          * 
@@ -398,7 +398,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advancedEventSelector`.
          * 
          * @return builder
          * 
@@ -408,7 +408,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`advancedEventSelector`&#34; pulumi-lang-dotnet=&#34;`AdvancedEventSelector`&#34; pulumi-lang-go=&#34;`advancedEventSelector`&#34; pulumi-lang-python=&#34;`advanced_event_selector`&#34; pulumi-lang-yaml=&#34;`advancedEventSelector`&#34; pulumi-lang-java=&#34;`advancedEventSelector`&#34;&gt;`advancedEventSelector`&lt;/span&gt;.
+         * @param eventSelectors Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advancedEventSelector`.
          * 
          * @return builder
          * 
@@ -418,7 +418,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param includeGlobalServiceEvents Whether the trail is publishing events from global services such as IAM to the log files. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param includeGlobalServiceEvents Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -429,7 +429,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param includeGlobalServiceEvents Whether the trail is publishing events from global services such as IAM to the log files. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param includeGlobalServiceEvents Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -470,7 +470,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param isMultiRegionTrail Whether the trail is created in the current region or in all regions. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param isMultiRegionTrail Whether the trail is created in the current region or in all regions. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -481,7 +481,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param isMultiRegionTrail Whether the trail is created in the current region or in all regions. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param isMultiRegionTrail Whether the trail is created in the current region or in all regions. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -491,7 +491,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param isOrganizationTrail Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param isOrganizationTrail Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -502,7 +502,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param isOrganizationTrail Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param isOrganizationTrail Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -628,7 +628,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the trail. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -639,7 +639,7 @@ public final class TrailArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the trail. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the trail. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

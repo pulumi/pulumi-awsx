@@ -13,36 +13,12 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// <summary>
     /// Provides a Target Group resource for use with Load Balancer resources.
     /// 
-    /// &gt; **Note:** &lt;span pulumi-lang-nodejs="`aws.alb.TargetGroup`" pulumi-lang-dotnet="`aws.alb.TargetGroup`" pulumi-lang-go="`alb.TargetGroup`" pulumi-lang-python="`alb.TargetGroup`" pulumi-lang-yaml="`aws.alb.TargetGroup`" pulumi-lang-java="`aws.alb.TargetGroup`"&gt;`aws.alb.TargetGroup`&lt;/span&gt; is known as &lt;span pulumi-lang-nodejs="`aws.lb.TargetGroup`" pulumi-lang-dotnet="`aws.lb.TargetGroup`" pulumi-lang-go="`lb.TargetGroup`" pulumi-lang-python="`lb.TargetGroup`" pulumi-lang-yaml="`aws.lb.TargetGroup`" pulumi-lang-java="`aws.lb.TargetGroup`"&gt;`aws.lb.TargetGroup`&lt;/span&gt;. The functionality is identical.
+    /// &gt; **Note:** `aws.alb.TargetGroup` is known as `aws.lb.TargetGroup`. The functionality is identical.
     /// 
     /// ## Example Usage
     /// 
     /// ### Instance Target Group
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const main = new aws.ec2.Vpc("main", {cidrBlock: "10.0.0.0/16"});
-    /// const test = new aws.lb.TargetGroup("test", {
-    ///     name: "tf-example-lb-tg",
-    ///     port: 80,
-    ///     protocol: "HTTP",
-    ///     vpcId: main.id,
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// main = aws.ec2.Vpc("main", cidr_block="10.0.0.0/16")
-    /// test = aws.lb.TargetGroup("test",
-    ///     name="tf-example-lb-tg",
-    ///     port=80,
-    ///     protocol="HTTP",
-    ///     vpc_id=main.id)
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -66,117 +42,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		main, err := ec2.NewVpc(ctx, "main", &amp;ec2.VpcArgs{
-    /// 			CidrBlock: pulumi.String("10.0.0.0/16"),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		_, err = lb.NewTargetGroup(ctx, "test", &amp;lb.TargetGroupArgs{
-    /// 			Name:     pulumi.String("tf-example-lb-tg"),
-    /// 			Port:     pulumi.Int(80),
-    /// 			Protocol: pulumi.String("HTTP"),
-    /// 			VpcId:    main.ID(),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.ec2.Vpc;
-    /// import com.pulumi.aws.ec2.VpcArgs;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var main = new Vpc("main", VpcArgs.builder()
-    ///             .cidrBlock("10.0.0.0/16")
-    ///             .build());
-    /// 
-    ///         var test = new TargetGroup("test", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-tg")
-    ///             .port(80)
-    ///             .protocol("HTTP")
-    ///             .vpcId(main.id())
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   test:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-tg
-    ///       port: 80
-    ///       protocol: HTTP
-    ///       vpcId: ${main.id}
-    ///   main:
-    ///     type: aws:ec2:Vpc
-    ///     properties:
-    ///       cidrBlock: 10.0.0.0/16
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ### IP Target Group
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const main = new aws.ec2.Vpc("main", {cidrBlock: "10.0.0.0/16"});
-    /// const ip_example = new aws.lb.TargetGroup("ip-example", {
-    ///     name: "tf-example-lb-tg",
-    ///     port: 80,
-    ///     protocol: "HTTP",
-    ///     targetType: "ip",
-    ///     vpcId: main.id,
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// main = aws.ec2.Vpc("main", cidr_block="10.0.0.0/16")
-    /// ip_example = aws.lb.TargetGroup("ip-example",
-    ///     name="tf-example-lb-tg",
-    ///     port=80,
-    ///     protocol="HTTP",
-    ///     target_type="ip",
-    ///     vpc_id=main.id)
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -201,112 +69,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		main, err := ec2.NewVpc(ctx, "main", &amp;ec2.VpcArgs{
-    /// 			CidrBlock: pulumi.String("10.0.0.0/16"),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &amp;lb.TargetGroupArgs{
-    /// 			Name:       pulumi.String("tf-example-lb-tg"),
-    /// 			Port:       pulumi.Int(80),
-    /// 			Protocol:   pulumi.String("HTTP"),
-    /// 			TargetType: pulumi.String("ip"),
-    /// 			VpcId:      main.ID(),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.ec2.Vpc;
-    /// import com.pulumi.aws.ec2.VpcArgs;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var main = new Vpc("main", VpcArgs.builder()
-    ///             .cidrBlock("10.0.0.0/16")
-    ///             .build());
-    /// 
-    ///         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-tg")
-    ///             .port(80)
-    ///             .protocol("HTTP")
-    ///             .targetType("ip")
-    ///             .vpcId(main.id())
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   ip-example:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-tg
-    ///       port: 80
-    ///       protocol: HTTP
-    ///       targetType: ip
-    ///       vpcId: ${main.id}
-    ///   main:
-    ///     type: aws:ec2:Vpc
-    ///     properties:
-    ///       cidrBlock: 10.0.0.0/16
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ### Lambda Target Group
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {
-    ///     name: "tf-example-lb-tg",
-    ///     targetType: "lambda",
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// lambda_example = aws.lb.TargetGroup("lambda-example",
-    ///     name="tf-example-lb-tg",
-    ///     target_type="lambda")
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -323,92 +88,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &amp;lb.TargetGroupArgs{
-    /// 			Name:       pulumi.String("tf-example-lb-tg"),
-    /// 			TargetType: pulumi.String("lambda"),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-tg")
-    ///             .targetType("lambda")
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   lambda-example:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-tg
-    ///       targetType: lambda
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ### ALB Target Group
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const alb_example = new aws.lb.TargetGroup("alb-example", {
-    ///     name: "tf-example-lb-alb-tg",
-    ///     targetType: "alb",
-    ///     port: 80,
-    ///     protocol: "TCP",
-    ///     vpcId: main.id,
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// alb_example = aws.lb.TargetGroup("alb-example",
-    ///     name="tf-example-lb-alb-tg",
-    ///     target_type="alb",
-    ///     port=80,
-    ///     protocol="TCP",
-    ///     vpc_id=main["id"])
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -428,105 +110,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "alb-example", &amp;lb.TargetGroupArgs{
-    /// 			Name:       pulumi.String("tf-example-lb-alb-tg"),
-    /// 			TargetType: pulumi.String("alb"),
-    /// 			Port:       pulumi.Int(80),
-    /// 			Protocol:   pulumi.String("TCP"),
-    /// 			VpcId:      pulumi.Any(main.Id),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-alb-tg")
-    ///             .targetType("alb")
-    ///             .port(80)
-    ///             .protocol("TCP")
-    ///             .vpcId(main.id())
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   alb-example:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-alb-tg
-    ///       targetType: alb
-    ///       port: 80
-    ///       protocol: TCP
-    ///       vpcId: ${main.id}
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ### Target group with unhealthy connection termination disabled
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const tcp_example = new aws.lb.TargetGroup("tcp-example", {
-    ///     name: "tf-example-lb-nlb-tg",
-    ///     port: 25,
-    ///     protocol: "TCP",
-    ///     vpcId: main.id,
-    ///     targetHealthStates: [{
-    ///         enableUnhealthyConnectionTermination: false,
-    ///     }],
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// tcp_example = aws.lb.TargetGroup("tcp-example",
-    ///     name="tf-example-lb-nlb-tg",
-    ///     port=25,
-    ///     protocol="TCP",
-    ///     vpc_id=main["id"],
-    ///     target_health_states=[{
-    ///         "enable_unhealthy_connection_termination": False,
-    ///     }])
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -552,127 +138,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "tcp-example", &amp;lb.TargetGroupArgs{
-    /// 			Name:     pulumi.String("tf-example-lb-nlb-tg"),
-    /// 			Port:     pulumi.Int(25),
-    /// 			Protocol: pulumi.String("TCP"),
-    /// 			VpcId:    pulumi.Any(main.Id),
-    /// 			TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
-    /// 				&amp;lb.TargetGroupTargetHealthStateArgs{
-    /// 					EnableUnhealthyConnectionTermination: pulumi.Bool(false),
-    /// 				},
-    /// 			},
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetHealthStateArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-nlb-tg")
-    ///             .port(25)
-    ///             .protocol("TCP")
-    ///             .vpcId(main.id())
-    ///             .targetHealthStates(TargetGroupTargetHealthStateArgs.builder()
-    ///                 .enableUnhealthyConnectionTermination(false)
-    ///                 .build())
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   tcp-example:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-nlb-tg
-    ///       port: 25
-    ///       protocol: TCP
-    ///       vpcId: ${main.id}
-    ///       targetHealthStates:
-    ///         - enableUnhealthyConnectionTermination: false
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ### Target group with health requirements
     /// 
-    /// &lt;!--Start PulumiCodeChooser --&gt;
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const tcp_example = new aws.lb.TargetGroup("tcp-example", {
-    ///     name: "tf-example-lb-nlb-tg",
-    ///     port: 80,
-    ///     protocol: "TCP",
-    ///     vpcId: main.id,
-    ///     targetGroupHealth: {
-    ///         dnsFailover: {
-    ///             minimumHealthyTargetsCount: "1",
-    ///             minimumHealthyTargetsPercentage: "off",
-    ///         },
-    ///         unhealthyStateRouting: {
-    ///             minimumHealthyTargetsCount: 1,
-    ///             minimumHealthyTargetsPercentage: "off",
-    ///         },
-    ///     },
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// tcp_example = aws.lb.TargetGroup("tcp-example",
-    ///     name="tf-example-lb-nlb-tg",
-    ///     port=80,
-    ///     protocol="TCP",
-    ///     vpc_id=main["id"],
-    ///     target_group_health={
-    ///         "dns_failover": {
-    ///             "minimum_healthy_targets_count": "1",
-    ///             "minimum_healthy_targets_percentage": "off",
-    ///         },
-    ///         "unhealthy_state_routing": {
-    ///             "minimum_healthy_targets_count": 1,
-    ///             "minimum_healthy_targets_percentage": "off",
-    ///         },
-    ///     })
-    /// ```
     /// ```csharp
     /// using System.Collections.Generic;
     /// using System.Linq;
@@ -704,101 +172,6 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// });
     /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "tcp-example", &amp;lb.TargetGroupArgs{
-    /// 			Name:     pulumi.String("tf-example-lb-nlb-tg"),
-    /// 			Port:     pulumi.Int(80),
-    /// 			Protocol: pulumi.String("TCP"),
-    /// 			VpcId:    pulumi.Any(main.Id),
-    /// 			TargetGroupHealth: &amp;lb.TargetGroupTargetGroupHealthArgs{
-    /// 				DnsFailover: &amp;lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
-    /// 					MinimumHealthyTargetsCount:      pulumi.String("1"),
-    /// 					MinimumHealthyTargetsPercentage: pulumi.String("off"),
-    /// 				},
-    /// 				UnhealthyStateRouting: &amp;lb.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs{
-    /// 					MinimumHealthyTargetsCount:      pulumi.Int(1),
-    /// 					MinimumHealthyTargetsPercentage: pulumi.String("off"),
-    /// 				},
-    /// 			},
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import com.pulumi.Context;
-    /// import com.pulumi.Pulumi;
-    /// import com.pulumi.core.Output;
-    /// import com.pulumi.aws.lb.TargetGroup;
-    /// import com.pulumi.aws.lb.TargetGroupArgs;
-    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthArgs;
-    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthDnsFailoverArgs;
-    /// import com.pulumi.aws.lb.inputs.TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs;
-    /// import java.util.List;
-    /// import java.util.ArrayList;
-    /// import java.util.Map;
-    /// import java.io.File;
-    /// import java.nio.file.Files;
-    /// import java.nio.file.Paths;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
-    ///             .name("tf-example-lb-nlb-tg")
-    ///             .port(80)
-    ///             .protocol("TCP")
-    ///             .vpcId(main.id())
-    ///             .targetGroupHealth(TargetGroupTargetGroupHealthArgs.builder()
-    ///                 .dnsFailover(TargetGroupTargetGroupHealthDnsFailoverArgs.builder()
-    ///                     .minimumHealthyTargetsCount("1")
-    ///                     .minimumHealthyTargetsPercentage("off")
-    ///                     .build())
-    ///                 .unhealthyStateRouting(TargetGroupTargetGroupHealthUnhealthyStateRoutingArgs.builder()
-    ///                     .minimumHealthyTargetsCount(1)
-    ///                     .minimumHealthyTargetsPercentage("off")
-    ///                     .build())
-    ///                 .build())
-    ///             .build());
-    /// 
-    ///     }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   tcp-example:
-    ///     type: aws:lb:TargetGroup
-    ///     properties:
-    ///       name: tf-example-lb-nlb-tg
-    ///       port: 80
-    ///       protocol: TCP
-    ///       vpcId: ${main.id}
-    ///       targetGroupHealth:
-    ///         dnsFailover:
-    ///           minimumHealthyTargetsCount: '1'
-    ///           minimumHealthyTargetsPercentage: off
-    ///         unhealthyStateRouting:
-    ///           minimumHealthyTargetsCount: '1'
-    ///           minimumHealthyTargetsPercentage: off
-    /// ```
-    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ## Import
     /// 
@@ -806,7 +179,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// #### Required
     /// 
-    /// - &lt;span pulumi-lang-nodejs="`arn`" pulumi-lang-dotnet="`Arn`" pulumi-lang-go="`arn`" pulumi-lang-python="`arn`" pulumi-lang-yaml="`arn`" pulumi-lang-java="`arn`"&gt;`arn`&lt;/span&gt; (String) Amazon Resource Name (ARN) of the target group.
+    /// - `Arn` (String) Amazon Resource Name (ARN) of the target group.
     /// 
     /// 
     /// Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -818,7 +191,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     public sealed class TargetGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
+        /// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `False`.
         /// </summary>
         [Input("connectionTermination")]
         public Input<bool>? ConnectionTermination { get; set; }
@@ -836,31 +209,31 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<Pulumi.Aws.LB.Inputs.TargetGroupHealthCheckArgs>? HealthCheck { get; set; }
 
         /// <summary>
-        /// The type of IP addresses used by the target group, only supported when target type is set to &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt;. Possible values are &lt;span pulumi-lang-nodejs="`ipv4`" pulumi-lang-dotnet="`Ipv4`" pulumi-lang-go="`ipv4`" pulumi-lang-python="`ipv4`" pulumi-lang-yaml="`ipv4`" pulumi-lang-java="`ipv4`"&gt;`ipv4`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`ipv6`" pulumi-lang-dotnet="`Ipv6`" pulumi-lang-go="`ipv6`" pulumi-lang-python="`ipv6`" pulumi-lang-yaml="`ipv6`" pulumi-lang-java="`ipv6`"&gt;`ipv6`&lt;/span&gt;.
+        /// The type of IP addresses used by the target group, only supported when target type is set to `Ip`. Possible values are `Ipv4` or `Ipv6`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
 
         /// <summary>
-        /// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`lambda`" pulumi-lang-dotnet="`Lambda`" pulumi-lang-go="`lambda`" pulumi-lang-python="`lambda`" pulumi-lang-yaml="`lambda`" pulumi-lang-java="`lambda`"&gt;`lambda`&lt;/span&gt;. Default is &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
+        /// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `TargetType` is `Lambda`. Default is `False`.
         /// </summary>
         [Input("lambdaMultiValueHeadersEnabled")]
         public Input<bool>? LambdaMultiValueHeadersEnabled { get; set; }
 
         /// <summary>
-        /// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is &lt;span pulumi-lang-nodejs="`roundRobin`" pulumi-lang-dotnet="`RoundRobin`" pulumi-lang-go="`roundRobin`" pulumi-lang-python="`round_robin`" pulumi-lang-yaml="`roundRobin`" pulumi-lang-java="`roundRobin`"&gt;`roundRobin`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`leastOutstandingRequests`" pulumi-lang-dotnet="`LeastOutstandingRequests`" pulumi-lang-go="`leastOutstandingRequests`" pulumi-lang-python="`least_outstanding_requests`" pulumi-lang-yaml="`leastOutstandingRequests`" pulumi-lang-java="`leastOutstandingRequests`"&gt;`leastOutstandingRequests`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs="`weightedRandom`" pulumi-lang-dotnet="`WeightedRandom`" pulumi-lang-go="`weightedRandom`" pulumi-lang-python="`weighted_random`" pulumi-lang-yaml="`weightedRandom`" pulumi-lang-java="`weightedRandom`"&gt;`weightedRandom`&lt;/span&gt;. The default is &lt;span pulumi-lang-nodejs="`roundRobin`" pulumi-lang-dotnet="`RoundRobin`" pulumi-lang-go="`roundRobin`" pulumi-lang-python="`round_robin`" pulumi-lang-yaml="`roundRobin`" pulumi-lang-java="`roundRobin`"&gt;`roundRobin`&lt;/span&gt;.
+        /// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `RoundRobin`, `LeastOutstandingRequests`, or `WeightedRandom`. The default is `RoundRobin`.
         /// </summary>
         [Input("loadBalancingAlgorithmType")]
         public Input<string>? LoadBalancingAlgorithmType { get; set; }
 
         /// <summary>
-        /// Determines whether to enable target anomaly mitigation.  Target anomaly mitigation is only supported by the &lt;span pulumi-lang-nodejs="`weightedRandom`" pulumi-lang-dotnet="`WeightedRandom`" pulumi-lang-go="`weightedRandom`" pulumi-lang-python="`weighted_random`" pulumi-lang-yaml="`weightedRandom`" pulumi-lang-java="`weightedRandom`"&gt;`weightedRandom`&lt;/span&gt; load balancing algorithm type.  See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights) for more information.  The value is `"on"` or `"off"`. The default is `"off"`.
+        /// Determines whether to enable target anomaly mitigation.  Target anomaly mitigation is only supported by the `WeightedRandom` load balancing algorithm type.  See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights) for more information.  The value is `"on"` or `"off"`. The default is `"off"`.
         /// </summary>
         [Input("loadBalancingAnomalyMitigation")]
         public Input<string>? LoadBalancingAnomalyMitigation { get; set; }
 
         /// <summary>
-        /// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `&lt;span pulumi-lang-nodejs=""useLoadBalancerConfiguration"" pulumi-lang-dotnet=""UseLoadBalancerConfiguration"" pulumi-lang-go=""useLoadBalancerConfiguration"" pulumi-lang-python=""use_load_balancer_configuration"" pulumi-lang-yaml=""useLoadBalancerConfiguration"" pulumi-lang-java=""useLoadBalancerConfiguration""&gt;"useLoadBalancerConfiguration"&lt;/span&gt;`. The default is `&lt;span pulumi-lang-nodejs=""useLoadBalancerConfiguration"" pulumi-lang-dotnet=""UseLoadBalancerConfiguration"" pulumi-lang-go=""useLoadBalancerConfiguration"" pulumi-lang-python=""use_load_balancer_configuration"" pulumi-lang-yaml=""useLoadBalancerConfiguration"" pulumi-lang-java=""useLoadBalancerConfiguration""&gt;"useLoadBalancerConfiguration"&lt;/span&gt;`.
+        /// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"UseLoadBalancerConfiguration"`. The default is `"UseLoadBalancerConfiguration"`.
         /// </summary>
         [Input("loadBalancingCrossZoneEnabled")]
         public Input<string>? LoadBalancingCrossZoneEnabled { get; set; }
@@ -872,13 +245,13 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? Name { get; set; }
 
         /// <summary>
-        /// Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs="`name`" pulumi-lang-dotnet="`Name`" pulumi-lang-go="`name`" pulumi-lang-python="`name`" pulumi-lang-yaml="`name`" pulumi-lang-java="`name`"&gt;`name`&lt;/span&gt;. Cannot be longer than 6 characters.
+        /// Creates a unique name beginning with the specified prefix. Conflicts with `Name`. Cannot be longer than 6 characters.
         /// </summary>
         [Input("namePrefix")]
         public Input<string>? NamePrefix { get; set; }
 
         /// <summary>
-        /// Port on which targets receive traffic, unless overridden when registering a specific target. Required when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`alb`" pulumi-lang-dotnet="`Alb`" pulumi-lang-go="`alb`" pulumi-lang-python="`alb`" pulumi-lang-yaml="`alb`" pulumi-lang-java="`alb`"&gt;`alb`&lt;/span&gt;. Does not apply when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`lambda`" pulumi-lang-dotnet="`Lambda`" pulumi-lang-go="`lambda`" pulumi-lang-python="`lambda`" pulumi-lang-yaml="`lambda`" pulumi-lang-java="`lambda`"&gt;`lambda`&lt;/span&gt;.
+        /// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `TargetType` is `Instance`, `Ip` or `Alb`. Does not apply when `TargetType` is `Lambda`.
         /// </summary>
         [Input("port")]
         public Input<int>? Port { get; set; }
@@ -892,20 +265,20 @@ namespace Pulumi.Awsx.Lb.Inputs
         /// <summary>
         /// Protocol to use for routing traffic to the targets.
         /// Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, `UDP`, `QUIC`, or `TCP_QUIC`.
-        /// Required when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs="`alb`" pulumi-lang-dotnet="`Alb`" pulumi-lang-go="`alb`" pulumi-lang-python="`alb`" pulumi-lang-yaml="`alb`" pulumi-lang-java="`alb`"&gt;`alb`&lt;/span&gt;.
-        /// Does not apply when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`lambda`" pulumi-lang-dotnet="`Lambda`" pulumi-lang-go="`lambda`" pulumi-lang-python="`lambda`" pulumi-lang-yaml="`lambda`" pulumi-lang-java="`lambda`"&gt;`lambda`&lt;/span&gt;.
+        /// Required when `TargetType` is `Instance`, `Ip`, or `Alb`.
+        /// Does not apply when `TargetType` is `Lambda`.
         /// </summary>
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
 
         /// <summary>
-        /// Only applicable when &lt;span pulumi-lang-nodejs="`protocol`" pulumi-lang-dotnet="`Protocol`" pulumi-lang-go="`protocol`" pulumi-lang-python="`protocol`" pulumi-lang-yaml="`protocol`" pulumi-lang-java="`protocol`"&gt;`protocol`&lt;/span&gt; is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+        /// Only applicable when `Protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         /// </summary>
         [Input("protocolVersion")]
         public Input<string>? ProtocolVersion { get; set; }
 
         /// <summary>
-        /// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
+        /// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `False`.
         /// </summary>
         [Input("proxyProtocolV2")]
         public Input<bool>? ProxyProtocolV2 { get; set; }
@@ -932,7 +305,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the resource. If configured with a provider `DefaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -941,7 +314,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt;.
+        /// Port on which the target control agent and application load balancer exchange management traffic for the target optimizer feature. Only applicable for Application Load Balancer target groups when `TargetType` is `Instance` or `Ip`.
         /// </summary>
         [Input("targetControlPort")]
         public Input<int>? TargetControlPort { get; set; }
@@ -950,7 +323,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>? _targetFailovers;
 
         /// <summary>
-        /// Target failover block. Only applicable for Gateway Load Balancer target groups. See&lt;span pulumi-lang-nodejs=" targetFailover " pulumi-lang-dotnet=" TargetFailover " pulumi-lang-go=" targetFailover " pulumi-lang-python=" target_failover " pulumi-lang-yaml=" targetFailover " pulumi-lang-java=" targetFailover "&gt; targetFailover &lt;/span&gt;for more information.
+        /// Target failover block. Only applicable for Gateway Load Balancer target groups. See TargetFailover for more information.
         /// </summary>
         public InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs> TargetFailovers
         {
@@ -959,7 +332,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// Target health requirements block. See&lt;span pulumi-lang-nodejs=" targetGroupHealth " pulumi-lang-dotnet=" TargetGroupHealth " pulumi-lang-go=" targetGroupHealth " pulumi-lang-python=" target_group_health " pulumi-lang-yaml=" targetGroupHealth " pulumi-lang-java=" targetGroupHealth "&gt; targetGroupHealth &lt;/span&gt;for more information.
+        /// Target health requirements block. See TargetGroupHealth for more information.
         /// </summary>
         [Input("targetGroupHealth")]
         public Input<Pulumi.Aws.LB.Inputs.TargetGroupTargetGroupHealthArgs>? TargetGroupHealth { get; set; }
@@ -968,7 +341,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetHealthStateArgs>? _targetHealthStates;
 
         /// <summary>
-        /// Target health state block. Only applicable for Network Load Balancer target groups when &lt;span pulumi-lang-nodejs="`protocol`" pulumi-lang-dotnet="`Protocol`" pulumi-lang-go="`protocol`" pulumi-lang-python="`protocol`" pulumi-lang-yaml="`protocol`" pulumi-lang-java="`protocol`"&gt;`protocol`&lt;/span&gt; is `TCP` or `TLS`. See&lt;span pulumi-lang-nodejs=" targetHealthState " pulumi-lang-dotnet=" TargetHealthState " pulumi-lang-go=" targetHealthState " pulumi-lang-python=" target_health_state " pulumi-lang-yaml=" targetHealthState " pulumi-lang-java=" targetHealthState "&gt; targetHealthState &lt;/span&gt;for more information.
+        /// Target health state block. Only applicable for Network Load Balancer target groups when `Protocol` is `TCP` or `TLS`. See TargetHealthState for more information.
         /// </summary>
         public InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetHealthStateArgs> TargetHealthStates
         {
@@ -979,21 +352,21 @@ namespace Pulumi.Awsx.Lb.Inputs
         /// <summary>
         /// Type of target that you must specify when registering targets with this target group.
         /// See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values.
-        /// The default is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt;.
+        /// The default is `Instance`.
         /// 
         /// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
         /// 
-        /// If the target type is &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt;, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+        /// If the target type is `Ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
         /// 
-        /// Network Load Balancers do not support the &lt;span pulumi-lang-nodejs="`lambda`" pulumi-lang-dotnet="`Lambda`" pulumi-lang-go="`lambda`" pulumi-lang-python="`lambda`" pulumi-lang-yaml="`lambda`" pulumi-lang-java="`lambda`"&gt;`lambda`&lt;/span&gt; target type.
+        /// Network Load Balancers do not support the `Lambda` target type.
         /// 
-        /// Application Load Balancers do not support the &lt;span pulumi-lang-nodejs="`alb`" pulumi-lang-dotnet="`Alb`" pulumi-lang-go="`alb`" pulumi-lang-python="`alb`" pulumi-lang-yaml="`alb`" pulumi-lang-java="`alb`"&gt;`alb`&lt;/span&gt; target type.
+        /// Application Load Balancers do not support the `Alb` target type.
         /// </summary>
         [Input("targetType")]
         public Input<string>? TargetType { get; set; }
 
         /// <summary>
-        /// Identifier of the VPC in which to create the target group. Required when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`instance`" pulumi-lang-dotnet="`Instance`" pulumi-lang-go="`instance`" pulumi-lang-python="`instance`" pulumi-lang-yaml="`instance`" pulumi-lang-java="`instance`"&gt;`instance`&lt;/span&gt;, &lt;span pulumi-lang-nodejs="`ip`" pulumi-lang-dotnet="`Ip`" pulumi-lang-go="`ip`" pulumi-lang-python="`ip`" pulumi-lang-yaml="`ip`" pulumi-lang-java="`ip`"&gt;`ip`&lt;/span&gt; or &lt;span pulumi-lang-nodejs="`alb`" pulumi-lang-dotnet="`Alb`" pulumi-lang-go="`alb`" pulumi-lang-python="`alb`" pulumi-lang-yaml="`alb`" pulumi-lang-java="`alb`"&gt;`alb`&lt;/span&gt;. Does not apply when &lt;span pulumi-lang-nodejs="`targetType`" pulumi-lang-dotnet="`TargetType`" pulumi-lang-go="`targetType`" pulumi-lang-python="`target_type`" pulumi-lang-yaml="`targetType`" pulumi-lang-java="`targetType`"&gt;`targetType`&lt;/span&gt; is &lt;span pulumi-lang-nodejs="`lambda`" pulumi-lang-dotnet="`Lambda`" pulumi-lang-go="`lambda`" pulumi-lang-python="`lambda`" pulumi-lang-yaml="`lambda`" pulumi-lang-java="`lambda`"&gt;`lambda`&lt;/span&gt;.
+        /// Identifier of the VPC in which to create the target group. Required when `TargetType` is `Instance`, `Ip` or `Alb`. Does not apply when `TargetType` is `Lambda`.
         /// </summary>
         [Input("vpcId")]
         public Input<string>? VpcId { get; set; }

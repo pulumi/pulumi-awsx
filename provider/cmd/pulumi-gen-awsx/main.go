@@ -20,12 +20,14 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
+	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfgen/schemafilter"
 	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
@@ -49,6 +51,7 @@ type Language string
 const (
 	DotNet Language = "dotnet"
 	Go     Language = "go"
+	Java   Language = "java"
 	Python Language = "python"
 	Schema Language = "schema"
 	Nodejs Language = "nodejs"
@@ -60,6 +63,8 @@ func parseLanguage(text string) (Language, error) {
 		return DotNet, nil
 	case "go":
 		return Go, nil
+	case "java":
+		return Java, nil
 	case "python":
 		return Python, nil
 	case "nodejs":
@@ -67,7 +72,7 @@ func parseLanguage(text string) (Language, error) {
 	case "schema":
 		return Schema, nil
 	default:
-		allLangs := []Language{DotNet, Go, Python, Schema, Nodejs}
+		allLangs := []Language{DotNet, Go, Java, Python, Schema, Nodejs}
 		allLangStrings := []string{}
 		for _, lang := range allLangs {
 			allLangStrings = append(allLangStrings, string(lang))
@@ -112,28 +117,64 @@ func generate(language Language, cwd, outDir string) error {
 	if language == Schema {
 		return writePulumiSchema(pkgSpec, outDir)
 	}
-	// Following Makefile expectations from the bridged providers re-generate the schema on the fly.
-	// Once that is refactored could instead load a pre-generated schema from a file.
-	schema, err := bindSchema(pkgSpec, version.Version)
+
+	// The checked-in schema is the all-language docs source of truth. Filter it per SDK target
+	// before generation so chooser blocks and inflected identifiers don't leak into every SDK.
+	filteredSpec, filteredSchemaJSON, err := filterSchema(pkgSpec, version.Version, language)
 	if err != nil {
 		return err
 	}
+
 	switch language {
 	case DotNet:
+		schema, err := bindSchema(filteredSpec)
+		if err != nil {
+			return err
+		}
 		return genDotNet(schema, outDir)
 	case Go:
+		schema, err := bindSchema(filteredSpec)
+		if err != nil {
+			return err
+		}
 		return genGo(schema, outDir)
+	case Java:
+		return genJava(filteredSchemaJSON, outDir)
 	case Python:
+		schema, err := bindSchema(filteredSpec)
+		if err != nil {
+			return err
+		}
 		return genPython(schema, outDir)
 	case Nodejs:
+		schema, err := bindSchema(filteredSpec)
+		if err != nil {
+			return err
+		}
 		return genNodejs(schema, outDir)
 	default:
 		return fmt.Errorf("unrecognized language %q", language)
 	}
 }
 
-func bindSchema(pkgSpec schema.PackageSpec, version string) (*schema.Package, error) {
+func filterSchema(pkgSpec schema.PackageSpec, version string, language Language) (schema.PackageSpec, []byte, error) {
 	pkgSpec.Version = version
+	schemaJSON, err := json.Marshal(pkgSpec)
+	if err != nil {
+		return schema.PackageSpec{}, nil, errors.Wrap(err, "marshaling Pulumi schema")
+	}
+
+	filteredSchemaJSON := schemafilter.FilterSchemaByLanguage(schemaJSON, string(language))
+
+	var filteredSpec schema.PackageSpec
+	if err := json.Unmarshal(filteredSchemaJSON, &filteredSpec); err != nil {
+		return schema.PackageSpec{}, nil, errors.Wrap(err, "unmarshaling filtered Pulumi schema")
+	}
+
+	return filteredSpec, filteredSchemaJSON, nil
+}
+
+func bindSchema(pkgSpec schema.PackageSpec) (*schema.Package, error) {
 	pkg, err := schema.ImportSpec(pkgSpec, nil, schema.ValidationOptions{})
 	if err != nil {
 		return nil, err
@@ -155,6 +196,48 @@ func genGo(pkg *schema.Package, outdir string) error {
 		return err
 	}
 	return writeFiles(outdir, files)
+}
+
+// Java still uses the Pulumi CLI SDK generator, but it now consumes the same filtered
+// per-language schema contract as the in-process generators above.
+func genJava(filteredSchemaJSON []byte, outdir string) error {
+	tempDir, err := os.MkdirTemp("", "pulumi-gen-awsx-java-schema")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(tempDir)
+
+	schemaPath := filepath.Join(tempDir, "schema.json")
+	if err := os.WriteFile(schemaPath, filteredSchemaJSON, 0o600); err != nil {
+		return err
+	}
+
+	cliOutDir := filepath.Join(tempDir, "sdk")
+	args := []string{
+		"package", "gen-sdk",
+		"--language", string(Java),
+		"--out", cliOutDir,
+	}
+	if version.Version != "" {
+		args = append(args, "--version", version.Version)
+	}
+	args = append(args, schemaPath)
+
+	cmd := exec.Command("pulumi", args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return errors.Wrap(err, string(output))
+	}
+
+	generatedOutDir := filepath.Join(cliOutDir, string(Java))
+	if _, err := os.Stat(generatedOutDir); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+		generatedOutDir = cliOutDir
+	}
+
+	return copyGeneratedFiles(generatedOutDir, outdir)
 }
 
 func genPython(pkg *schema.Package, outdir string) error {
@@ -212,6 +295,28 @@ func writeFiles(rootDir string, files map[string][]byte) error {
 		}
 	}
 	return nil
+}
+
+func copyGeneratedFiles(srcRoot, dstRoot string) error {
+	return filepath.Walk(srcRoot, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+
+		contents, err := os.ReadFile(path) //nolint:gosec
+		if err != nil {
+			return err
+		}
+
+		rel, err := filepath.Rel(srcRoot, path)
+		if err != nil {
+			return err
+		}
+		return writeFile(dstRoot, rel, contents)
+	})
 }
 
 func writeFile(rootDir, filename string, contents []byte) error {
