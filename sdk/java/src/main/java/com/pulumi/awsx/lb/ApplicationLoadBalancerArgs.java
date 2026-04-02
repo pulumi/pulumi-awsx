@@ -60,14 +60,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Connection Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * Connection Logs block. See below. Only valid for Load Balancers of type `application`.
      * 
      */
     @Import(name="connectionLogs")
     private @Nullable Output<LoadBalancerConnectionLogsArgs> connectionLogs;
 
     /**
-     * @return Connection Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * @return Connection Logs block. See below. Only valid for Load Balancers of type `application`.
      * 
      */
     public Optional<Output<LoadBalancerConnectionLogsArgs>> connectionLogs() {
@@ -135,14 +135,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are &lt;span pulumi-lang-nodejs=&#34;`monitor`&#34; pulumi-lang-dotnet=&#34;`Monitor`&#34; pulumi-lang-go=&#34;`monitor`&#34; pulumi-lang-python=&#34;`monitor`&#34; pulumi-lang-yaml=&#34;`monitor`&#34; pulumi-lang-java=&#34;`monitor`&#34;&gt;`monitor`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`defensive`&#34; pulumi-lang-dotnet=&#34;`Defensive`&#34; pulumi-lang-go=&#34;`defensive`&#34; pulumi-lang-python=&#34;`defensive`&#34; pulumi-lang-yaml=&#34;`defensive`&#34; pulumi-lang-java=&#34;`defensive`&#34;&gt;`defensive`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`strictest`&#34; pulumi-lang-dotnet=&#34;`Strictest`&#34; pulumi-lang-go=&#34;`strictest`&#34; pulumi-lang-python=&#34;`strictest`&#34; pulumi-lang-yaml=&#34;`strictest`&#34; pulumi-lang-java=&#34;`strictest`&#34;&gt;`strictest`&lt;/span&gt;.
+     * How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      * 
      */
     @Import(name="desyncMitigationMode")
     private @Nullable Output<String> desyncMitigationMode;
 
     /**
-     * @return How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are &lt;span pulumi-lang-nodejs=&#34;`monitor`&#34; pulumi-lang-dotnet=&#34;`Monitor`&#34; pulumi-lang-go=&#34;`monitor`&#34; pulumi-lang-python=&#34;`monitor`&#34; pulumi-lang-yaml=&#34;`monitor`&#34; pulumi-lang-java=&#34;`monitor`&#34;&gt;`monitor`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`defensive`&#34; pulumi-lang-dotnet=&#34;`Defensive`&#34; pulumi-lang-go=&#34;`defensive`&#34; pulumi-lang-python=&#34;`defensive`&#34; pulumi-lang-yaml=&#34;`defensive`&#34; pulumi-lang-java=&#34;`defensive`&#34;&gt;`defensive`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`strictest`&#34; pulumi-lang-dotnet=&#34;`Strictest`&#34; pulumi-lang-go=&#34;`strictest`&#34; pulumi-lang-python=&#34;`strictest`&#34; pulumi-lang-yaml=&#34;`strictest`&#34; pulumi-lang-java=&#34;`strictest`&#34;&gt;`strictest`&lt;/span&gt;.
+     * @return How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      * 
      */
     public Optional<Output<String>> desyncMitigationMode() {
@@ -150,14 +150,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * How traffic is distributed among the load balancer Availability Zones. Possible values are &lt;span pulumi-lang-nodejs=&#34;`anyAvailabilityZone`&#34; pulumi-lang-dotnet=&#34;`AnyAvailabilityZone`&#34; pulumi-lang-go=&#34;`anyAvailabilityZone`&#34; pulumi-lang-python=&#34;`any_availability_zone`&#34; pulumi-lang-yaml=&#34;`anyAvailabilityZone`&#34; pulumi-lang-java=&#34;`anyAvailabilityZone`&#34;&gt;`anyAvailabilityZone`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`AvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`availabilityZoneAffinity`&#34;&gt;`availabilityZoneAffinity`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`PartialAvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`partial_availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`partialAvailabilityZoneAffinity`&#34;&gt;`partialAvailabilityZoneAffinity`&lt;/span&gt;. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; type load balancers.
+     * How traffic is distributed among the load balancer Availability Zones. Possible values are `anyAvailabilityZone` (default), `availabilityZoneAffinity`, or `partialAvailabilityZoneAffinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
      * 
      */
     @Import(name="dnsRecordClientRoutingPolicy")
     private @Nullable Output<String> dnsRecordClientRoutingPolicy;
 
     /**
-     * @return How traffic is distributed among the load balancer Availability Zones. Possible values are &lt;span pulumi-lang-nodejs=&#34;`anyAvailabilityZone`&#34; pulumi-lang-dotnet=&#34;`AnyAvailabilityZone`&#34; pulumi-lang-go=&#34;`anyAvailabilityZone`&#34; pulumi-lang-python=&#34;`any_availability_zone`&#34; pulumi-lang-yaml=&#34;`anyAvailabilityZone`&#34; pulumi-lang-java=&#34;`anyAvailabilityZone`&#34;&gt;`anyAvailabilityZone`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`AvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`availabilityZoneAffinity`&#34;&gt;`availabilityZoneAffinity`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`PartialAvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`partial_availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`partialAvailabilityZoneAffinity`&#34;&gt;`partialAvailabilityZoneAffinity`&lt;/span&gt;. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; type load balancers.
+     * @return How traffic is distributed among the load balancer Availability Zones. Possible values are `anyAvailabilityZone` (default), `availabilityZoneAffinity`, or `partialAvailabilityZoneAffinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
      * 
      */
     public Optional<Output<String>> dnsRecordClientRoutingPolicy() {
@@ -165,14 +165,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
      * 
      */
     @Import(name="dropInvalidHeaderFields")
     private @Nullable Output<Boolean> dropInvalidHeaderFields;
 
     /**
-     * @return Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * @return Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
      * 
      */
     public Optional<Output<Boolean>> dropInvalidHeaderFields() {
@@ -180,14 +180,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     @Import(name="enableDeletionProtection")
     private @Nullable Output<Boolean> enableDeletionProtection;
 
     /**
-     * @return If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableDeletionProtection() {
@@ -195,14 +195,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether HTTP/2 is enabled in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * Whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
      * 
      */
     @Import(name="enableHttp2")
     private @Nullable Output<Boolean> enableHttp2;
 
     /**
-     * @return Whether HTTP/2 is enabled in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+     * @return Whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
      * 
      */
     public Optional<Output<Boolean>> enableHttp2() {
@@ -210,14 +210,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;
+     * Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
      * 
      */
     @Import(name="enableTlsVersionAndCipherSuiteHeaders")
     private @Nullable Output<Boolean> enableTlsVersionAndCipherSuiteHeaders;
 
     /**
-     * @return Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;
+     * @return Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
      * 
      */
     public Optional<Output<Boolean>> enableTlsVersionAndCipherSuiteHeaders() {
@@ -225,14 +225,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
      * 
      */
     @Import(name="enableWafFailOpen")
     private @Nullable Output<Boolean> enableWafFailOpen;
 
     /**
-     * @return Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableWafFailOpen() {
@@ -240,14 +240,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
      * 
      */
     @Import(name="enableXffClientPort")
     private @Nullable Output<Boolean> enableXffClientPort;
 
     /**
-     * @return Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableXffClientPort() {
@@ -255,14 +255,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether zonal shift is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether zonal shift is enabled. Defaults to `false`.
      * 
      */
     @Import(name="enableZonalShift")
     private @Nullable Output<Boolean> enableZonalShift;
 
     /**
-     * @return Whether zonal shift is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether zonal shift is enabled. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableZonalShift() {
@@ -270,14 +270,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The possible values are &lt;span pulumi-lang-nodejs=&#34;`on`&#34; pulumi-lang-dotnet=&#34;`On`&#34; pulumi-lang-go=&#34;`on`&#34; pulumi-lang-python=&#34;`on`&#34; pulumi-lang-yaml=&#34;`on`&#34; pulumi-lang-java=&#34;`on`&#34;&gt;`on`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`off`&#34; pulumi-lang-dotnet=&#34;`Off`&#34; pulumi-lang-go=&#34;`off`&#34; pulumi-lang-python=&#34;`off`&#34; pulumi-lang-yaml=&#34;`off`&#34; pulumi-lang-java=&#34;`off`&#34;&gt;`off`&lt;/span&gt;.
+     * Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
      * 
      */
     @Import(name="enforceSecurityGroupInboundRulesOnPrivateLinkTraffic")
     private @Nullable Output<String> enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
 
     /**
-     * @return Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The possible values are &lt;span pulumi-lang-nodejs=&#34;`on`&#34; pulumi-lang-dotnet=&#34;`On`&#34; pulumi-lang-go=&#34;`on`&#34; pulumi-lang-python=&#34;`on`&#34; pulumi-lang-yaml=&#34;`on`&#34; pulumi-lang-java=&#34;`on`&#34;&gt;`on`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`off`&#34; pulumi-lang-dotnet=&#34;`Off`&#34; pulumi-lang-go=&#34;`off`&#34; pulumi-lang-python=&#34;`off`&#34; pulumi-lang-yaml=&#34;`off`&#34; pulumi-lang-java=&#34;`off`&#34;&gt;`off`&lt;/span&gt;.
+     * @return Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
      * 
      */
     public Optional<Output<String>> enforceSecurityGroupInboundRulesOnPrivateLinkTraffic() {
@@ -285,14 +285,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * Health Check Logs block. See below. Only valid for Load Balancers of type `application`.
      * 
      */
     @Import(name="healthCheckLogs")
     private @Nullable Output<LoadBalancerHealthCheckLogsArgs> healthCheckLogs;
 
     /**
-     * @return Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+     * @return Health Check Logs block. See below. Only valid for Load Balancers of type `application`.
      * 
      */
     public Optional<Output<LoadBalancerHealthCheckLogsArgs>> healthCheckLogs() {
@@ -300,14 +300,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Default: 60.
+     * Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
      * 
      */
     @Import(name="idleTimeout")
     private @Nullable Output<Integer> idleTimeout;
 
     /**
-     * @return Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Default: 60.
+     * @return Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
      * 
      */
     public Optional<Output<Integer>> idleTimeout() {
@@ -315,14 +315,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * If true, the LB will be internal. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * If true, the LB will be internal. Defaults to `false`.
      * 
      */
     @Import(name="internal")
     private @Nullable Output<Boolean> internal;
 
     /**
-     * @return If true, the LB will be internal. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return If true, the LB will be internal. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> internal() {
@@ -330,14 +330,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; (all load balancer types), &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; (all load balancer types), and `dualstack-without-public-ipv4` (type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; only).
+     * Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
      * 
      */
     @Import(name="ipAddressType")
     private @Nullable Output<String> ipAddressType;
 
     /**
-     * @return Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; (all load balancer types), &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; (all load balancer types), and `dualstack-without-public-ipv4` (type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; only).
+     * @return Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
      * 
      */
     public Optional<Output<String>> ipAddressType() {
@@ -345,14 +345,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. See&lt;span pulumi-lang-nodejs=&#34; ipamPools &#34; pulumi-lang-dotnet=&#34; IpamPools &#34; pulumi-lang-go=&#34; ipamPools &#34; pulumi-lang-python=&#34; ipam_pools &#34; pulumi-lang-yaml=&#34; ipamPools &#34; pulumi-lang-java=&#34; ipamPools &#34;&gt; ipamPools &lt;/span&gt;for more information.
+     * . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipamPools for more information.
      * 
      */
     @Import(name="ipamPools")
     private @Nullable Output<LoadBalancerIpamPoolsArgs> ipamPools;
 
     /**
-     * @return . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. See&lt;span pulumi-lang-nodejs=&#34; ipamPools &#34; pulumi-lang-dotnet=&#34; IpamPools &#34; pulumi-lang-go=&#34; ipamPools &#34; pulumi-lang-python=&#34; ipam_pools &#34; pulumi-lang-yaml=&#34; ipamPools &#34; pulumi-lang-java=&#34; ipamPools &#34;&gt; ipamPools &lt;/span&gt;for more information.
+     * @return . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipamPools for more information.
      * 
      */
     public Optional<Output<LoadBalancerIpamPoolsArgs>> ipamPools() {
@@ -390,14 +390,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Minimum capacity for a load balancer. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;.
+     * Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
      * 
      */
     @Import(name="minimumLoadBalancerCapacity")
     private @Nullable Output<LoadBalancerMinimumLoadBalancerCapacityArgs> minimumLoadBalancerCapacity;
 
     /**
-     * @return Minimum capacity for a load balancer. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;.
+     * @return Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
      * 
      */
     public Optional<Output<LoadBalancerMinimumLoadBalancerCapacityArgs>> minimumLoadBalancerCapacity() {
@@ -420,14 +420,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+     * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      * 
      */
     @Import(name="namePrefix")
     private @Nullable Output<String> namePrefix;
 
     /**
-     * @return Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+     * @return Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      * 
      */
     public Optional<Output<String>> namePrefix() {
@@ -435,14 +435,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
      * 
      */
     @Import(name="preserveHostHeader")
     private @Nullable Output<Boolean> preserveHostHeader;
 
     /**
-     * @return Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+     * @return Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> preserveHostHeader() {
@@ -465,14 +465,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: &lt;span pulumi-lang-nodejs=&#34;`0`&#34; pulumi-lang-dotnet=&#34;`0`&#34; pulumi-lang-go=&#34;`0`&#34; pulumi-lang-python=&#34;`0`&#34; pulumi-lang-yaml=&#34;`0`&#34; pulumi-lang-java=&#34;`0`&#34;&gt;`0`&lt;/span&gt;.
+     * The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
      * 
      */
     @Import(name="secondaryIpsAutoAssignedPerSubnet")
     private @Nullable Output<Integer> secondaryIpsAutoAssignedPerSubnet;
 
     /**
-     * @return The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: &lt;span pulumi-lang-nodejs=&#34;`0`&#34; pulumi-lang-dotnet=&#34;`0`&#34; pulumi-lang-go=&#34;`0`&#34; pulumi-lang-python=&#34;`0`&#34; pulumi-lang-yaml=&#34;`0`&#34; pulumi-lang-java=&#34;`0`&#34;&gt;`0`&lt;/span&gt;.
+     * @return The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
      * 
      */
     public Optional<Output<Integer>> secondaryIpsAutoAssignedPerSubnet() {
@@ -480,14 +480,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * List of security group IDs to assign to the LB. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. For load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+     * List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
      * 
      */
     @Import(name="securityGroups")
     private @Nullable Output<List<String>> securityGroups;
 
     /**
-     * @return List of security group IDs to assign to the LB. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. For load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+     * @return List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
      * 
      */
     public Optional<Output<List<String>>> securityGroups() {
@@ -495,14 +495,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * List of subnet IDs to attach to the LB. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; will force a recreation of the resource.
+     * List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
      * 
      */
     @Import(name="subnetIds")
     private @Nullable Output<List<String>> subnetIds;
 
     /**
-     * @return List of subnet IDs to attach to the LB. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; will force a recreation of the resource.
+     * @return List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
      * 
      */
     public Optional<Output<List<String>>> subnetIds() {
@@ -510,14 +510,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Subnet mapping block. See below. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnet mappings can only be added.
+     * Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
      * 
      */
     @Import(name="subnetMappings")
     private @Nullable Output<List<LoadBalancerSubnetMappingArgs>> subnetMappings;
 
     /**
-     * @return Subnet mapping block. See below. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnet mappings can only be added.
+     * @return Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
      * 
      */
     public Optional<Output<List<LoadBalancerSubnetMappingArgs>>> subnetMappings() {
@@ -540,14 +540,14 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -555,22 +555,22 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`preserve`&#34; pulumi-lang-dotnet=&#34;`Preserve`&#34; pulumi-lang-go=&#34;`preserve`&#34; pulumi-lang-python=&#34;`preserve`&#34; pulumi-lang-yaml=&#34;`preserve`&#34; pulumi-lang-java=&#34;`preserve`&#34;&gt;`preserve`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`remove`&#34; pulumi-lang-dotnet=&#34;`Remove`&#34; pulumi-lang-go=&#34;`remove`&#34; pulumi-lang-python=&#34;`remove`&#34; pulumi-lang-yaml=&#34;`remove`&#34; pulumi-lang-java=&#34;`remove`&#34;&gt;`remove`&lt;/span&gt;. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. The default is &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;.
+     * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
      * 
-     * &gt; **NOTE:** Please note that internal LBs can only use &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; as the &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt;. You can only change to &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt; if the selected subnets are IPv6 enabled.
+     * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ipAddressType`. You can only change to `dualstack` `ipAddressType` if the selected subnets are IPv6 enabled.
      * 
-     * &gt; **NOTE:** Please note that one of either &lt;span pulumi-lang-nodejs=&#34;`subnets`&#34; pulumi-lang-dotnet=&#34;`Subnets`&#34; pulumi-lang-go=&#34;`subnets`&#34; pulumi-lang-python=&#34;`subnets`&#34; pulumi-lang-yaml=&#34;`subnets`&#34; pulumi-lang-java=&#34;`subnets`&#34;&gt;`subnets`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`subnetMapping`&#34; pulumi-lang-dotnet=&#34;`SubnetMapping`&#34; pulumi-lang-go=&#34;`subnetMapping`&#34; pulumi-lang-python=&#34;`subnet_mapping`&#34; pulumi-lang-yaml=&#34;`subnetMapping`&#34; pulumi-lang-java=&#34;`subnetMapping`&#34;&gt;`subnetMapping`&lt;/span&gt; is required.
+     * &gt; **NOTE:** Please note that one of either `subnets` or `subnetMapping` is required.
      * 
      */
     @Import(name="xffHeaderProcessingMode")
     private @Nullable Output<String> xffHeaderProcessingMode;
 
     /**
-     * @return Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`preserve`&#34; pulumi-lang-dotnet=&#34;`Preserve`&#34; pulumi-lang-go=&#34;`preserve`&#34; pulumi-lang-python=&#34;`preserve`&#34; pulumi-lang-yaml=&#34;`preserve`&#34; pulumi-lang-java=&#34;`preserve`&#34;&gt;`preserve`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`remove`&#34; pulumi-lang-dotnet=&#34;`Remove`&#34; pulumi-lang-go=&#34;`remove`&#34; pulumi-lang-python=&#34;`remove`&#34; pulumi-lang-yaml=&#34;`remove`&#34; pulumi-lang-java=&#34;`remove`&#34;&gt;`remove`&lt;/span&gt;. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. The default is &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;.
+     * @return Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
      * 
-     * &gt; **NOTE:** Please note that internal LBs can only use &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; as the &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt;. You can only change to &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt; if the selected subnets are IPv6 enabled.
+     * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ipAddressType`. You can only change to `dualstack` `ipAddressType` if the selected subnets are IPv6 enabled.
      * 
-     * &gt; **NOTE:** Please note that one of either &lt;span pulumi-lang-nodejs=&#34;`subnets`&#34; pulumi-lang-dotnet=&#34;`Subnets`&#34; pulumi-lang-go=&#34;`subnets`&#34; pulumi-lang-python=&#34;`subnets`&#34; pulumi-lang-yaml=&#34;`subnets`&#34; pulumi-lang-java=&#34;`subnets`&#34;&gt;`subnets`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`subnetMapping`&#34; pulumi-lang-dotnet=&#34;`SubnetMapping`&#34; pulumi-lang-go=&#34;`subnetMapping`&#34; pulumi-lang-python=&#34;`subnet_mapping`&#34; pulumi-lang-yaml=&#34;`subnetMapping`&#34; pulumi-lang-java=&#34;`subnetMapping`&#34;&gt;`subnetMapping`&lt;/span&gt; is required.
+     * &gt; **NOTE:** Please note that one of either `subnets` or `subnetMapping` is required.
      * 
      */
     public Optional<Output<String>> xffHeaderProcessingMode() {
@@ -679,7 +679,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param connectionLogs Connection Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param connectionLogs Connection Logs block. See below. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -690,7 +690,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param connectionLogs Connection Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param connectionLogs Connection Logs block. See below. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -764,7 +764,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param desyncMitigationMode How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are &lt;span pulumi-lang-nodejs=&#34;`monitor`&#34; pulumi-lang-dotnet=&#34;`Monitor`&#34; pulumi-lang-go=&#34;`monitor`&#34; pulumi-lang-python=&#34;`monitor`&#34; pulumi-lang-yaml=&#34;`monitor`&#34; pulumi-lang-java=&#34;`monitor`&#34;&gt;`monitor`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`defensive`&#34; pulumi-lang-dotnet=&#34;`Defensive`&#34; pulumi-lang-go=&#34;`defensive`&#34; pulumi-lang-python=&#34;`defensive`&#34; pulumi-lang-yaml=&#34;`defensive`&#34; pulumi-lang-java=&#34;`defensive`&#34;&gt;`defensive`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`strictest`&#34; pulumi-lang-dotnet=&#34;`Strictest`&#34; pulumi-lang-go=&#34;`strictest`&#34; pulumi-lang-python=&#34;`strictest`&#34; pulumi-lang-yaml=&#34;`strictest`&#34; pulumi-lang-java=&#34;`strictest`&#34;&gt;`strictest`&lt;/span&gt;.
+         * @param desyncMitigationMode How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
          * 
          * @return builder
          * 
@@ -775,7 +775,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param desyncMitigationMode How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are &lt;span pulumi-lang-nodejs=&#34;`monitor`&#34; pulumi-lang-dotnet=&#34;`Monitor`&#34; pulumi-lang-go=&#34;`monitor`&#34; pulumi-lang-python=&#34;`monitor`&#34; pulumi-lang-yaml=&#34;`monitor`&#34; pulumi-lang-java=&#34;`monitor`&#34;&gt;`monitor`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`defensive`&#34; pulumi-lang-dotnet=&#34;`Defensive`&#34; pulumi-lang-go=&#34;`defensive`&#34; pulumi-lang-python=&#34;`defensive`&#34; pulumi-lang-yaml=&#34;`defensive`&#34; pulumi-lang-java=&#34;`defensive`&#34;&gt;`defensive`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`strictest`&#34; pulumi-lang-dotnet=&#34;`Strictest`&#34; pulumi-lang-go=&#34;`strictest`&#34; pulumi-lang-python=&#34;`strictest`&#34; pulumi-lang-yaml=&#34;`strictest`&#34; pulumi-lang-java=&#34;`strictest`&#34;&gt;`strictest`&lt;/span&gt;.
+         * @param desyncMitigationMode How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
          * 
          * @return builder
          * 
@@ -785,7 +785,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param dnsRecordClientRoutingPolicy How traffic is distributed among the load balancer Availability Zones. Possible values are &lt;span pulumi-lang-nodejs=&#34;`anyAvailabilityZone`&#34; pulumi-lang-dotnet=&#34;`AnyAvailabilityZone`&#34; pulumi-lang-go=&#34;`anyAvailabilityZone`&#34; pulumi-lang-python=&#34;`any_availability_zone`&#34; pulumi-lang-yaml=&#34;`anyAvailabilityZone`&#34; pulumi-lang-java=&#34;`anyAvailabilityZone`&#34;&gt;`anyAvailabilityZone`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`AvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`availabilityZoneAffinity`&#34;&gt;`availabilityZoneAffinity`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`PartialAvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`partial_availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`partialAvailabilityZoneAffinity`&#34;&gt;`partialAvailabilityZoneAffinity`&lt;/span&gt;. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; type load balancers.
+         * @param dnsRecordClientRoutingPolicy How traffic is distributed among the load balancer Availability Zones. Possible values are `anyAvailabilityZone` (default), `availabilityZoneAffinity`, or `partialAvailabilityZoneAffinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
          * 
          * @return builder
          * 
@@ -796,7 +796,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param dnsRecordClientRoutingPolicy How traffic is distributed among the load balancer Availability Zones. Possible values are &lt;span pulumi-lang-nodejs=&#34;`anyAvailabilityZone`&#34; pulumi-lang-dotnet=&#34;`AnyAvailabilityZone`&#34; pulumi-lang-go=&#34;`anyAvailabilityZone`&#34; pulumi-lang-python=&#34;`any_availability_zone`&#34; pulumi-lang-yaml=&#34;`anyAvailabilityZone`&#34; pulumi-lang-java=&#34;`anyAvailabilityZone`&#34;&gt;`anyAvailabilityZone`&lt;/span&gt; (default), &lt;span pulumi-lang-nodejs=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`AvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`availabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`availabilityZoneAffinity`&#34;&gt;`availabilityZoneAffinity`&lt;/span&gt;, or &lt;span pulumi-lang-nodejs=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-dotnet=&#34;`PartialAvailabilityZoneAffinity`&#34; pulumi-lang-go=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-python=&#34;`partial_availability_zone_affinity`&#34; pulumi-lang-yaml=&#34;`partialAvailabilityZoneAffinity`&#34; pulumi-lang-java=&#34;`partialAvailabilityZoneAffinity`&#34;&gt;`partialAvailabilityZoneAffinity`&lt;/span&gt;. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; type load balancers.
+         * @param dnsRecordClientRoutingPolicy How traffic is distributed among the load balancer Availability Zones. Possible values are `anyAvailabilityZone` (default), `availabilityZoneAffinity`, or `partialAvailabilityZoneAffinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
          * 
          * @return builder
          * 
@@ -806,7 +806,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param dropInvalidHeaderFields Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param dropInvalidHeaderFields Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -817,7 +817,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param dropInvalidHeaderFields Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param dropInvalidHeaderFields Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -827,7 +827,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -838,7 +838,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -848,7 +848,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableHttp2 Whether HTTP/2 is enabled in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param enableHttp2 Whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -859,7 +859,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableHttp2 Whether HTTP/2 is enabled in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;.
+         * @param enableHttp2 Whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -869,7 +869,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableTlsVersionAndCipherSuiteHeaders Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;
+         * @param enableTlsVersionAndCipherSuiteHeaders Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
          * 
          * @return builder
          * 
@@ -880,7 +880,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableTlsVersionAndCipherSuiteHeaders Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;
+         * @param enableTlsVersionAndCipherSuiteHeaders Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
          * 
          * @return builder
          * 
@@ -890,7 +890,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableWafFailOpen Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableWafFailOpen Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -901,7 +901,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableWafFailOpen Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableWafFailOpen Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -911,7 +911,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableXffClientPort Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableXffClientPort Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -922,7 +922,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableXffClientPort Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; load balancers. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableXffClientPort Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -932,7 +932,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableZonalShift Whether zonal shift is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableZonalShift Whether zonal shift is enabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -943,7 +943,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enableZonalShift Whether zonal shift is enabled. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param enableZonalShift Whether zonal shift is enabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -953,7 +953,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enforceSecurityGroupInboundRulesOnPrivateLinkTraffic Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The possible values are &lt;span pulumi-lang-nodejs=&#34;`on`&#34; pulumi-lang-dotnet=&#34;`On`&#34; pulumi-lang-go=&#34;`on`&#34; pulumi-lang-python=&#34;`on`&#34; pulumi-lang-yaml=&#34;`on`&#34; pulumi-lang-java=&#34;`on`&#34;&gt;`on`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`off`&#34; pulumi-lang-dotnet=&#34;`Off`&#34; pulumi-lang-go=&#34;`off`&#34; pulumi-lang-python=&#34;`off`&#34; pulumi-lang-yaml=&#34;`off`&#34; pulumi-lang-java=&#34;`off`&#34;&gt;`off`&lt;/span&gt;.
+         * @param enforceSecurityGroupInboundRulesOnPrivateLinkTraffic Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
          * 
          * @return builder
          * 
@@ -964,7 +964,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param enforceSecurityGroupInboundRulesOnPrivateLinkTraffic Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The possible values are &lt;span pulumi-lang-nodejs=&#34;`on`&#34; pulumi-lang-dotnet=&#34;`On`&#34; pulumi-lang-go=&#34;`on`&#34; pulumi-lang-python=&#34;`on`&#34; pulumi-lang-yaml=&#34;`on`&#34; pulumi-lang-java=&#34;`on`&#34;&gt;`on`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`off`&#34; pulumi-lang-dotnet=&#34;`Off`&#34; pulumi-lang-go=&#34;`off`&#34; pulumi-lang-python=&#34;`off`&#34; pulumi-lang-yaml=&#34;`off`&#34; pulumi-lang-java=&#34;`off`&#34;&gt;`off`&lt;/span&gt;.
+         * @param enforceSecurityGroupInboundRulesOnPrivateLinkTraffic Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
          * 
          * @return builder
          * 
@@ -974,7 +974,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -985,7 +985,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;.
+         * @param healthCheckLogs Health Check Logs block. See below. Only valid for Load Balancers of type `application`.
          * 
          * @return builder
          * 
@@ -995,7 +995,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param idleTimeout Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Default: 60.
+         * @param idleTimeout Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
          * 
          * @return builder
          * 
@@ -1006,7 +1006,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param idleTimeout Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. Default: 60.
+         * @param idleTimeout Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
          * 
          * @return builder
          * 
@@ -1016,7 +1016,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param internal If true, the LB will be internal. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param internal If true, the LB will be internal. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -1027,7 +1027,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param internal If true, the LB will be internal. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param internal If true, the LB will be internal. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -1037,7 +1037,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param ipAddressType Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; (all load balancer types), &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; (all load balancer types), and `dualstack-without-public-ipv4` (type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; only).
+         * @param ipAddressType Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
          * 
          * @return builder
          * 
@@ -1048,7 +1048,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param ipAddressType Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; (all load balancer types), &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; (all load balancer types), and `dualstack-without-public-ipv4` (type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; only).
+         * @param ipAddressType Type of IP addresses used by the subnets for your load balancer. The possible values depend upon the load balancer type: `ipv4` (all load balancer types), `dualstack` (all load balancer types), and `dualstack-without-public-ipv4` (type `application` only).
          * 
          * @return builder
          * 
@@ -1058,7 +1058,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. See&lt;span pulumi-lang-nodejs=&#34; ipamPools &#34; pulumi-lang-dotnet=&#34; IpamPools &#34; pulumi-lang-go=&#34; ipamPools &#34; pulumi-lang-python=&#34; ipam_pools &#34; pulumi-lang-yaml=&#34; ipamPools &#34; pulumi-lang-java=&#34; ipamPools &#34;&gt; ipamPools &lt;/span&gt;for more information.
+         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipamPools for more information.
          * 
          * @return builder
          * 
@@ -1069,7 +1069,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. See&lt;span pulumi-lang-nodejs=&#34; ipamPools &#34; pulumi-lang-dotnet=&#34; IpamPools &#34; pulumi-lang-go=&#34; ipamPools &#34; pulumi-lang-python=&#34; ipam_pools &#34; pulumi-lang-yaml=&#34; ipamPools &#34; pulumi-lang-java=&#34; ipamPools &#34;&gt; ipamPools &lt;/span&gt;for more information.
+         * @param ipamPools . The IPAM pools to use with the load balancer.  Only valid for Load Balancers of type `application`. See ipamPools for more information.
          * 
          * @return builder
          * 
@@ -1111,7 +1111,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;.
+         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
          * 
          * @return builder
          * 
@@ -1122,7 +1122,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;.
+         * @param minimumLoadBalancerCapacity Minimum capacity for a load balancer. Only valid for Load Balancers of type `application` or `network`.
          * 
          * @return builder
          * 
@@ -1153,7 +1153,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
          * 
          * @return builder
          * 
@@ -1164,7 +1164,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`name`&#34; pulumi-lang-dotnet=&#34;`Name`&#34; pulumi-lang-go=&#34;`name`&#34; pulumi-lang-python=&#34;`name`&#34; pulumi-lang-yaml=&#34;`name`&#34; pulumi-lang-java=&#34;`name`&#34;&gt;`name`&lt;/span&gt;.
+         * @param namePrefix Creates a unique name beginning with the specified prefix. Conflicts with `name`.
          * 
          * @return builder
          * 
@@ -1174,7 +1174,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param preserveHostHeader Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param preserveHostHeader Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -1185,7 +1185,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param preserveHostHeader Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;.
+         * @param preserveHostHeader Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -1216,7 +1216,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: &lt;span pulumi-lang-nodejs=&#34;`0`&#34; pulumi-lang-dotnet=&#34;`0`&#34; pulumi-lang-go=&#34;`0`&#34; pulumi-lang-python=&#34;`0`&#34; pulumi-lang-yaml=&#34;`0`&#34; pulumi-lang-java=&#34;`0`&#34;&gt;`0`&lt;/span&gt;.
+         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
          * 
          * @return builder
          * 
@@ -1227,7 +1227,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: &lt;span pulumi-lang-nodejs=&#34;`0`&#34; pulumi-lang-dotnet=&#34;`0`&#34; pulumi-lang-go=&#34;`0`&#34; pulumi-lang-python=&#34;`0`&#34; pulumi-lang-yaml=&#34;`0`&#34; pulumi-lang-java=&#34;`0`&#34;&gt;`0`&lt;/span&gt;.
+         * @param secondaryIpsAutoAssignedPerSubnet The number of secondary IP addresses to configure for your load balancer nodes. Only valid for Load Balancers of type `network`. The valid range is 0-7. When decreased, this will force a recreation of the resource. Default: `0`.
          * 
          * @return builder
          * 
@@ -1237,7 +1237,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. For load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1248,7 +1248,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. For load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1258,7 +1258,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt;. For load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1268,7 +1268,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; will force a recreation of the resource.
+         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1279,7 +1279,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; will force a recreation of the resource.
+         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1289,7 +1289,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; will force a recreation of the resource.
+         * @param subnetIds List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
          * 
          * @return builder
          * 
@@ -1299,7 +1299,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnet mappings can only be added.
+         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
          * 
          * @return builder
          * 
@@ -1310,7 +1310,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnet mappings can only be added.
+         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
          * 
          * @return builder
          * 
@@ -1320,7 +1320,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`network`&#34; pulumi-lang-dotnet=&#34;`Network`&#34; pulumi-lang-go=&#34;`network`&#34; pulumi-lang-python=&#34;`network`&#34; pulumi-lang-yaml=&#34;`network`&#34; pulumi-lang-java=&#34;`network`&#34;&gt;`network`&lt;/span&gt; subnet mappings can only be added.
+         * @param subnetMappings Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
          * 
          * @return builder
          * 
@@ -1361,7 +1361,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param tags Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -1372,7 +1372,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param tags Map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -1382,11 +1382,11 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`preserve`&#34; pulumi-lang-dotnet=&#34;`Preserve`&#34; pulumi-lang-go=&#34;`preserve`&#34; pulumi-lang-python=&#34;`preserve`&#34; pulumi-lang-yaml=&#34;`preserve`&#34; pulumi-lang-java=&#34;`preserve`&#34;&gt;`preserve`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`remove`&#34; pulumi-lang-dotnet=&#34;`Remove`&#34; pulumi-lang-go=&#34;`remove`&#34; pulumi-lang-python=&#34;`remove`&#34; pulumi-lang-yaml=&#34;`remove`&#34; pulumi-lang-java=&#34;`remove`&#34;&gt;`remove`&lt;/span&gt;. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. The default is &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;.
+         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
          * 
-         * &gt; **NOTE:** Please note that internal LBs can only use &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; as the &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt;. You can only change to &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt; if the selected subnets are IPv6 enabled.
+         * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ipAddressType`. You can only change to `dualstack` `ipAddressType` if the selected subnets are IPv6 enabled.
          * 
-         * &gt; **NOTE:** Please note that one of either &lt;span pulumi-lang-nodejs=&#34;`subnets`&#34; pulumi-lang-dotnet=&#34;`Subnets`&#34; pulumi-lang-go=&#34;`subnets`&#34; pulumi-lang-python=&#34;`subnets`&#34; pulumi-lang-yaml=&#34;`subnets`&#34; pulumi-lang-java=&#34;`subnets`&#34;&gt;`subnets`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`subnetMapping`&#34; pulumi-lang-dotnet=&#34;`SubnetMapping`&#34; pulumi-lang-go=&#34;`subnetMapping`&#34; pulumi-lang-python=&#34;`subnet_mapping`&#34; pulumi-lang-yaml=&#34;`subnetMapping`&#34; pulumi-lang-java=&#34;`subnetMapping`&#34;&gt;`subnetMapping`&lt;/span&gt; is required.
+         * &gt; **NOTE:** Please note that one of either `subnets` or `subnetMapping` is required.
          * 
          * @return builder
          * 
@@ -1397,11 +1397,11 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`preserve`&#34; pulumi-lang-dotnet=&#34;`Preserve`&#34; pulumi-lang-go=&#34;`preserve`&#34; pulumi-lang-python=&#34;`preserve`&#34; pulumi-lang-yaml=&#34;`preserve`&#34; pulumi-lang-java=&#34;`preserve`&#34;&gt;`preserve`&lt;/span&gt;, and &lt;span pulumi-lang-nodejs=&#34;`remove`&#34; pulumi-lang-dotnet=&#34;`Remove`&#34; pulumi-lang-go=&#34;`remove`&#34; pulumi-lang-python=&#34;`remove`&#34; pulumi-lang-yaml=&#34;`remove`&#34; pulumi-lang-java=&#34;`remove`&#34;&gt;`remove`&lt;/span&gt;. Only valid for Load Balancers of type &lt;span pulumi-lang-nodejs=&#34;`application`&#34; pulumi-lang-dotnet=&#34;`Application`&#34; pulumi-lang-go=&#34;`application`&#34; pulumi-lang-python=&#34;`application`&#34; pulumi-lang-yaml=&#34;`application`&#34; pulumi-lang-java=&#34;`application`&#34;&gt;`application`&lt;/span&gt;. The default is &lt;span pulumi-lang-nodejs=&#34;`append`&#34; pulumi-lang-dotnet=&#34;`Append`&#34; pulumi-lang-go=&#34;`append`&#34; pulumi-lang-python=&#34;`append`&#34; pulumi-lang-yaml=&#34;`append`&#34; pulumi-lang-java=&#34;`append`&#34;&gt;`append`&lt;/span&gt;.
+         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
          * 
-         * &gt; **NOTE:** Please note that internal LBs can only use &lt;span pulumi-lang-nodejs=&#34;`ipv4`&#34; pulumi-lang-dotnet=&#34;`Ipv4`&#34; pulumi-lang-go=&#34;`ipv4`&#34; pulumi-lang-python=&#34;`ipv4`&#34; pulumi-lang-yaml=&#34;`ipv4`&#34; pulumi-lang-java=&#34;`ipv4`&#34;&gt;`ipv4`&lt;/span&gt; as the &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt;. You can only change to &lt;span pulumi-lang-nodejs=&#34;`dualstack`&#34; pulumi-lang-dotnet=&#34;`Dualstack`&#34; pulumi-lang-go=&#34;`dualstack`&#34; pulumi-lang-python=&#34;`dualstack`&#34; pulumi-lang-yaml=&#34;`dualstack`&#34; pulumi-lang-java=&#34;`dualstack`&#34;&gt;`dualstack`&lt;/span&gt; &lt;span pulumi-lang-nodejs=&#34;`ipAddressType`&#34; pulumi-lang-dotnet=&#34;`IpAddressType`&#34; pulumi-lang-go=&#34;`ipAddressType`&#34; pulumi-lang-python=&#34;`ip_address_type`&#34; pulumi-lang-yaml=&#34;`ipAddressType`&#34; pulumi-lang-java=&#34;`ipAddressType`&#34;&gt;`ipAddressType`&lt;/span&gt; if the selected subnets are IPv6 enabled.
+         * &gt; **NOTE:** Please note that internal LBs can only use `ipv4` as the `ipAddressType`. You can only change to `dualstack` `ipAddressType` if the selected subnets are IPv6 enabled.
          * 
-         * &gt; **NOTE:** Please note that one of either &lt;span pulumi-lang-nodejs=&#34;`subnets`&#34; pulumi-lang-dotnet=&#34;`Subnets`&#34; pulumi-lang-go=&#34;`subnets`&#34; pulumi-lang-python=&#34;`subnets`&#34; pulumi-lang-yaml=&#34;`subnets`&#34; pulumi-lang-java=&#34;`subnets`&#34;&gt;`subnets`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`subnetMapping`&#34; pulumi-lang-dotnet=&#34;`SubnetMapping`&#34; pulumi-lang-go=&#34;`subnetMapping`&#34; pulumi-lang-python=&#34;`subnet_mapping`&#34; pulumi-lang-yaml=&#34;`subnetMapping`&#34; pulumi-lang-java=&#34;`subnetMapping`&#34;&gt;`subnetMapping`&lt;/span&gt; is required.
+         * &gt; **NOTE:** Please note that one of either `subnets` or `subnetMapping` is required.
          * 
          * @return builder
          * 

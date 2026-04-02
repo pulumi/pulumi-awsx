@@ -76,8 +76,8 @@ namespace Pulumi.Awsx.Ecr
         }
 
         /// <summary>
-        /// If &lt;span pulumi-lang-nodejs="`true`" pulumi-lang-dotnet="`True`" pulumi-lang-go="`true`" pulumi-lang-python="`true`" pulumi-lang-yaml="`true`" pulumi-lang-java="`true`"&gt;`true`&lt;/span&gt;, will delete the repository even if it contains images.
-        /// Defaults to &lt;span pulumi-lang-nodejs="`false`" pulumi-lang-dotnet="`False`" pulumi-lang-go="`false`" pulumi-lang-python="`false`" pulumi-lang-yaml="`false`" pulumi-lang-java="`false`"&gt;`false`&lt;/span&gt;.
+        /// If `True`, will delete the repository even if it contains images.
+        /// Defaults to `False`.
         /// </summary>
         [Input("forceDelete")]
         public Input<bool>? ForceDelete { get; set; }
@@ -98,7 +98,7 @@ namespace Pulumi.Awsx.Ecr
         private InputList<Pulumi.Aws.Ecr.Inputs.RepositoryImageTagMutabilityExclusionFilterArgs>? _imageTagMutabilityExclusionFilters;
 
         /// <summary>
-        /// Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when &lt;span pulumi-lang-nodejs="`imageTagMutability`" pulumi-lang-dotnet="`ImageTagMutability`" pulumi-lang-go="`imageTagMutability`" pulumi-lang-python="`image_tag_mutability`" pulumi-lang-yaml="`imageTagMutability`" pulumi-lang-java="`imageTagMutability`"&gt;`imageTagMutability`&lt;/span&gt; is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
+        /// Configuration block that defines filters to specify which image tags can override the default tag mutability setting. Only applicable when `ImageTagMutability` is set to `IMMUTABLE_WITH_EXCLUSION` or `MUTABLE_WITH_EXCLUSION`. See below for schema.
         /// </summary>
         public InputList<Pulumi.Aws.Ecr.Inputs.RepositoryImageTagMutabilityExclusionFilterArgs> ImageTagMutabilityExclusionFilters
         {
@@ -128,7 +128,7 @@ namespace Pulumi.Awsx.Ecr
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs="`defaultTags`" pulumi-lang-dotnet="`DefaultTags`" pulumi-lang-go="`defaultTags`" pulumi-lang-python="`default_tags`" pulumi-lang-yaml="`defaultTags`" pulumi-lang-java="`defaultTags`"&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// A map of tags to assign to the resource. If configured with a provider `DefaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
