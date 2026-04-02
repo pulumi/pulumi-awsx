@@ -66,8 +66,12 @@ export class AnyIPv6Location implements SecurityGroupRuleLocation {
 
 export class TcpPorts implements SecurityGroupRulePorts {
     public readonly protocol = "tcp";
+    public readonly toPort?: pulumi.Input<number>;
     constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+                toPort?: pulumi.Input<number>) {
+        if (toPort !== undefined) {
+            this.toPort = toPort;
+        }
     }
 }
 
@@ -81,8 +85,12 @@ export class AllTcpPorts extends TcpPorts {
 
 export class UdpPorts implements SecurityGroupRulePorts {
     public readonly protocol = "udp";
+    public readonly toPort?: pulumi.Input<number>;
     constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+                toPort?: pulumi.Input<number>) {
+        if (toPort !== undefined) {
+            this.toPort = toPort;
+        }
     }
 }
 
@@ -94,8 +102,12 @@ export class AllUdpPorts extends UdpPorts {
 
 export class IcmpPorts implements SecurityGroupRulePorts {
     public readonly protocol = "icmp";
+    public readonly toPort?: pulumi.Input<number>;
     constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+                toPort?: pulumi.Input<number>) {
+        if (toPort !== undefined) {
+            this.toPort = toPort;
+        }
     }
 }
 
