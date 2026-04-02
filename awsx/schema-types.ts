@@ -420,6 +420,7 @@ export interface BucketInputs {
     readonly accelerationStatus?: pulumi.Input<string>;
     readonly acl?: pulumi.Input<string>;
     readonly bucket?: pulumi.Input<string>;
+    readonly bucketNamespace?: pulumi.Input<string>;
     readonly bucketPrefix?: pulumi.Input<string>;
     readonly corsRules?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketCorsRule>[]>;
     readonly forceDestroy?: pulumi.Input<boolean>;
@@ -441,6 +442,7 @@ export interface BucketOutputs {
     readonly accelerationStatus?: pulumi.Output<string>;
     readonly acl?: pulumi.Output<string>;
     readonly bucket?: pulumi.Output<string>;
+    readonly bucketNamespace?: pulumi.Output<string>;
     readonly bucketPrefix?: pulumi.Output<string>;
     readonly corsRules?: pulumi.Output<aws.types.output.s3.BucketCorsRule[]>;
     readonly forceDestroy?: pulumi.Output<boolean>;

@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 /**
  * The set of arguments for constructing a Bucket resource.
- * 
+ *
  */
 public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
@@ -34,10 +34,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAccelerateConfiguration`&#34;&gt;`aws.s3.BucketAccelerateConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * acceleration_status is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-go=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-python=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketAccelerateConfiguration &#34;&gt; aws.s3.BucketAccelerateConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* acceleration_status is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-go="" s3.BucketAccelerateConfiguration "" pulumi-lang-python="" s3.BucketAccelerateConfiguration "" pulumi-lang-yaml="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-java="" aws.s3.BucketAccelerateConfiguration ""> aws.s3.BucketAccelerateConfiguration </span>resource instead. */
     @Import(name="accelerationStatus")
@@ -46,10 +46,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAccelerateConfiguration`&#34;&gt;`aws.s3.BucketAccelerateConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * acceleration_status is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-go=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-python=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketAccelerateConfiguration &#34;&gt; aws.s3.BucketAccelerateConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* acceleration_status is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-go="" s3.BucketAccelerateConfiguration "" pulumi-lang-python="" s3.BucketAccelerateConfiguration "" pulumi-lang-yaml="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-java="" aws.s3.BucketAccelerateConfiguration ""> aws.s3.BucketAccelerateConfiguration </span>resource instead. */
     public Optional<Output<String>> accelerationStatus() {
@@ -58,44 +58,59 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;.  Conflicts with &lt;span pulumi-lang-nodejs=&#34;`grant`&#34; pulumi-lang-dotnet=&#34;`Grant`&#34; pulumi-lang-go=&#34;`grant`&#34; pulumi-lang-python=&#34;`grant`&#34; pulumi-lang-yaml=&#34;`grant`&#34; pulumi-lang-java=&#34;`grant`&#34;&gt;`grant`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-     * 
+     *
      */
     @Import(name="acl")
     private @Nullable Output<String> acl;
 
     /**
      * @return The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;.  Conflicts with &lt;span pulumi-lang-nodejs=&#34;`grant`&#34; pulumi-lang-dotnet=&#34;`Grant`&#34; pulumi-lang-go=&#34;`grant`&#34; pulumi-lang-python=&#34;`grant`&#34; pulumi-lang-yaml=&#34;`grant`&#34; pulumi-lang-java=&#34;`grant`&#34;&gt;`grant`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-     * 
+     *
      */
     public Optional<Output<String>> acl() {
         return Optional.ofNullable(this.acl);
     }
 
     /**
-     * Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucket_name]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
-     * 
+     * Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucketName]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
+     *
      */
     @Import(name="bucket")
     private @Nullable Output<String> bucket;
 
     /**
-     * @return Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucket_name]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
-     * 
+     * @return Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucketName]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
+     *
      */
     public Optional<Output<String>> bucket() {
         return Optional.ofNullable(this.bucket);
     }
 
     /**
+     * Namespace for the bucket. Determines bucket naming scope. Valid values: `account-regional`, &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt; (AWS).
+     *
+     */
+    @Import(name="bucketNamespace")
+    private @Nullable Output<String> bucketNamespace;
+
+    /**
+     * @return Namespace for the bucket. Determines bucket naming scope. Valid values: `account-regional`, &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt; (AWS).
+     *
+     */
+    public Optional<Output<String>> bucketNamespace() {
+        return Optional.ofNullable(this.bucketNamespace);
+    }
+
+    /**
      * Creates a unique bucket name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`bucket`&#34; pulumi-lang-dotnet=&#34;`Bucket`&#34; pulumi-lang-go=&#34;`bucket`&#34; pulumi-lang-python=&#34;`bucket`&#34; pulumi-lang-yaml=&#34;`bucket`&#34; pulumi-lang-java=&#34;`bucket`&#34;&gt;`bucket`&lt;/span&gt;. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-     * 
+     *
      */
     @Import(name="bucketPrefix")
     private @Nullable Output<String> bucketPrefix;
 
     /**
      * @return Creates a unique bucket name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`bucket`&#34; pulumi-lang-dotnet=&#34;`Bucket`&#34; pulumi-lang-go=&#34;`bucket`&#34; pulumi-lang-python=&#34;`bucket`&#34; pulumi-lang-yaml=&#34;`bucket`&#34; pulumi-lang-java=&#34;`bucket`&#34;&gt;`bucket`&lt;/span&gt;. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-     * 
+     *
      */
     public Optional<Output<String>> bucketPrefix() {
         return Optional.ofNullable(this.bucketPrefix);
@@ -103,10 +118,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketCorsConfiguration`&#34;&gt;`aws.s3.BucketCorsConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * cors_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-go=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-python=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketCorsConfiguration &#34;&gt; aws.s3.BucketCorsConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* cors_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketCorsConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketCorsConfiguration "" pulumi-lang-go="" s3.BucketCorsConfiguration "" pulumi-lang-python="" s3.BucketCorsConfiguration "" pulumi-lang-yaml="" aws.s3.BucketCorsConfiguration "" pulumi-lang-java="" aws.s3.BucketCorsConfiguration ""> aws.s3.BucketCorsConfiguration </span>resource instead. */
     @Import(name="corsRules")
@@ -114,10 +129,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * @return Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketCorsConfiguration`&#34;&gt;`aws.s3.BucketCorsConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * cors_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-go=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-python=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketCorsConfiguration &#34;&gt; aws.s3.BucketCorsConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* cors_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketCorsConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketCorsConfiguration "" pulumi-lang-go="" s3.BucketCorsConfiguration "" pulumi-lang-python="" s3.BucketCorsConfiguration "" pulumi-lang-yaml="" aws.s3.BucketCorsConfiguration "" pulumi-lang-java="" aws.s3.BucketCorsConfiguration ""> aws.s3.BucketCorsConfiguration </span>resource instead. */
     public Optional<Output<List<BucketCorsRuleArgs>>> corsRules() {
@@ -126,14 +141,14 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;. Once this parameter is set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-     * 
+     *
      */
     @Import(name="forceDestroy")
     private @Nullable Output<Boolean> forceDestroy;
 
     /**
      * @return Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;. Once this parameter is set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-     * 
+     *
      */
     public Optional<Output<Boolean>> forceDestroy() {
         return Optional.ofNullable(this.forceDestroy);
@@ -141,10 +156,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`acl`&#34; pulumi-lang-dotnet=&#34;`Acl`&#34; pulumi-lang-go=&#34;`acl`&#34; pulumi-lang-python=&#34;`acl`&#34; pulumi-lang-yaml=&#34;`acl`&#34; pulumi-lang-java=&#34;`acl`&#34;&gt;`acl`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * grant is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAcl &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAcl &#34; pulumi-lang-go=&#34; s3.BucketAcl &#34; pulumi-lang-python=&#34; s3.BucketAcl &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAcl &#34; pulumi-lang-java=&#34; aws.s3.BucketAcl &#34;&gt; aws.s3.BucketAcl &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* grant is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAcl "" pulumi-lang-dotnet="" aws.s3.BucketAcl "" pulumi-lang-go="" s3.BucketAcl "" pulumi-lang-python="" s3.BucketAcl "" pulumi-lang-yaml="" aws.s3.BucketAcl "" pulumi-lang-java="" aws.s3.BucketAcl ""> aws.s3.BucketAcl </span>resource instead. */
     @Import(name="grants")
@@ -152,10 +167,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * @return An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`acl`&#34; pulumi-lang-dotnet=&#34;`Acl`&#34; pulumi-lang-go=&#34;`acl`&#34; pulumi-lang-python=&#34;`acl`&#34; pulumi-lang-yaml=&#34;`acl`&#34; pulumi-lang-java=&#34;`acl`&#34;&gt;`acl`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * grant is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAcl &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAcl &#34; pulumi-lang-go=&#34; s3.BucketAcl &#34; pulumi-lang-python=&#34; s3.BucketAcl &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAcl &#34; pulumi-lang-java=&#34; aws.s3.BucketAcl &#34;&gt; aws.s3.BucketAcl &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* grant is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAcl "" pulumi-lang-dotnet="" aws.s3.BucketAcl "" pulumi-lang-go="" s3.BucketAcl "" pulumi-lang-python="" s3.BucketAcl "" pulumi-lang-yaml="" aws.s3.BucketAcl "" pulumi-lang-java="" aws.s3.BucketAcl ""> aws.s3.BucketAcl </span>resource instead. */
     public Optional<Output<List<BucketGrantArgs>>> grants() {
@@ -165,10 +180,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLifecycleConfiguration`&#34;&gt;`aws.s3.BucketLifecycleConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * lifecycle_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-go=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-python=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketLifecycleConfiguration &#34;&gt; aws.s3.BucketLifecycleConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-go="" s3.BucketLifecycleConfiguration "" pulumi-lang-python="" s3.BucketLifecycleConfiguration "" pulumi-lang-yaml="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-java="" aws.s3.BucketLifecycleConfiguration ""> aws.s3.BucketLifecycleConfiguration </span>resource instead. */
     @Import(name="lifecycleRules")
@@ -177,10 +192,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLifecycleConfiguration`&#34;&gt;`aws.s3.BucketLifecycleConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * lifecycle_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-go=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-python=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketLifecycleConfiguration &#34;&gt; aws.s3.BucketLifecycleConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-go="" s3.BucketLifecycleConfiguration "" pulumi-lang-python="" s3.BucketLifecycleConfiguration "" pulumi-lang-yaml="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-java="" aws.s3.BucketLifecycleConfiguration ""> aws.s3.BucketLifecycleConfiguration </span>resource instead. */
     public Optional<Output<List<BucketLifecycleRuleArgs>>> lifecycleRules() {
@@ -190,10 +205,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-go=&#34;`s3.BucketLogging`&#34; pulumi-lang-python=&#34;`s3.BucketLogging`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLogging`&#34;&gt;`aws.s3.BucketLogging`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * logging is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLogging &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLogging &#34; pulumi-lang-go=&#34; s3.BucketLogging &#34; pulumi-lang-python=&#34; s3.BucketLogging &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLogging &#34; pulumi-lang-java=&#34; aws.s3.BucketLogging &#34;&gt; aws.s3.BucketLogging &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* logging is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLogging "" pulumi-lang-dotnet="" aws.s3.BucketLogging "" pulumi-lang-go="" s3.BucketLogging "" pulumi-lang-python="" s3.BucketLogging "" pulumi-lang-yaml="" aws.s3.BucketLogging "" pulumi-lang-java="" aws.s3.BucketLogging ""> aws.s3.BucketLogging </span>resource instead. */
     @Import(name="logging")
@@ -202,10 +217,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-go=&#34;`s3.BucketLogging`&#34; pulumi-lang-python=&#34;`s3.BucketLogging`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLogging`&#34;&gt;`aws.s3.BucketLogging`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * logging is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLogging &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLogging &#34; pulumi-lang-go=&#34; s3.BucketLogging &#34; pulumi-lang-python=&#34; s3.BucketLogging &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLogging &#34; pulumi-lang-java=&#34; aws.s3.BucketLogging &#34;&gt; aws.s3.BucketLogging &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* logging is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLogging "" pulumi-lang-dotnet="" aws.s3.BucketLogging "" pulumi-lang-go="" s3.BucketLogging "" pulumi-lang-python="" s3.BucketLogging "" pulumi-lang-yaml="" aws.s3.BucketLogging "" pulumi-lang-java="" aws.s3.BucketLogging ""> aws.s3.BucketLogging </span>resource instead. */
     public Optional<Output<BucketLoggingArgs>> logging() {
@@ -215,40 +230,40 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
      * The provider wil only perform drift detection if a configuration value is provided.
-     * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`object_lock_enabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
-     * 
+     * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`objectLockEnabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
+     *
      * @deprecated
-     * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; object_lock_enabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
-     * 
+     * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; objectLockEnabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
+     *
      */
-    @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> object_lock_enabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
+    @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> objectLockEnabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
     @Import(name="objectLockConfiguration")
     private @Nullable Output<BucketObjectLockConfigurationArgs> objectLockConfiguration;
 
     /**
      * @return Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
      * The provider wil only perform drift detection if a configuration value is provided.
-     * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`object_lock_enabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
-     * 
+     * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`objectLockEnabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
+     *
      * @deprecated
-     * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; object_lock_enabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
-     * 
+     * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; objectLockEnabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
+     *
      */
-    @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> object_lock_enabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
+    @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> objectLockEnabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
     public Optional<Output<BucketObjectLockConfigurationArgs>> objectLockConfiguration() {
         return Optional.ofNullable(this.objectLockConfiguration);
     }
 
     /**
      * Indicates whether this bucket has an Object Lock configuration enabled. Valid values are &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. This argument is not supported in all regions or partitions.
-     * 
+     *
      */
     @Import(name="objectLockEnabled")
     private @Nullable Output<Boolean> objectLockEnabled;
 
     /**
      * @return Indicates whether this bucket has an Object Lock configuration enabled. Valid values are &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. This argument is not supported in all regions or partitions.
-     * 
+     *
      */
     public Optional<Output<Boolean>> objectLockEnabled() {
         return Optional.ofNullable(this.objectLockEnabled);
@@ -258,7 +273,7 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-go=&#34;`s3.BucketPolicy`&#34; pulumi-lang-python=&#34;`s3.BucketPolicy`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-java=&#34;`aws.s3.BucketPolicy`&#34;&gt;`aws.s3.BucketPolicy`&lt;/span&gt; instead.
-     * 
+     *
      */
     @Import(name="policy")
     private @Nullable Output<String> policy;
@@ -267,7 +282,7 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * @return Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-go=&#34;`s3.BucketPolicy`&#34; pulumi-lang-python=&#34;`s3.BucketPolicy`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-java=&#34;`aws.s3.BucketPolicy`&#34;&gt;`aws.s3.BucketPolicy`&lt;/span&gt; instead.
-     * 
+     *
      */
     public Optional<Output<String>> policy() {
         return Optional.ofNullable(this.policy);
@@ -275,14 +290,14 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-     * 
+     *
      */
     @Import(name="region")
     private @Nullable Output<String> region;
 
     /**
      * @return Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-     * 
+     *
      */
     public Optional<Output<String>> region() {
         return Optional.ofNullable(this.region);
@@ -291,10 +306,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-go=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-python=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-java=&#34;`aws.s3.BucketReplicationConfig`&#34;&gt;`aws.s3.BucketReplicationConfig`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * replication_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-go=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-python=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-yaml=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-java=&#34; aws.s3.BucketReplicationConfig &#34;&gt; aws.s3.BucketReplicationConfig &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* replication_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketReplicationConfig "" pulumi-lang-dotnet="" aws.s3.BucketReplicationConfig "" pulumi-lang-go="" s3.BucketReplicationConfig "" pulumi-lang-python="" s3.BucketReplicationConfig "" pulumi-lang-yaml="" aws.s3.BucketReplicationConfig "" pulumi-lang-java="" aws.s3.BucketReplicationConfig ""> aws.s3.BucketReplicationConfig </span>resource instead. */
     @Import(name="replicationConfiguration")
@@ -303,10 +318,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-go=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-python=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-java=&#34;`aws.s3.BucketReplicationConfig`&#34;&gt;`aws.s3.BucketReplicationConfig`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * replication_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-go=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-python=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-yaml=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-java=&#34; aws.s3.BucketReplicationConfig &#34;&gt; aws.s3.BucketReplicationConfig &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* replication_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketReplicationConfig "" pulumi-lang-dotnet="" aws.s3.BucketReplicationConfig "" pulumi-lang-go="" s3.BucketReplicationConfig "" pulumi-lang-python="" s3.BucketReplicationConfig "" pulumi-lang-yaml="" aws.s3.BucketReplicationConfig "" pulumi-lang-java="" aws.s3.BucketReplicationConfig ""> aws.s3.BucketReplicationConfig </span>resource instead. */
     public Optional<Output<BucketReplicationConfigurationArgs>> replicationConfiguration() {
@@ -319,10 +334,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34;&gt;`aws.s3.BucketRequestPaymentConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * request_payer is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-go=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-python=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketRequestPaymentConfiguration &#34;&gt; aws.s3.BucketRequestPaymentConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* request_payer is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-go="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-python="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-yaml="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-java="" aws.s3.BucketRequestPaymentConfiguration ""> aws.s3.BucketRequestPaymentConfiguration </span>resource instead. */
     @Import(name="requestPayer")
@@ -334,10 +349,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34;&gt;`aws.s3.BucketRequestPaymentConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * request_payer is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-go=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-python=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketRequestPaymentConfiguration &#34;&gt; aws.s3.BucketRequestPaymentConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* request_payer is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-go="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-python="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-yaml="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-java="" aws.s3.BucketRequestPaymentConfiguration ""> aws.s3.BucketRequestPaymentConfiguration </span>resource instead. */
     public Optional<Output<String>> requestPayer() {
@@ -348,10 +363,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34;&gt;`aws.s3.BucketServerSideEncryptionConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * server_side_encryption_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-go=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-python=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34;&gt; aws.s3.BucketServerSideEncryptionConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-go="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-python="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-yaml="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-java="" aws.s3.BucketServerSideEncryptionConfiguration ""> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead. */
     @Import(name="serverSideEncryptionConfiguration")
@@ -361,10 +376,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
      * @return Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
      * The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34;&gt;`aws.s3.BucketServerSideEncryptionConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * server_side_encryption_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-go=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-python=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34;&gt; aws.s3.BucketServerSideEncryptionConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-go="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-python="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-yaml="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-java="" aws.s3.BucketServerSideEncryptionConfiguration ""> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead. */
     public Optional<Output<BucketServerSideEncryptionConfigurationArgs>> serverSideEncryptionConfiguration() {
@@ -372,19 +387,19 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-     * 
+     * Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     *
      * The following arguments are deprecated, and will be removed in a future major version:
-     * 
+     *
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-     * 
+     * @return Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     *
      * The following arguments are deprecated, and will be removed in a future major version:
-     * 
+     *
      */
     public Optional<Output<Map<String,String>>> tags() {
         return Optional.ofNullable(this.tags);
@@ -392,10 +407,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-go=&#34;`s3.BucketVersioning`&#34; pulumi-lang-python=&#34;`s3.BucketVersioning`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-java=&#34;`aws.s3.BucketVersioning`&#34;&gt;`aws.s3.BucketVersioning`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * versioning is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-go=&#34; s3.BucketVersioning &#34; pulumi-lang-python=&#34; s3.BucketVersioning &#34; pulumi-lang-yaml=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-java=&#34; aws.s3.BucketVersioning &#34;&gt; aws.s3.BucketVersioning &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* versioning is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketVersioning "" pulumi-lang-dotnet="" aws.s3.BucketVersioning "" pulumi-lang-go="" s3.BucketVersioning "" pulumi-lang-python="" s3.BucketVersioning "" pulumi-lang-yaml="" aws.s3.BucketVersioning "" pulumi-lang-java="" aws.s3.BucketVersioning ""> aws.s3.BucketVersioning </span>resource instead. */
     @Import(name="versioning")
@@ -403,10 +418,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * @return Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-go=&#34;`s3.BucketVersioning`&#34; pulumi-lang-python=&#34;`s3.BucketVersioning`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-java=&#34;`aws.s3.BucketVersioning`&#34;&gt;`aws.s3.BucketVersioning`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * versioning is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-go=&#34; s3.BucketVersioning &#34; pulumi-lang-python=&#34; s3.BucketVersioning &#34; pulumi-lang-yaml=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-java=&#34; aws.s3.BucketVersioning &#34;&gt; aws.s3.BucketVersioning &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* versioning is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketVersioning "" pulumi-lang-dotnet="" aws.s3.BucketVersioning "" pulumi-lang-go="" s3.BucketVersioning "" pulumi-lang-python="" s3.BucketVersioning "" pulumi-lang-yaml="" aws.s3.BucketVersioning "" pulumi-lang-java="" aws.s3.BucketVersioning ""> aws.s3.BucketVersioning </span>resource instead. */
     public Optional<Output<BucketVersioningArgs>> versioning() {
@@ -416,10 +431,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketWebsiteConfiguration`&#34;&gt;`aws.s3.BucketWebsiteConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * website is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-go=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-python=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketWebsiteConfiguration &#34;&gt; aws.s3.BucketWebsiteConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* website is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-go="" s3.BucketWebsiteConfiguration "" pulumi-lang-python="" s3.BucketWebsiteConfiguration "" pulumi-lang-yaml="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-java="" aws.s3.BucketWebsiteConfiguration ""> aws.s3.BucketWebsiteConfiguration </span>resource instead. */
     @Import(name="website")
@@ -428,10 +443,10 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * @return Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
      * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketWebsiteConfiguration`&#34;&gt;`aws.s3.BucketWebsiteConfiguration`&lt;/span&gt; instead.
-     * 
+     *
      * @deprecated
      * website is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-go=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-python=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketWebsiteConfiguration &#34;&gt; aws.s3.BucketWebsiteConfiguration &lt;/span&gt;resource instead.
-     * 
+     *
      */
     @Deprecated /* website is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-go="" s3.BucketWebsiteConfiguration "" pulumi-lang-python="" s3.BucketWebsiteConfiguration "" pulumi-lang-yaml="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-java="" aws.s3.BucketWebsiteConfiguration ""> aws.s3.BucketWebsiteConfiguration </span>resource instead. */
     public Optional<Output<BucketWebsiteArgs>> website() {
@@ -444,6 +459,7 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         this.accelerationStatus = $.accelerationStatus;
         this.acl = $.acl;
         this.bucket = $.bucket;
+        this.bucketNamespace = $.bucketNamespace;
         this.bucketPrefix = $.bucketPrefix;
         this.corsRules = $.corsRules;
         this.forceDestroy = $.forceDestroy;
@@ -483,12 +499,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param accelerationStatus Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAccelerateConfiguration`&#34;&gt;`aws.s3.BucketAccelerateConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * acceleration_status is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-go=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-python=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketAccelerateConfiguration &#34;&gt; aws.s3.BucketAccelerateConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* acceleration_status is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-go="" s3.BucketAccelerateConfiguration "" pulumi-lang-python="" s3.BucketAccelerateConfiguration "" pulumi-lang-yaml="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-java="" aws.s3.BucketAccelerateConfiguration ""> aws.s3.BucketAccelerateConfiguration </span>resource instead. */
         public Builder accelerationStatus(@Nullable Output<String> accelerationStatus) {
@@ -499,12 +515,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param accelerationStatus Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`. Cannot be used in `cn-north-1` or `us-gov-west-1`. This provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketAccelerateConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAccelerateConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAccelerateConfiguration`&#34;&gt;`aws.s3.BucketAccelerateConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * acceleration_status is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-go=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-python=&#34; s3.BucketAccelerateConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAccelerateConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketAccelerateConfiguration &#34;&gt; aws.s3.BucketAccelerateConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* acceleration_status is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-go="" s3.BucketAccelerateConfiguration "" pulumi-lang-python="" s3.BucketAccelerateConfiguration "" pulumi-lang-yaml="" aws.s3.BucketAccelerateConfiguration "" pulumi-lang-java="" aws.s3.BucketAccelerateConfiguration ""> aws.s3.BucketAccelerateConfiguration </span>resource instead. */
         public Builder accelerationStatus(String accelerationStatus) {
@@ -513,9 +529,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param acl The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;.  Conflicts with &lt;span pulumi-lang-nodejs=&#34;`grant`&#34; pulumi-lang-dotnet=&#34;`Grant`&#34; pulumi-lang-go=&#34;`grant`&#34; pulumi-lang-python=&#34;`grant`&#34; pulumi-lang-yaml=&#34;`grant`&#34; pulumi-lang-java=&#34;`grant`&#34;&gt;`grant`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder acl(@Nullable Output<String> acl) {
             $.acl = acl;
@@ -524,19 +540,19 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param acl The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to &lt;span pulumi-lang-nodejs=&#34;`private`&#34; pulumi-lang-dotnet=&#34;`Private`&#34; pulumi-lang-go=&#34;`private`&#34; pulumi-lang-python=&#34;`private`&#34; pulumi-lang-yaml=&#34;`private`&#34; pulumi-lang-java=&#34;`private`&#34;&gt;`private`&lt;/span&gt;.  Conflicts with &lt;span pulumi-lang-nodejs=&#34;`grant`&#34; pulumi-lang-dotnet=&#34;`Grant`&#34; pulumi-lang-go=&#34;`grant`&#34; pulumi-lang-python=&#34;`grant`&#34; pulumi-lang-yaml=&#34;`grant`&#34; pulumi-lang-java=&#34;`grant`&#34;&gt;`grant`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder acl(String acl) {
             return acl(Output.of(acl));
         }
 
         /**
-         * @param bucket Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucket_name]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
-         * 
+         * @param bucket Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucketName]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
+         *
          * @return builder
-         * 
+         *
          */
         public Builder bucket(@Nullable Output<String> bucket) {
             $.bucket = bucket;
@@ -544,20 +560,41 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param bucket Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucket_name]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
-         * 
+         * @param bucket Name of the bucket. If omitted, the provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html). The name must not be in the format `&lt;span pulumi-lang-nodejs=&#34;[bucketName]&#34; pulumi-lang-dotnet=&#34;[BucketName]&#34; pulumi-lang-go=&#34;[bucketName]&#34; pulumi-lang-python=&#34;[bucket_name]&#34; pulumi-lang-yaml=&#34;[bucketName]&#34; pulumi-lang-java=&#34;[bucketName]&#34;&gt;[bucketName]&lt;/span&gt;--[azid]--x-s3`. Use the &lt;span pulumi-lang-nodejs=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-dotnet=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-go=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-python=&#34;`s3.DirectoryBucket`&#34; pulumi-lang-yaml=&#34;`aws.s3.DirectoryBucket`&#34; pulumi-lang-java=&#34;`aws.s3.DirectoryBucket`&#34;&gt;`aws.s3.DirectoryBucket`&lt;/span&gt; resource to manage S3 Express buckets.
+         *
          * @return builder
-         * 
+         *
          */
         public Builder bucket(String bucket) {
             return bucket(Output.of(bucket));
         }
 
         /**
-         * @param bucketPrefix Creates a unique bucket name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`bucket`&#34; pulumi-lang-dotnet=&#34;`Bucket`&#34; pulumi-lang-go=&#34;`bucket`&#34; pulumi-lang-python=&#34;`bucket`&#34; pulumi-lang-yaml=&#34;`bucket`&#34; pulumi-lang-java=&#34;`bucket`&#34;&gt;`bucket`&lt;/span&gt;. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-         * 
+         * @param bucketNamespace Namespace for the bucket. Determines bucket naming scope. Valid values: `account-regional`, &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt; (AWS).
+         *
          * @return builder
-         * 
+         *
+         */
+        public Builder bucketNamespace(@Nullable Output<String> bucketNamespace) {
+            $.bucketNamespace = bucketNamespace;
+            return this;
+        }
+
+        /**
+         * @param bucketNamespace Namespace for the bucket. Determines bucket naming scope. Valid values: `account-regional`, &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt;. Defaults to &lt;span pulumi-lang-nodejs=&#34;`global`&#34; pulumi-lang-dotnet=&#34;`Global`&#34; pulumi-lang-go=&#34;`global`&#34; pulumi-lang-python=&#34;`global`&#34; pulumi-lang-yaml=&#34;`global`&#34; pulumi-lang-java=&#34;`global`&#34;&gt;`global`&lt;/span&gt; (AWS).
+         *
+         * @return builder
+         *
+         */
+        public Builder bucketNamespace(String bucketNamespace) {
+            return bucketNamespace(Output.of(bucketNamespace));
+        }
+
+        /**
+         * @param bucketPrefix Creates a unique bucket name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`bucket`&#34; pulumi-lang-dotnet=&#34;`Bucket`&#34; pulumi-lang-go=&#34;`bucket`&#34; pulumi-lang-python=&#34;`bucket`&#34; pulumi-lang-yaml=&#34;`bucket`&#34; pulumi-lang-java=&#34;`bucket`&#34;&gt;`bucket`&lt;/span&gt;. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         *
+         * @return builder
+         *
          */
         public Builder bucketPrefix(@Nullable Output<String> bucketPrefix) {
             $.bucketPrefix = bucketPrefix;
@@ -566,9 +603,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param bucketPrefix Creates a unique bucket name beginning with the specified prefix. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`bucket`&#34; pulumi-lang-dotnet=&#34;`Bucket`&#34; pulumi-lang-go=&#34;`bucket`&#34; pulumi-lang-python=&#34;`bucket`&#34; pulumi-lang-yaml=&#34;`bucket`&#34; pulumi-lang-java=&#34;`bucket`&#34;&gt;`bucket`&lt;/span&gt;. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder bucketPrefix(String bucketPrefix) {
             return bucketPrefix(Output.of(bucketPrefix));
@@ -576,12 +613,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param corsRules Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketCorsConfiguration`&#34;&gt;`aws.s3.BucketCorsConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * cors_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-go=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-python=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketCorsConfiguration &#34;&gt; aws.s3.BucketCorsConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* cors_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketCorsConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketCorsConfiguration "" pulumi-lang-go="" s3.BucketCorsConfiguration "" pulumi-lang-python="" s3.BucketCorsConfiguration "" pulumi-lang-yaml="" aws.s3.BucketCorsConfiguration "" pulumi-lang-java="" aws.s3.BucketCorsConfiguration ""> aws.s3.BucketCorsConfiguration </span>resource instead. */
         public Builder corsRules(@Nullable Output<List<BucketCorsRuleArgs>> corsRules) {
@@ -591,12 +628,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param corsRules Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketCorsConfiguration`&#34;&gt;`aws.s3.BucketCorsConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * cors_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-go=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-python=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketCorsConfiguration &#34;&gt; aws.s3.BucketCorsConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* cors_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketCorsConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketCorsConfiguration "" pulumi-lang-go="" s3.BucketCorsConfiguration "" pulumi-lang-python="" s3.BucketCorsConfiguration "" pulumi-lang-yaml="" aws.s3.BucketCorsConfiguration "" pulumi-lang-java="" aws.s3.BucketCorsConfiguration ""> aws.s3.BucketCorsConfiguration </span>resource instead. */
         public Builder corsRules(List<BucketCorsRuleArgs> corsRules) {
@@ -605,12 +642,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param corsRules Rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html). See CORS rule below for details. This provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketCorsConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketCorsConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketCorsConfiguration`&#34;&gt;`aws.s3.BucketCorsConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * cors_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-go=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-python=&#34; s3.BucketCorsConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketCorsConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketCorsConfiguration &#34;&gt; aws.s3.BucketCorsConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* cors_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketCorsConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketCorsConfiguration "" pulumi-lang-go="" s3.BucketCorsConfiguration "" pulumi-lang-python="" s3.BucketCorsConfiguration "" pulumi-lang-yaml="" aws.s3.BucketCorsConfiguration "" pulumi-lang-java="" aws.s3.BucketCorsConfiguration ""> aws.s3.BucketCorsConfiguration </span>resource instead. */
         public Builder corsRules(BucketCorsRuleArgs... corsRules) {
@@ -619,9 +656,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param forceDestroy Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;. Once this parameter is set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder forceDestroy(@Nullable Output<Boolean> forceDestroy) {
             $.forceDestroy = forceDestroy;
@@ -630,9 +667,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param forceDestroy Boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket *when the bucket is destroyed* so that the bucket can be destroyed without error. These objects are *not* recoverable. This only deletes objects when the bucket is destroyed, *not* when setting this parameter to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;. Once this parameter is set to &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt;, there must be a successful `pulumi up` run before a destroy is required to update this value in the resource state. Without a successful `pulumi up` after this parameter is set, this flag will have no effect. If setting this field in the same operation that would require replacing the bucket or destroying the bucket, this flag will not work. Additionally when importing a bucket, a successful `pulumi up` is required to set this value in state before it will take effect on a destroy operation.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder forceDestroy(Boolean forceDestroy) {
             return forceDestroy(Output.of(forceDestroy));
@@ -640,12 +677,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param grants An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`acl`&#34; pulumi-lang-dotnet=&#34;`Acl`&#34; pulumi-lang-go=&#34;`acl`&#34; pulumi-lang-python=&#34;`acl`&#34; pulumi-lang-yaml=&#34;`acl`&#34; pulumi-lang-java=&#34;`acl`&#34;&gt;`acl`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * grant is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAcl &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAcl &#34; pulumi-lang-go=&#34; s3.BucketAcl &#34; pulumi-lang-python=&#34; s3.BucketAcl &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAcl &#34; pulumi-lang-java=&#34; aws.s3.BucketAcl &#34;&gt; aws.s3.BucketAcl &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* grant is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAcl "" pulumi-lang-dotnet="" aws.s3.BucketAcl "" pulumi-lang-go="" s3.BucketAcl "" pulumi-lang-python="" s3.BucketAcl "" pulumi-lang-yaml="" aws.s3.BucketAcl "" pulumi-lang-java="" aws.s3.BucketAcl ""> aws.s3.BucketAcl </span>resource instead. */
         public Builder grants(@Nullable Output<List<BucketGrantArgs>> grants) {
@@ -655,12 +692,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param grants An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`acl`&#34; pulumi-lang-dotnet=&#34;`Acl`&#34; pulumi-lang-go=&#34;`acl`&#34; pulumi-lang-python=&#34;`acl`&#34; pulumi-lang-yaml=&#34;`acl`&#34; pulumi-lang-java=&#34;`acl`&#34;&gt;`acl`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * grant is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAcl &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAcl &#34; pulumi-lang-go=&#34; s3.BucketAcl &#34; pulumi-lang-python=&#34; s3.BucketAcl &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAcl &#34; pulumi-lang-java=&#34; aws.s3.BucketAcl &#34;&gt; aws.s3.BucketAcl &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* grant is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAcl "" pulumi-lang-dotnet="" aws.s3.BucketAcl "" pulumi-lang-go="" s3.BucketAcl "" pulumi-lang-python="" s3.BucketAcl "" pulumi-lang-yaml="" aws.s3.BucketAcl "" pulumi-lang-java="" aws.s3.BucketAcl ""> aws.s3.BucketAcl </span>resource instead. */
         public Builder grants(List<BucketGrantArgs> grants) {
@@ -669,12 +706,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param grants An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl). See Grant below for details. Conflicts with &lt;span pulumi-lang-nodejs=&#34;`acl`&#34; pulumi-lang-dotnet=&#34;`Acl`&#34; pulumi-lang-go=&#34;`acl`&#34; pulumi-lang-python=&#34;`acl`&#34; pulumi-lang-yaml=&#34;`acl`&#34; pulumi-lang-java=&#34;`acl`&#34;&gt;`acl`&lt;/span&gt;. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-go=&#34;`s3.BucketAcl`&#34; pulumi-lang-python=&#34;`s3.BucketAcl`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketAcl`&#34; pulumi-lang-java=&#34;`aws.s3.BucketAcl`&#34;&gt;`aws.s3.BucketAcl`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * grant is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketAcl &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketAcl &#34; pulumi-lang-go=&#34; s3.BucketAcl &#34; pulumi-lang-python=&#34; s3.BucketAcl &#34; pulumi-lang-yaml=&#34; aws.s3.BucketAcl &#34; pulumi-lang-java=&#34; aws.s3.BucketAcl &#34;&gt; aws.s3.BucketAcl &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* grant is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketAcl "" pulumi-lang-dotnet="" aws.s3.BucketAcl "" pulumi-lang-go="" s3.BucketAcl "" pulumi-lang-python="" s3.BucketAcl "" pulumi-lang-yaml="" aws.s3.BucketAcl "" pulumi-lang-java="" aws.s3.BucketAcl ""> aws.s3.BucketAcl </span>resource instead. */
         public Builder grants(BucketGrantArgs... grants) {
@@ -684,12 +721,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param lifecycleRules Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLifecycleConfiguration`&#34;&gt;`aws.s3.BucketLifecycleConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * lifecycle_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-go=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-python=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketLifecycleConfiguration &#34;&gt; aws.s3.BucketLifecycleConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-go="" s3.BucketLifecycleConfiguration "" pulumi-lang-python="" s3.BucketLifecycleConfiguration "" pulumi-lang-yaml="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-java="" aws.s3.BucketLifecycleConfiguration ""> aws.s3.BucketLifecycleConfiguration </span>resource instead. */
         public Builder lifecycleRules(@Nullable Output<List<BucketLifecycleRuleArgs>> lifecycleRules) {
@@ -700,12 +737,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param lifecycleRules Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLifecycleConfiguration`&#34;&gt;`aws.s3.BucketLifecycleConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * lifecycle_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-go=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-python=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketLifecycleConfiguration &#34;&gt; aws.s3.BucketLifecycleConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-go="" s3.BucketLifecycleConfiguration "" pulumi-lang-python="" s3.BucketLifecycleConfiguration "" pulumi-lang-yaml="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-java="" aws.s3.BucketLifecycleConfiguration ""> aws.s3.BucketLifecycleConfiguration </span>resource instead. */
         public Builder lifecycleRules(List<BucketLifecycleRuleArgs> lifecycleRules) {
@@ -715,12 +752,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param lifecycleRules Configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html). See Lifecycle Rule below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketLifecycleConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLifecycleConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLifecycleConfiguration`&#34;&gt;`aws.s3.BucketLifecycleConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * lifecycle_rule is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-go=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-python=&#34; s3.BucketLifecycleConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLifecycleConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketLifecycleConfiguration &#34;&gt; aws.s3.BucketLifecycleConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* lifecycle_rule is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-go="" s3.BucketLifecycleConfiguration "" pulumi-lang-python="" s3.BucketLifecycleConfiguration "" pulumi-lang-yaml="" aws.s3.BucketLifecycleConfiguration "" pulumi-lang-java="" aws.s3.BucketLifecycleConfiguration ""> aws.s3.BucketLifecycleConfiguration </span>resource instead. */
         public Builder lifecycleRules(BucketLifecycleRuleArgs... lifecycleRules) {
@@ -730,12 +767,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param logging Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-go=&#34;`s3.BucketLogging`&#34; pulumi-lang-python=&#34;`s3.BucketLogging`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLogging`&#34;&gt;`aws.s3.BucketLogging`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * logging is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLogging &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLogging &#34; pulumi-lang-go=&#34; s3.BucketLogging &#34; pulumi-lang-python=&#34; s3.BucketLogging &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLogging &#34; pulumi-lang-java=&#34; aws.s3.BucketLogging &#34;&gt; aws.s3.BucketLogging &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* logging is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLogging "" pulumi-lang-dotnet="" aws.s3.BucketLogging "" pulumi-lang-go="" s3.BucketLogging "" pulumi-lang-python="" s3.BucketLogging "" pulumi-lang-yaml="" aws.s3.BucketLogging "" pulumi-lang-java="" aws.s3.BucketLogging ""> aws.s3.BucketLogging </span>resource instead. */
         public Builder logging(@Nullable Output<BucketLoggingArgs> logging) {
@@ -746,12 +783,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param logging Configuration of [S3 bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) parameters. See Logging below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-go=&#34;`s3.BucketLogging`&#34; pulumi-lang-python=&#34;`s3.BucketLogging`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketLogging`&#34; pulumi-lang-java=&#34;`aws.s3.BucketLogging`&#34;&gt;`aws.s3.BucketLogging`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * logging is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketLogging &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketLogging &#34; pulumi-lang-go=&#34; s3.BucketLogging &#34; pulumi-lang-python=&#34; s3.BucketLogging &#34; pulumi-lang-yaml=&#34; aws.s3.BucketLogging &#34; pulumi-lang-java=&#34; aws.s3.BucketLogging &#34;&gt; aws.s3.BucketLogging &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* logging is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketLogging "" pulumi-lang-dotnet="" aws.s3.BucketLogging "" pulumi-lang-go="" s3.BucketLogging "" pulumi-lang-python="" s3.BucketLogging "" pulumi-lang-yaml="" aws.s3.BucketLogging "" pulumi-lang-java="" aws.s3.BucketLogging ""> aws.s3.BucketLogging </span>resource instead. */
         public Builder logging(BucketLoggingArgs logging) {
@@ -761,15 +798,15 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param objectLockConfiguration Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
          * The provider wil only perform drift detection if a configuration value is provided.
-         * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`object_lock_enabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
-         * 
+         * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`objectLockEnabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
+         *
          * @return builder
-         * 
+         *
          * @deprecated
-         * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; object_lock_enabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
-         * 
+         * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; objectLockEnabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
+         *
          */
-        @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> object_lock_enabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
+        @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> objectLockEnabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
         public Builder objectLockConfiguration(@Nullable Output<BucketObjectLockConfigurationArgs> objectLockConfiguration) {
             $.objectLockConfiguration = objectLockConfiguration;
             return this;
@@ -778,24 +815,24 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param objectLockConfiguration Configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html). See Object Lock Configuration below for details.
          * The provider wil only perform drift detection if a configuration value is provided.
-         * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`object_lock_enabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
-         * 
+         * Use the &lt;span pulumi-lang-nodejs=&#34;`objectLockEnabled`&#34; pulumi-lang-dotnet=&#34;`ObjectLockEnabled`&#34; pulumi-lang-go=&#34;`objectLockEnabled`&#34; pulumi-lang-python=&#34;`object_lock_enabled`&#34; pulumi-lang-yaml=&#34;`objectLockEnabled`&#34; pulumi-lang-java=&#34;`objectLockEnabled`&#34;&gt;`objectLockEnabled`&lt;/span&gt; parameter and the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketObjectLockConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketObjectLockConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketObjectLockConfiguration`&#34;&gt;`aws.s3.BucketObjectLockConfiguration`&lt;/span&gt; instead.
+         *
          * @return builder
-         * 
+         *
          * @deprecated
-         * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; object_lock_enabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
-         * 
+         * object_lock_configuration is deprecated. Use the top-level parameter&lt;span pulumi-lang-nodejs=&#34; objectLockEnabled &#34; pulumi-lang-dotnet=&#34; ObjectLockEnabled &#34; pulumi-lang-go=&#34; objectLockEnabled &#34; pulumi-lang-python=&#34; object_lock_enabled &#34; pulumi-lang-yaml=&#34; objectLockEnabled &#34; pulumi-lang-java=&#34; objectLockEnabled &#34;&gt; objectLockEnabled &lt;/span&gt;and the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-go=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-python=&#34; s3.BucketObjectLockConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketObjectLockConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketObjectLockConfiguration &#34;&gt; aws.s3.BucketObjectLockConfiguration &lt;/span&gt;resource instead.
+         *
          */
-        @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> object_lock_enabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
+        @Deprecated /* object_lock_configuration is deprecated. Use the top-level parameter<span pulumi-lang-nodejs="" objectLockEnabled "" pulumi-lang-dotnet="" ObjectLockEnabled "" pulumi-lang-go="" objectLockEnabled "" pulumi-lang-python="" object_lock_enabled "" pulumi-lang-yaml="" objectLockEnabled "" pulumi-lang-java="" objectLockEnabled ""> objectLockEnabled </span>and the<span pulumi-lang-nodejs="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-go="" s3.BucketObjectLockConfiguration "" pulumi-lang-python="" s3.BucketObjectLockConfiguration "" pulumi-lang-yaml="" aws.s3.BucketObjectLockConfiguration "" pulumi-lang-java="" aws.s3.BucketObjectLockConfiguration ""> aws.s3.BucketObjectLockConfiguration </span>resource instead. */
         public Builder objectLockConfiguration(BucketObjectLockConfigurationArgs objectLockConfiguration) {
             return objectLockConfiguration(Output.of(objectLockConfiguration));
         }
 
         /**
          * @param objectLockEnabled Indicates whether this bucket has an Object Lock configuration enabled. Valid values are &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. This argument is not supported in all regions or partitions.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder objectLockEnabled(@Nullable Output<Boolean> objectLockEnabled) {
             $.objectLockEnabled = objectLockEnabled;
@@ -804,9 +841,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param objectLockEnabled Indicates whether this bucket has an Object Lock configuration enabled. Valid values are &lt;span pulumi-lang-nodejs=&#34;`true`&#34; pulumi-lang-dotnet=&#34;`True`&#34; pulumi-lang-go=&#34;`true`&#34; pulumi-lang-python=&#34;`true`&#34; pulumi-lang-yaml=&#34;`true`&#34; pulumi-lang-java=&#34;`true`&#34;&gt;`true`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`false`&#34; pulumi-lang-dotnet=&#34;`False`&#34; pulumi-lang-go=&#34;`false`&#34; pulumi-lang-python=&#34;`false`&#34; pulumi-lang-yaml=&#34;`false`&#34; pulumi-lang-java=&#34;`false`&#34;&gt;`false`&lt;/span&gt;. This argument is not supported in all regions or partitions.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder objectLockEnabled(Boolean objectLockEnabled) {
             return objectLockEnabled(Output.of(objectLockEnabled));
@@ -816,9 +853,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * @param policy Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-go=&#34;`s3.BucketPolicy`&#34; pulumi-lang-python=&#34;`s3.BucketPolicy`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-java=&#34;`aws.s3.BucketPolicy`&#34;&gt;`aws.s3.BucketPolicy`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder policy(@Nullable Output<String> policy) {
             $.policy = policy;
@@ -829,9 +866,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * @param policy Valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing. In this case, please make sure you use the verbose/specific version of the policy. For more information about building AWS IAM policy documents with this provider, see the AWS IAM Policy Document Guide.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-go=&#34;`s3.BucketPolicy`&#34; pulumi-lang-python=&#34;`s3.BucketPolicy`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketPolicy`&#34; pulumi-lang-java=&#34;`aws.s3.BucketPolicy`&#34;&gt;`aws.s3.BucketPolicy`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder policy(String policy) {
             return policy(Output.of(policy));
@@ -839,9 +876,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder region(@Nullable Output<String> region) {
             $.region = region;
@@ -850,9 +887,9 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param region Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder region(String region) {
             return region(Output.of(region));
@@ -861,12 +898,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param replicationConfiguration Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-go=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-python=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-java=&#34;`aws.s3.BucketReplicationConfig`&#34;&gt;`aws.s3.BucketReplicationConfig`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * replication_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-go=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-python=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-yaml=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-java=&#34; aws.s3.BucketReplicationConfig &#34;&gt; aws.s3.BucketReplicationConfig &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* replication_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketReplicationConfig "" pulumi-lang-dotnet="" aws.s3.BucketReplicationConfig "" pulumi-lang-go="" s3.BucketReplicationConfig "" pulumi-lang-python="" s3.BucketReplicationConfig "" pulumi-lang-yaml="" aws.s3.BucketReplicationConfig "" pulumi-lang-java="" aws.s3.BucketReplicationConfig ""> aws.s3.BucketReplicationConfig </span>resource instead. */
         public Builder replicationConfiguration(@Nullable Output<BucketReplicationConfigurationArgs> replicationConfiguration) {
@@ -877,12 +914,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param replicationConfiguration Configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html). See Replication Configuration below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-go=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-python=&#34;`s3.BucketReplicationConfig`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketReplicationConfig`&#34; pulumi-lang-java=&#34;`aws.s3.BucketReplicationConfig`&#34;&gt;`aws.s3.BucketReplicationConfig`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * replication_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-go=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-python=&#34; s3.BucketReplicationConfig &#34; pulumi-lang-yaml=&#34; aws.s3.BucketReplicationConfig &#34; pulumi-lang-java=&#34; aws.s3.BucketReplicationConfig &#34;&gt; aws.s3.BucketReplicationConfig &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* replication_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketReplicationConfig "" pulumi-lang-dotnet="" aws.s3.BucketReplicationConfig "" pulumi-lang-go="" s3.BucketReplicationConfig "" pulumi-lang-python="" s3.BucketReplicationConfig "" pulumi-lang-yaml="" aws.s3.BucketReplicationConfig "" pulumi-lang-java="" aws.s3.BucketReplicationConfig ""> aws.s3.BucketReplicationConfig </span>resource instead. */
         public Builder replicationConfiguration(BucketReplicationConfigurationArgs replicationConfiguration) {
@@ -895,12 +932,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34;&gt;`aws.s3.BucketRequestPaymentConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * request_payer is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-go=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-python=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketRequestPaymentConfiguration &#34;&gt; aws.s3.BucketRequestPaymentConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* request_payer is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-go="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-python="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-yaml="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-java="" aws.s3.BucketRequestPaymentConfiguration ""> aws.s3.BucketRequestPaymentConfiguration </span>resource instead. */
         public Builder requestPayer(@Nullable Output<String> requestPayer) {
@@ -914,12 +951,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) developer guide for more information.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketRequestPaymentConfiguration`&#34;&gt;`aws.s3.BucketRequestPaymentConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * request_payer is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-go=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-python=&#34; s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketRequestPaymentConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketRequestPaymentConfiguration &#34;&gt; aws.s3.BucketRequestPaymentConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* request_payer is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-go="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-python="" s3.BucketRequestPaymentConfiguration "" pulumi-lang-yaml="" aws.s3.BucketRequestPaymentConfiguration "" pulumi-lang-java="" aws.s3.BucketRequestPaymentConfiguration ""> aws.s3.BucketRequestPaymentConfiguration </span>resource instead. */
         public Builder requestPayer(String requestPayer) {
@@ -930,12 +967,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * @param serverSideEncryptionConfiguration Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34;&gt;`aws.s3.BucketServerSideEncryptionConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * server_side_encryption_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-go=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-python=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34;&gt; aws.s3.BucketServerSideEncryptionConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-go="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-python="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-yaml="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-java="" aws.s3.BucketServerSideEncryptionConfiguration ""> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead. */
         public Builder serverSideEncryptionConfiguration(@Nullable Output<BucketServerSideEncryptionConfigurationArgs> serverSideEncryptionConfiguration) {
@@ -947,12 +984,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
          * @param serverSideEncryptionConfiguration Configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html). See Server Side Encryption Configuration below for details.
          * The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketServerSideEncryptionConfiguration`&#34;&gt;`aws.s3.BucketServerSideEncryptionConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * server_side_encryption_configuration is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-go=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-python=&#34; s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketServerSideEncryptionConfiguration &#34;&gt; aws.s3.BucketServerSideEncryptionConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* server_side_encryption_configuration is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-go="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-python="" s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-yaml="" aws.s3.BucketServerSideEncryptionConfiguration "" pulumi-lang-java="" aws.s3.BucketServerSideEncryptionConfiguration ""> aws.s3.BucketServerSideEncryptionConfiguration </span>resource instead. */
         public Builder serverSideEncryptionConfiguration(BucketServerSideEncryptionConfigurationArgs serverSideEncryptionConfiguration) {
@@ -960,12 +997,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         * 
+         * @param tags Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         *
          * The following arguments are deprecated, and will be removed in a future major version:
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder tags(@Nullable Output<Map<String,String>> tags) {
             $.tags = tags;
@@ -973,12 +1010,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         * 
+         * @param tags Map of tags to assign to the bucket. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         *
          * The following arguments are deprecated, and will be removed in a future major version:
-         * 
+         *
          * @return builder
-         * 
+         *
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
@@ -986,12 +1023,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param versioning Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-go=&#34;`s3.BucketVersioning`&#34; pulumi-lang-python=&#34;`s3.BucketVersioning`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-java=&#34;`aws.s3.BucketVersioning`&#34;&gt;`aws.s3.BucketVersioning`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * versioning is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-go=&#34; s3.BucketVersioning &#34; pulumi-lang-python=&#34; s3.BucketVersioning &#34; pulumi-lang-yaml=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-java=&#34; aws.s3.BucketVersioning &#34;&gt; aws.s3.BucketVersioning &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* versioning is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketVersioning "" pulumi-lang-dotnet="" aws.s3.BucketVersioning "" pulumi-lang-go="" s3.BucketVersioning "" pulumi-lang-python="" s3.BucketVersioning "" pulumi-lang-yaml="" aws.s3.BucketVersioning "" pulumi-lang-java="" aws.s3.BucketVersioning ""> aws.s3.BucketVersioning </span>resource instead. */
         public Builder versioning(@Nullable Output<BucketVersioningArgs> versioning) {
@@ -1001,12 +1038,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param versioning Configuration of the [S3 bucket versioning state](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html). See Versioning below for details. The provider will only perform drift detection if a configuration value is provided. Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-go=&#34;`s3.BucketVersioning`&#34; pulumi-lang-python=&#34;`s3.BucketVersioning`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketVersioning`&#34; pulumi-lang-java=&#34;`aws.s3.BucketVersioning`&#34;&gt;`aws.s3.BucketVersioning`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * versioning is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-go=&#34; s3.BucketVersioning &#34; pulumi-lang-python=&#34; s3.BucketVersioning &#34; pulumi-lang-yaml=&#34; aws.s3.BucketVersioning &#34; pulumi-lang-java=&#34; aws.s3.BucketVersioning &#34;&gt; aws.s3.BucketVersioning &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* versioning is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketVersioning "" pulumi-lang-dotnet="" aws.s3.BucketVersioning "" pulumi-lang-go="" s3.BucketVersioning "" pulumi-lang-python="" s3.BucketVersioning "" pulumi-lang-yaml="" aws.s3.BucketVersioning "" pulumi-lang-java="" aws.s3.BucketVersioning ""> aws.s3.BucketVersioning </span>resource instead. */
         public Builder versioning(BucketVersioningArgs versioning) {
@@ -1016,12 +1053,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param website Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketWebsiteConfiguration`&#34;&gt;`aws.s3.BucketWebsiteConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * website is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-go=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-python=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketWebsiteConfiguration &#34;&gt; aws.s3.BucketWebsiteConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* website is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-go="" s3.BucketWebsiteConfiguration "" pulumi-lang-python="" s3.BucketWebsiteConfiguration "" pulumi-lang-yaml="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-java="" aws.s3.BucketWebsiteConfiguration ""> aws.s3.BucketWebsiteConfiguration </span>resource instead. */
         public Builder website(@Nullable Output<BucketWebsiteArgs> website) {
@@ -1032,12 +1069,12 @@ public final class BucketArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param website Configuration of the [S3 bucket website](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html). See Website below for details. The provider will only perform drift detection if a configuration value is provided.
          * Use the resource &lt;span pulumi-lang-nodejs=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-dotnet=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-go=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-python=&#34;`s3.BucketWebsiteConfiguration`&#34; pulumi-lang-yaml=&#34;`aws.s3.BucketWebsiteConfiguration`&#34; pulumi-lang-java=&#34;`aws.s3.BucketWebsiteConfiguration`&#34;&gt;`aws.s3.BucketWebsiteConfiguration`&lt;/span&gt; instead.
-         * 
+         *
          * @return builder
-         * 
+         *
          * @deprecated
          * website is deprecated. Use the&lt;span pulumi-lang-nodejs=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-dotnet=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-go=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-python=&#34; s3.BucketWebsiteConfiguration &#34; pulumi-lang-yaml=&#34; aws.s3.BucketWebsiteConfiguration &#34; pulumi-lang-java=&#34; aws.s3.BucketWebsiteConfiguration &#34;&gt; aws.s3.BucketWebsiteConfiguration &lt;/span&gt;resource instead.
-         * 
+         *
          */
         @Deprecated /* website is deprecated. Use the<span pulumi-lang-nodejs="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-dotnet="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-go="" s3.BucketWebsiteConfiguration "" pulumi-lang-python="" s3.BucketWebsiteConfiguration "" pulumi-lang-yaml="" aws.s3.BucketWebsiteConfiguration "" pulumi-lang-java="" aws.s3.BucketWebsiteConfiguration ""> aws.s3.BucketWebsiteConfiguration </span>resource instead. */
         public Builder website(BucketWebsiteArgs website) {

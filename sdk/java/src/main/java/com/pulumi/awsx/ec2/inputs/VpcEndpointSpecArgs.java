@@ -21,10 +21,10 @@ import javax.annotation.Nullable;
  * Provides a VPC Endpoint resource.
  * 
  * &gt; **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
- * Route Tables - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`routeTableId`&#34; pulumi-lang-dotnet=&#34;`RouteTableId`&#34; pulumi-lang-go=&#34;`routeTableId`&#34; pulumi-lang-python=&#34;`route_table_id`&#34; pulumi-lang-yaml=&#34;`routeTableId`&#34; pulumi-lang-java=&#34;`routeTableId`&#34;&gt;`route_table_id`&lt;/span&gt;),
- * Security Groups - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`securityGroupId`&#34; pulumi-lang-dotnet=&#34;`SecurityGroupId`&#34; pulumi-lang-go=&#34;`securityGroupId`&#34; pulumi-lang-python=&#34;`security_group_id`&#34; pulumi-lang-yaml=&#34;`securityGroupId`&#34; pulumi-lang-java=&#34;`securityGroupId`&#34;&gt;`security_group_id`&lt;/span&gt;),
- * and Subnets - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`subnetId`&#34; pulumi-lang-dotnet=&#34;`SubnetId`&#34; pulumi-lang-go=&#34;`subnetId`&#34; pulumi-lang-python=&#34;`subnet_id`&#34; pulumi-lang-yaml=&#34;`subnetId`&#34; pulumi-lang-java=&#34;`subnetId`&#34;&gt;`subnet_id`&lt;/span&gt;) and
- * a VPC Endpoint resource with &lt;span pulumi-lang-nodejs=&#34;`routeTableIds`&#34; pulumi-lang-dotnet=&#34;`RouteTableIds`&#34; pulumi-lang-go=&#34;`routeTableIds`&#34; pulumi-lang-python=&#34;`route_table_ids`&#34; pulumi-lang-yaml=&#34;`routeTableIds`&#34; pulumi-lang-java=&#34;`routeTableIds`&#34;&gt;`route_table_ids`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`subnetIds`&#34; pulumi-lang-dotnet=&#34;`SubnetIds`&#34; pulumi-lang-go=&#34;`subnetIds`&#34; pulumi-lang-python=&#34;`subnet_ids`&#34; pulumi-lang-yaml=&#34;`subnetIds`&#34; pulumi-lang-java=&#34;`subnetIds`&#34;&gt;`subnet_ids`&lt;/span&gt; attributes.
+ * Route Tables - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`routeTableId`&#34; pulumi-lang-dotnet=&#34;`RouteTableId`&#34; pulumi-lang-go=&#34;`routeTableId`&#34; pulumi-lang-python=&#34;`route_table_id`&#34; pulumi-lang-yaml=&#34;`routeTableId`&#34; pulumi-lang-java=&#34;`routeTableId`&#34;&gt;`routeTableId`&lt;/span&gt;),
+ * Security Groups - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`securityGroupId`&#34; pulumi-lang-dotnet=&#34;`SecurityGroupId`&#34; pulumi-lang-go=&#34;`securityGroupId`&#34; pulumi-lang-python=&#34;`security_group_id`&#34; pulumi-lang-yaml=&#34;`securityGroupId`&#34; pulumi-lang-java=&#34;`securityGroupId`&#34;&gt;`securityGroupId`&lt;/span&gt;),
+ * and Subnets - (an association between a VPC endpoint and a single &lt;span pulumi-lang-nodejs=&#34;`subnetId`&#34; pulumi-lang-dotnet=&#34;`SubnetId`&#34; pulumi-lang-go=&#34;`subnetId`&#34; pulumi-lang-python=&#34;`subnet_id`&#34; pulumi-lang-yaml=&#34;`subnetId`&#34; pulumi-lang-java=&#34;`subnetId`&#34;&gt;`subnetId`&lt;/span&gt;) and
+ * a VPC Endpoint resource with &lt;span pulumi-lang-nodejs=&#34;`routeTableIds`&#34; pulumi-lang-dotnet=&#34;`RouteTableIds`&#34; pulumi-lang-go=&#34;`routeTableIds`&#34; pulumi-lang-python=&#34;`route_table_ids`&#34; pulumi-lang-yaml=&#34;`routeTableIds`&#34; pulumi-lang-java=&#34;`routeTableIds`&#34;&gt;`routeTableIds`&lt;/span&gt; and &lt;span pulumi-lang-nodejs=&#34;`subnetIds`&#34; pulumi-lang-dotnet=&#34;`SubnetIds`&#34; pulumi-lang-go=&#34;`subnetIds`&#34; pulumi-lang-python=&#34;`subnet_ids`&#34; pulumi-lang-yaml=&#34;`subnetIds`&#34; pulumi-lang-java=&#34;`subnetIds`&#34;&gt;`subnetIds`&lt;/span&gt; attributes.
  * Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
  * Doing so will cause a conflict of associations and will overwrite the association.
  * 
@@ -416,7 +416,7 @@ import javax.annotation.Nullable;
  * </pre>
  * &lt;!--End PulumiCodeChooser --&gt;
  * 
- * &gt; **NOTE The &lt;span pulumi-lang-nodejs=&#34;`dnsEntry`&#34; pulumi-lang-dotnet=&#34;`DnsEntry`&#34; pulumi-lang-go=&#34;`dnsEntry`&#34; pulumi-lang-python=&#34;`dns_entry`&#34; pulumi-lang-yaml=&#34;`dnsEntry`&#34; pulumi-lang-java=&#34;`dnsEntry`&#34;&gt;`dns_entry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs=&#34;`lookup`&#34; pulumi-lang-dotnet=&#34;`Lookup`&#34; pulumi-lang-go=&#34;`lookup`&#34; pulumi-lang-python=&#34;`lookup`&#34; pulumi-lang-yaml=&#34;`lookup`&#34; pulumi-lang-java=&#34;`lookup`&#34;&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
+ * &gt; **NOTE The &lt;span pulumi-lang-nodejs=&#34;`dnsEntry`&#34; pulumi-lang-dotnet=&#34;`DnsEntry`&#34; pulumi-lang-go=&#34;`dnsEntry`&#34; pulumi-lang-python=&#34;`dns_entry`&#34; pulumi-lang-yaml=&#34;`dnsEntry`&#34; pulumi-lang-java=&#34;`dnsEntry`&#34;&gt;`dnsEntry`&lt;/span&gt; output is a list of maps:** This provider interpolation support for lists of maps requires the &lt;span pulumi-lang-nodejs=&#34;`lookup`&#34; pulumi-lang-dotnet=&#34;`Lookup`&#34; pulumi-lang-go=&#34;`lookup`&#34; pulumi-lang-python=&#34;`lookup`&#34; pulumi-lang-yaml=&#34;`lookup`&#34; pulumi-lang-java=&#34;`lookup`&#34;&gt;`lookup`&lt;/span&gt; and `[]` until full support of lists of maps is available
  * 
  * ## Import
  * 
@@ -424,17 +424,18 @@ import javax.annotation.Nullable;
  * 
  * #### Required
  * 
- * * `id` - (String) ID of the VPC endpoint.
+ * * &lt;span pulumi-lang-nodejs=&#34;`id`&#34; pulumi-lang-dotnet=&#34;`Id`&#34; pulumi-lang-go=&#34;`id`&#34; pulumi-lang-python=&#34;`id`&#34; pulumi-lang-yaml=&#34;`id`&#34; pulumi-lang-java=&#34;`id`&#34;&gt;`id`&lt;/span&gt; - (String) ID of the VPC endpoint.
  * 
  * #### Optional
  * 
- * * `account_id` (String) AWS Account where this resource is managed.
+ * * &lt;span pulumi-lang-nodejs=&#34;`accountId`&#34; pulumi-lang-dotnet=&#34;`AccountId`&#34; pulumi-lang-go=&#34;`accountId`&#34; pulumi-lang-python=&#34;`account_id`&#34; pulumi-lang-yaml=&#34;`accountId`&#34; pulumi-lang-java=&#34;`accountId`&#34;&gt;`accountId`&lt;/span&gt; (String) AWS Account where this resource is managed.
+ * * &lt;span pulumi-lang-nodejs=&#34;`region`&#34; pulumi-lang-dotnet=&#34;`Region`&#34; pulumi-lang-go=&#34;`region`&#34; pulumi-lang-python=&#34;`region`&#34; pulumi-lang-yaml=&#34;`region`&#34; pulumi-lang-java=&#34;`region`&#34;&gt;`region`&lt;/span&gt; (String) Region where this resource is managed.
  * 
- * * `region` (String) Region where this resource is managed.
+ * Using `pulumi import`, import VPC Endpoints using the VPC endpoint &lt;span pulumi-lang-nodejs=&#34;`id`&#34; pulumi-lang-dotnet=&#34;`Id`&#34; pulumi-lang-go=&#34;`id`&#34; pulumi-lang-python=&#34;`id`&#34; pulumi-lang-yaml=&#34;`id`&#34; pulumi-lang-java=&#34;`id`&#34;&gt;`id`&lt;/span&gt;. For example:
  * 
- * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
- * 
- * % pulumi import aws_vpc_endpoint.example vpce-3ecf2a57
+ * ```sh
+ * $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
+ * ```
  * 
  */
 public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs {
@@ -457,14 +458,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dns_options &lt;/span&gt;below.
+     * The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dnsOptions &lt;/span&gt;below.
      * 
      */
     @Import(name="dnsOptions")
     private @Nullable Output<VpcEndpointDnsOptionsArgs> dnsOptions;
 
     /**
-     * @return The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dns_options &lt;/span&gt;below.
+     * @return The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dnsOptions &lt;/span&gt;below.
      * 
      */
     public Optional<Output<VpcEndpointDnsOptionsArgs>> dnsOptions() {
@@ -532,14 +533,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+     * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
      * 
      */
     @Import(name="resourceConfigurationArn")
     private @Nullable Output<String> resourceConfigurationArn;
 
     /**
-     * @return The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+     * @return The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
      * 
      */
     public Optional<Output<String>> resourceConfigurationArn() {
@@ -594,14 +595,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+     * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
      * 
      */
     @Import(name="serviceNetworkArn")
     private @Nullable Output<String> serviceNetworkArn;
 
     /**
-     * @return The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+     * @return The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
      * 
      */
     public Optional<Output<String>> serviceNetworkArn() {
@@ -624,14 +625,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnet_configuration &lt;/span&gt;below.
+     * Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnetConfiguration &lt;/span&gt;below.
      * 
      */
     @Import(name="subnetConfigurations")
     private @Nullable Output<List<VpcEndpointSubnetConfigurationArgs>> subnetConfigurations;
 
     /**
-     * @return Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnet_configuration &lt;/span&gt;below.
+     * @return Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnetConfiguration &lt;/span&gt;below.
      * 
      */
     public Optional<Output<List<VpcEndpointSubnetConfigurationArgs>>> subnetConfigurations() {
@@ -654,14 +655,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -734,7 +735,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param dnsOptions The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dns_options &lt;/span&gt;below.
+         * @param dnsOptions The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dnsOptions &lt;/span&gt;below.
          * 
          * @return builder
          * 
@@ -745,7 +746,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param dnsOptions The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dns_options &lt;/span&gt;below.
+         * @param dnsOptions The DNS options for the endpoint. See&lt;span pulumi-lang-nodejs=&#34; dnsOptions &#34; pulumi-lang-dotnet=&#34; DnsOptions &#34; pulumi-lang-go=&#34; dnsOptions &#34; pulumi-lang-python=&#34; dns_options &#34; pulumi-lang-yaml=&#34; dnsOptions &#34; pulumi-lang-java=&#34; dnsOptions &#34;&gt; dnsOptions &lt;/span&gt;below.
          * 
          * @return builder
          * 
@@ -829,7 +830,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
          * 
          * @return builder
          * 
@@ -840,7 +841,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+         * @param resourceConfigurationArn The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
          * 
          * @return builder
          * 
@@ -926,7 +927,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
          * 
          * @return builder
          * 
@@ -937,7 +938,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resource_configuration_arn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`service_name`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`service_network_arn`&lt;/span&gt; is required.
+         * @param serviceNetworkArn The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of &lt;span pulumi-lang-nodejs=&#34;`resourceConfigurationArn`&#34; pulumi-lang-dotnet=&#34;`ResourceConfigurationArn`&#34; pulumi-lang-go=&#34;`resourceConfigurationArn`&#34; pulumi-lang-python=&#34;`resource_configuration_arn`&#34; pulumi-lang-yaml=&#34;`resourceConfigurationArn`&#34; pulumi-lang-java=&#34;`resourceConfigurationArn`&#34;&gt;`resourceConfigurationArn`&lt;/span&gt;, &lt;span pulumi-lang-nodejs=&#34;`serviceName`&#34; pulumi-lang-dotnet=&#34;`ServiceName`&#34; pulumi-lang-go=&#34;`serviceName`&#34; pulumi-lang-python=&#34;`service_name`&#34; pulumi-lang-yaml=&#34;`serviceName`&#34; pulumi-lang-java=&#34;`serviceName`&#34;&gt;`serviceName`&lt;/span&gt; or &lt;span pulumi-lang-nodejs=&#34;`serviceNetworkArn`&#34; pulumi-lang-dotnet=&#34;`ServiceNetworkArn`&#34; pulumi-lang-go=&#34;`serviceNetworkArn`&#34; pulumi-lang-python=&#34;`service_network_arn`&#34; pulumi-lang-yaml=&#34;`serviceNetworkArn`&#34; pulumi-lang-java=&#34;`serviceNetworkArn`&#34;&gt;`serviceNetworkArn`&lt;/span&gt; is required.
          * 
          * @return builder
          * 
@@ -968,7 +969,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnet_configuration &lt;/span&gt;below.
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnetConfiguration &lt;/span&gt;below.
          * 
          * @return builder
          * 
@@ -979,7 +980,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnet_configuration &lt;/span&gt;below.
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnetConfiguration &lt;/span&gt;below.
          * 
          * @return builder
          * 
@@ -989,7 +990,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnet_configuration &lt;/span&gt;below.
+         * @param subnetConfigurations Subnet configuration for the endpoint, used to select specific IPv4 and/or IPv6 addresses to the endpoint. See&lt;span pulumi-lang-nodejs=&#34; subnetConfiguration &#34; pulumi-lang-dotnet=&#34; SubnetConfiguration &#34; pulumi-lang-go=&#34; subnetConfiguration &#34; pulumi-lang-python=&#34; subnet_configuration &#34; pulumi-lang-yaml=&#34; subnetConfiguration &#34; pulumi-lang-java=&#34; subnetConfiguration &#34;&gt; subnetConfiguration &lt;/span&gt;below.
          * 
          * @return builder
          * 
@@ -1030,7 +1031,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -1041,7 +1042,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`default_tags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags A map of tags to assign to the resource. If configured with a provider &lt;span pulumi-lang-nodejs=&#34;`defaultTags`&#34; pulumi-lang-dotnet=&#34;`DefaultTags`&#34; pulumi-lang-go=&#34;`defaultTags`&#34; pulumi-lang-python=&#34;`default_tags`&#34; pulumi-lang-yaml=&#34;`defaultTags`&#34; pulumi-lang-java=&#34;`defaultTags`&#34;&gt;`defaultTags`&lt;/span&gt; configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
