@@ -25,10 +25,10 @@
       "version": "v7.0.0",
       "sha": "bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
     },
-    "github/gh-aw/actions/setup@v0.57.2": {
+    "github/gh-aw/actions/setup@v0.65.7": {
       "repo": "github/gh-aw/actions/setup",
-      "version": "v0.57.2",
-      "sha": "32b3a711a9ee97d38e3989c90af0385aff0066a7"
+      "version": "v0.65.7",
+      "sha": "f2bf5c6a483a7efbccc433d5f16e3bdd5c2792a8"
     }
   }
 }
