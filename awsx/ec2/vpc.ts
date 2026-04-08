@@ -677,14 +677,11 @@ export function validateNatGatewayStrategy(
   switch (natGatewayStrategy.toLowerCase()) {
     case "oneperaz":
     case "single":
-      if (
-        subnets.some((x) => x.type.toLowerCase() === "public") &&
-        subnets.some((x) => x.type.toLowerCase() === "private")
-      ) {
+      if (subnets.some((x) => x.type.toLowerCase() === "public")) {
         return;
       }
       throw new Error(
-        "If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.",
+        "If NAT Gateway strategy is 'OnePerAz' or 'Single', public subnets must be declared to host the NAT Gateway resource.",
       );
     case "none":
       break;
