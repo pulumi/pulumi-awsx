@@ -401,9 +401,13 @@ describe("child resource api", () => {
     return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
   }
 
+  let invokeCalls: any[] = [];
+  let newResources: any[] = [];
+
   beforeAll(async () => {
     await runtime.setMocks({
       call(args) {
+        invokeCalls.push(args);
         switch (args.token) {
           case "aws:index/getAvailabilityZones:getAvailabilityZones":
             const result: pulumiAws.GetAvailabilityZonesResult = {
@@ -419,6 +423,7 @@ describe("child resource api", () => {
         }
       },
       newResource(args) {
+        newResources.push(args);
         if (args.type === "aws:ec2/vpc:Vpc" && args.inputs.assignGeneratedIpv6CidrBlock) {
           return {
             id: `mocked::${args.type}::${args.name}-id`,
@@ -438,6 +443,8 @@ describe("child resource api", () => {
 
   let vpc: Vpc;
   beforeEach(() => {
+    invokeCalls = [];
+    newResources = [];
     vpc = new Vpc("test", {
       tags: {
         share1: "parent",
@@ -507,6 +514,52 @@ describe("child resource api", () => {
       expect(tags?.share1).toBe("parent");
       expect(tags?.share2).toBe("parent");
     }
+  });
+
+  it("passes region through to child resources and AZ lookup", async () => {
+    invokeCalls = [];
+    newResources = [];
+
+    const regionalVpc = new Vpc("test-region", {
+      region: pulumiAws.Region.EUCentral1,
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public" }, { type: "Private" }],
+    });
+
+    await unwrap(regionalVpc.routeTables);
+
+    const azLookup = invokeCalls.find(
+      (call) =>
+        call.token === "aws:index/getAvailabilityZones:getAvailabilityZones" &&
+        call.inputs.region === pulumiAws.Region.EUCentral1,
+    );
+    expect(azLookup?.inputs.region).toBe(pulumiAws.Region.EUCentral1);
+
+    const childResourceTypes = new Set([
+      "aws:ec2/internetGateway:InternetGateway",
+      "aws:ec2/subnet:Subnet",
+      "aws:ec2/routeTable:RouteTable",
+      "aws:ec2/routeTableAssociation:RouteTableAssociation",
+      "aws:ec2/eip:Eip",
+      "aws:ec2/natGateway:NatGateway",
+      "aws:ec2/route:Route",
+    ]);
+
+    const regionalChildren = newResources.filter(
+      (resource) => childResourceTypes.has(resource.type) && resource.name.startsWith("test-region"),
+    );
+    expect(regionalChildren.length).toBeGreaterThan(0);
+    for (const resource of regionalChildren) {
+      expect(resource.inputs.region).toBe(pulumiAws.Region.EUCentral1);
+    }
+  });
+
+  it("requires a plain string region for default AZ discovery", () => {
+    expect(() =>
+      (Vpc as any).resolvePromptRegionForAzLookup(pulumi.output(pulumiAws.Region.EUCentral1)),
+    ).toThrowError(
+      "Vpc.region must be a plain string when availabilityZoneNames is not set. If region is dynamic, specify availabilityZoneNames explicitly.",
+    );
   });
 
   it("defaults subnet IPv6 assignment from VPC and honors explicit false", async () => {

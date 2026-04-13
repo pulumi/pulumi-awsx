@@ -85,8 +85,12 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
 
-    const availabilityZones =
-      args.availabilityZoneNames ?? (await this.getDefaultAzs(args.numberOfAvailabilityZones));
+    const availabilityZones = args.availabilityZoneNames
+      ? args.availabilityZoneNames
+      : await this.getDefaultAzs(
+          args.numberOfAvailabilityZones,
+          Vpc.resolvePromptRegionForAzLookup(args.region),
+        );
 
     const natGatewayStrategy: schema.NatGatewayStrategyInputs =
       args.natGateways?.strategy ?? "OnePerAz";
@@ -121,6 +125,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     const igw = new aws.ec2.InternetGateway(
       `${name}`,
       {
+        region: args.region,
         vpcId: vpc.id,
         tags: sharedTags,
       },
@@ -152,6 +157,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           vpcEndpointType: spec.vpcEndpointType,
           vpcId: vpc.id,
           serviceName: spec.serviceName,
+          region: spec.region ?? args.region,
         },
         {
           parent: vpc,
@@ -181,6 +187,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           const subnet = new aws.ec2.Subnet(
             spec.subnetName,
             {
+              region: args.region,
               vpcId: vpc.id,
               availabilityZone: spec.azName,
               mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
@@ -210,6 +217,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           const routeTable = new aws.ec2.RouteTable(
             spec.subnetName,
             {
+              region: args.region,
               vpcId: vpc.id,
               tags: {
                 ...sharedTags,
@@ -224,6 +232,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           const routeTableAssoc = new aws.ec2.RouteTableAssociation(
             spec.subnetName,
             {
+              region: args.region,
               routeTableId: routeTable.id,
               subnetId: subnet.id,
             },
@@ -241,6 +250,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               const eip = new aws.ec2.Eip(
                 `${name}-${i + 1}`,
                 {
+                  region: args.region,
                   tags: {
                     ...args.tags,
                     Name: `${name}-${i + 1}`,
@@ -254,6 +264,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             const natGateway = new aws.ec2.NatGateway(
               `${name}-${i + 1}`,
               {
+                region: args.region,
                 subnetId: subnet.id,
                 allocationId: createEip ? eips[i].allocationId : allocationIds[i],
                 tags: {
@@ -271,6 +282,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             const route = new aws.ec2.Route(
               spec.subnetName,
               {
+                region: args.region,
                 routeTableId: routeTable.id,
                 gatewayId: igw.id,
                 destinationCidrBlock: "0.0.0.0/0",
@@ -292,6 +304,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               const route = new aws.ec2.Route(
                 spec.subnetName,
                 {
+                  region: args.region,
                   routeTableId: routeTable.id,
                   natGatewayId,
                   destinationCidrBlock: "0.0.0.0/0",
@@ -526,9 +539,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     return { subnetLayout: verifiedSubnetLayout, subnetSpecs };
   }
 
-  async getDefaultAzs(azCount?: number): Promise<string[]> {
+  async getDefaultAzs(azCount?: number, region?: string): Promise<string[]> {
     const desiredCount = azCount ?? 3;
-    const result = await aws.getAvailabilityZones(undefined, { parent: this });
+    const result = await aws.getAvailabilityZones(region ? { region } : undefined, { parent: this });
     if (!result.names) {
       throw new Error(
         "Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.",
@@ -540,6 +553,15 @@ export class Vpc extends schema.Vpc<VpcData> {
       );
     }
     return result.names.slice(0, desiredCount);
+  }
+
+  private static resolvePromptRegionForAzLookup(region?: pulumi.Input<string>): string | undefined {
+    if (region !== undefined && typeof region !== "string") {
+      throw new Error(
+        "Vpc.region must be a plain string when availabilityZoneNames is not set. If region is dynamic, specify availabilityZoneNames explicitly.",
+      );
+    }
+    return region;
   }
 
   // Internal. Exported for testing.
