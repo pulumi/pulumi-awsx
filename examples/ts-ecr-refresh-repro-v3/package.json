@@ -1,0 +1,16 @@
+{
+    "name": "ecr-refresh-repro-v3",
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/aws": "7.24.0",
+        "@pulumi/awsx": "3.3.0",
+        "@pulumi/pulumi": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.0.0"
+    }
+}

@@ -18,6 +18,7 @@ package examples
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,6 +34,9 @@ import (
 	"github.com/pulumi/providertest/pulumitest/opttest"
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"github.com/pulumi/pulumi/sdk/v3/go/auto/optpreview"
+	"github.com/pulumi/pulumi/sdk/v3/go/auto/optrefresh"
+	"github.com/pulumi/pulumi/sdk/v3/go/auto/optup"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/apitype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -506,6 +510,42 @@ func TestDockerUpgrade(t *testing.T) {
 	assert.Truef(t, foundUpdated, "updated image digest %q should exist in ECR", updatedDigest)
 }
 
+func TestEcrImageRefreshRunProgramUpgradeFromV2Repro(t *testing.T) {
+	t.Parallel()
+	cwd := getCwd(t)
+
+	baseline := pulumitest.NewPulumiTest(t, filepath.Join(cwd, "ts-ecr-refresh-repro-v3"),
+		opttest.DownloadProviderVersion("awsx", "2.19.0"),
+		opttest.RequireYarnLinks(false),
+	)
+
+	t.Log("Running `pulumi up` with awsx v2.19.0")
+	baselineUp := baseline.Up(t)
+	t.Logf("Baseline up:\n%s", baselineUp.StdOut)
+	baselineState := baseline.ExportStack(t)
+	logEcrImageState(t, "after baseline up", baselineState)
+
+	upgrade := baseline.CopyToTempDir(t,
+		opttest.Defaults(),
+		opttest.LocalProviderPath("awsx", filepath.Join(cwd, "..", "bin")),
+		opttest.YarnLink("@pulumi/awsx"),
+	)
+	upgrade.ImportStack(t, baselineState)
+	logEcrImageState(t, "after import into local awsx provider", upgrade.ExportStack(t))
+
+	t.Log("Running `pulumi refresh --run-program` after upgrade to the local awsx provider")
+	refresh, err := upgrade.CurrentStack().Refresh(upgrade.Context(), optrefresh.RunProgram(true))
+	require.NoError(t, err)
+	t.Logf("Refresh after upgrade:\n%s", refresh.StdOut)
+	logEcrImageState(t, "after upgraded refresh", upgrade.ExportStack(t))
+
+	t.Log("Running `pulumi up --refresh --run-program` after upgrade to the local awsx provider")
+	upgradeUp, err := upgrade.CurrentStack().Up(upgrade.Context(), optup.Refresh(), optup.RunProgram(true))
+	require.NoError(t, err)
+	t.Logf("Up with refresh after upgrade:\n%s", upgradeUp.StdOut)
+	logEcrImageState(t, "after upgraded up --refresh --run-program", upgrade.ExportStack(t))
+}
+
 func TestEcrRegistryImage(t *testing.T) {
 	t.Parallel()
 	cwd := getCwd(t)
@@ -613,6 +653,39 @@ func getEcrImageDetails(t *testing.T, client *ecr.Client, repositoryName string,
 		time.Sleep(5 * time.Second)
 	}
 	return describeImagesOutput, err
+}
+
+func logEcrImageState(t *testing.T, label string, deployment apitype.UntypedDeployment) {
+	t.Helper()
+
+	var decoded apitype.DeploymentV3
+	require.NoError(t, json.Unmarshal(deployment.Deployment, &decoded))
+
+	found := false
+	for _, resource := range decoded.Resources {
+		switch resource.Type {
+		case "awsx:ecr:Image", "docker-build:index:Image", "docker:index:Image":
+		default:
+			continue
+		}
+
+		t.Logf(
+			"%s: type=%s urn=%s imageUri=%v digest=%v ref=%v repoDigest=%v tags=%v",
+			label,
+			resource.Type,
+			resource.URN,
+			resource.Outputs["imageUri"],
+			resource.Outputs["digest"],
+			resource.Outputs["ref"],
+			resource.Outputs["repoDigest"],
+			resource.Outputs["tags"],
+		)
+		found = true
+	}
+
+	if !found {
+		t.Fatalf("%s: no awsx/docke*r image resources found in exported state", label)
+	}
 }
 
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {

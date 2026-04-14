@@ -1,0 +1,3 @@
+name: ecr-refresh-repro
+runtime: nodejs
+description: Reproduces awsx.ecr.Image upgrade behavior from awsx 2.x to 3.x with a stable program shape.

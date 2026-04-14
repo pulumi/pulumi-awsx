@@ -22,7 +22,12 @@ import { getDockerCredentials } from "./auth";
 export class Image extends schema.Image {
   constructor(name: string, args: schema.ImageArgs, opts: pulumi.ComponentResourceOptions = {}) {
     super(name, args, opts);
+    if (opts.urn) {
+      return; // Rehydrating, skip construction
+    }
+
     this.imageUri = pulumi.output(args).apply((args) => computeImageFromAsset(args, this));
+    this.registerOutputs({ imageUri: this.imageUri });
   }
 }
 
@@ -94,7 +99,20 @@ export function computeImageFromAsset(
 
   // Return the image reference without the tag. This is necessary for backwards compatibility with earlier versions of the awsx provider
   // that used pulumi-docker and in order to allow passing this output to Lambda functions (they expect an image URI without a tag).
-  return image.ref.apply(removeTagFromRef);
+  return pulumi.all([image.ref, image.digest]).apply(([ref, digest]) => {
+
+    if (digest) {
+      return `${repositoryUrl}@${digest}`;
+    }
+    if (ref) {
+      return removeTagFromRef(ref);
+    }
+    // This is the refresh-only fallback for stacks upgraded from awsx v2.19.0,
+    // where the old docker.Image child has not been migrated to docker-build yet.
+    // A subsequent `pulumi up --refresh --run-program` replaces the child and
+    // restores the digest-form image URI via the branches above.
+    return canonicalImageName;
+  });
 }
 
 function createUniqueImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
