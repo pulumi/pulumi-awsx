@@ -91,14 +91,17 @@ describe("validateNatGatewayStrategy", () => {
       it("should succeed if there's public and private subnets", () =>
         runTest(strategy, ["Public", "Private"], false));
 
-      it("should throw an exception if there are only isolated subnets", () =>
-        runTest(strategy, ["Isolated"], true, "both private and public subnets"));
-
-      it("should throw an exception if there are only private subnets", () =>
-        runTest(strategy, ["Private"], true, "both private and public subnets"));
+      it("should succeed if there's public and isolated subnets", () =>
+        runTest(strategy, ["Public", "Isolated"], false));
 
       it("should throw an exception if there are only public subnets", () =>
-        runTest(strategy, ["Public"], true, "both private and public subnets"));
+        runTest(strategy, ["Public"], true, "private or isolated subnets"));
+
+      it("should throw an exception if there are only isolated subnets", () =>
+        runTest(strategy, ["Isolated"], true, "public subnets must be declared"));
+
+      it("should throw an exception if there are only private subnets", () =>
+        runTest(strategy, ["Private"], true, "public subnets must be declared"));
     },
   );
 

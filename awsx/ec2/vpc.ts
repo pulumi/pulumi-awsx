@@ -701,12 +701,15 @@ export function validateNatGatewayStrategy(
     case "single":
       if (
         subnets.some((x) => x.type.toLowerCase() === "public") &&
-        subnets.some((x) => x.type.toLowerCase() === "private")
+        subnets.some((x) => {
+          const t = x.type.toLowerCase();
+          return t === "private" || t === "isolated";
+        })
       ) {
         return;
       }
       throw new Error(
-        "If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.",
+        "If NAT Gateway strategy is 'OnePerAz' or 'Single', public subnets must be declared to host the NAT Gateway resource, along with private or isolated subnets to route through it.",
       );
     case "none":
       break;
