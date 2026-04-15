@@ -12,7 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { removeTagFromRef } from "./image";
+import * as pulumi from "@pulumi/pulumi";
+
+pulumi.runtime.setMocks(
+  {
+    newResource: function (args: pulumi.runtime.MockResourceArgs): { id: string; state: any } {
+      return {
+        id: `${args.name}_id`,
+        state: {
+          ...args.inputs,
+          digest: "sha256:mock-digest",
+        },
+      };
+    },
+    call: function (): pulumi.runtime.MockCallResult | Promise<pulumi.runtime.MockCallResult> {
+      return {
+        userName: "AWS",
+        password: "password",
+        proxyEndpoint: "https://123456789012.dkr.ecr.us-west-2.amazonaws.com",
+      };
+    },
+  },
+  "project",
+  "stack",
+  false,
+);
+
+import { Image, removeTagFromRef } from "./image";
 
 describe("removeTagFromRef", () => {
   it("should remove tag from standard ECR image reference", () => {
@@ -52,4 +78,21 @@ describe("removeTagFromRef", () => {
       "123456789012.dkr.ecr.us-west-2.amazonaws.com/my_repo-name@sha256:ccf572fa3e9a9b9316761f749c3020c5748e1c47052e5781eec04e0a53954428";
     expect(removeTagFromRef(input)).toBe(expected);
   });
+
+  it("should fall back to repositoryUrl plus digest when ref is unavailable", async () => {
+    const repositoryUrl = "123456789012.dkr.ecr.us-west-2.amazonaws.com/lambda";
+    const image = new Image("lambda", {
+      repositoryUrl,
+      imageName: "lambda",
+      context: "../lambda",
+    });
+
+    await expect(promisify(pulumi.output(image.imageUri))).resolves.toBe(
+      `${repositoryUrl}@sha256:mock-digest`,
+    );
+  });
 });
+
+function promisify<T>(output: pulumi.Output<T>): Promise<T> {
+  return new Promise((resolve) => output.apply(resolve));
+}

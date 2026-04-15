@@ -1,0 +1,16 @@
+name: ecr-refresh-repro
+runtime: yaml
+description: Reproduces awsx.ecr.Image upgrade behavior from awsx 2.x to 3.x with a stable program shape.
+resources:
+  repository:
+    type: awsx:ecr:Repository
+    properties:
+      forceDelete: true
+  image:
+    type: awsx:ecr:Image
+    properties:
+      repositoryUrl: ${repository.repository.repositoryUrl}
+      context: ./app
+outputs:
+  repositoryName: ${repository.repository.name}
+  image: ${image.imageUri}
