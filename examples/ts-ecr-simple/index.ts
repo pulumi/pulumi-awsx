@@ -22,4 +22,6 @@ export const repositoryName = repository.repository.name;
 export const image = new awsx.ecr.Image("image", {
   repositoryUrl: repository.repository.repositoryUrl,
   context: "./app",
+  // imageTag sets the pushed image tag; imageName is kept for its existing tag-suffix behavior.
+  imageTag: "v1.0.0",
 }).imageUri;
