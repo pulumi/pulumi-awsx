@@ -398,7 +398,7 @@ if not MYPY:
             name=f"ptfe.{internal.name}",
             type=aws.route53.RecordType.CNAME,
             ttl=300,
-            records=[ptfe_service.dns_entries[0].dns_name])
+            records=[ptfe_service.dns_entries[0].dns_name.apply(lambda x: str(x))])
         ```
 
         > **NOTE The `dns_entry` output is a list of maps:** This provider interpolation support for lists of maps requires the `lookup` and `[]` until full support of lists of maps is available
@@ -669,7 +669,7 @@ class VpcEndpointSpecArgs:
             name=f"ptfe.{internal.name}",
             type=aws.route53.RecordType.CNAME,
             ttl=300,
-            records=[ptfe_service.dns_entries[0].dns_name])
+            records=[ptfe_service.dns_entries[0].dns_name.apply(lambda x: str(x))])
         ```
 
         > **NOTE The `dns_entry` output is a list of maps:** This provider interpolation support for lists of maps requires the `lookup` and `[]` until full support of lists of maps is available
