@@ -111,7 +111,7 @@ jobs:
     - lint
     runs-on: pulumi-ubuntu-8core
     steps:
-    - uses: guibranco/github-status-action-v2@3f704867b3ec00272a5f1b550c207789736bbee9 # v1.2.0
+    - uses: guibranco/github-status-action-v2@f6952298057800f771cdce8e7918d5b88333eb89 # v1.2.3
       with:
         authToken: ${{ secrets.GITHUB_TOKEN }}
         # Write an explicit status check called "Sentinel" which will only pass if this code really runs.
