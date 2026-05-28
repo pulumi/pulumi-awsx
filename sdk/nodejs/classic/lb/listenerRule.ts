@@ -83,4 +83,4 @@ export interface ListenerRuleArgs {
     priority?: pulumi.Input<number>;
 }
 
-const test1: string = utils.checkCompat<OverwriteShape, ListenerRuleArgs>();
+utils.checkCompat<OverwriteShape, ListenerRuleArgs>();
