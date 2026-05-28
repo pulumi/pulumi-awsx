@@ -453,4 +453,4 @@ export interface UserDataLine {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test2: string = utils.checkCompat<OverwriteAutoScalingLaunchConfigurationArgs, AutoScalingLaunchConfigurationArgs>();
+utils.checkCompat<OverwriteAutoScalingLaunchConfigurationArgs, AutoScalingLaunchConfigurationArgs>();

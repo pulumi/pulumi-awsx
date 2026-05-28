@@ -615,7 +615,12 @@ export function createAPI(parent: pulumi.Resource, name: string, args: APIArgs, 
     }, { parent });
 
     if (restApiArgs.policy) {
-        apiPolicy = new aws.apigateway.RestApiPolicy(name, {
+        // `@pulumi/aws` 7.x types optional scalars as `Input<T | undefined>` (undefined inside the
+        // Input), but `RestApiPolicyArgs.policy` is `Input<string>`. The two are runtime-equivalent
+        // here — the surrounding `if` ensures the value is defined — but not mutually assignable in
+        // the type checker. Reconcile the variance at the construction boundary. Mirrors the fix in
+        // pulumi/pulumi-eks#2267.
+        apiPolicy = new aws.apigateway.RestApiPolicy(name, <aws.apigateway.RestApiPolicyArgs>{
             restApiId: restAPI.id,
             policy: restApiArgs.policy,
         }, { parent });

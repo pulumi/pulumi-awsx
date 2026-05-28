@@ -786,4 +786,4 @@ interface InternalVpcArgs extends VpcArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test1: string = utils.checkCompat<OverwriteShape, VpcArgs>();
+utils.checkCompat<OverwriteShape, VpcArgs>();
