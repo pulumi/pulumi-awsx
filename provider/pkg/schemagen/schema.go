@@ -82,11 +82,15 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
+				// Pulumi sub-provider deps are pinned to exact versions so that an upstream
+				// patch release with a breaking type change can't silently rot identical-source
+				// SDK builds between intentional bump PRs.
 				"dependencies": map[string]string{
 					"@aws-sdk/client-ecs":  "^3.405.0",
-					"@pulumi/aws":          "^" + dependencies.Aws,
-					"@pulumi/docker":       "^" + dependencies.Docker,
-					"@pulumi/docker-build": "^" + dependencies.DockerBuild,
+					"@pulumi/aws":          dependencies.Aws,
+					"@pulumi/docker":       dependencies.Docker,
+					"@pulumi/docker-build": dependencies.DockerBuild,
+					"@pulumi/pulumi":       dependencies.Pulumi,
 					"docker-classic":       "npm:@pulumi/docker@3.6.1",
 					"@types/aws-lambda":    "^8.10.23",
 					"mime":                 "^2.0.0",
