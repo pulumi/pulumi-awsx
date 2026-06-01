@@ -1,0 +1,4 @@
+interface:
+  display_name: "AWSX Test Authoring"
+  short_description: "Choose and write AWSX tests"
+  default_prompt: "Use $awsx-test-authoring to choose and write the right test for an AWSX change."
