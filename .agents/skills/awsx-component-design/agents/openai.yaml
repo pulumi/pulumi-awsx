@@ -1,0 +1,4 @@
+interface:
+  display_name: "AWSX Component Design"
+  short_description: "Design modern AWSX component shape"
+  default_prompt: "Use $awsx-component-design to review the shape of a modern AWSX component."
