@@ -458,6 +458,7 @@ describe("child resource api", () => {
       subnetSpecs: [
         { type: "Public", tags: { share2: "override" } },
         { type: "Private", tags: { share2: "override" } },
+        { type: "Isolated", tags: { share2: "override" } },
       ],
     });
   });
@@ -491,11 +492,46 @@ describe("child resource api", () => {
 
   it("subnets", async () => {
     const subnets = await unwrap(vpc.subnets);
-    expect(subnets).toHaveLength(6);
+    expect(subnets).toHaveLength(9);
     for (const subnet of subnets) {
       const tags = await unwrap(subnet.tags);
       expect(tags?.share1).toBe("parent");
       expect(tags?.share2).toBe("override");
+    }
+  });
+
+  it("subnets by type", async () => {
+    const publicSubnets = await unwrap(vpc.publicSubnets);
+    const publicSubnetIds = await unwrap(vpc.publicSubnetIds);
+    expect(publicSubnets).toHaveLength(3);
+    expect(await Promise.all(publicSubnets.map((subnet) => unwrap(subnet.id)))).toEqual(publicSubnetIds);
+    for (const subnet of publicSubnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("override");
+      expect(tags?.SubnetType).toBe("Public");
+    }
+
+    const privateSubnets = await unwrap(vpc.privateSubnets);
+    const privateSubnetIds = await unwrap(vpc.privateSubnetIds);
+    expect(privateSubnets).toHaveLength(3);
+    expect(await Promise.all(privateSubnets.map((subnet) => unwrap(subnet.id)))).toEqual(privateSubnetIds);
+    for (const subnet of privateSubnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("override");
+      expect(tags?.SubnetType).toBe("Private");
+    }
+
+    const isolatedSubnets = await unwrap(vpc.isolatedSubnets);
+    const isolatedSubnetIds = await unwrap(vpc.isolatedSubnetIds);
+    expect(isolatedSubnets).toHaveLength(3);
+    expect(await Promise.all(isolatedSubnets.map((subnet) => unwrap(subnet.id)))).toEqual(isolatedSubnetIds);
+    for (const subnet of isolatedSubnets) {
+      const tags = await unwrap(subnet.tags);
+      expect(tags?.share1).toBe("parent");
+      expect(tags?.share2).toBe("override");
+      expect(tags?.SubnetType).toBe("Isolated");
     }
   });
 
@@ -511,7 +547,7 @@ describe("child resource api", () => {
 
   it("routeTables", async () => {
     const routeTables = await unwrap(vpc.routeTables);
-    expect(routeTables).toHaveLength(6);
+    expect(routeTables).toHaveLength(9);
     for (const routeTable of routeTables) {
       const tags = await unwrap(routeTable.tags);
       expect(tags?.share1).toBe("parent");

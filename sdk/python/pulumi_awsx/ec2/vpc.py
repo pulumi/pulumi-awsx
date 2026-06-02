@@ -575,8 +575,11 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["eips"] = None
             __props__.__dict__["internet_gateway"] = None
             __props__.__dict__["isolated_subnet_ids"] = None
+            __props__.__dict__["isolated_subnets"] = None
             __props__.__dict__["private_subnet_ids"] = None
+            __props__.__dict__["private_subnets"] = None
             __props__.__dict__["public_subnet_ids"] = None
+            __props__.__dict__["public_subnets"] = None
             __props__.__dict__["route_table_associations"] = None
             __props__.__dict__["route_tables"] = None
             __props__.__dict__["routes"] = None
@@ -614,6 +617,14 @@ class Vpc(pulumi.ComponentResource):
         return pulumi.get(self, "isolated_subnet_ids")
 
     @_builtins.property
+    @pulumi.getter(name="isolatedSubnets")
+    def isolated_subnets(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Subnet']]:
+        """
+        The VPC's isolated subnets.
+        """
+        return pulumi.get(self, "isolated_subnets")
+
+    @_builtins.property
     @pulumi.getter(name="natGateways")
     def nat_gateways(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.NatGateway']]:
         """
@@ -627,9 +638,25 @@ class Vpc(pulumi.ComponentResource):
         return pulumi.get(self, "private_subnet_ids")
 
     @_builtins.property
+    @pulumi.getter(name="privateSubnets")
+    def private_subnets(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Subnet']]:
+        """
+        The VPC's private subnets.
+        """
+        return pulumi.get(self, "private_subnets")
+
+    @_builtins.property
     @pulumi.getter(name="publicSubnetIds")
     def public_subnet_ids(self) -> pulumi.Output[Sequence[_builtins.str]]:
         return pulumi.get(self, "public_subnet_ids")
+
+    @_builtins.property
+    @pulumi.getter(name="publicSubnets")
+    def public_subnets(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Subnet']]:
+        """
+        The VPC's public subnets.
+        """
+        return pulumi.get(self, "public_subnets")
 
     @_builtins.property
     @pulumi.getter(name="routeTableAssociations")

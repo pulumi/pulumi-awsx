@@ -2093,6 +2093,13 @@
                         "type": "string"
                     }
                 },
+                "isolatedSubnets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                    },
+                    "description": "The VPC's isolated subnets."
+                },
                 "natGateways": {
                     "type": "array",
                     "items": {
@@ -2106,11 +2113,25 @@
                         "type": "string"
                     }
                 },
+                "privateSubnets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                    },
+                    "description": "The VPC's private subnets."
+                },
                 "publicSubnetIds": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "publicSubnets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                    },
+                    "description": "The VPC's public subnets."
                 },
                 "routeTableAssociations": {
                     "type": "array",
@@ -2170,6 +2191,9 @@
             "required": [
                 "vpc",
                 "subnets",
+                "publicSubnets",
+                "privateSubnets",
+                "isolatedSubnets",
                 "routeTables",
                 "routeTableAssociations",
                 "routes",

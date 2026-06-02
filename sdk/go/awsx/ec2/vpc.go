@@ -74,10 +74,16 @@ type Vpc struct {
 	// The Internet Gateway for the VPC.
 	InternetGateway   ec2.InternetGatewayOutput `pulumi:"internetGateway"`
 	IsolatedSubnetIds pulumi.StringArrayOutput  `pulumi:"isolatedSubnetIds"`
+	// The VPC's isolated subnets.
+	IsolatedSubnets ec2.SubnetArrayOutput `pulumi:"isolatedSubnets"`
 	// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
 	NatGateways      ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
 	PrivateSubnetIds pulumi.StringArrayOutput  `pulumi:"privateSubnetIds"`
-	PublicSubnetIds  pulumi.StringArrayOutput  `pulumi:"publicSubnetIds"`
+	// The VPC's private subnets.
+	PrivateSubnets  ec2.SubnetArrayOutput    `pulumi:"privateSubnets"`
+	PublicSubnetIds pulumi.StringArrayOutput `pulumi:"publicSubnetIds"`
+	// The VPC's public subnets.
+	PublicSubnets ec2.SubnetArrayOutput `pulumi:"publicSubnets"`
 	// The Route Table Associations for the VPC.
 	RouteTableAssociations ec2.RouteTableAssociationArrayOutput `pulumi:"routeTableAssociations"`
 	// The Route Tables for the VPC.
@@ -303,6 +309,11 @@ func (o VpcOutput) IsolatedSubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.IsolatedSubnetIds }).(pulumi.StringArrayOutput)
 }
 
+// The VPC's isolated subnets.
+func (o VpcOutput) IsolatedSubnets() ec2.SubnetArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.SubnetArrayOutput { return v.IsolatedSubnets }).(ec2.SubnetArrayOutput)
+}
+
 // The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
 func (o VpcOutput) NatGateways() ec2.NatGatewayArrayOutput {
 	return o.ApplyT(func(v *Vpc) ec2.NatGatewayArrayOutput { return v.NatGateways }).(ec2.NatGatewayArrayOutput)
@@ -312,8 +323,18 @@ func (o VpcOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PrivateSubnetIds }).(pulumi.StringArrayOutput)
 }
 
+// The VPC's private subnets.
+func (o VpcOutput) PrivateSubnets() ec2.SubnetArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.SubnetArrayOutput { return v.PrivateSubnets }).(ec2.SubnetArrayOutput)
+}
+
 func (o VpcOutput) PublicSubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PublicSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+// The VPC's public subnets.
+func (o VpcOutput) PublicSubnets() ec2.SubnetArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.SubnetArrayOutput { return v.PublicSubnets }).(ec2.SubnetArrayOutput)
 }
 
 // The Route Table Associations for the VPC.

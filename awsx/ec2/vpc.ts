@@ -31,6 +31,9 @@ import { isIPv6 } from "net";
 interface VpcData {
   vpc: aws.ec2.Vpc;
   subnets: aws.ec2.Subnet[];
+  publicSubnets: aws.ec2.Subnet[];
+  privateSubnets: aws.ec2.Subnet[];
+  isolatedSubnets: aws.ec2.Subnet[];
   vpcEndpoints: aws.ec2.VpcEndpoint[];
   routeTables: aws.ec2.RouteTable[];
   routes: aws.ec2.Route[];
@@ -53,6 +56,9 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     this.vpc = data.vpc;
     this.subnets = data.subnets;
+    this.publicSubnets = data.publicSubnets;
+    this.privateSubnets = data.privateSubnets;
+    this.isolatedSubnets = data.isolatedSubnets;
     this.routeTables = data.routeTables;
     this.routes = data.routes;
     this.routeTableAssociations = data.routeTableAssociations;
@@ -134,6 +140,9 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const vpcEndpoints: aws.ec2.VpcEndpoint[] = [];
     const subnets: aws.ec2.Subnet[] = [];
+    const publicSubnets: aws.ec2.Subnet[] = [];
+    const privateSubnets: aws.ec2.Subnet[] = [];
+    const isolatedSubnets: aws.ec2.Subnet[] = [];
     const routeTables: aws.ec2.RouteTable[] = [];
     const routeTableAssociations: aws.ec2.RouteTableAssociation[] = [];
     const routes: aws.ec2.Route[] = [];
@@ -207,10 +216,13 @@ export class Vpc extends schema.Vpc<VpcData> {
           subnetIndex += availabilityZones.length;
           subnets.push(subnet);
           if (spec.type.toLowerCase() === "public") {
+            publicSubnets.push(subnet);
             publicSubnetIds.push(subnet.id);
           } else if (spec.type.toLowerCase() === "private") {
+            privateSubnets.push(subnet);
             privateSubnetIds.push(subnet.id);
           } else {
+            isolatedSubnets.push(subnet);
             isolatedSubnetIds.push(subnet.id);
           }
 
@@ -323,6 +335,9 @@ export class Vpc extends schema.Vpc<VpcData> {
       vpc,
       vpcEndpoints,
       subnets,
+      publicSubnets,
+      privateSubnets,
+      isolatedSubnets,
       igw,
       routeTables,
       routeTableAssociations,

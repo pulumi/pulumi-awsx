@@ -122,6 +122,20 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
         return this.isolatedSubnetIds;
     }
     /**
+     * The VPC&#39;s isolated subnets.
+     * 
+     */
+    @Export(name="isolatedSubnets", refs={List.class,Subnet.class}, tree="[0,1]")
+    private Output<List<Subnet>> isolatedSubnets;
+
+    /**
+     * @return The VPC&#39;s isolated subnets.
+     * 
+     */
+    public Output<List<Subnet>> isolatedSubnets() {
+        return this.isolatedSubnets;
+    }
+    /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      * 
      */
@@ -141,11 +155,39 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<List<String>> privateSubnetIds() {
         return this.privateSubnetIds;
     }
+    /**
+     * The VPC&#39;s private subnets.
+     * 
+     */
+    @Export(name="privateSubnets", refs={List.class,Subnet.class}, tree="[0,1]")
+    private Output<List<Subnet>> privateSubnets;
+
+    /**
+     * @return The VPC&#39;s private subnets.
+     * 
+     */
+    public Output<List<Subnet>> privateSubnets() {
+        return this.privateSubnets;
+    }
     @Export(name="publicSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> publicSubnetIds;
 
     public Output<List<String>> publicSubnetIds() {
         return this.publicSubnetIds;
+    }
+    /**
+     * The VPC&#39;s public subnets.
+     * 
+     */
+    @Export(name="publicSubnets", refs={List.class,Subnet.class}, tree="[0,1]")
+    private Output<List<Subnet>> publicSubnets;
+
+    /**
+     * @return The VPC&#39;s public subnets.
+     * 
+     */
+    public Output<List<Subnet>> publicSubnets() {
+        return this.publicSubnets;
     }
     /**
      * The Route Table Associations for the VPC.

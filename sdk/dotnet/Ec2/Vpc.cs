@@ -78,6 +78,12 @@ namespace Pulumi.Awsx.Ec2
         public Output<ImmutableArray<string>> IsolatedSubnetIds { get; private set; } = null!;
 
         /// <summary>
+        /// The VPC's isolated subnets.
+        /// </summary>
+        [Output("isolatedSubnets")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.Subnet>> IsolatedSubnets { get; private set; } = null!;
+
+        /// <summary>
         /// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
         /// </summary>
         [Output("natGateways")]
@@ -86,8 +92,20 @@ namespace Pulumi.Awsx.Ec2
         [Output("privateSubnetIds")]
         public Output<ImmutableArray<string>> PrivateSubnetIds { get; private set; } = null!;
 
+        /// <summary>
+        /// The VPC's private subnets.
+        /// </summary>
+        [Output("privateSubnets")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.Subnet>> PrivateSubnets { get; private set; } = null!;
+
         [Output("publicSubnetIds")]
         public Output<ImmutableArray<string>> PublicSubnetIds { get; private set; } = null!;
+
+        /// <summary>
+        /// The VPC's public subnets.
+        /// </summary>
+        [Output("publicSubnets")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.Subnet>> PublicSubnets { get; private set; } = null!;
 
         /// <summary>
         /// The Route Table Associations for the VPC.
