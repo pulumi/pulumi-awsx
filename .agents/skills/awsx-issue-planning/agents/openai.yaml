@@ -1,0 +1,4 @@
+interface:
+  display_name: "AWSX Issue Planning"
+  short_description: "Plan nontrivial AWSX issue fixes"
+  default_prompt: "Use $awsx-issue-planning to create a pre-implementation plan for this AWSX issue."
