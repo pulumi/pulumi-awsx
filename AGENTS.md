@@ -44,8 +44,10 @@ Use the focused harness entry points this way:
   content.
 - For GitHub issue implementation, use `.agents/skills/awsx-issue-planning/SKILL.md`
   first unless the prompt explicitly says the plan/API shape is already
-  approved. Do not start code edits for a nontrivial issue until a planning
-  brief exists.
+  approved. For nontrivial issues, produce the planning brief and stop by
+  default; do not let the same session self-approve implementation unless the
+  prompt explicitly asks to proceed after planning without a maintainer review
+  checkpoint.
 - Treat prior rollout summaries, memories, or old worktree diffs for the same
   issue as historical attempts, not accepted design guidance.
 - `.agents/skills/awsx-issue-planning/SKILL.md` applies before editing when a

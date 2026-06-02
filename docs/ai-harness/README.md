@@ -31,8 +31,10 @@ Routing:
 - Treat `.agents/skills/` as the source of truth for skill content; keep
   `.claude/skills/` as symlinks only.
 - Use `$awsx-issue-planning` first for GitHub issue implementation unless the
-  prompt explicitly says the plan/API shape is already approved. Do not start
-  code edits for a nontrivial issue until a planning brief exists.
+  prompt explicitly says the plan/API shape is already approved. For nontrivial
+  issues, the planning brief is the first-session deliverable; stop there unless
+  the prompt explicitly asks to proceed after planning without a maintainer
+  review checkpoint.
 - Treat prior rollout summaries, memories, or old worktree diffs for the same
   issue as historical attempts, not accepted design guidance.
 - Use `$awsx-issue-planning` before implementation when the issue may require a
