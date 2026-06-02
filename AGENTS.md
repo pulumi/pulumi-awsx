@@ -14,6 +14,10 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
   for nontrivial issues where scope, API shape, compatibility, or spec needs
   are unsettled.
+- `.agents/skills/awsx-plan-issue-session/SKILL.md` - manual-only launcher for
+  planning an issue in a fresh session and stopping before edits.
+- `.agents/skills/awsx-implement-approved-plan/SKILL.md` - manual-only launcher
+  for implementing an already reviewed AWSX plan.
 - `.agents/skills/awsx-component-design/SKILL.md` - tactical authoring workflow
   for modern `awsx/**` component changes.
 - `.agents/skills/awsx-breaking-change-evaluation/SKILL.md` - compatibility
@@ -22,8 +26,9 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
   guidance for modern AWSX changes.
 - `.agents/skills/awsx-aws-service-validation/SKILL.md` - AWS service fact,
   docs, provider-surface, and regional availability validation.
-- `.claude/skills/` - symlinks to the repo-local `.agents/skills/` entries so
-  Claude Code sees the same skill sources.
+- `.claude/skills/` - symlinks to most repo-local `.agents/skills/` entries so
+  Claude Code sees the same skill sources; manual-only launcher skills may use
+  small Claude wrappers for Claude-specific invocation controls.
 - `provider/pkg/schemagen/` - schema generation logic.
 - `provider/cmd/pulumi-resource-awsx/` - provider schema output and embedding.
 - `awsx/` - TypeScript provider implementation + Jest tests.
@@ -39,15 +44,19 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 Use the focused harness entry points this way:
 - `AGENTS.md` owns repo map, commands, generated boundaries, and path-triggered validation.
 - `REVIEW.md` owns the short AWSX-specific review checklist.
-- `.agents/skills/` is the skill source of truth; keep `.claude/skills/`
-  symlinks pointed at those same directories instead of duplicating skill
-  content.
+- `.agents/skills/` is the skill source of truth. Keep `.claude/skills/` as
+  symlinks except when a skill needs Claude-specific invocation controls that
+  Codex skill validation does not allow in `.agents/skills`.
 - For GitHub issue implementation, use `.agents/skills/awsx-issue-planning/SKILL.md`
   first unless the prompt explicitly says the plan/API shape is already
   approved. For nontrivial issues, produce the planning brief and stop by
   default; do not let the same session self-approve implementation unless the
   prompt explicitly asks to proceed after planning without a maintainer review
   checkpoint.
+- Use `.agents/skills/awsx-plan-issue-session/SKILL.md` and
+  `.agents/skills/awsx-implement-approved-plan/SKILL.md` only when explicitly
+  invoked as session launchers. They are control-flow wrappers around the
+  tactical AWSX skills, not ambient guidance.
 - Treat prior rollout summaries, memories, or old worktree diffs for the same
   issue as historical attempts, not accepted design guidance.
 - `.agents/skills/awsx-issue-planning/SKILL.md` applies before editing when a
