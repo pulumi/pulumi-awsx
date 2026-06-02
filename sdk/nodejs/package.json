@@ -15,7 +15,7 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@aws-sdk/client-ecs": "^3.405.0",
+        "@aws-sdk/client-ecs": "^3.972.0",
         "@pulumi/aws": "^7.24.0",
         "@pulumi/docker": "^4.6.0",
         "@pulumi/docker-build": "^0.0.14",

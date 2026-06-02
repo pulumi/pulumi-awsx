@@ -83,7 +83,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"@aws-sdk/client-ecs":  "^3.405.0",
+					"@aws-sdk/client-ecs":  "^3.972.0",
 					"@pulumi/aws":          "^" + dependencies.Aws,
 					"@pulumi/docker":       "^" + dependencies.Docker,
 					"@pulumi/docker-build": "^" + dependencies.DockerBuild,

@@ -13,7 +13,7 @@
         "lint": "tslint -c tslint.json -p tsconfig.json"
     },
     "dependencies": {
-        "@aws-sdk/client-ecs": "^3.405.0",
+        "@aws-sdk/client-ecs": "^3.972.0",
         "@pulumi/aws": "^7.0.0",
         "@pulumi/docker": "4.5.8",
         "@pulumi/pulumi": "^3.34.0",
