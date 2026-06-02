@@ -126,7 +126,7 @@ export class NetworkListener
         implements apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly defaultTargetGroup?: NetworkTargetGroup;
+    public declare readonly defaultTargetGroup?: NetworkTargetGroup;
 
     // tslint:disable-next-line:variable-name
     private readonly __isNetworkListenerInstance: boolean;

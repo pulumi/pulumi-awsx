@@ -22,12 +22,13 @@ class RegistryImageArgs:
     def __init__(__self__, *,
                  repository_url: pulumi.Input[_builtins.str],
                  source_image: pulumi.Input[_builtins.str],
-                 insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
-                 keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
-                 tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
+                 insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
+                 keep_remotely: pulumi.Input[Optional[_builtins.bool]] = None,
+                 tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None):
         """
         The set of arguments for constructing a RegistryImage resource.
+
         :param pulumi.Input[_builtins.str] repository_url: The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         :param pulumi.Input[_builtins.str] source_image: The source image to push to the registry.
         :param pulumi.Input[_builtins.bool] insecure_skip_verify: If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
@@ -72,50 +73,50 @@ class RegistryImageArgs:
 
     @_builtins.property
     @pulumi.getter(name="insecureSkipVerify")
-    def insecure_skip_verify(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def insecure_skip_verify(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
         """
         return pulumi.get(self, "insecure_skip_verify")
 
     @insecure_skip_verify.setter
-    def insecure_skip_verify(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def insecure_skip_verify(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "insecure_skip_verify", value)
 
     @_builtins.property
     @pulumi.getter(name="keepRemotely")
-    def keep_remotely(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def keep_remotely(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
         """
         return pulumi.get(self, "keep_remotely")
 
     @keep_remotely.setter
-    def keep_remotely(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def keep_remotely(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "keep_remotely", value)
 
     @_builtins.property
     @pulumi.getter
-    def tag(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def tag(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The tag to use for the pushed image. If not provided, it defaults to `latest`.
         """
         return pulumi.get(self, "tag")
 
     @tag.setter
-    def tag(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def tag(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "tag", value)
 
     @_builtins.property
     @pulumi.getter
-    def triggers(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def triggers(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
         """
         return pulumi.get(self, "triggers")
 
     @triggers.setter
-    def triggers(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def triggers(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "triggers", value)
 
 
@@ -125,12 +126,12 @@ class RegistryImage(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
-                 keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
-                 repository_url: Optional[pulumi.Input[_builtins.str]] = None,
-                 source_image: Optional[pulumi.Input[_builtins.str]] = None,
-                 tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
+                 keep_remotely: pulumi.Input[Optional[_builtins.bool]] = None,
+                 repository_url: pulumi.Input[Optional[_builtins.str]] = None,
+                 source_image: pulumi.Input[Optional[_builtins.str]] = None,
+                 tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  __props__=None):
         """
         Manages the lifecycle of a docker image in a registry. You can upload images to a registry (= `docker push`) and also delete them again. In contrast to [`awsx.ecr.Image`](/registry/packages/awsx/api-docs/ecr/image/), this resource does not require to build the image, but can be used to push an existing image to an ECR repository. The image will be pushed whenever the source image changes or is updated.
@@ -147,6 +148,7 @@ class RegistryImage(pulumi.ComponentResource):
             repository_url=repository.url,
             source_image="my-awesome-image:v1.0.0")
         ```
+
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -179,6 +181,7 @@ class RegistryImage(pulumi.ComponentResource):
             source_image="my-awesome-image:v1.0.0")
         ```
 
+
         :param str resource_name: The name of the resource.
         :param RegistryImageArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -194,12 +197,12 @@ class RegistryImage(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 insecure_skip_verify: Optional[pulumi.Input[_builtins.bool]] = None,
-                 keep_remotely: Optional[pulumi.Input[_builtins.bool]] = None,
-                 repository_url: Optional[pulumi.Input[_builtins.str]] = None,
-                 source_image: Optional[pulumi.Input[_builtins.str]] = None,
-                 tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 insecure_skip_verify: pulumi.Input[Optional[_builtins.bool]] = None,
+                 keep_remotely: pulumi.Input[Optional[_builtins.bool]] = None,
+                 repository_url: pulumi.Input[Optional[_builtins.str]] = None,
+                 source_image: pulumi.Input[Optional[_builtins.str]] = None,
+                 tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):

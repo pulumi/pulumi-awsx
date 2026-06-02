@@ -20,14 +20,15 @@ __all__ = ['TargetGroupAttachmentArgs', 'TargetGroupAttachment']
 @pulumi.input_type
 class TargetGroupAttachmentArgs:
     def __init__(__self__, *,
-                 instance: Optional[pulumi.Input['pulumi_aws.ec2.Instance']] = None,
-                 instance_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
-                 lambda_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
-                 target_group_arn: Optional[pulumi.Input[_builtins.str]] = None):
+                 instance: pulumi.Input[Optional['pulumi_aws.ec2.Instance']] = None,
+                 instance_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 lambda_: pulumi.Input[Optional['pulumi_aws.lambda_.Function']] = None,
+                 lambda_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 target_group: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']] = None,
+                 target_group_arn: pulumi.Input[Optional[_builtins.str]] = None):
         """
         The set of arguments for constructing a TargetGroupAttachment resource.
+
         :param pulumi.Input['pulumi_aws.ec2.Instance'] instance: EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input[_builtins.str] instance_id: ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input['pulumi_aws.lambda_.Function'] lambda_: Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
@@ -50,74 +51,74 @@ class TargetGroupAttachmentArgs:
 
     @_builtins.property
     @pulumi.getter
-    def instance(self) -> Optional[pulumi.Input['pulumi_aws.ec2.Instance']]:
+    def instance(self) -> pulumi.Input[Optional['pulumi_aws.ec2.Instance']]:
         """
         EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         """
         return pulumi.get(self, "instance")
 
     @instance.setter
-    def instance(self, value: Optional[pulumi.Input['pulumi_aws.ec2.Instance']]):
+    def instance(self, value: pulumi.Input[Optional['pulumi_aws.ec2.Instance']]):
         pulumi.set(self, "instance", value)
 
     @_builtins.property
     @pulumi.getter(name="instanceId")
-    def instance_id(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def instance_id(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         """
         return pulumi.get(self, "instance_id")
 
     @instance_id.setter
-    def instance_id(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def instance_id(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "instance_id", value)
 
     @_builtins.property
     @pulumi.getter(name="lambda")
-    def lambda_(self) -> Optional[pulumi.Input['pulumi_aws.lambda_.Function']]:
+    def lambda_(self) -> pulumi.Input[Optional['pulumi_aws.lambda_.Function']]:
         """
         Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         """
         return pulumi.get(self, "lambda_")
 
     @lambda_.setter
-    def lambda_(self, value: Optional[pulumi.Input['pulumi_aws.lambda_.Function']]):
+    def lambda_(self, value: pulumi.Input[Optional['pulumi_aws.lambda_.Function']]):
         pulumi.set(self, "lambda_", value)
 
     @_builtins.property
     @pulumi.getter(name="lambdaArn")
-    def lambda_arn(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def lambda_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         """
         return pulumi.get(self, "lambda_arn")
 
     @lambda_arn.setter
-    def lambda_arn(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def lambda_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "lambda_arn", value)
 
     @_builtins.property
     @pulumi.getter(name="targetGroup")
-    def target_group(self) -> Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]:
+    def target_group(self) -> pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']]:
         """
         Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
         return pulumi.get(self, "target_group")
 
     @target_group.setter
-    def target_group(self, value: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]):
+    def target_group(self, value: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']]):
         pulumi.set(self, "target_group", value)
 
     @_builtins.property
     @pulumi.getter(name="targetGroupArn")
-    def target_group_arn(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def target_group_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
         return pulumi.get(self, "target_group_arn")
 
     @target_group_arn.setter
-    def target_group_arn(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def target_group_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "target_group_arn", value)
 
 
@@ -127,15 +128,16 @@ class TargetGroupAttachment(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 instance: Optional[pulumi.Input['pulumi_aws.ec2.Instance']] = None,
-                 instance_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
-                 lambda_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
-                 target_group_arn: Optional[pulumi.Input[_builtins.str]] = None,
+                 instance: pulumi.Input[Optional['pulumi_aws.ec2.Instance']] = None,
+                 instance_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 lambda_: pulumi.Input[Optional['pulumi_aws.lambda_.Function']] = None,
+                 lambda_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 target_group: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']] = None,
+                 target_group_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         """
         Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.
+
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -155,6 +157,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
         """
         Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.
 
+
         :param str resource_name: The name of the resource.
         :param TargetGroupAttachmentArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -170,12 +173,12 @@ class TargetGroupAttachment(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 instance: Optional[pulumi.Input['pulumi_aws.ec2.Instance']] = None,
-                 instance_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
-                 lambda_arn: Optional[pulumi.Input[_builtins.str]] = None,
-                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
-                 target_group_arn: Optional[pulumi.Input[_builtins.str]] = None,
+                 instance: pulumi.Input[Optional['pulumi_aws.ec2.Instance']] = None,
+                 instance_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 lambda_: pulumi.Input[Optional['pulumi_aws.lambda_.Function']] = None,
+                 lambda_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 target_group: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']] = None,
+                 target_group_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):

@@ -182,7 +182,7 @@ function computePortInfo(
 
 export class ApplicationListener extends Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
-    public readonly defaultTargetGroup?: ApplicationTargetGroup;
+    public declare readonly defaultTargetGroup?: ApplicationTargetGroup;
 
     // tslint:disable-next-line:variable-name
     private readonly __isApplicationListenerInstance: boolean;

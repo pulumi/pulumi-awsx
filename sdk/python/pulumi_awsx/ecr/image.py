@@ -21,18 +21,19 @@ __all__ = ['ImageArgs', 'Image']
 class ImageArgs:
     def __init__(__self__, *,
                  repository_url: pulumi.Input[_builtins.str],
-                 args: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 args: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  builder_version: Optional['BuilderVersion'] = None,
-                 cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 context: Optional[pulumi.Input[_builtins.str]] = None,
-                 dockerfile: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_name: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 platform: Optional[pulumi.Input[_builtins.str]] = None,
-                 registry_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 target: Optional[pulumi.Input[_builtins.str]] = None):
+                 cache_from: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 context: pulumi.Input[Optional[_builtins.str]] = None,
+                 dockerfile: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_name: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 platform: pulumi.Input[Optional[_builtins.str]] = None,
+                 registry_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 target: pulumi.Input[Optional[_builtins.str]] = None):
         """
         The set of arguments for constructing a Image resource.
+
         :param pulumi.Input[_builtins.str] repository_url: Url of the repository
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
         :param 'BuilderVersion' builder_version: The version of the Docker builder.
@@ -81,14 +82,14 @@ class ImageArgs:
 
     @_builtins.property
     @pulumi.getter
-    def args(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def args(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
         """
         return pulumi.get(self, "args")
 
     @args.setter
-    def args(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def args(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "args", value)
 
     @_builtins.property
@@ -105,98 +106,98 @@ class ImageArgs:
 
     @_builtins.property
     @pulumi.getter(name="cacheFrom")
-    def cache_from(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def cache_from(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         """
         Images to consider as cache sources
         """
         return pulumi.get(self, "cache_from")
 
     @cache_from.setter
-    def cache_from(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def cache_from(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "cache_from", value)
 
     @_builtins.property
     @pulumi.getter
-    def context(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def context(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         """
         return pulumi.get(self, "context")
 
     @context.setter
-    def context(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def context(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "context", value)
 
     @_builtins.property
     @pulumi.getter
-    def dockerfile(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def dockerfile(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         """
         return pulumi.get(self, "dockerfile")
 
     @dockerfile.setter
-    def dockerfile(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def dockerfile(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "dockerfile", value)
 
     @_builtins.property
     @pulumi.getter(name="imageName")
-    def image_name(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def image_name(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
         """
         return pulumi.get(self, "image_name")
 
     @image_name.setter
-    def image_name(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def image_name(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "image_name", value)
 
     @_builtins.property
     @pulumi.getter(name="imageTag")
-    def image_tag(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def image_tag(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Custom image tag for the resulting docker image. If omitted a random string will be used
         """
         return pulumi.get(self, "image_tag")
 
     @image_tag.setter
-    def image_tag(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def image_tag(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "image_tag", value)
 
     @_builtins.property
     @pulumi.getter
-    def platform(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def platform(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         """
         return pulumi.get(self, "platform")
 
     @platform.setter
-    def platform(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def platform(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "platform", value)
 
     @_builtins.property
     @pulumi.getter(name="registryId")
-    def registry_id(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def registry_id(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
         """
         return pulumi.get(self, "registry_id")
 
     @registry_id.setter
-    def registry_id(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def registry_id(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "registry_id", value)
 
     @_builtins.property
     @pulumi.getter
-    def target(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def target(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The target of the dockerfile to build
         """
         return pulumi.get(self, "target")
 
     @target.setter
-    def target(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def target(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "target", value)
 
 
@@ -206,20 +207,21 @@ class Image(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 args: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 args: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  builder_version: Optional['BuilderVersion'] = None,
-                 cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 context: Optional[pulumi.Input[_builtins.str]] = None,
-                 dockerfile: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_name: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 platform: Optional[pulumi.Input[_builtins.str]] = None,
-                 registry_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 repository_url: Optional[pulumi.Input[_builtins.str]] = None,
-                 target: Optional[pulumi.Input[_builtins.str]] = None,
+                 cache_from: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 context: pulumi.Input[Optional[_builtins.str]] = None,
+                 dockerfile: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_name: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 platform: pulumi.Input[Optional[_builtins.str]] = None,
+                 registry_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 repository_url: pulumi.Input[Optional[_builtins.str]] = None,
+                 target: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         """
         Builds a docker image and pushes to the ECR repository
+
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -244,6 +246,7 @@ class Image(pulumi.ComponentResource):
         """
         Builds a docker image and pushes to the ECR repository
 
+
         :param str resource_name: The name of the resource.
         :param ImageArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -259,17 +262,17 @@ class Image(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 args: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 args: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  builder_version: Optional['BuilderVersion'] = None,
-                 cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 context: Optional[pulumi.Input[_builtins.str]] = None,
-                 dockerfile: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_name: Optional[pulumi.Input[_builtins.str]] = None,
-                 image_tag: Optional[pulumi.Input[_builtins.str]] = None,
-                 platform: Optional[pulumi.Input[_builtins.str]] = None,
-                 registry_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 repository_url: Optional[pulumi.Input[_builtins.str]] = None,
-                 target: Optional[pulumi.Input[_builtins.str]] = None,
+                 cache_from: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 context: pulumi.Input[Optional[_builtins.str]] = None,
+                 dockerfile: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_name: pulumi.Input[Optional[_builtins.str]] = None,
+                 image_tag: pulumi.Input[Optional[_builtins.str]] = None,
+                 platform: pulumi.Input[Optional[_builtins.str]] = None,
+                 registry_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 repository_url: pulumi.Input[Optional[_builtins.str]] = None,
+                 target: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):

@@ -68,25 +68,25 @@ export interface TargetGroupAttachmentArgs {
     /**
      * EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
      */
-    instance?: pulumi.Input<pulumiAws.ec2.Instance>;
+    instance?: pulumi.Input<pulumiAws.ec2.Instance | undefined>;
     /**
      * ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
      */
-    instanceId?: pulumi.Input<string>;
+    instanceId?: pulumi.Input<string | undefined>;
     /**
      * Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
      */
-    lambda?: pulumi.Input<pulumiAws.lambda.Function>;
+    lambda?: pulumi.Input<pulumiAws.lambda.Function | undefined>;
     /**
      * ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
      */
-    lambdaArn?: pulumi.Input<string>;
+    lambdaArn?: pulumi.Input<string | undefined>;
     /**
      * Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
      */
-    targetGroup?: pulumi.Input<pulumiAws.lb.TargetGroup>;
+    targetGroup?: pulumi.Input<pulumiAws.lb.TargetGroup | undefined>;
     /**
      * ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
      */
-    targetGroupArn?: pulumi.Input<string>;
+    targetGroupArn?: pulumi.Input<string | undefined>;
 }

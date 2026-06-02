@@ -71,7 +71,7 @@ export interface ImageArgs {
     /**
      * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
      */
-    args?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    args?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
      * The version of the Docker builder.
      */
@@ -79,31 +79,31 @@ export interface ImageArgs {
     /**
      * Images to consider as cache sources
      */
-    cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    cacheFrom?: pulumi.Input<pulumi.Input<string>[] | undefined>;
     /**
      * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
      */
-    context?: pulumi.Input<string>;
+    context?: pulumi.Input<string | undefined>;
     /**
      * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
      */
-    dockerfile?: pulumi.Input<string>;
+    dockerfile?: pulumi.Input<string | undefined>;
     /**
      * Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
      */
-    imageName?: pulumi.Input<string>;
+    imageName?: pulumi.Input<string | undefined>;
     /**
      * Custom image tag for the resulting docker image. If omitted a random string will be used
      */
-    imageTag?: pulumi.Input<string>;
+    imageTag?: pulumi.Input<string | undefined>;
     /**
      * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      */
-    platform?: pulumi.Input<string>;
+    platform?: pulumi.Input<string | undefined>;
     /**
      * ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
      */
-    registryId?: pulumi.Input<string>;
+    registryId?: pulumi.Input<string | undefined>;
     /**
      * Url of the repository
      */
@@ -111,5 +111,5 @@ export interface ImageArgs {
     /**
      * The target of the dockerfile to build
      */
-    target?: pulumi.Input<string>;
+    target?: pulumi.Input<string | undefined>;
 }
