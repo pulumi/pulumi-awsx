@@ -8,9 +8,10 @@ argument-hint: ISSUE_OR_PR_URL
 
 # AWSX Plan Issue Session
 
-Use the canonical instructions in:
+Read `.agents/skills/awsx-plan-issue-session/SKILL.md` now and follow it
+exactly. Do not take any other action until you have read it.
 
-`.agents/skills/awsx-plan-issue-session/SKILL.md`
+The canonical instructions are in `.agents/skills/awsx-plan-issue-session/SKILL.md`.
 
 This Claude wrapper exists because Claude's manual-only skill controls live in
 `SKILL.md` frontmatter, while the canonical `.agents` skill uses Codex's

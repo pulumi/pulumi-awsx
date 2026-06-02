@@ -17,31 +17,25 @@ target is missing, ask for it and stop.
 
 1. Use `$awsx-issue-planning` first.
 2. Do not edit files, implement code, commit, or create a checked-in spec.
-3. Re-check live context instead of trusting prior attempts:
-   - issue body, comments, related PRs, and linked examples;
-   - current AWSX code, schema source when relevant, and existing tests;
-   - installed `@pulumi/aws` surface for affected child resources;
-   - AWS service facts using `$awsx-aws-service-validation` when needed.
+3. Re-check live context as required by `$awsx-issue-planning` instead of
+   trusting prior attempts.
 4. Treat rollout summaries, memories, old worktree diffs, and abandoned PRs as
    historical attempts, not accepted design guidance.
-5. Use supporting skills only for planning evidence:
-   - `$awsx-component-design` for API/component shape;
-   - `$awsx-breaking-change-evaluation` for compatibility-sensitive options;
-   - `$awsx-test-authoring` for proof strategy;
-   - `$awsx-aws-service-validation` for feature-level AWS requirements.
+5. Use supporting AWSX skills only for planning evidence, following
+   `$awsx-issue-planning` routing.
 6. Produce the planning brief required by `$awsx-issue-planning`.
-7. Stop after the brief.
+7. Make the brief easy to carry into the implementation session. Prefer a
+   concise, copyable brief in chat. If the user asks for a durable handoff,
+   create or update the requested issue/PR comment, checked-in spec, or handoff
+   file instead of inventing a location.
+8. Stop after the brief.
 
-## Required Brief Emphasis
+## Brief Requirements
 
-The brief must define the user-visible AWS outcome, enumerate the AWS happy-path
-requirements for the resource cluster in scope, evaluate whether the current
-AWSX API can express the full working configuration, and identify the immediate
-follow-up issue users would file if a narrow fix ships incomplete.
+The brief must meet `$awsx-issue-planning` requirements, especially the
+definition-of-done, service-requirements, and immediate-follow-up issue
+sections.
 
-If the initial prompt says to implement only if the brief says implementation
-should proceed, treat that as no implementation permission. That delegates
-approval back to the same session and still counts as self-approval.
-
-If implementation looks appropriate, phrase it as a recommended follow-up for a
-separate implementation session. Do not edit in this session.
+Delegated approval is not permission. A prompt like "implement if the brief says
+implementation should proceed" still delegates approval back to this same
+session; follow `$awsx-issue-planning` and stop after the brief.

@@ -8,9 +8,10 @@ argument-hint: ISSUE_OR_PR_URL APPROVED_PLAN
 
 # AWSX Implement Approved Plan
 
-Use the canonical instructions in:
+Read `.agents/skills/awsx-implement-approved-plan/SKILL.md` now and follow it
+exactly. Do not take any other action until you have read it.
 
-`.agents/skills/awsx-implement-approved-plan/SKILL.md`
+The canonical instructions are in `.agents/skills/awsx-implement-approved-plan/SKILL.md`.
 
 This Claude wrapper exists because Claude's manual-only skill controls live in
 `SKILL.md` frontmatter, while the canonical `.agents` skill uses Codex's

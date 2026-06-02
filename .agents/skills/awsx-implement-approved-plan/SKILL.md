@@ -29,7 +29,8 @@ it and stop.
    outcome.
 6. Do not run full `make test` locally. Run focused validation only, following
    `AGENTS.md` and `$awsx-test-authoring`.
-7. Report what changed, what validation ran, and what remains unproven.
+7. Report what changed, what validation ran, what remains unproven, and any
+   deviation from the approved plan.
 
 ## Stop Conditions
 
