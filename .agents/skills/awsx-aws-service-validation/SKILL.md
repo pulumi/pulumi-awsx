@@ -102,6 +102,10 @@ solely because the MCP server is not configured.
 - Identify the exact AWS claim: property exists, value is valid, API behavior,
   required relationship, regional availability, IAM or service integration, or
   recommended pattern.
+- For feature-level validation, first enumerate the complete AWS happy-path
+  requirement set for the resource cluster in scope, then validate each
+  required resource, setting, default, and relationship. Do not stop after
+  proving only the property or constraint named by the issue.
 - Compare the AWS claim with the installed `@pulumi/aws` resource args, invoke
   args, return types, and generated docs when relevant.
 - If AWS docs and `@pulumi/aws` disagree, classify the disagreement:
@@ -140,6 +144,8 @@ Needs escalation:
 Not enough evidence:
 - "This is how ECS usually works" with no AWS docs, provider surface, local
   pattern, or live proof.
+- A feature validation that proves one required property exists but does not
+  enumerate the other AWS settings needed for the happy path to work.
 ```
 
 ## Hand Off When
