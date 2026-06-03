@@ -69,7 +69,7 @@ jobs:
         major-version: 3
         set-env: 'PROVIDER_VERSION'
     - name: Cache examples generation
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: |
           .pulumi/examples-cache
@@ -85,7 +85,7 @@ jobs:
         cache_save: true
     - name: Setup Go Cache
       if: inputs.acceptance_fanout
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: |
           ~/go/pkg/mod
