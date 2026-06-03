@@ -35,6 +35,13 @@ Never hand-edit generated outputs as the source of truth:
 
 Use source files + regeneration commands instead.
 
+When reviewing generated workflow or `Makefile` changes, do not assume they
+were hand-edited only because generated files changed. First check whether
+`.ci-mgmt.yaml` changed, or whether the commit/PR notes explicitly say
+`make ci-mgmt` was run for a generated refresh or tool-pin update. Flag
+generated workflow changes only when there is no corresponding source-of-truth
+change or documented regeneration reason.
+
 ## If You Change...
 - `awsx/**` -> run `make test_provider`
 - `awsx-classic/**` -> run `yarn --cwd awsx-classic lint`
