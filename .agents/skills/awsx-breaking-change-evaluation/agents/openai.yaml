@@ -1,0 +1,4 @@
+interface:
+  display_name: "AWSX Breaking Change Evaluation"
+  short_description: "Evaluate AWSX compatibility risk"
+  default_prompt: "Use $awsx-breaking-change-evaluation to assess whether an AWSX change is breaking."
