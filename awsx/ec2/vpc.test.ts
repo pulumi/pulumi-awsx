@@ -641,6 +641,21 @@ describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
     return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
   }
 
+  async function subnetSummaries(vpc: Vpc) {
+    const subnets = await unwrap(vpc.subnets);
+    return Promise.all(
+      subnets.map(async (subnet) => {
+        const tags = await unwrap(subnet.tags);
+        return {
+          cidrBlock: await unwrap(subnet.cidrBlock),
+          name: tags?.Name,
+          subnetType: tags?.SubnetType,
+          elbTag: tags?.["kubernetes.io/role/elb"],
+        };
+      }),
+    );
+  }
+
   beforeAll(async () => {
     await runtime.setMocks({
       call(args) {
@@ -709,16 +724,22 @@ describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
       ],
     });
 
-    const subnets = await unwrap(vpc.subnets);
-    expect(subnets).toHaveLength(6);
-
-    for (const subnet of subnets) {
-      const tags = await unwrap(subnet.tags);
-      const subnetType = tags?.SubnetType;
-      if (subnetType === "Public") {
-        expect(tags?.["kubernetes.io/role/elb"]).toBe("1");
-      }
-    }
+    const subnets = await subnetSummaries(vpc);
+    expect(subnets.map((subnet) => subnet.subnetType)).toEqual([
+      "Public",
+      "Private",
+      "Public",
+      "Private",
+      "Public",
+      "Private",
+    ]);
+    expect(subnets.filter((subnet) => subnet.subnetType === "Public")).toHaveLength(3);
+    expect(subnets.filter((subnet) => subnet.subnetType === "Private")).toHaveLength(3);
+    expect(
+      subnets
+        .filter((subnet) => subnet.subnetType === "Public")
+        .map((subnet) => subnet.elbTag),
+    ).toEqual(["1", "1", "1"]);
   });
 
   it("applies tags only to the specified subnet type, not the auto-added ones", async () => {
@@ -729,17 +750,15 @@ describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
       ],
     });
 
-    const subnets = await unwrap(vpc.subnets);
-    for (const subnet of subnets) {
-      const tags = await unwrap(subnet.tags);
-      const subnetType = tags?.SubnetType;
-      if (subnetType === "Private") {
-        expect(tags?.["kubernetes.io/role/elb"]).toBeUndefined();
-      }
-    }
+    const subnets = await subnetSummaries(vpc);
+    expect(
+      subnets
+        .filter((subnet) => subnet.subnetType === "Private")
+        .map((subnet) => subnet.elbTag),
+    ).toEqual([undefined, undefined, undefined]);
   });
 
-  it("creates the default layout and preserves user sizing overrides", async () => {
+  it("creates the default layout and preserves cidrMask overrides", async () => {
     const vpc = new Vpc("auto-merge-sizing", {
       availabilityZoneNames: ["us-east-1a", "us-east-1b"],
       natGateways: { strategy: "None" },
@@ -747,17 +766,70 @@ describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
       subnetSpecs: [{ type: "Public", cidrMask: 20 }],
     });
 
-    const subnets = await unwrap(vpc.subnets);
-    expect(subnets).toHaveLength(4);
+    const subnets = await subnetSummaries(vpc);
+    expect(subnets).toEqual([
+      {
+        cidrBlock: "10.0.64.0/20",
+        name: "auto-merge-sizing-public-1",
+        subnetType: "Public",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.0.0/18",
+        name: "auto-merge-sizing-private-1",
+        subnetType: "Private",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.192.0/20",
+        name: "auto-merge-sizing-public-2",
+        subnetType: "Public",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.128.0/18",
+        name: "auto-merge-sizing-private-2",
+        subnetType: "Private",
+        elbTag: undefined,
+      },
+    ]);
+  });
 
-    const subnetTypes = await Promise.all(
-      subnets.map(async (subnet) => {
-        const tags = await unwrap(subnet.tags);
-        return tags?.SubnetType;
-      }),
-    );
-    expect(subnetTypes.filter((type) => type === "Public")).toHaveLength(2);
-    expect(subnetTypes.filter((type) => type === "Private")).toHaveLength(2);
+  it("creates the default layout and preserves size-only overrides", async () => {
+    const vpc = new Vpc("auto-merge-size-only", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "AutoMerge",
+      subnetSpecs: [{ type: "Public", size: 4096 }],
+    });
+
+    const subnets = await subnetSummaries(vpc);
+    expect(subnets).toEqual([
+      {
+        cidrBlock: "10.0.64.0/20",
+        name: "auto-merge-size-only-public-1",
+        subnetType: "Public",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.0.0/18",
+        name: "auto-merge-size-only-private-1",
+        subnetType: "Private",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.192.0/20",
+        name: "auto-merge-size-only-public-2",
+        subnetType: "Public",
+        elbTag: undefined,
+      },
+      {
+        cidrBlock: "10.0.128.0/18",
+        name: "auto-merge-size-only-private-2",
+        subnetType: "Private",
+        elbTag: undefined,
+      },
+    ]);
   });
 
 });

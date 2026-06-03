@@ -23,7 +23,6 @@ import {
   getSubnetSpecsAutoMerge,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
-  mergeWithDefaultSubnetSpecs,
   validateAndNormalizeSubnetInputs,
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
@@ -493,19 +492,13 @@ export class Vpc extends schema.Vpc<VpcData> {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
-    if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
-      assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
-    }
-
-    const effectiveSubnetSpecs =
-      subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined
-        ? mergeWithDefaultSubnetSpecs(args.subnetSpecs)
-        : args.subnetSpecs;
-
-    const parsedSpecs: NormalizedSubnetInputs = validateAndNormalizeSubnetInputs(
-      effectiveSubnetSpecs,
-      availabilityZones.length,
-    );
+    const parsedSpecs: NormalizedSubnetInputs = (() => {
+      if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
+        assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
+        return validateAndNormalizeSubnetInputs(args.subnetSpecs, availabilityZones.length);
+      }
+      return validateAndNormalizeSubnetInputs(args.subnetSpecs, availabilityZones.length);
+    })();
 
     const subnetSpecs = (() => {
       const a = Vpc.pickSubnetAllocator(parsedSpecs, subnetStrategy);
@@ -533,7 +526,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 name,
                 cidrBlock,
                 availabilityZones,
-                args.subnetSpecs,
+                parsedSpecs?.normalizedSpecs,
                 args.availabilityZoneCidrMask,
               )
             : getSubnetSpecs(

@@ -213,7 +213,14 @@ export function mergeWithDefaultSubnetSpecs(
       (candidate) => candidate.type.toLowerCase() === spec.type.toLowerCase(),
     );
     if (defaultMatch !== undefined && spec.name === undefined) {
-      overridesByType.set(spec.type.toLowerCase(), spec);
+      const typeKey = spec.type.toLowerCase();
+      if (overridesByType.has(typeKey)) {
+        throw new Error(
+          `Multiple subnet specs of type "${typeKey}" require unique names. ` +
+            `You can have at most one unnamed subnet per type. All other subnets of the same type must have unique "name" properties to avoid duplicate resource names.`,
+        );
+      }
+      overridesByType.set(typeKey, spec);
       continue;
     }
     extraSpecs.push(spec);

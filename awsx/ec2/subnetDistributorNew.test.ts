@@ -457,6 +457,15 @@ describe("merging SubnetSpecs with defaults for AutoMerge", () => {
     expect(merged).toEqual([{ type: "Private" }, { type: "Public", cidrMask: 20 }]);
   });
 
+  it("should reject duplicate unnamed default-type overrides", () => {
+    expect(() =>
+      mergeWithDefaultSubnetSpecs([
+        { type: "Public", tags: { first: "true" } },
+        { type: "Public", tags: { second: "true" } },
+      ]),
+    ).toThrow(/Multiple subnet specs of type "public" require unique names/);
+  });
+
   it("should preserve default cidr sizing when merging onto concrete defaults", () => {
     const userSpecs: SubnetSpecInputs[] = [
       { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
@@ -504,6 +513,44 @@ describe("merging SubnetSpecs with defaults for AutoMerge", () => {
         type: "Public",
         cidrBlock: "10.0.192.0/19",
         tags: { "kubernetes.io/role/elb": "1" },
+      });
+    });
+  });
+
+  it("should preserve size-only overrides when used with getSubnetSpecsAutoMerge", () => {
+    const normalizedUserSpecs = validateAndNormalizeSubnetInputs(
+      [{ type: "Public", size: 4096 }],
+      2,
+    );
+    expect(normalizedUserSpecs?.isExplicitLayout).toBe(false);
+    if (normalizedUserSpecs === undefined || normalizedUserSpecs.isExplicitLayout) {
+      throw new Error("Expected non-explicit normalized specs");
+    }
+
+    const result = getSubnetSpecsAutoMerge(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      normalizedUserSpecs.normalizedSpecs,
+    );
+
+    validatePartialSubnetSpecs(result, (ss) => {
+      expect(ss).toHaveLength(4);
+      expect(ss[0]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.0.0/18",
+      });
+      expect(ss[1]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.64.0/20",
+      });
+      expect(ss[2]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.128.0/18",
+      });
+      expect(ss[3]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.192.0/20",
       });
     });
   });
