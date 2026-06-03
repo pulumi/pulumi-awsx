@@ -1,9 +1,9 @@
 ---
-name: awsx-plan-issue-session
-description: Manual-only AWSX issue planning session launcher. Use only when explicitly invoked to produce a planning brief for a GitHub issue or feature request, then stop before editing.
+name: awsx-start-issue-planning-session
+description: Manual-only AWSX issue planning session starter. Use only when explicitly invoked to start a planning-only session for a GitHub issue or feature request, produce a planning brief, and stop before editing.
 ---
 
-# AWSX Plan Issue Session
+# AWSX Start Issue Planning Session
 
 This is a manual-only launcher skill. Use it only when the user explicitly
 invokes it. Its output is a planning brief, not code.

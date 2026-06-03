@@ -14,8 +14,8 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
   for nontrivial issues where scope, API shape, compatibility, or spec needs
   are unsettled.
-- `.agents/skills/awsx-plan-issue-session/SKILL.md` - manual-only launcher for
-  planning an issue in a fresh session and stopping before edits.
+- `.agents/skills/awsx-start-issue-planning-session/SKILL.md` - manual-only
+  starter for planning an issue in a fresh session and stopping before edits.
 - `.agents/skills/awsx-implement-approved-plan/SKILL.md` - manual-only launcher
   for implementing an already reviewed AWSX plan.
 - `.agents/skills/awsx-component-design/SKILL.md` - tactical authoring workflow
@@ -53,7 +53,7 @@ Use the focused harness entry points this way:
   default; do not let the same session self-approve implementation unless the
   prompt explicitly asks to proceed after planning without a maintainer review
   checkpoint.
-- Use `.agents/skills/awsx-plan-issue-session/SKILL.md` and
+- Use `.agents/skills/awsx-start-issue-planning-session/SKILL.md` and
   `.agents/skills/awsx-implement-approved-plan/SKILL.md` only when explicitly
   invoked as session launchers. They are control-flow wrappers around the
   tactical AWSX skills, not ambient guidance.

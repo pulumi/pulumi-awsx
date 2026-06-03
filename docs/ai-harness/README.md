@@ -12,8 +12,8 @@ Current harness files:
 - `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
   for nontrivial AWSX issues where scope, API shape, compatibility, or spec
   needs are not already settled.
-- `.agents/skills/awsx-plan-issue-session/SKILL.md` - manual-only launcher for
-  planning an issue in a fresh session and stopping before edits.
+- `.agents/skills/awsx-start-issue-planning-session/SKILL.md` - manual-only
+  starter for planning an issue in a fresh session and stopping before edits.
 - `.agents/skills/awsx-implement-approved-plan/SKILL.md` - manual-only launcher
   for implementing an already reviewed AWSX plan.
 - `.agents/skills/awsx-component-design/SKILL.md` - tactical authoring workflow
@@ -42,9 +42,10 @@ Routing:
   issues, the planning brief is the first-session deliverable; stop there unless
   the prompt explicitly asks to proceed after planning without a maintainer
   review checkpoint.
-- Use `$awsx-plan-issue-session` and `$awsx-implement-approved-plan` only when
-  explicitly launching those workflows. They are manual-only session wrappers,
-  not skills that should trigger from ordinary issue or implementation requests.
+- Use `$awsx-start-issue-planning-session` and
+  `$awsx-implement-approved-plan` only when explicitly launching those
+  workflows. They are manual-only session wrappers, not skills that should
+  trigger from ordinary issue or implementation requests.
 - Treat prior rollout summaries, memories, or old worktree diffs for the same
   issue as historical attempts, not accepted design guidance.
 - Use `$awsx-issue-planning` before implementation when the issue may require a
