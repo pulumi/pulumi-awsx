@@ -190,6 +190,18 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					Description: "The VPC's subnets.",
 					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/subnet:Subnet"),
 				},
+				"publicSubnets": {
+					Description: "The VPC's public subnets.",
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/subnet:Subnet"),
+				},
+				"privateSubnets": {
+					Description: "The VPC's private subnets.",
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/subnet:Subnet"),
+				},
+				"isolatedSubnets": {
+					Description: "The VPC's isolated subnets.",
+					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/subnet:Subnet"),
+				},
 				"routeTables": {
 					Description: "The Route Tables for the VPC.",
 					TypeSpec:    arrayOfAwsResource(awsSpec, "aws:ec2/routeTable:RouteTable"),
@@ -254,8 +266,9 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 			},
 			Required: []string{
-				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "internetGateway", "natGateways",
-				"eips", "subnetLayout", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
+				"vpc", "subnets", "publicSubnets", "privateSubnets", "isolatedSubnets", "routeTables",
+				"routeTableAssociations", "routes", "internetGateway", "natGateways", "eips", "subnetLayout",
+				"publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
 			},
 		},
 		InputProperties: inputProperties,
