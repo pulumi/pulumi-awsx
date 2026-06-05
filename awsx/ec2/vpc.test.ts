@@ -36,6 +36,10 @@ import * as runtime from "@pulumi/pulumi/runtime";
 import * as pulumiAws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
+  return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
+}
+
 describe("validateEips", () => {
   it("should not throw an exception if NAT Gateway strategy is Single and no EIPs are supplied", () => {
     expect(() => validateEips("Single", [])).not.toThrowError();
@@ -406,10 +410,6 @@ describe("validating vpc args", () => {
 });
 
 describe("child resource api", () => {
-  function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
-    return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
-  }
-
   let invokeCalls: any[] = [];
   let newResources: any[] = [];
 
@@ -637,10 +637,6 @@ describe("child resource api", () => {
 });
 
 describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {
-  function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
-    return new Promise((resolve) => (pulumi.Output.isInstance(x) ? x.apply(resolve) : resolve(x)));
-  }
-
   async function subnetSummaries(vpc: Vpc) {
     const subnets = await unwrap(vpc.subnets);
     return Promise.all(

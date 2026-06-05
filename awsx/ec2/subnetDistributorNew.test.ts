@@ -437,24 +437,47 @@ describe("explicit subnet layouts", () => {
 });
 
 describe("merging SubnetSpecs with defaults for AutoMerge", () => {
-  it("should add missing default types when user only specifies Public with tags", () => {
-    const userSpecs: SubnetSpecInputs[] = [
-      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
-    ];
-    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
-    expect(merged).toHaveLength(2);
-    expect(merged[0]).toEqual({ type: "Private" });
-    expect(merged[1]).toEqual({
-      type: "Public",
-      tags: { "kubernetes.io/role/elb": "1" },
-    });
-  });
+  const mergeCases: Array<{
+    name: string;
+    userSpecs: SubnetSpecInputs[];
+    defaults?: SubnetSpecInputs[];
+    expected: SubnetSpecInputs[];
+  }> = [
+    {
+      name: "adds missing default types when user only specifies Public with tags",
+      userSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+      defaults: undefined,
+      expected: [
+        { type: "Private" },
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    },
+    {
+      name: "preserves subnet sizing for user-provided types while adding defaults",
+      userSpecs: [{ type: "Public", cidrMask: 20 }],
+      defaults: undefined,
+      expected: [
+        { type: "Private" },
+        { type: "Public", cidrMask: 20 },
+      ],
+    },
+    {
+      name: "preserves default cidr sizing when merging onto concrete defaults",
+      userSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+      defaults: defaultSubnetInputs(17),
+      expected: [
+        { type: "Private", cidrMask: 18 },
+        { type: "Public", cidrMask: 19, tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    },
+  ];
 
-  it("should preserve subnet sizing for user-provided types while adding defaults", () => {
-    const userSpecs: SubnetSpecInputs[] = [{ type: "Public", cidrMask: 20 }];
-    const merged = mergeWithDefaultSubnetSpecs(userSpecs);
-
-    expect(merged).toEqual([{ type: "Private" }, { type: "Public", cidrMask: 20 }]);
+  test.each(mergeCases)("should $name", ({ userSpecs, defaults, expected }) => {
+    expect(mergeWithDefaultSubnetSpecs(userSpecs, defaults)).toEqual(expected);
   });
 
   it("should reject duplicate unnamed default-type overrides", () => {
@@ -464,18 +487,6 @@ describe("merging SubnetSpecs with defaults for AutoMerge", () => {
         { type: "Public", tags: { second: "true" } },
       ]),
     ).toThrow(/Multiple subnet specs of type "public" require unique names/);
-  });
-
-  it("should preserve default cidr sizing when merging onto concrete defaults", () => {
-    const userSpecs: SubnetSpecInputs[] = [
-      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
-    ];
-    const merged = mergeWithDefaultSubnetSpecs(userSpecs, defaultSubnetInputs(17));
-
-    expect(merged).toEqual([
-      { type: "Private", cidrMask: 18 },
-      { type: "Public", cidrMask: 19, tags: { "kubernetes.io/role/elb": "1" } },
-    ]);
   });
 
   it("should reject explicit cidrBlocks for AutoMerge", () => {
