@@ -55,6 +55,10 @@ import (
 //
 // The "Auto" strategy divides the VPC space evenly between the availability zones. Within each availability zone it allocates each subnet in the order they were specified. If a CIDR mask or size was not specified it will default to an even division of the availability zone range. If subnets have different sizes, spaces will be automatically added to ensure subnets don't overlap (e.g. where a previous subnet is smaller than the next).
 //
+// ### AutoMerge
+//
+// The "AutoMerge" strategy starts from the default auto-generated public/private layout and then merges any user-provided subnet settings into the matching subnet types. This is useful when you want the standard default layout but need to customize one or more default subnet types with tags, IPv6 assignment, or sizing overrides. Explicit `cidrBlocks` layouts are not supported with this strategy; use "Auto" or "Exact" when fully specifying subnet ranges yourself.
+//
 // ### Exact
 //
 // The "Exact" strategy is the same as "Auto" with the additional requirement to explicitly specify what the whole of each zone's range will be used for. Where you expect to have a gap between or after subnets, these must be passed using the subnet specification type "Unused" to show all space has been properly accounted for.

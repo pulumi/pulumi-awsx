@@ -15,9 +15,12 @@
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import {
+  assertAutoMergeCompatibleSubnetSpecs,
   defaultSubnetInputs,
+  getSubnetSpecsAutoMerge,
   getSubnetSpecs,
   getSubnetSpecsExplicit,
+  mergeWithDefaultSubnetSpecs,
   nextNetmask,
   validSubnetSizes,
   validateAndNormalizeSubnetInputs,
@@ -430,6 +433,137 @@ describe("explicit subnet layouts", () => {
         type: "Private",
       },
     ]);
+  });
+});
+
+describe("merging SubnetSpecs with defaults for AutoMerge", () => {
+  const mergeCases: Array<{
+    name: string;
+    userSpecs: SubnetSpecInputs[];
+    defaults?: SubnetSpecInputs[];
+    expected: SubnetSpecInputs[];
+  }> = [
+    {
+      name: "adds missing default types when user only specifies Public with tags",
+      userSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+      defaults: undefined,
+      expected: [
+        { type: "Private" },
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    },
+    {
+      name: "preserves subnet sizing for user-provided types while adding defaults",
+      userSpecs: [{ type: "Public", cidrMask: 20 }],
+      defaults: undefined,
+      expected: [
+        { type: "Private" },
+        { type: "Public", cidrMask: 20 },
+      ],
+    },
+    {
+      name: "preserves default cidr sizing when merging onto concrete defaults",
+      userSpecs: [
+        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+      defaults: defaultSubnetInputs(17),
+      expected: [
+        { type: "Private", cidrMask: 18 },
+        { type: "Public", cidrMask: 19, tags: { "kubernetes.io/role/elb": "1" } },
+      ],
+    },
+  ];
+
+  test.each(mergeCases)("should $name", ({ userSpecs, defaults, expected }) => {
+    expect(mergeWithDefaultSubnetSpecs(userSpecs, defaults)).toEqual(expected);
+  });
+
+  it("should reject duplicate unnamed default-type overrides", () => {
+    expect(() =>
+      mergeWithDefaultSubnetSpecs([
+        { type: "Public", tags: { first: "true" } },
+        { type: "Public", tags: { second: "true" } },
+      ]),
+    ).toThrow(/Multiple subnet specs of type "public" require unique names/);
+  });
+
+  it("should reject explicit cidrBlocks for AutoMerge", () => {
+    expect(() =>
+      assertAutoMergeCompatibleSubnetSpecs([
+        { type: "Public", cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20"] },
+      ]),
+    ).toThrow(/subnetStrategy="AutoMerge" does not support subnetSpecs with explicit cidrBlocks/);
+  });
+
+  it("should preserve default layout semantics when used with getSubnetSpecsAutoMerge", () => {
+    const result = getSubnetSpecsAutoMerge(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      [{ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
+    );
+
+    validatePartialSubnetSpecs(result, (ss) => {
+      expect(ss).toHaveLength(4);
+      expect(ss[0]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.0.0/18",
+      });
+      expect(ss[1]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.64.0/19",
+        tags: { "kubernetes.io/role/elb": "1" },
+      });
+      expect(ss[2]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.128.0/18",
+      });
+      expect(ss[3]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.192.0/19",
+        tags: { "kubernetes.io/role/elb": "1" },
+      });
+    });
+  });
+
+  it("should preserve size-only overrides when used with getSubnetSpecsAutoMerge", () => {
+    const normalizedUserSpecs = validateAndNormalizeSubnetInputs(
+      [{ type: "Public", size: 4096 }],
+      2,
+    );
+    expect(normalizedUserSpecs?.isExplicitLayout).toBe(false);
+    if (normalizedUserSpecs === undefined || normalizedUserSpecs.isExplicitLayout) {
+      throw new Error("Expected non-explicit normalized specs");
+    }
+
+    const result = getSubnetSpecsAutoMerge(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      normalizedUserSpecs.normalizedSpecs,
+    );
+
+    validatePartialSubnetSpecs(result, (ss) => {
+      expect(ss).toHaveLength(4);
+      expect(ss[0]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.0.0/18",
+      });
+      expect(ss[1]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.64.0/20",
+      });
+      expect(ss[2]).toMatchObject({
+        type: "Private",
+        cidrBlock: "10.0.128.0/18",
+      });
+      expect(ss[3]).toMatchObject({
+        type: "Public",
+        cidrBlock: "10.0.192.0/20",
+      });
+    });
   });
 });
 

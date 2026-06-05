@@ -45,6 +45,10 @@ class SubnetAllocationStrategy(_builtins.str, Enum):
     """
     Order remains as specified by specs, allowing gaps where required.
     """
+    AUTO_MERGE = "AutoMerge"
+    """
+    Start from the default auto-generated public/private layout and merge user-provided subnet settings into matching subnet types.
+    """
     EXACT = "Exact"
     """
     Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
