@@ -2100,7 +2100,7 @@
                 "isolatedSubnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.32.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's isolated subnets."
                 },
@@ -2120,7 +2120,7 @@
                 "privateSubnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.32.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's private subnets."
                 },
@@ -2133,7 +2133,7 @@
                 "publicSubnets": {
                     "type": "array",
                     "items": {
-                        "$ref": "/aws/v7.24.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                        "$ref": "/aws/v7.32.0/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "The VPC's public subnets."
                 },
