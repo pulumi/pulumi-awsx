@@ -1,3 +1,0 @@
-name: ts-lb-attach-ec2
-runtime: nodejs
-description: LoadBalancer Typescript EC2 attach test

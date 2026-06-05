@@ -1,3 +1,0 @@
-name: vpc-ignoreSubnetChanges
-runtime: nodejs
-description: A simple vpc demo.

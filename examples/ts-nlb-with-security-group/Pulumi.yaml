@@ -1,3 +1,0 @@
-name: ts-nlb-with-security-group
-runtime: nodejs
-description: Minimal Network LoadBalancer Typescript component test

@@ -1,3 +1,0 @@
-name: ts-vpc-get-default-vpc
-runtime: nodejs
-description: Fetch the default VPC details
