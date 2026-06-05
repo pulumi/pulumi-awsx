@@ -29,6 +29,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	ecrTypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
+	lambdasvc "github.com/aws/aws-sdk-go-v2/service/lambda"
 	"github.com/pulumi/providertest/pulumitest"
 	"github.com/pulumi/providertest/pulumitest/optnewstack"
 	"github.com/pulumi/providertest/pulumitest/opttest"
@@ -250,6 +251,83 @@ func TestVpcWithServiceEndpoint(t *testing.T) {
 		})
 
 	integration.ProgramTest(t, &test)
+}
+
+func TestVpcWithAutoServiceEndpoints(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest:          false,
+			Dir:                    filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-with-auto-service-endpoints"),
+			RetryFailedSteps:       true, // Internet Gateway occasionally fails to delete on first attempt.
+			ExtraRuntimeValidation: validateVpcEndpointAutoTraffic,
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+type vpcEndpointAutoTrafficResult struct {
+	DynamoDB     string `json:"dynamodb"`
+	SQSMessageID string `json:"sqsMessageId"`
+}
+
+func validateVpcEndpointAutoTraffic(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+	lambdaName, ok := stackInfo.Outputs["lambdaName"].(string)
+	require.True(t, ok)
+	require.NotEmpty(t, lambdaName)
+
+	endpointIDs, ok := stackInfo.Outputs["vpcEndpointIds"].([]interface{})
+	require.True(t, ok)
+	require.Len(t, endpointIDs, 2)
+
+	client := lambdasvc.NewFromConfig(loadAwsDefaultConfig(t))
+	deadline := time.Now().Add(2 * time.Minute)
+	var lastErr error
+	for time.Now().Before(deadline) {
+		result, err := invokeVpcEndpointAutoTrafficLambda(client, lambdaName)
+		if err == nil {
+			require.Equal(t, "ok", result.DynamoDB)
+			require.NotEmpty(t, result.SQSMessageID)
+			return
+		}
+		lastErr = err
+		time.Sleep(10 * time.Second)
+	}
+	require.NoError(t, lastErr)
+}
+
+func invokeVpcEndpointAutoTrafficLambda(
+	client *lambdasvc.Client,
+	lambdaName string,
+) (vpcEndpointAutoTrafficResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	resp, err := client.Invoke(ctx, &lambdasvc.InvokeInput{
+		FunctionName: aws.String(lambdaName),
+		Payload:      []byte("{}"),
+	})
+	if err != nil {
+		return vpcEndpointAutoTrafficResult{}, err
+	}
+	if resp.FunctionError != nil {
+		return vpcEndpointAutoTrafficResult{}, fmt.Errorf(
+			"lambda function error %s: %s",
+			aws.ToString(resp.FunctionError),
+			string(resp.Payload),
+		)
+	}
+
+	var result vpcEndpointAutoTrafficResult
+	if err := json.Unmarshal(resp.Payload, &result); err != nil {
+		return vpcEndpointAutoTrafficResult{}, err
+	}
+	if result.DynamoDB != "ok" {
+		return vpcEndpointAutoTrafficResult{}, fmt.Errorf("unexpected DynamoDB result %q", result.DynamoDB)
+	}
+	if result.SQSMessageID == "" {
+		return vpcEndpointAutoTrafficResult{}, fmt.Errorf("missing SQS message ID")
+	}
+	return result, nil
 }
 
 func TestVpcSpecificSubnetSpecArgs(t *testing.T) {

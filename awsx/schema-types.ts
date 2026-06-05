@@ -105,6 +105,7 @@ export interface VpcArgs {
     readonly subnetStrategy?: SubnetAllocationStrategyInputs;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly vpcEndpointSpecs?: VpcEndpointSpecInputs[];
+    readonly vpcEndpointStrategy?: VpcEndpointStrategyInputs;
 }
 export abstract class Image<TData = any> extends (pulumi.ComponentResource)<TData> {
     public imageUri!: string | pulumi.Output<string>;
@@ -711,6 +712,8 @@ export interface VpcEndpointSpecOutputs {
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly vpcEndpointType?: pulumi.Output<string>;
 }
+export type VpcEndpointStrategyInputs = "Legacy" | "Auto";
+export type VpcEndpointStrategyOutputs = "Legacy" | "Auto";
 export type BuilderVersionInputs = "BuilderV1" | "BuilderBuildKit";
 export type BuilderVersionOutputs = "BuilderV1" | "BuilderBuildKit";
 export interface DockerBuildInputs {

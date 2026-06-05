@@ -164,6 +164,8 @@ type vpcArgs struct {
 	Tags map[string]string `pulumi:"tags"`
 	// A list of VPC Endpoints specs to be deployed as part of the VPC
 	VpcEndpointSpecs []VpcEndpointSpec `pulumi:"vpcEndpointSpecs"`
+	// The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+	VpcEndpointStrategy *VpcEndpointStrategy `pulumi:"vpcEndpointStrategy"`
 }
 
 // The set of arguments for constructing a Vpc resource.
@@ -210,6 +212,8 @@ type VpcArgs struct {
 	Tags pulumi.StringMapInput
 	// A list of VPC Endpoints specs to be deployed as part of the VPC
 	VpcEndpointSpecs []VpcEndpointSpecArgs
+	// The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+	VpcEndpointStrategy *VpcEndpointStrategy
 }
 
 func (VpcArgs) ElementType() reflect.Type {
