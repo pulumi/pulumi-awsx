@@ -267,7 +267,7 @@ test: export PATH := $(WORKING_DIR)/bin:$(PATH)
 test:
 	cd examples && $(GO_TEST_EXEC) -v -tags=$(TESTTAGS) -parallel $(TESTPARALLELISM) -timeout 2h $(value GOTESTARGS)
 .PHONY: test
-test_provider_cmd = yarn --cwd awsx test
+test_provider_cmd = yarn --cwd awsx install --no-progress --frozen-lockfile && yarn --cwd awsx test
 test_provider:
 	$(call test_provider_cmd)
 .PHONY: test_provider
@@ -290,7 +290,9 @@ tfgen_no_deps: .make/schema
 tfgen_build_only: bin/$(CODEGEN)
 bin/$(CODEGEN): provider/*.go provider/go.* .make/upstream
 	(cd provider && go build $(PULUMI_PROVIDER_BUILD_PARALLELISM) -o $(WORKING_DIR)/bin/$(CODEGEN) -ldflags "$(LDFLAGS_PROJ_VERSION) $(LDFLAGS_EXTRAS)" $(PROJECT)/$(PROVIDER_PATH)/cmd/$(CODEGEN))
-.PHONY: tfgen schema tfgen_no_deps tfgen_build_only
+schema_embed:
+	(cd provider && VERSION=$(PROVIDER_VERSION) go generate cmd/$(PROVIDER)/main.go)
+.PHONY: tfgen schema tfgen_no_deps tfgen_build_only schema_embed
 
 # Apply patches to the upstream submodule, if it exists
 upstream: .make/upstream

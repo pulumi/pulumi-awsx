@@ -201,7 +201,7 @@ export interface VpcArgs {
     /**
      * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
      */
-    assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean | undefined>;
     /**
      * The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
      */
@@ -217,43 +217,43 @@ export interface VpcArgs {
     /**
      * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
      */
-    enableDnsHostnames?: pulumi.Input<boolean>;
+    enableDnsHostnames?: pulumi.Input<boolean | undefined>;
     /**
      * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
      */
-    enableDnsSupport?: pulumi.Input<boolean>;
+    enableDnsSupport?: pulumi.Input<boolean | undefined>;
     /**
      * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
      */
-    enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
+    enableNetworkAddressUsageMetrics?: pulumi.Input<boolean | undefined>;
     /**
      * A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
      */
-    instanceTenancy?: pulumi.Input<string>;
+    instanceTenancy?: pulumi.Input<string | undefined>;
     /**
      * The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
      */
-    ipv4IpamPoolId?: pulumi.Input<string>;
+    ipv4IpamPoolId?: pulumi.Input<string | undefined>;
     /**
      * The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
      */
-    ipv4NetmaskLength?: pulumi.Input<number>;
+    ipv4NetmaskLength?: pulumi.Input<number | undefined>;
     /**
      * IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6NetmaskLength`.
      */
-    ipv6CidrBlock?: pulumi.Input<string>;
+    ipv6CidrBlock?: pulumi.Input<string | undefined>;
     /**
      * By default when an IPv6 CIDR is assigned to a VPC a default ipv6CidrBlockNetworkBorderGroup will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
      */
-    ipv6CidrBlockNetworkBorderGroup?: pulumi.Input<string>;
+    ipv6CidrBlockNetworkBorderGroup?: pulumi.Input<string | undefined>;
     /**
      * IPAM Pool ID for a IPv6 pool. Conflicts with `assignGeneratedIpv6CidrBlock`.
      */
-    ipv6IpamPoolId?: pulumi.Input<string>;
+    ipv6IpamPoolId?: pulumi.Input<string | undefined>;
     /**
      * Netmask length to request from IPAM Pool. Conflicts with `ipv6CidrBlock`. This can be omitted if IPAM pool as a `allocationDefaultNetmaskLength` set. Valid values are from `44` to `60` in increments of 4.
      */
-    ipv6NetmaskLength?: pulumi.Input<number>;
+    ipv6NetmaskLength?: pulumi.Input<number | undefined>;
     /**
      * Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
      */
@@ -265,7 +265,7 @@ export interface VpcArgs {
     /**
      * Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
      */
-    region?: pulumi.Input<string>;
+    region?: pulumi.Input<string | undefined>;
     /**
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
      */
@@ -277,7 +277,7 @@ export interface VpcArgs {
     /**
      * A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
-    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
      * A list of VPC Endpoints specs to be deployed as part of the VPC
      */

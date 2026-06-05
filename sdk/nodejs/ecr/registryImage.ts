@@ -83,11 +83,11 @@ export interface RegistryImageArgs {
     /**
      * If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
      */
-    insecureSkipVerify?: pulumi.Input<boolean>;
+    insecureSkipVerify?: pulumi.Input<boolean | undefined>;
     /**
      * If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
      */
-    keepRemotely?: pulumi.Input<boolean>;
+    keepRemotely?: pulumi.Input<boolean | undefined>;
     /**
      * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      */
@@ -99,9 +99,9 @@ export interface RegistryImageArgs {
     /**
      * The tag to use for the pushed image. If not provided, it defaults to `latest`.
      */
-    tag?: pulumi.Input<string>;
+    tag?: pulumi.Input<string | undefined>;
     /**
      * A map of arbitrary strings that, when changed, will force the `docker.RegistryImage` resource to be replaced. This can be used to repush a local image
      */
-    triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
 }

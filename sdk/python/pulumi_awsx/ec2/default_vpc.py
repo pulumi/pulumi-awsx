@@ -35,6 +35,7 @@ class DefaultVpc(pulumi.ComponentResource):
         """
         Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.
 
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         """
@@ -46,6 +47,7 @@ class DefaultVpc(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.
+
 
         :param str resource_name: The name of the resource.
         :param DefaultVpcArgs args: The arguments to use to populate this resource's properties.

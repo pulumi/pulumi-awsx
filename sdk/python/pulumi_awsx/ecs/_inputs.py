@@ -64,143 +64,139 @@ __all__ = [
     'TaskDefinitionVolumeFromArgsDict',
 ]
 
-MYPY = False
+class EC2ServiceTaskDefinitionArgsDict(TypedDict):
+    """
+    Create a TaskDefinition resource with the given unique name, arguments, and options.
+    Creates required log-group and task & execution roles.
+    Presents required Service load balancers if target group included in port mappings.
+    """
+    container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
+    """
+    Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+    multiple containers, especially when creating a TaskDefinition to call [run] on.
 
-if not MYPY:
-    class EC2ServiceTaskDefinitionArgsDict(TypedDict):
-        """
-        Create a TaskDefinition resource with the given unique name, arguments, and options.
-        Creates required log-group and task & execution roles.
-        Presents required Service load balancers if target group included in port mappings.
-        """
-        container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
-        """
-        Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
-        multiple containers, especially when creating a TaskDefinition to call [run] on.
+    Either [container] or [containers] must be provided.
+    """
+    containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
+    """
+    All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+    contain many containers within.
 
-        Either [container] or [containers] must be provided.
-        """
-        containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
-        """
-        All the containers to make a TaskDefinition from.  Useful when creating a Service that will
-        contain many containers within.
+    Either [container] or [containers] must be provided.
+    """
+    cpu: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+    """
+    enable_fault_injection: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+    """
+    ephemeral_storage: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]]
+    """
+    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    """
+    execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+    Will be created automatically if not defined.
+    """
+    family: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    An optional unique name for your task definition. If not specified, then a default will be created.
+    """
+    ipc_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
+    """
+    log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
+    """
+    A set of volume blocks that containers in your task may use.
+    """
+    memory: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+    based on the cumulative needs specified by [containerDefinitions]
+    """
+    network_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Docker networking mode to use for the containers in the task. Valid values: `awsvpc`, `bridge`, `host`, and `none`.
+    """
+    pid_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Process namespace to use for the containers in the task. Valid values: host`, `task`.
+    """
+    placement_constraints: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]]
+    """
+    Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+    """
+    proxy_configuration: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]]
+    """
+    Configuration block for the App Mesh proxy. Detailed below.
+    """
+    region: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    runtime_platform: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]]
+    """
+    Configuration block for runtime_platform that containers in your task may use.
+    """
+    skip_destroy: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+    """
+    tags: NotRequired[pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]]
+    """
+    Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
+    task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+    Will be created automatically if not defined.
+    """
+    track_latest: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+    """
+    volumes: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]]
+    """
+    Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
-        Either [container] or [containers] must be provided.
-        """
-        cpu: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        """
-        enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
-        """
-        ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
-        """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
-        """
-        execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-        Will be created automatically if not defined.
-        """
-        family: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        An optional unique name for your task definition. If not specified, then a default will be created.
-        """
-        ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
-        """
-        log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
-        """
-        A set of volume blocks that containers in your task may use.
-        """
-        memory: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-        based on the cumulative needs specified by [containerDefinitions]
-        """
-        network_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Docker networking mode to use for the containers in the task. Valid values: `awsvpc`, `bridge`, `host`, and `none`.
-        """
-        pid_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Process namespace to use for the containers in the task. Valid values: host`, `task`.
-        """
-        placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
-        """
-        Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
-        """
-        proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
-        """
-        Configuration block for the App Mesh proxy. Detailed below.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
-        """
-        Configuration block for runtime_platform that containers in your task may use.
-        """
-        skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-        task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-        Will be created automatically if not defined.
-        """
-        track_latest: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
-        """
-        volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
-        """
-        Repeatable configuration block for volumes that containers in your task may use. Detailed below.
+    > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
 
-        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
-
-        > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
-        """
-elif False:
-    EC2ServiceTaskDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+    > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+    """
 
 @pulumi.input_type
 class EC2ServiceTaskDefinitionArgs:
     def __init__(__self__, *,
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
-                 cpu: Optional[pulumi.Input[_builtins.str]] = None,
-                 enable_fault_injection: Optional[pulumi.Input[_builtins.bool]] = None,
-                 ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
+                 cpu: pulumi.Input[Optional[_builtins.str]] = None,
+                 enable_fault_injection: pulumi.Input[Optional[_builtins.bool]] = None,
+                 ephemeral_storage: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-                 family: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipc_mode: Optional[pulumi.Input[_builtins.str]] = None,
+                 family: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipc_mode: pulumi.Input[Optional[_builtins.str]] = None,
                  log_group: Optional['_awsx.DefaultLogGroupArgs'] = None,
-                 memory: Optional[pulumi.Input[_builtins.str]] = None,
-                 network_mode: Optional[pulumi.Input[_builtins.str]] = None,
-                 pid_mode: Optional[pulumi.Input[_builtins.str]] = None,
-                 placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
-                 proxy_configuration: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
-                 region: Optional[pulumi.Input[_builtins.str]] = None,
-                 runtime_platform: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] = None,
-                 skip_destroy: Optional[pulumi.Input[_builtins.bool]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 memory: pulumi.Input[Optional[_builtins.str]] = None,
+                 network_mode: pulumi.Input[Optional[_builtins.str]] = None,
+                 pid_mode: pulumi.Input[Optional[_builtins.str]] = None,
+                 placement_constraints: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
+                 proxy_configuration: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
+                 region: pulumi.Input[Optional[_builtins.str]] = None,
+                 runtime_platform: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] = None,
+                 skip_destroy: pulumi.Input[Optional[_builtins.bool]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-                 track_latest: Optional[pulumi.Input[_builtins.bool]] = None,
-                 volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
+                 track_latest: pulumi.Input[Optional[_builtins.bool]] = None,
+                 volumes: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
+
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -311,38 +307,38 @@ class EC2ServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def cpu(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def cpu(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         """
         return pulumi.get(self, "cpu")
 
     @cpu.setter
-    def cpu(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def cpu(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "cpu", value)
 
     @_builtins.property
     @pulumi.getter(name="enableFaultInjection")
-    def enable_fault_injection(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def enable_fault_injection(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
         """
         return pulumi.get(self, "enable_fault_injection")
 
     @enable_fault_injection.setter
-    def enable_fault_injection(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def enable_fault_injection(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "enable_fault_injection", value)
 
     @_builtins.property
     @pulumi.getter(name="ephemeralStorage")
-    def ephemeral_storage(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
+    def ephemeral_storage(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
         """
         The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         """
         return pulumi.get(self, "ephemeral_storage")
 
     @ephemeral_storage.setter
-    def ephemeral_storage(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]):
+    def ephemeral_storage(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]):
         pulumi.set(self, "ephemeral_storage", value)
 
     @_builtins.property
@@ -360,26 +356,26 @@ class EC2ServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def family(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def family(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         An optional unique name for your task definition. If not specified, then a default will be created.
         """
         return pulumi.get(self, "family")
 
     @family.setter
-    def family(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def family(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "family", value)
 
     @_builtins.property
     @pulumi.getter(name="ipcMode")
-    def ipc_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipc_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
         """
         return pulumi.get(self, "ipc_mode")
 
     @ipc_mode.setter
-    def ipc_mode(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipc_mode(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipc_mode", value)
 
     @_builtins.property
@@ -396,7 +392,7 @@ class EC2ServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def memory(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def memory(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
         based on the cumulative needs specified by [containerDefinitions]
@@ -404,103 +400,103 @@ class EC2ServiceTaskDefinitionArgs:
         return pulumi.get(self, "memory")
 
     @memory.setter
-    def memory(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def memory(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "memory", value)
 
     @_builtins.property
     @pulumi.getter(name="networkMode")
-    def network_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def network_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Docker networking mode to use for the containers in the task. Valid values: `awsvpc`, `bridge`, `host`, and `none`.
         """
         return pulumi.get(self, "network_mode")
 
     @network_mode.setter
-    def network_mode(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def network_mode(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "network_mode", value)
 
     @_builtins.property
     @pulumi.getter(name="pidMode")
-    def pid_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def pid_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Process namespace to use for the containers in the task. Valid values: host`, `task`.
         """
         return pulumi.get(self, "pid_mode")
 
     @pid_mode.setter
-    def pid_mode(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def pid_mode(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "pid_mode", value)
 
     @_builtins.property
     @pulumi.getter(name="placementConstraints")
-    def placement_constraints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]:
+    def placement_constraints(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]:
         """
         Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         """
         return pulumi.get(self, "placement_constraints")
 
     @placement_constraints.setter
-    def placement_constraints(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]):
+    def placement_constraints(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]):
         pulumi.set(self, "placement_constraints", value)
 
     @_builtins.property
     @pulumi.getter(name="proxyConfiguration")
-    def proxy_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]:
+    def proxy_configuration(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]:
         """
         Configuration block for the App Mesh proxy. Detailed below.
         """
         return pulumi.get(self, "proxy_configuration")
 
     @proxy_configuration.setter
-    def proxy_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]):
+    def proxy_configuration(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]):
         pulumi.set(self, "proxy_configuration", value)
 
     @_builtins.property
     @pulumi.getter
-    def region(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def region(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         """
         return pulumi.get(self, "region")
 
     @region.setter
-    def region(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def region(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "region", value)
 
     @_builtins.property
     @pulumi.getter(name="runtimePlatform")
-    def runtime_platform(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]:
+    def runtime_platform(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]:
         """
         Configuration block for runtime_platform that containers in your task may use.
         """
         return pulumi.get(self, "runtime_platform")
 
     @runtime_platform.setter
-    def runtime_platform(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]):
+    def runtime_platform(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]):
         pulumi.set(self, "runtime_platform", value)
 
     @_builtins.property
     @pulumi.getter(name="skipDestroy")
-    def skip_destroy(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def skip_destroy(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
         """
         return pulumi.get(self, "skip_destroy")
 
     @skip_destroy.setter
-    def skip_destroy(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def skip_destroy(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "skip_destroy", value)
 
     @_builtins.property
     @pulumi.getter
-    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def tags(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
     @tags.setter
-    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def tags(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
 
     @_builtins.property
@@ -518,19 +514,19 @@ class EC2ServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter(name="trackLatest")
-    def track_latest(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def track_latest(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         """
         return pulumi.get(self, "track_latest")
 
     @track_latest.setter
-    def track_latest(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def track_latest(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "track_latest", value)
 
     @_builtins.property
     @pulumi.getter
-    def volumes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
+    def volumes(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
         """
         Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
@@ -541,140 +537,138 @@ class EC2ServiceTaskDefinitionArgs:
         return pulumi.get(self, "volumes")
 
     @volumes.setter
-    def volumes(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]):
+    def volumes(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]):
         pulumi.set(self, "volumes", value)
 
 
-if not MYPY:
-    class FargateServiceTaskDefinitionArgsDict(TypedDict):
-        """
-        Create a TaskDefinition resource with the given unique name, arguments, and options.
-        Creates required log-group and task & execution roles.
-        Presents required Service load balancers if target group included in port mappings.
-        """
-        container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
-        """
-        Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
-        multiple containers, especially when creating a TaskDefinition to call [run] on.
+class FargateServiceTaskDefinitionArgsDict(TypedDict):
+    """
+    Create a TaskDefinition resource with the given unique name, arguments, and options.
+    Creates required log-group and task & execution roles.
+    Presents required Service load balancers if target group included in port mappings.
+    """
+    container: NotRequired['TaskDefinitionContainerDefinitionArgsDict']
+    """
+    Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+    multiple containers, especially when creating a TaskDefinition to call [run] on.
 
-        Either [container] or [containers] must be provided.
-        """
-        containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
-        """
-        All the containers to make a TaskDefinition from.  Useful when creating a Service that will
-        contain many containers within.
+    Either [container] or [containers] must be provided.
+    """
+    containers: NotRequired[Mapping[str, 'TaskDefinitionContainerDefinitionArgsDict']]
+    """
+    All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+    contain many containers within.
 
-        Either [container] or [containers] must be provided.
-        """
-        cpu: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
-        """
-        enable_fault_injection: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
-        """
-        ephemeral_storage: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]
-        """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
-        """
-        execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-        Will be created automatically if not defined.
-        """
-        family: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        An optional unique name for your task definition. If not specified, then a default will be created.
-        """
-        ipc_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
-        """
-        log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
-        """
-        A set of volume blocks that containers in your task may use.
-        """
-        memory: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-        based on the cumulative needs specified by [containerDefinitions]
-        """
-        pid_mode: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Process namespace to use for the containers in the task. Valid values: host`, `task`.
-        """
-        placement_constraints: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]
-        """
-        Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
-        """
-        proxy_configuration: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]
-        """
-        Configuration block for the App Mesh proxy. Detailed below.
-        """
-        region: NotRequired[pulumi.Input[_builtins.str]]
-        """
-        Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
-        """
-        runtime_platform: NotRequired[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]
-        """
-        Configuration block for runtime_platform that containers in your task may use.
-        """
-        skip_destroy: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
-        """
-        tags: NotRequired[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]
-        """
-        Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        """
-        task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
-        """
-        IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-        Will be created automatically if not defined.
-        """
-        track_latest: NotRequired[pulumi.Input[_builtins.bool]]
-        """
-        Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
-        """
-        volumes: NotRequired[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]
-        """
-        Repeatable configuration block for volumes that containers in your task may use. Detailed below.
+    Either [container] or [containers] must be provided.
+    """
+    cpu: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+    """
+    enable_fault_injection: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
+    """
+    ephemeral_storage: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]]
+    """
+    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    """
+    execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+    Will be created automatically if not defined.
+    """
+    family: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    An optional unique name for your task definition. If not specified, then a default will be created.
+    """
+    ipc_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
+    """
+    log_group: NotRequired['_awsx.DefaultLogGroupArgsDict']
+    """
+    A set of volume blocks that containers in your task may use.
+    """
+    memory: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+    based on the cumulative needs specified by [containerDefinitions]
+    """
+    pid_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Process namespace to use for the containers in the task. Valid values: host`, `task`.
+    """
+    placement_constraints: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]]
+    """
+    Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+    """
+    proxy_configuration: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgsDict']]]
+    """
+    Configuration block for the App Mesh proxy. Detailed below.
+    """
+    region: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
+    """
+    runtime_platform: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgsDict']]]
+    """
+    Configuration block for runtime_platform that containers in your task may use.
+    """
+    skip_destroy: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+    """
+    tags: NotRequired[pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]]
+    """
+    Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+    """
+    task_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
+    """
+    IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+    Will be created automatically if not defined.
+    """
+    track_latest: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    """
+    Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
+    """
+    volumes: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgsDict']]]]]
+    """
+    Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
-        > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
+    > **NOTE:** Proper escaping is required for JSON field values containing quotes (`"`) such as `environment` values. If directly setting the JSON, they should be escaped as `\\"` in the JSON,  e.g., `"value": "I \\"love\\" escaped quotes"`. If using a variable value, they should be escaped as `\\\\\\"` in the variable, e.g., `value = "I \\\\\\"love\\\\\\" escaped quotes"` in the variable and `"value": "${var.myvariable}"` in the JSON.
 
-        > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
-        """
-elif False:
-    FargateServiceTaskDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+    > **Note:** Fault injection only works with tasks using the `awsvpc` or `host` network modes. Fault injection isn't available on Windows.
+    """
 
 @pulumi.input_type
 class FargateServiceTaskDefinitionArgs:
     def __init__(__self__, *,
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
-                 cpu: Optional[pulumi.Input[_builtins.str]] = None,
-                 enable_fault_injection: Optional[pulumi.Input[_builtins.bool]] = None,
-                 ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
+                 cpu: pulumi.Input[Optional[_builtins.str]] = None,
+                 enable_fault_injection: pulumi.Input[Optional[_builtins.bool]] = None,
+                 ephemeral_storage: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-                 family: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipc_mode: Optional[pulumi.Input[_builtins.str]] = None,
+                 family: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipc_mode: pulumi.Input[Optional[_builtins.str]] = None,
                  log_group: Optional['_awsx.DefaultLogGroupArgs'] = None,
-                 memory: Optional[pulumi.Input[_builtins.str]] = None,
-                 pid_mode: Optional[pulumi.Input[_builtins.str]] = None,
-                 placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
-                 proxy_configuration: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
-                 region: Optional[pulumi.Input[_builtins.str]] = None,
-                 runtime_platform: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] = None,
-                 skip_destroy: Optional[pulumi.Input[_builtins.bool]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 memory: pulumi.Input[Optional[_builtins.str]] = None,
+                 pid_mode: pulumi.Input[Optional[_builtins.str]] = None,
+                 placement_constraints: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
+                 proxy_configuration: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
+                 region: pulumi.Input[Optional[_builtins.str]] = None,
+                 runtime_platform: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] = None,
+                 skip_destroy: pulumi.Input[Optional[_builtins.bool]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-                 track_latest: Optional[pulumi.Input[_builtins.bool]] = None,
-                 volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
+                 track_latest: pulumi.Input[Optional[_builtins.bool]] = None,
+                 volumes: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
+
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -782,38 +776,38 @@ class FargateServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def cpu(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def cpu(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         """
         return pulumi.get(self, "cpu")
 
     @cpu.setter
-    def cpu(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def cpu(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "cpu", value)
 
     @_builtins.property
     @pulumi.getter(name="enableFaultInjection")
-    def enable_fault_injection(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def enable_fault_injection(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
         """
         return pulumi.get(self, "enable_fault_injection")
 
     @enable_fault_injection.setter
-    def enable_fault_injection(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def enable_fault_injection(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "enable_fault_injection", value)
 
     @_builtins.property
     @pulumi.getter(name="ephemeralStorage")
-    def ephemeral_storage(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
+    def ephemeral_storage(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
         """
         The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         """
         return pulumi.get(self, "ephemeral_storage")
 
     @ephemeral_storage.setter
-    def ephemeral_storage(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]):
+    def ephemeral_storage(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]):
         pulumi.set(self, "ephemeral_storage", value)
 
     @_builtins.property
@@ -831,26 +825,26 @@ class FargateServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def family(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def family(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         An optional unique name for your task definition. If not specified, then a default will be created.
         """
         return pulumi.get(self, "family")
 
     @family.setter
-    def family(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def family(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "family", value)
 
     @_builtins.property
     @pulumi.getter(name="ipcMode")
-    def ipc_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipc_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         IPC resource namespace to be used for the containers in the task. Valid values: `host`, `task`, `none`.
         """
         return pulumi.get(self, "ipc_mode")
 
     @ipc_mode.setter
-    def ipc_mode(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipc_mode(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipc_mode", value)
 
     @_builtins.property
@@ -867,7 +861,7 @@ class FargateServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def memory(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def memory(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
         based on the cumulative needs specified by [containerDefinitions]
@@ -875,91 +869,91 @@ class FargateServiceTaskDefinitionArgs:
         return pulumi.get(self, "memory")
 
     @memory.setter
-    def memory(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def memory(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "memory", value)
 
     @_builtins.property
     @pulumi.getter(name="pidMode")
-    def pid_mode(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def pid_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Process namespace to use for the containers in the task. Valid values: host`, `task`.
         """
         return pulumi.get(self, "pid_mode")
 
     @pid_mode.setter
-    def pid_mode(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def pid_mode(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "pid_mode", value)
 
     @_builtins.property
     @pulumi.getter(name="placementConstraints")
-    def placement_constraints(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]:
+    def placement_constraints(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]:
         """
         Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         """
         return pulumi.get(self, "placement_constraints")
 
     @placement_constraints.setter
-    def placement_constraints(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]):
+    def placement_constraints(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]):
         pulumi.set(self, "placement_constraints", value)
 
     @_builtins.property
     @pulumi.getter(name="proxyConfiguration")
-    def proxy_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]:
+    def proxy_configuration(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]:
         """
         Configuration block for the App Mesh proxy. Detailed below.
         """
         return pulumi.get(self, "proxy_configuration")
 
     @proxy_configuration.setter
-    def proxy_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]):
+    def proxy_configuration(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]):
         pulumi.set(self, "proxy_configuration", value)
 
     @_builtins.property
     @pulumi.getter
-    def region(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def region(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         """
         return pulumi.get(self, "region")
 
     @region.setter
-    def region(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def region(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "region", value)
 
     @_builtins.property
     @pulumi.getter(name="runtimePlatform")
-    def runtime_platform(self) -> Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]:
+    def runtime_platform(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]:
         """
         Configuration block for runtime_platform that containers in your task may use.
         """
         return pulumi.get(self, "runtime_platform")
 
     @runtime_platform.setter
-    def runtime_platform(self, value: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]):
+    def runtime_platform(self, value: pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']]):
         pulumi.set(self, "runtime_platform", value)
 
     @_builtins.property
     @pulumi.getter(name="skipDestroy")
-    def skip_destroy(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def skip_destroy(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
         """
         return pulumi.get(self, "skip_destroy")
 
     @skip_destroy.setter
-    def skip_destroy(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def skip_destroy(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "skip_destroy", value)
 
     @_builtins.property
     @pulumi.getter
-    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def tags(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
     @tags.setter
-    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def tags(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
 
     @_builtins.property
@@ -977,19 +971,19 @@ class FargateServiceTaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter(name="trackLatest")
-    def track_latest(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def track_latest(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource.
         """
         return pulumi.get(self, "track_latest")
 
     @track_latest.setter
-    def track_latest(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def track_latest(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "track_latest", value)
 
     @_builtins.property
     @pulumi.getter
-    def volumes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
+    def volumes(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
         """
         Repeatable configuration block for volumes that containers in your task may use. Detailed below.
 
@@ -1000,119 +994,117 @@ class FargateServiceTaskDefinitionArgs:
         return pulumi.get(self, "volumes")
 
     @volumes.setter
-    def volumes(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]):
+    def volumes(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]):
         pulumi.set(self, "volumes", value)
 
 
-if not MYPY:
-    class TaskDefinitionContainerDefinitionArgsDict(TypedDict):
-        """
-        List of container definitions that are passed to the Docker daemon on a container instance
-        """
-        image: pulumi.Input[_builtins.str]
-        """
-        The image used to start a container. This string is passed directly to the Docker daemon.
-        """
-        name: pulumi.Input[_builtins.str]
-        """
-        The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
-        """
-        command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        cpu: NotRequired[pulumi.Input[_builtins.int]]
-        depends_on: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgsDict']]]]
-        disable_networking: NotRequired[pulumi.Input[_builtins.bool]]
-        dns_search_domains: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        dns_servers: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        docker_labels: NotRequired[Any]
-        docker_security_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        entry_point: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        environment: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgsDict']]]]
-        """
-        The environment variables to pass to a container
-        """
-        environment_files: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgsDict']]]]
-        """
-        The list of one or more files that contain the environment variables to pass to a container
-        """
-        essential: NotRequired[pulumi.Input[_builtins.bool]]
-        extra_hosts: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgsDict']]]]
-        firelens_configuration: NotRequired[pulumi.Input['TaskDefinitionFirelensConfigurationArgsDict']]
-        health_check: NotRequired[pulumi.Input['TaskDefinitionHealthCheckArgsDict']]
-        hostname: NotRequired[pulumi.Input[_builtins.str]]
-        interactive: NotRequired[pulumi.Input[_builtins.bool]]
-        links: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        linux_parameters: NotRequired[pulumi.Input['TaskDefinitionLinuxParametersArgsDict']]
-        log_configuration: NotRequired[pulumi.Input['TaskDefinitionLogConfigurationArgsDict']]
-        memory: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
-        """
-        memory_reservation: NotRequired[pulumi.Input[_builtins.int]]
-        mount_points: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgsDict']]]]
-        port_mappings: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgsDict']]]]
-        """
-        Port mappings allow containers to access ports on the host container instance to send or receive traffic.
-        """
-        privileged: NotRequired[pulumi.Input[_builtins.bool]]
-        pseudo_terminal: NotRequired[pulumi.Input[_builtins.bool]]
-        readonly_root_filesystem: NotRequired[pulumi.Input[_builtins.bool]]
-        repository_credentials: NotRequired[pulumi.Input['TaskDefinitionRepositoryCredentialsArgsDict']]
-        resource_requirements: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgsDict']]]]
-        secrets: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
-        start_timeout: NotRequired[pulumi.Input[_builtins.int]]
-        stop_timeout: NotRequired[pulumi.Input[_builtins.int]]
-        system_controls: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgsDict']]]]
-        ulimits: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgsDict']]]]
-        user: NotRequired[pulumi.Input[_builtins.str]]
-        volumes_from: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgsDict']]]]
-        working_directory: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionContainerDefinitionArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionContainerDefinitionArgsDict(TypedDict):
+    """
+    List of container definitions that are passed to the Docker daemon on a container instance
+    """
+    image: pulumi.Input[_builtins.str]
+    """
+    The image used to start a container. This string is passed directly to the Docker daemon.
+    """
+    name: pulumi.Input[_builtins.str]
+    """
+    The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
+    """
+    command: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    cpu: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    depends_on: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgsDict']]]]]
+    disable_networking: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    dns_search_domains: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    dns_servers: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    docker_labels: NotRequired[Any]
+    docker_security_options: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    entry_point: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    environment: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgsDict']]]]]
+    """
+    The environment variables to pass to a container
+    """
+    environment_files: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgsDict']]]]]
+    """
+    The list of one or more files that contain the environment variables to pass to a container
+    """
+    essential: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    extra_hosts: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionHostEntryArgsDict']]]]]
+    firelens_configuration: NotRequired[pulumi.Input[Optional['TaskDefinitionFirelensConfigurationArgsDict']]]
+    health_check: NotRequired[pulumi.Input[Optional['TaskDefinitionHealthCheckArgsDict']]]
+    hostname: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    interactive: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    links: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    linux_parameters: NotRequired[pulumi.Input[Optional['TaskDefinitionLinuxParametersArgsDict']]]
+    log_configuration: NotRequired[pulumi.Input[Optional['TaskDefinitionLogConfigurationArgsDict']]]
+    memory: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    """
+    The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
+    """
+    memory_reservation: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    mount_points: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionMountPointArgsDict']]]]]
+    port_mappings: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionPortMappingArgsDict']]]]]
+    """
+    Port mappings allow containers to access ports on the host container instance to send or receive traffic.
+    """
+    privileged: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    pseudo_terminal: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    readonly_root_filesystem: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    repository_credentials: NotRequired[pulumi.Input[Optional['TaskDefinitionRepositoryCredentialsArgsDict']]]
+    resource_requirements: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgsDict']]]]]
+    secrets: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]]
+    start_timeout: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    stop_timeout: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    system_controls: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSystemControlArgsDict']]]]]
+    ulimits: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionUlimitArgsDict']]]]]
+    user: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    volumes_from: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgsDict']]]]]
+    working_directory: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionContainerDefinitionArgs:
     def __init__(__self__, *,
                  image: pulumi.Input[_builtins.str],
                  name: pulumi.Input[_builtins.str],
-                 command: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 cpu: Optional[pulumi.Input[_builtins.int]] = None,
-                 depends_on: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]] = None,
-                 disable_networking: Optional[pulumi.Input[_builtins.bool]] = None,
-                 dns_search_domains: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 dns_servers: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 command: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 cpu: pulumi.Input[Optional[_builtins.int]] = None,
+                 depends_on: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]] = None,
+                 disable_networking: pulumi.Input[Optional[_builtins.bool]] = None,
+                 dns_search_domains: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 dns_servers: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
                  docker_labels: Optional[Any] = None,
-                 docker_security_options: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 entry_point: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 environment: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]] = None,
-                 environment_files: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]] = None,
-                 essential: Optional[pulumi.Input[_builtins.bool]] = None,
-                 extra_hosts: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]] = None,
-                 firelens_configuration: Optional[pulumi.Input['TaskDefinitionFirelensConfigurationArgs']] = None,
-                 health_check: Optional[pulumi.Input['TaskDefinitionHealthCheckArgs']] = None,
-                 hostname: Optional[pulumi.Input[_builtins.str]] = None,
-                 interactive: Optional[pulumi.Input[_builtins.bool]] = None,
-                 links: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 linux_parameters: Optional[pulumi.Input['TaskDefinitionLinuxParametersArgs']] = None,
-                 log_configuration: Optional[pulumi.Input['TaskDefinitionLogConfigurationArgs']] = None,
-                 memory: Optional[pulumi.Input[_builtins.int]] = None,
-                 memory_reservation: Optional[pulumi.Input[_builtins.int]] = None,
-                 mount_points: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]] = None,
-                 port_mappings: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]] = None,
-                 privileged: Optional[pulumi.Input[_builtins.bool]] = None,
-                 pseudo_terminal: Optional[pulumi.Input[_builtins.bool]] = None,
-                 readonly_root_filesystem: Optional[pulumi.Input[_builtins.bool]] = None,
-                 repository_credentials: Optional[pulumi.Input['TaskDefinitionRepositoryCredentialsArgs']] = None,
-                 resource_requirements: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]] = None,
-                 secrets: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]] = None,
-                 start_timeout: Optional[pulumi.Input[_builtins.int]] = None,
-                 stop_timeout: Optional[pulumi.Input[_builtins.int]] = None,
-                 system_controls: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]] = None,
-                 ulimits: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]] = None,
-                 user: Optional[pulumi.Input[_builtins.str]] = None,
-                 volumes_from: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]] = None,
-                 working_directory: Optional[pulumi.Input[_builtins.str]] = None):
+                 docker_security_options: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 entry_point: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 environment: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]] = None,
+                 environment_files: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]] = None,
+                 essential: pulumi.Input[Optional[_builtins.bool]] = None,
+                 extra_hosts: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]] = None,
+                 firelens_configuration: pulumi.Input[Optional['TaskDefinitionFirelensConfigurationArgs']] = None,
+                 health_check: pulumi.Input[Optional['TaskDefinitionHealthCheckArgs']] = None,
+                 hostname: pulumi.Input[Optional[_builtins.str]] = None,
+                 interactive: pulumi.Input[Optional[_builtins.bool]] = None,
+                 links: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 linux_parameters: pulumi.Input[Optional['TaskDefinitionLinuxParametersArgs']] = None,
+                 log_configuration: pulumi.Input[Optional['TaskDefinitionLogConfigurationArgs']] = None,
+                 memory: pulumi.Input[Optional[_builtins.int]] = None,
+                 memory_reservation: pulumi.Input[Optional[_builtins.int]] = None,
+                 mount_points: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]] = None,
+                 port_mappings: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]] = None,
+                 privileged: pulumi.Input[Optional[_builtins.bool]] = None,
+                 pseudo_terminal: pulumi.Input[Optional[_builtins.bool]] = None,
+                 readonly_root_filesystem: pulumi.Input[Optional[_builtins.bool]] = None,
+                 repository_credentials: pulumi.Input[Optional['TaskDefinitionRepositoryCredentialsArgs']] = None,
+                 resource_requirements: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]] = None,
+                 secrets: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]] = None,
+                 start_timeout: pulumi.Input[Optional[_builtins.int]] = None,
+                 stop_timeout: pulumi.Input[Optional[_builtins.int]] = None,
+                 system_controls: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]] = None,
+                 ulimits: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]] = None,
+                 user: pulumi.Input[Optional[_builtins.str]] = None,
+                 volumes_from: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]] = None,
+                 working_directory: pulumi.Input[Optional[_builtins.str]] = None):
         """
         List of container definitions that are passed to the Docker daemon on a container instance
+
         :param pulumi.Input[_builtins.str] image: The image used to start a container. This string is passed directly to the Docker daemon.
         :param pulumi.Input[_builtins.str] name: The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
         :param pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]] environment: The environment variables to pass to a container
@@ -1223,56 +1215,56 @@ class TaskDefinitionContainerDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def command(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def command(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "command")
 
     @command.setter
-    def command(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def command(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "command", value)
 
     @_builtins.property
     @pulumi.getter
-    def cpu(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def cpu(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "cpu")
 
     @cpu.setter
-    def cpu(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def cpu(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "cpu", value)
 
     @_builtins.property
     @pulumi.getter(name="dependsOn")
-    def depends_on(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]]:
+    def depends_on(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]]:
         return pulumi.get(self, "depends_on")
 
     @depends_on.setter
-    def depends_on(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]]):
+    def depends_on(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionContainerDependencyArgs']]]]):
         pulumi.set(self, "depends_on", value)
 
     @_builtins.property
     @pulumi.getter(name="disableNetworking")
-    def disable_networking(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def disable_networking(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "disable_networking")
 
     @disable_networking.setter
-    def disable_networking(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def disable_networking(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "disable_networking", value)
 
     @_builtins.property
     @pulumi.getter(name="dnsSearchDomains")
-    def dns_search_domains(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def dns_search_domains(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "dns_search_domains")
 
     @dns_search_domains.setter
-    def dns_search_domains(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def dns_search_domains(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "dns_search_domains", value)
 
     @_builtins.property
     @pulumi.getter(name="dnsServers")
-    def dns_servers(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def dns_servers(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "dns_servers")
 
     @dns_servers.setter
-    def dns_servers(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def dns_servers(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "dns_servers", value)
 
     @_builtins.property
@@ -1286,299 +1278,296 @@ class TaskDefinitionContainerDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter(name="dockerSecurityOptions")
-    def docker_security_options(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def docker_security_options(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "docker_security_options")
 
     @docker_security_options.setter
-    def docker_security_options(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def docker_security_options(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "docker_security_options", value)
 
     @_builtins.property
     @pulumi.getter(name="entryPoint")
-    def entry_point(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def entry_point(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "entry_point")
 
     @entry_point.setter
-    def entry_point(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def entry_point(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "entry_point", value)
 
     @_builtins.property
     @pulumi.getter
-    def environment(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]]:
+    def environment(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]]:
         """
         The environment variables to pass to a container
         """
         return pulumi.get(self, "environment")
 
     @environment.setter
-    def environment(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]]):
+    def environment(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionKeyValuePairArgs']]]]):
         pulumi.set(self, "environment", value)
 
     @_builtins.property
     @pulumi.getter(name="environmentFiles")
-    def environment_files(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]]:
+    def environment_files(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]]:
         """
         The list of one or more files that contain the environment variables to pass to a container
         """
         return pulumi.get(self, "environment_files")
 
     @environment_files.setter
-    def environment_files(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]]):
+    def environment_files(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionEnvironmentFileArgs']]]]):
         pulumi.set(self, "environment_files", value)
 
     @_builtins.property
     @pulumi.getter
-    def essential(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def essential(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "essential")
 
     @essential.setter
-    def essential(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def essential(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "essential", value)
 
     @_builtins.property
     @pulumi.getter(name="extraHosts")
-    def extra_hosts(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]]:
+    def extra_hosts(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]]:
         return pulumi.get(self, "extra_hosts")
 
     @extra_hosts.setter
-    def extra_hosts(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]]):
+    def extra_hosts(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionHostEntryArgs']]]]):
         pulumi.set(self, "extra_hosts", value)
 
     @_builtins.property
     @pulumi.getter(name="firelensConfiguration")
-    def firelens_configuration(self) -> Optional[pulumi.Input['TaskDefinitionFirelensConfigurationArgs']]:
+    def firelens_configuration(self) -> pulumi.Input[Optional['TaskDefinitionFirelensConfigurationArgs']]:
         return pulumi.get(self, "firelens_configuration")
 
     @firelens_configuration.setter
-    def firelens_configuration(self, value: Optional[pulumi.Input['TaskDefinitionFirelensConfigurationArgs']]):
+    def firelens_configuration(self, value: pulumi.Input[Optional['TaskDefinitionFirelensConfigurationArgs']]):
         pulumi.set(self, "firelens_configuration", value)
 
     @_builtins.property
     @pulumi.getter(name="healthCheck")
-    def health_check(self) -> Optional[pulumi.Input['TaskDefinitionHealthCheckArgs']]:
+    def health_check(self) -> pulumi.Input[Optional['TaskDefinitionHealthCheckArgs']]:
         return pulumi.get(self, "health_check")
 
     @health_check.setter
-    def health_check(self, value: Optional[pulumi.Input['TaskDefinitionHealthCheckArgs']]):
+    def health_check(self, value: pulumi.Input[Optional['TaskDefinitionHealthCheckArgs']]):
         pulumi.set(self, "health_check", value)
 
     @_builtins.property
     @pulumi.getter
-    def hostname(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def hostname(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "hostname")
 
     @hostname.setter
-    def hostname(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def hostname(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "hostname", value)
 
     @_builtins.property
     @pulumi.getter
-    def interactive(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def interactive(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "interactive")
 
     @interactive.setter
-    def interactive(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def interactive(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "interactive", value)
 
     @_builtins.property
     @pulumi.getter
-    def links(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def links(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "links")
 
     @links.setter
-    def links(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def links(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "links", value)
 
     @_builtins.property
     @pulumi.getter(name="linuxParameters")
-    def linux_parameters(self) -> Optional[pulumi.Input['TaskDefinitionLinuxParametersArgs']]:
+    def linux_parameters(self) -> pulumi.Input[Optional['TaskDefinitionLinuxParametersArgs']]:
         return pulumi.get(self, "linux_parameters")
 
     @linux_parameters.setter
-    def linux_parameters(self, value: Optional[pulumi.Input['TaskDefinitionLinuxParametersArgs']]):
+    def linux_parameters(self, value: pulumi.Input[Optional['TaskDefinitionLinuxParametersArgs']]):
         pulumi.set(self, "linux_parameters", value)
 
     @_builtins.property
     @pulumi.getter(name="logConfiguration")
-    def log_configuration(self) -> Optional[pulumi.Input['TaskDefinitionLogConfigurationArgs']]:
+    def log_configuration(self) -> pulumi.Input[Optional['TaskDefinitionLogConfigurationArgs']]:
         return pulumi.get(self, "log_configuration")
 
     @log_configuration.setter
-    def log_configuration(self, value: Optional[pulumi.Input['TaskDefinitionLogConfigurationArgs']]):
+    def log_configuration(self, value: pulumi.Input[Optional['TaskDefinitionLogConfigurationArgs']]):
         pulumi.set(self, "log_configuration", value)
 
     @_builtins.property
     @pulumi.getter
-    def memory(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def memory(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
         """
         return pulumi.get(self, "memory")
 
     @memory.setter
-    def memory(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def memory(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "memory", value)
 
     @_builtins.property
     @pulumi.getter(name="memoryReservation")
-    def memory_reservation(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def memory_reservation(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "memory_reservation")
 
     @memory_reservation.setter
-    def memory_reservation(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def memory_reservation(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "memory_reservation", value)
 
     @_builtins.property
     @pulumi.getter(name="mountPoints")
-    def mount_points(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]]:
+    def mount_points(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]]:
         return pulumi.get(self, "mount_points")
 
     @mount_points.setter
-    def mount_points(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]]):
+    def mount_points(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionMountPointArgs']]]]):
         pulumi.set(self, "mount_points", value)
 
     @_builtins.property
     @pulumi.getter(name="portMappings")
-    def port_mappings(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]]:
+    def port_mappings(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]]:
         """
         Port mappings allow containers to access ports on the host container instance to send or receive traffic.
         """
         return pulumi.get(self, "port_mappings")
 
     @port_mappings.setter
-    def port_mappings(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]]):
+    def port_mappings(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionPortMappingArgs']]]]):
         pulumi.set(self, "port_mappings", value)
 
     @_builtins.property
     @pulumi.getter
-    def privileged(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def privileged(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "privileged")
 
     @privileged.setter
-    def privileged(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def privileged(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "privileged", value)
 
     @_builtins.property
     @pulumi.getter(name="pseudoTerminal")
-    def pseudo_terminal(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def pseudo_terminal(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "pseudo_terminal")
 
     @pseudo_terminal.setter
-    def pseudo_terminal(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def pseudo_terminal(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "pseudo_terminal", value)
 
     @_builtins.property
     @pulumi.getter(name="readonlyRootFilesystem")
-    def readonly_root_filesystem(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def readonly_root_filesystem(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "readonly_root_filesystem")
 
     @readonly_root_filesystem.setter
-    def readonly_root_filesystem(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def readonly_root_filesystem(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "readonly_root_filesystem", value)
 
     @_builtins.property
     @pulumi.getter(name="repositoryCredentials")
-    def repository_credentials(self) -> Optional[pulumi.Input['TaskDefinitionRepositoryCredentialsArgs']]:
+    def repository_credentials(self) -> pulumi.Input[Optional['TaskDefinitionRepositoryCredentialsArgs']]:
         return pulumi.get(self, "repository_credentials")
 
     @repository_credentials.setter
-    def repository_credentials(self, value: Optional[pulumi.Input['TaskDefinitionRepositoryCredentialsArgs']]):
+    def repository_credentials(self, value: pulumi.Input[Optional['TaskDefinitionRepositoryCredentialsArgs']]):
         pulumi.set(self, "repository_credentials", value)
 
     @_builtins.property
     @pulumi.getter(name="resourceRequirements")
-    def resource_requirements(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]]:
+    def resource_requirements(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]]:
         return pulumi.get(self, "resource_requirements")
 
     @resource_requirements.setter
-    def resource_requirements(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]]):
+    def resource_requirements(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionResourceRequirementArgs']]]]):
         pulumi.set(self, "resource_requirements", value)
 
     @_builtins.property
     @pulumi.getter
-    def secrets(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]:
+    def secrets(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]:
         return pulumi.get(self, "secrets")
 
     @secrets.setter
-    def secrets(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]):
+    def secrets(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]):
         pulumi.set(self, "secrets", value)
 
     @_builtins.property
     @pulumi.getter(name="startTimeout")
-    def start_timeout(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def start_timeout(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "start_timeout")
 
     @start_timeout.setter
-    def start_timeout(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def start_timeout(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "start_timeout", value)
 
     @_builtins.property
     @pulumi.getter(name="stopTimeout")
-    def stop_timeout(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def stop_timeout(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "stop_timeout")
 
     @stop_timeout.setter
-    def stop_timeout(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def stop_timeout(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "stop_timeout", value)
 
     @_builtins.property
     @pulumi.getter(name="systemControls")
-    def system_controls(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]]:
+    def system_controls(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]]:
         return pulumi.get(self, "system_controls")
 
     @system_controls.setter
-    def system_controls(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]]):
+    def system_controls(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSystemControlArgs']]]]):
         pulumi.set(self, "system_controls", value)
 
     @_builtins.property
     @pulumi.getter
-    def ulimits(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]]:
+    def ulimits(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]]:
         return pulumi.get(self, "ulimits")
 
     @ulimits.setter
-    def ulimits(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]]):
+    def ulimits(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionUlimitArgs']]]]):
         pulumi.set(self, "ulimits", value)
 
     @_builtins.property
     @pulumi.getter
-    def user(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def user(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "user")
 
     @user.setter
-    def user(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def user(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "user", value)
 
     @_builtins.property
     @pulumi.getter(name="volumesFrom")
-    def volumes_from(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]]:
+    def volumes_from(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]]:
         return pulumi.get(self, "volumes_from")
 
     @volumes_from.setter
-    def volumes_from(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]]):
+    def volumes_from(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionVolumeFromArgs']]]]):
         pulumi.set(self, "volumes_from", value)
 
     @_builtins.property
     @pulumi.getter(name="workingDirectory")
-    def working_directory(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def working_directory(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "working_directory")
 
     @working_directory.setter
-    def working_directory(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def working_directory(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "working_directory", value)
 
 
-if not MYPY:
-    class TaskDefinitionContainerDependencyArgsDict(TypedDict):
-        condition: NotRequired[pulumi.Input[_builtins.str]]
-        container_name: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionContainerDependencyArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionContainerDependencyArgsDict(TypedDict):
+    condition: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    container_name: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionContainerDependencyArgs:
     def __init__(__self__, *,
-                 condition: Optional[pulumi.Input[_builtins.str]] = None,
-                 container_name: Optional[pulumi.Input[_builtins.str]] = None):
+                 condition: pulumi.Input[Optional[_builtins.str]] = None,
+                 container_name: pulumi.Input[Optional[_builtins.str]] = None):
         if condition is not None:
             pulumi.set(__self__, "condition", condition)
         if container_name is not None:
@@ -1586,37 +1575,34 @@ class TaskDefinitionContainerDependencyArgs:
 
     @_builtins.property
     @pulumi.getter
-    def condition(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def condition(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "condition")
 
     @condition.setter
-    def condition(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def condition(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "condition", value)
 
     @_builtins.property
     @pulumi.getter(name="containerName")
-    def container_name(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def container_name(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "container_name")
 
     @container_name.setter
-    def container_name(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def container_name(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "container_name", value)
 
 
-if not MYPY:
-    class TaskDefinitionDeviceArgsDict(TypedDict):
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        host_path: NotRequired[pulumi.Input[_builtins.str]]
-        permissions: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionDeviceArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionDeviceArgsDict(TypedDict):
+    container_path: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    host_path: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    permissions: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
 
 @pulumi.input_type
 class TaskDefinitionDeviceArgs:
     def __init__(__self__, *,
-                 container_path: Optional[pulumi.Input[_builtins.str]] = None,
-                 host_path: Optional[pulumi.Input[_builtins.str]] = None,
-                 permissions: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None):
+                 container_path: pulumi.Input[Optional[_builtins.str]] = None,
+                 host_path: pulumi.Input[Optional[_builtins.str]] = None,
+                 permissions: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None):
         if container_path is not None:
             pulumi.set(__self__, "container_path", container_path)
         if host_path is not None:
@@ -1626,44 +1612,41 @@ class TaskDefinitionDeviceArgs:
 
     @_builtins.property
     @pulumi.getter(name="containerPath")
-    def container_path(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def container_path(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "container_path")
 
     @container_path.setter
-    def container_path(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def container_path(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "container_path", value)
 
     @_builtins.property
     @pulumi.getter(name="hostPath")
-    def host_path(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def host_path(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "host_path")
 
     @host_path.setter
-    def host_path(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def host_path(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "host_path", value)
 
     @_builtins.property
     @pulumi.getter
-    def permissions(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def permissions(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "permissions")
 
     @permissions.setter
-    def permissions(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def permissions(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "permissions", value)
 
 
-if not MYPY:
-    class TaskDefinitionEnvironmentFileArgsDict(TypedDict):
-        type: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionEnvironmentFileArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionEnvironmentFileArgsDict(TypedDict):
+    type: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    value: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionEnvironmentFileArgs:
     def __init__(__self__, *,
-                 type: Optional[pulumi.Input[_builtins.str]] = None,
-                 value: Optional[pulumi.Input[_builtins.str]] = None):
+                 type: pulumi.Input[Optional[_builtins.str]] = None,
+                 value: pulumi.Input[Optional[_builtins.str]] = None):
         if type is not None:
             pulumi.set(__self__, "type", type)
         if value is not None:
@@ -1671,35 +1654,32 @@ class TaskDefinitionEnvironmentFileArgs:
 
     @_builtins.property
     @pulumi.getter
-    def type(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def type(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "type")
 
     @type.setter
-    def type(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def type(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "type", value)
 
     @_builtins.property
     @pulumi.getter
-    def value(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def value(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "value")
 
     @value.setter
-    def value(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def value(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionFirelensConfigurationArgsDict(TypedDict):
-        options: NotRequired[Any]
-        type: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionFirelensConfigurationArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionFirelensConfigurationArgsDict(TypedDict):
+    options: NotRequired[Any]
+    type: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionFirelensConfigurationArgs:
     def __init__(__self__, *,
                  options: Optional[Any] = None,
-                 type: Optional[pulumi.Input[_builtins.str]] = None):
+                 type: pulumi.Input[Optional[_builtins.str]] = None):
         if options is not None:
             pulumi.set(__self__, "options", options)
         if type is not None:
@@ -1716,52 +1696,50 @@ class TaskDefinitionFirelensConfigurationArgs:
 
     @_builtins.property
     @pulumi.getter
-    def type(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def type(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "type")
 
     @type.setter
-    def type(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def type(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "type", value)
 
 
-if not MYPY:
-    class TaskDefinitionHealthCheckArgsDict(TypedDict):
-        """
-        The health check command and associated configuration parameters for the container.
-        """
-        command: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        """
-        A string array representing the command that the container runs to determine if it is healthy.
-        """
-        interval: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
-        """
-        retries: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
-        """
-        start_period: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default.
-        """
-        timeout: NotRequired[pulumi.Input[_builtins.int]]
-        """
-        The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds.
-        """
-elif False:
-    TaskDefinitionHealthCheckArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionHealthCheckArgsDict(TypedDict):
+    """
+    The health check command and associated configuration parameters for the container.
+    """
+    command: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    """
+    A string array representing the command that the container runs to determine if it is healthy.
+    """
+    interval: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    """
+    The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
+    """
+    retries: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    """
+    The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
+    """
+    start_period: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    """
+    The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default.
+    """
+    timeout: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    """
+    The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds.
+    """
 
 @pulumi.input_type
 class TaskDefinitionHealthCheckArgs:
     def __init__(__self__, *,
-                 command: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 interval: Optional[pulumi.Input[_builtins.int]] = None,
-                 retries: Optional[pulumi.Input[_builtins.int]] = None,
-                 start_period: Optional[pulumi.Input[_builtins.int]] = None,
-                 timeout: Optional[pulumi.Input[_builtins.int]] = None):
+                 command: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 interval: pulumi.Input[Optional[_builtins.int]] = None,
+                 retries: pulumi.Input[Optional[_builtins.int]] = None,
+                 start_period: pulumi.Input[Optional[_builtins.int]] = None,
+                 timeout: pulumi.Input[Optional[_builtins.int]] = None):
         """
         The health check command and associated configuration parameters for the container.
+
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] command: A string array representing the command that the container runs to determine if it is healthy.
         :param pulumi.Input[_builtins.int] interval: The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
         :param pulumi.Input[_builtins.int] retries: The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
@@ -1781,77 +1759,74 @@ class TaskDefinitionHealthCheckArgs:
 
     @_builtins.property
     @pulumi.getter
-    def command(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def command(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         """
         A string array representing the command that the container runs to determine if it is healthy.
         """
         return pulumi.get(self, "command")
 
     @command.setter
-    def command(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def command(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "command", value)
 
     @_builtins.property
     @pulumi.getter
-    def interval(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def interval(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds.
         """
         return pulumi.get(self, "interval")
 
     @interval.setter
-    def interval(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def interval(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "interval", value)
 
     @_builtins.property
     @pulumi.getter
-    def retries(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def retries(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries.
         """
         return pulumi.get(self, "retries")
 
     @retries.setter
-    def retries(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def retries(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "retries", value)
 
     @_builtins.property
     @pulumi.getter(name="startPeriod")
-    def start_period(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def start_period(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default.
         """
         return pulumi.get(self, "start_period")
 
     @start_period.setter
-    def start_period(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def start_period(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "start_period", value)
 
     @_builtins.property
     @pulumi.getter
-    def timeout(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def timeout(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds.
         """
         return pulumi.get(self, "timeout")
 
     @timeout.setter
-    def timeout(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def timeout(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "timeout", value)
 
 
-if not MYPY:
-    class TaskDefinitionHostEntryArgsDict(TypedDict):
-        hostname: NotRequired[pulumi.Input[_builtins.str]]
-        ip_address: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionHostEntryArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionHostEntryArgsDict(TypedDict):
+    hostname: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    ip_address: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionHostEntryArgs:
     def __init__(__self__, *,
-                 hostname: Optional[pulumi.Input[_builtins.str]] = None,
-                 ip_address: Optional[pulumi.Input[_builtins.str]] = None):
+                 hostname: pulumi.Input[Optional[_builtins.str]] = None,
+                 ip_address: pulumi.Input[Optional[_builtins.str]] = None):
         if hostname is not None:
             pulumi.set(__self__, "hostname", hostname)
         if ip_address is not None:
@@ -1859,35 +1834,32 @@ class TaskDefinitionHostEntryArgs:
 
     @_builtins.property
     @pulumi.getter
-    def hostname(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def hostname(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "hostname")
 
     @hostname.setter
-    def hostname(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def hostname(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "hostname", value)
 
     @_builtins.property
     @pulumi.getter(name="ipAddress")
-    def ip_address(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ip_address(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "ip_address")
 
     @ip_address.setter
-    def ip_address(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ip_address(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ip_address", value)
 
 
-if not MYPY:
-    class TaskDefinitionKernelCapabilitiesArgsDict(TypedDict):
-        add: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-        drop: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionKernelCapabilitiesArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionKernelCapabilitiesArgsDict(TypedDict):
+    add: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
+    drop: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
 
 @pulumi.input_type
 class TaskDefinitionKernelCapabilitiesArgs:
     def __init__(__self__, *,
-                 add: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None,
-                 drop: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None):
+                 add: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None,
+                 drop: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None):
         if add is not None:
             pulumi.set(__self__, "add", add)
         if drop is not None:
@@ -1895,35 +1867,32 @@ class TaskDefinitionKernelCapabilitiesArgs:
 
     @_builtins.property
     @pulumi.getter
-    def add(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def add(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "add")
 
     @add.setter
-    def add(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def add(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "add", value)
 
     @_builtins.property
     @pulumi.getter
-    def drop(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def drop(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "drop")
 
     @drop.setter
-    def drop(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def drop(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "drop", value)
 
 
-if not MYPY:
-    class TaskDefinitionKeyValuePairArgsDict(TypedDict):
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionKeyValuePairArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionKeyValuePairArgsDict(TypedDict):
+    name: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    value: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionKeyValuePairArgs:
     def __init__(__self__, *,
-                 name: Optional[pulumi.Input[_builtins.str]] = None,
-                 value: Optional[pulumi.Input[_builtins.str]] = None):
+                 name: pulumi.Input[Optional[_builtins.str]] = None,
+                 value: pulumi.Input[Optional[_builtins.str]] = None):
         if name is not None:
             pulumi.set(__self__, "name", name)
         if value is not None:
@@ -1931,45 +1900,42 @@ class TaskDefinitionKeyValuePairArgs:
 
     @_builtins.property
     @pulumi.getter
-    def name(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def name(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "name")
 
     @name.setter
-    def name(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def name(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "name", value)
 
     @_builtins.property
     @pulumi.getter
-    def value(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def value(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "value")
 
     @value.setter
-    def value(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def value(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionLinuxParametersArgsDict(TypedDict):
-        capabilities: NotRequired[pulumi.Input['TaskDefinitionKernelCapabilitiesArgsDict']]
-        devices: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgsDict']]]]
-        init_process_enabled: NotRequired[pulumi.Input[_builtins.bool]]
-        max_swap: NotRequired[pulumi.Input[_builtins.int]]
-        shared_memory_size: NotRequired[pulumi.Input[_builtins.int]]
-        swappiness: NotRequired[pulumi.Input[_builtins.int]]
-        tmpfs: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgsDict']]]]
-elif False:
-    TaskDefinitionLinuxParametersArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionLinuxParametersArgsDict(TypedDict):
+    capabilities: NotRequired[pulumi.Input[Optional['TaskDefinitionKernelCapabilitiesArgsDict']]]
+    devices: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionDeviceArgsDict']]]]]
+    init_process_enabled: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    max_swap: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    shared_memory_size: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    swappiness: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    tmpfs: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionTmpfsArgsDict']]]]]
 
 @pulumi.input_type
 class TaskDefinitionLinuxParametersArgs:
     def __init__(__self__, *,
-                 capabilities: Optional[pulumi.Input['TaskDefinitionKernelCapabilitiesArgs']] = None,
-                 devices: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]] = None,
-                 init_process_enabled: Optional[pulumi.Input[_builtins.bool]] = None,
-                 max_swap: Optional[pulumi.Input[_builtins.int]] = None,
-                 shared_memory_size: Optional[pulumi.Input[_builtins.int]] = None,
-                 swappiness: Optional[pulumi.Input[_builtins.int]] = None,
-                 tmpfs: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]] = None):
+                 capabilities: pulumi.Input[Optional['TaskDefinitionKernelCapabilitiesArgs']] = None,
+                 devices: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]] = None,
+                 init_process_enabled: pulumi.Input[Optional[_builtins.bool]] = None,
+                 max_swap: pulumi.Input[Optional[_builtins.int]] = None,
+                 shared_memory_size: pulumi.Input[Optional[_builtins.int]] = None,
+                 swappiness: pulumi.Input[Optional[_builtins.int]] = None,
+                 tmpfs: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]] = None):
         if capabilities is not None:
             pulumi.set(__self__, "capabilities", capabilities)
         if devices is not None:
@@ -1987,82 +1953,79 @@ class TaskDefinitionLinuxParametersArgs:
 
     @_builtins.property
     @pulumi.getter
-    def capabilities(self) -> Optional[pulumi.Input['TaskDefinitionKernelCapabilitiesArgs']]:
+    def capabilities(self) -> pulumi.Input[Optional['TaskDefinitionKernelCapabilitiesArgs']]:
         return pulumi.get(self, "capabilities")
 
     @capabilities.setter
-    def capabilities(self, value: Optional[pulumi.Input['TaskDefinitionKernelCapabilitiesArgs']]):
+    def capabilities(self, value: pulumi.Input[Optional['TaskDefinitionKernelCapabilitiesArgs']]):
         pulumi.set(self, "capabilities", value)
 
     @_builtins.property
     @pulumi.getter
-    def devices(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]]:
+    def devices(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]]:
         return pulumi.get(self, "devices")
 
     @devices.setter
-    def devices(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]]):
+    def devices(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionDeviceArgs']]]]):
         pulumi.set(self, "devices", value)
 
     @_builtins.property
     @pulumi.getter(name="initProcessEnabled")
-    def init_process_enabled(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def init_process_enabled(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "init_process_enabled")
 
     @init_process_enabled.setter
-    def init_process_enabled(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def init_process_enabled(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "init_process_enabled", value)
 
     @_builtins.property
     @pulumi.getter(name="maxSwap")
-    def max_swap(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def max_swap(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "max_swap")
 
     @max_swap.setter
-    def max_swap(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def max_swap(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "max_swap", value)
 
     @_builtins.property
     @pulumi.getter(name="sharedMemorySize")
-    def shared_memory_size(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def shared_memory_size(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "shared_memory_size")
 
     @shared_memory_size.setter
-    def shared_memory_size(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def shared_memory_size(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "shared_memory_size", value)
 
     @_builtins.property
     @pulumi.getter
-    def swappiness(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def swappiness(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "swappiness")
 
     @swappiness.setter
-    def swappiness(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def swappiness(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "swappiness", value)
 
     @_builtins.property
     @pulumi.getter
-    def tmpfs(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]]:
+    def tmpfs(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]]:
         return pulumi.get(self, "tmpfs")
 
     @tmpfs.setter
-    def tmpfs(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]]):
+    def tmpfs(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionTmpfsArgs']]]]):
         pulumi.set(self, "tmpfs", value)
 
 
-if not MYPY:
-    class TaskDefinitionLogConfigurationArgsDict(TypedDict):
-        log_driver: pulumi.Input[_builtins.str]
-        options: NotRequired[Any]
-        secret_options: NotRequired[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]
-elif False:
-    TaskDefinitionLogConfigurationArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionLogConfigurationArgsDict(TypedDict):
+    log_driver: pulumi.Input[_builtins.str]
+    options: NotRequired[Any]
+    secret_options: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgsDict']]]]]
 
 @pulumi.input_type
 class TaskDefinitionLogConfigurationArgs:
     def __init__(__self__, *,
                  log_driver: pulumi.Input[_builtins.str],
                  options: Optional[Any] = None,
-                 secret_options: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]] = None):
+                 secret_options: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]] = None):
         pulumi.set(__self__, "log_driver", log_driver)
         if options is not None:
             pulumi.set(__self__, "options", options)
@@ -2089,28 +2052,25 @@ class TaskDefinitionLogConfigurationArgs:
 
     @_builtins.property
     @pulumi.getter(name="secretOptions")
-    def secret_options(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]:
+    def secret_options(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]:
         return pulumi.get(self, "secret_options")
 
     @secret_options.setter
-    def secret_options(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]):
+    def secret_options(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['TaskDefinitionSecretArgs']]]]):
         pulumi.set(self, "secret_options", value)
 
 
-if not MYPY:
-    class TaskDefinitionMountPointArgsDict(TypedDict):
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        read_only: NotRequired[pulumi.Input[_builtins.bool]]
-        source_volume: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionMountPointArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionMountPointArgsDict(TypedDict):
+    container_path: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    read_only: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    source_volume: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionMountPointArgs:
     def __init__(__self__, *,
-                 container_path: Optional[pulumi.Input[_builtins.str]] = None,
-                 read_only: Optional[pulumi.Input[_builtins.bool]] = None,
-                 source_volume: Optional[pulumi.Input[_builtins.str]] = None):
+                 container_path: pulumi.Input[Optional[_builtins.str]] = None,
+                 read_only: pulumi.Input[Optional[_builtins.bool]] = None,
+                 source_volume: pulumi.Input[Optional[_builtins.str]] = None):
         if container_path is not None:
             pulumi.set(__self__, "container_path", container_path)
         if read_only is not None:
@@ -2120,54 +2080,51 @@ class TaskDefinitionMountPointArgs:
 
     @_builtins.property
     @pulumi.getter(name="containerPath")
-    def container_path(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def container_path(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "container_path")
 
     @container_path.setter
-    def container_path(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def container_path(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "container_path", value)
 
     @_builtins.property
     @pulumi.getter(name="readOnly")
-    def read_only(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def read_only(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "read_only")
 
     @read_only.setter
-    def read_only(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def read_only(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "read_only", value)
 
     @_builtins.property
     @pulumi.getter(name="sourceVolume")
-    def source_volume(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def source_volume(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "source_volume")
 
     @source_volume.setter
-    def source_volume(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def source_volume(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "source_volume", value)
 
 
-if not MYPY:
-    class TaskDefinitionPortMappingArgsDict(TypedDict):
-        app_protocol: NotRequired[pulumi.Input['TaskDefinitionPortMappingAppProtocol']]
-        container_port: NotRequired[pulumi.Input[_builtins.int]]
-        container_port_range: NotRequired[pulumi.Input[_builtins.str]]
-        host_port: NotRequired[pulumi.Input[_builtins.int]]
-        name: NotRequired[pulumi.Input[_builtins.str]]
-        protocol: NotRequired[pulumi.Input[_builtins.str]]
-        target_group: NotRequired[pulumi.Input['pulumi_aws.lb.TargetGroup']]
-elif False:
-    TaskDefinitionPortMappingArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionPortMappingArgsDict(TypedDict):
+    app_protocol: NotRequired[pulumi.Input[Optional['TaskDefinitionPortMappingAppProtocol']]]
+    container_port: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    container_port_range: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    host_port: NotRequired[pulumi.Input[Optional[_builtins.int]]]
+    name: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    protocol: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    target_group: NotRequired[pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']]]
 
 @pulumi.input_type
 class TaskDefinitionPortMappingArgs:
     def __init__(__self__, *,
-                 app_protocol: Optional[pulumi.Input['TaskDefinitionPortMappingAppProtocol']] = None,
-                 container_port: Optional[pulumi.Input[_builtins.int]] = None,
-                 container_port_range: Optional[pulumi.Input[_builtins.str]] = None,
-                 host_port: Optional[pulumi.Input[_builtins.int]] = None,
-                 name: Optional[pulumi.Input[_builtins.str]] = None,
-                 protocol: Optional[pulumi.Input[_builtins.str]] = None,
-                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None):
+                 app_protocol: pulumi.Input[Optional['TaskDefinitionPortMappingAppProtocol']] = None,
+                 container_port: pulumi.Input[Optional[_builtins.int]] = None,
+                 container_port_range: pulumi.Input[Optional[_builtins.str]] = None,
+                 host_port: pulumi.Input[Optional[_builtins.int]] = None,
+                 name: pulumi.Input[Optional[_builtins.str]] = None,
+                 protocol: pulumi.Input[Optional[_builtins.str]] = None,
+                 target_group: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']] = None):
         if app_protocol is not None:
             pulumi.set(__self__, "app_protocol", app_protocol)
         if container_port is not None:
@@ -2185,97 +2142,91 @@ class TaskDefinitionPortMappingArgs:
 
     @_builtins.property
     @pulumi.getter(name="appProtocol")
-    def app_protocol(self) -> Optional[pulumi.Input['TaskDefinitionPortMappingAppProtocol']]:
+    def app_protocol(self) -> pulumi.Input[Optional['TaskDefinitionPortMappingAppProtocol']]:
         return pulumi.get(self, "app_protocol")
 
     @app_protocol.setter
-    def app_protocol(self, value: Optional[pulumi.Input['TaskDefinitionPortMappingAppProtocol']]):
+    def app_protocol(self, value: pulumi.Input[Optional['TaskDefinitionPortMappingAppProtocol']]):
         pulumi.set(self, "app_protocol", value)
 
     @_builtins.property
     @pulumi.getter(name="containerPort")
-    def container_port(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def container_port(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "container_port")
 
     @container_port.setter
-    def container_port(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def container_port(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "container_port", value)
 
     @_builtins.property
     @pulumi.getter(name="containerPortRange")
-    def container_port_range(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def container_port_range(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "container_port_range")
 
     @container_port_range.setter
-    def container_port_range(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def container_port_range(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "container_port_range", value)
 
     @_builtins.property
     @pulumi.getter(name="hostPort")
-    def host_port(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def host_port(self) -> pulumi.Input[Optional[_builtins.int]]:
         return pulumi.get(self, "host_port")
 
     @host_port.setter
-    def host_port(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def host_port(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "host_port", value)
 
     @_builtins.property
     @pulumi.getter
-    def name(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def name(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "name")
 
     @name.setter
-    def name(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def name(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "name", value)
 
     @_builtins.property
     @pulumi.getter
-    def protocol(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def protocol(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "protocol")
 
     @protocol.setter
-    def protocol(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def protocol(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "protocol", value)
 
     @_builtins.property
     @pulumi.getter(name="targetGroup")
-    def target_group(self) -> Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]:
+    def target_group(self) -> pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']]:
         return pulumi.get(self, "target_group")
 
     @target_group.setter
-    def target_group(self, value: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]):
+    def target_group(self, value: pulumi.Input[Optional['pulumi_aws.lb.TargetGroup']]):
         pulumi.set(self, "target_group", value)
 
 
-if not MYPY:
-    class TaskDefinitionRepositoryCredentialsArgsDict(TypedDict):
-        credentials_parameter: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionRepositoryCredentialsArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionRepositoryCredentialsArgsDict(TypedDict):
+    credentials_parameter: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionRepositoryCredentialsArgs:
     def __init__(__self__, *,
-                 credentials_parameter: Optional[pulumi.Input[_builtins.str]] = None):
+                 credentials_parameter: pulumi.Input[Optional[_builtins.str]] = None):
         if credentials_parameter is not None:
             pulumi.set(__self__, "credentials_parameter", credentials_parameter)
 
     @_builtins.property
     @pulumi.getter(name="credentialsParameter")
-    def credentials_parameter(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def credentials_parameter(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "credentials_parameter")
 
     @credentials_parameter.setter
-    def credentials_parameter(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def credentials_parameter(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "credentials_parameter", value)
 
 
-if not MYPY:
-    class TaskDefinitionResourceRequirementArgsDict(TypedDict):
-        type: pulumi.Input[_builtins.str]
-        value: pulumi.Input[_builtins.str]
-elif False:
-    TaskDefinitionResourceRequirementArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionResourceRequirementArgsDict(TypedDict):
+    type: pulumi.Input[_builtins.str]
+    value: pulumi.Input[_builtins.str]
 
 @pulumi.input_type
 class TaskDefinitionResourceRequirementArgs:
@@ -2304,12 +2255,9 @@ class TaskDefinitionResourceRequirementArgs:
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionSecretArgsDict(TypedDict):
-        name: pulumi.Input[_builtins.str]
-        value_from: pulumi.Input[_builtins.str]
-elif False:
-    TaskDefinitionSecretArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionSecretArgsDict(TypedDict):
+    name: pulumi.Input[_builtins.str]
+    value_from: pulumi.Input[_builtins.str]
 
 @pulumi.input_type
 class TaskDefinitionSecretArgs:
@@ -2338,18 +2286,15 @@ class TaskDefinitionSecretArgs:
         pulumi.set(self, "value_from", value)
 
 
-if not MYPY:
-    class TaskDefinitionSystemControlArgsDict(TypedDict):
-        namespace: NotRequired[pulumi.Input[_builtins.str]]
-        value: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionSystemControlArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionSystemControlArgsDict(TypedDict):
+    namespace: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    value: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionSystemControlArgs:
     def __init__(__self__, *,
-                 namespace: Optional[pulumi.Input[_builtins.str]] = None,
-                 value: Optional[pulumi.Input[_builtins.str]] = None):
+                 namespace: pulumi.Input[Optional[_builtins.str]] = None,
+                 value: pulumi.Input[Optional[_builtins.str]] = None):
         if namespace is not None:
             pulumi.set(__self__, "namespace", namespace)
         if value is not None:
@@ -2357,37 +2302,34 @@ class TaskDefinitionSystemControlArgs:
 
     @_builtins.property
     @pulumi.getter
-    def namespace(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def namespace(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "namespace")
 
     @namespace.setter
-    def namespace(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def namespace(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "namespace", value)
 
     @_builtins.property
     @pulumi.getter
-    def value(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def value(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "value")
 
     @value.setter
-    def value(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def value(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "value", value)
 
 
-if not MYPY:
-    class TaskDefinitionTmpfsArgsDict(TypedDict):
-        size: pulumi.Input[_builtins.int]
-        container_path: NotRequired[pulumi.Input[_builtins.str]]
-        mount_options: NotRequired[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]
-elif False:
-    TaskDefinitionTmpfsArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionTmpfsArgsDict(TypedDict):
+    size: pulumi.Input[_builtins.int]
+    container_path: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    mount_options: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]]
 
 @pulumi.input_type
 class TaskDefinitionTmpfsArgs:
     def __init__(__self__, *,
                  size: pulumi.Input[_builtins.int],
-                 container_path: Optional[pulumi.Input[_builtins.str]] = None,
-                 mount_options: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]] = None):
+                 container_path: pulumi.Input[Optional[_builtins.str]] = None,
+                 mount_options: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]] = None):
         pulumi.set(__self__, "size", size)
         if container_path is not None:
             pulumi.set(__self__, "container_path", container_path)
@@ -2405,30 +2347,27 @@ class TaskDefinitionTmpfsArgs:
 
     @_builtins.property
     @pulumi.getter(name="containerPath")
-    def container_path(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def container_path(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "container_path")
 
     @container_path.setter
-    def container_path(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def container_path(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "container_path", value)
 
     @_builtins.property
     @pulumi.getter(name="mountOptions")
-    def mount_options(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]:
+    def mount_options(self) -> pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]:
         return pulumi.get(self, "mount_options")
 
     @mount_options.setter
-    def mount_options(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[_builtins.str]]]]):
+    def mount_options(self, value: pulumi.Input[Optional[Sequence[pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "mount_options", value)
 
 
-if not MYPY:
-    class TaskDefinitionUlimitArgsDict(TypedDict):
-        hard_limit: pulumi.Input[_builtins.int]
-        name: pulumi.Input[_builtins.str]
-        soft_limit: pulumi.Input[_builtins.int]
-elif False:
-    TaskDefinitionUlimitArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionUlimitArgsDict(TypedDict):
+    hard_limit: pulumi.Input[_builtins.int]
+    name: pulumi.Input[_builtins.str]
+    soft_limit: pulumi.Input[_builtins.int]
 
 @pulumi.input_type
 class TaskDefinitionUlimitArgs:
@@ -2468,18 +2407,15 @@ class TaskDefinitionUlimitArgs:
         pulumi.set(self, "soft_limit", value)
 
 
-if not MYPY:
-    class TaskDefinitionVolumeFromArgsDict(TypedDict):
-        read_only: NotRequired[pulumi.Input[_builtins.bool]]
-        source_container: NotRequired[pulumi.Input[_builtins.str]]
-elif False:
-    TaskDefinitionVolumeFromArgsDict: TypeAlias = Mapping[str, Any]
+class TaskDefinitionVolumeFromArgsDict(TypedDict):
+    read_only: NotRequired[pulumi.Input[Optional[_builtins.bool]]]
+    source_container: NotRequired[pulumi.Input[Optional[_builtins.str]]]
 
 @pulumi.input_type
 class TaskDefinitionVolumeFromArgs:
     def __init__(__self__, *,
-                 read_only: Optional[pulumi.Input[_builtins.bool]] = None,
-                 source_container: Optional[pulumi.Input[_builtins.str]] = None):
+                 read_only: pulumi.Input[Optional[_builtins.bool]] = None,
+                 source_container: pulumi.Input[Optional[_builtins.str]] = None):
         if read_only is not None:
             pulumi.set(__self__, "read_only", read_only)
         if source_container is not None:
@@ -2487,20 +2423,20 @@ class TaskDefinitionVolumeFromArgs:
 
     @_builtins.property
     @pulumi.getter(name="readOnly")
-    def read_only(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def read_only(self) -> pulumi.Input[Optional[_builtins.bool]]:
         return pulumi.get(self, "read_only")
 
     @read_only.setter
-    def read_only(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def read_only(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "read_only", value)
 
     @_builtins.property
     @pulumi.getter(name="sourceContainer")
-    def source_container(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def source_container(self) -> pulumi.Input[Optional[_builtins.str]]:
         return pulumi.get(self, "source_container")
 
     @source_container.setter
-    def source_container(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def source_container(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "source_container", value)
 
 

@@ -23,29 +23,30 @@ __all__ = ['VpcArgs', 'Vpc']
 @pulumi.input_type
 class VpcArgs:
     def __init__(__self__, *,
-                 assign_generated_ipv6_cidr_block: Optional[pulumi.Input[_builtins.bool]] = None,
+                 assign_generated_ipv6_cidr_block: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_cidr_mask: Optional[_builtins.int] = None,
                  availability_zone_names: Optional[Sequence[_builtins.str]] = None,
                  cidr_block: Optional[_builtins.str] = None,
-                 enable_dns_hostnames: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_dns_support: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_network_address_usage_metrics: Optional[pulumi.Input[_builtins.bool]] = None,
-                 instance_tenancy: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
-                 ipv6_cidr_block: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_cidr_block_network_border_group: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
+                 enable_dns_hostnames: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_dns_support: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_network_address_usage_metrics: pulumi.Input[Optional[_builtins.bool]] = None,
+                 instance_tenancy: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
+                 ipv6_cidr_block: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_cidr_block_network_border_group: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
                  nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
                  number_of_availability_zones: Optional[_builtins.int] = None,
-                 region: Optional[pulumi.Input[_builtins.str]] = None,
+                 region: pulumi.Input[Optional[_builtins.str]] = None,
                  subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None):
         """
         The set of arguments for constructing a Vpc resource.
+
         :param pulumi.Input[_builtins.bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
         :param _builtins.int availability_zone_cidr_mask: The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
         :param Sequence[_builtins.str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
@@ -113,14 +114,14 @@ class VpcArgs:
 
     @_builtins.property
     @pulumi.getter(name="assignGeneratedIpv6CidrBlock")
-    def assign_generated_ipv6_cidr_block(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def assign_generated_ipv6_cidr_block(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
         """
         return pulumi.get(self, "assign_generated_ipv6_cidr_block")
 
     @assign_generated_ipv6_cidr_block.setter
-    def assign_generated_ipv6_cidr_block(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def assign_generated_ipv6_cidr_block(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "assign_generated_ipv6_cidr_block", value)
 
     @_builtins.property
@@ -161,122 +162,122 @@ class VpcArgs:
 
     @_builtins.property
     @pulumi.getter(name="enableDnsHostnames")
-    def enable_dns_hostnames(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def enable_dns_hostnames(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
         """
         return pulumi.get(self, "enable_dns_hostnames")
 
     @enable_dns_hostnames.setter
-    def enable_dns_hostnames(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def enable_dns_hostnames(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "enable_dns_hostnames", value)
 
     @_builtins.property
     @pulumi.getter(name="enableDnsSupport")
-    def enable_dns_support(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def enable_dns_support(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
         """
         return pulumi.get(self, "enable_dns_support")
 
     @enable_dns_support.setter
-    def enable_dns_support(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def enable_dns_support(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "enable_dns_support", value)
 
     @_builtins.property
     @pulumi.getter(name="enableNetworkAddressUsageMetrics")
-    def enable_network_address_usage_metrics(self) -> Optional[pulumi.Input[_builtins.bool]]:
+    def enable_network_address_usage_metrics(self) -> pulumi.Input[Optional[_builtins.bool]]:
         """
         Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
         """
         return pulumi.get(self, "enable_network_address_usage_metrics")
 
     @enable_network_address_usage_metrics.setter
-    def enable_network_address_usage_metrics(self, value: Optional[pulumi.Input[_builtins.bool]]):
+    def enable_network_address_usage_metrics(self, value: pulumi.Input[Optional[_builtins.bool]]):
         pulumi.set(self, "enable_network_address_usage_metrics", value)
 
     @_builtins.property
     @pulumi.getter(name="instanceTenancy")
-    def instance_tenancy(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def instance_tenancy(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
         """
         return pulumi.get(self, "instance_tenancy")
 
     @instance_tenancy.setter
-    def instance_tenancy(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def instance_tenancy(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "instance_tenancy", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv4IpamPoolId")
-    def ipv4_ipam_pool_id(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipv4_ipam_pool_id(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
         """
         return pulumi.get(self, "ipv4_ipam_pool_id")
 
     @ipv4_ipam_pool_id.setter
-    def ipv4_ipam_pool_id(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipv4_ipam_pool_id(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipv4_ipam_pool_id", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv4NetmaskLength")
-    def ipv4_netmask_length(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def ipv4_netmask_length(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.
         """
         return pulumi.get(self, "ipv4_netmask_length")
 
     @ipv4_netmask_length.setter
-    def ipv4_netmask_length(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def ipv4_netmask_length(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "ipv4_netmask_length", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv6CidrBlock")
-    def ipv6_cidr_block(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipv6_cidr_block(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.
         """
         return pulumi.get(self, "ipv6_cidr_block")
 
     @ipv6_cidr_block.setter
-    def ipv6_cidr_block(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipv6_cidr_block(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipv6_cidr_block", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv6CidrBlockNetworkBorderGroup")
-    def ipv6_cidr_block_network_border_group(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipv6_cidr_block_network_border_group(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         """
         return pulumi.get(self, "ipv6_cidr_block_network_border_group")
 
     @ipv6_cidr_block_network_border_group.setter
-    def ipv6_cidr_block_network_border_group(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipv6_cidr_block_network_border_group(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipv6_cidr_block_network_border_group", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv6IpamPoolId")
-    def ipv6_ipam_pool_id(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def ipv6_ipam_pool_id(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         """
         return pulumi.get(self, "ipv6_ipam_pool_id")
 
     @ipv6_ipam_pool_id.setter
-    def ipv6_ipam_pool_id(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def ipv6_ipam_pool_id(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ipv6_ipam_pool_id", value)
 
     @_builtins.property
     @pulumi.getter(name="ipv6NetmaskLength")
-    def ipv6_netmask_length(self) -> Optional[pulumi.Input[_builtins.int]]:
+    def ipv6_netmask_length(self) -> pulumi.Input[Optional[_builtins.int]]:
         """
         Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values are from `44` to `60` in increments of 4.
         """
         return pulumi.get(self, "ipv6_netmask_length")
 
     @ipv6_netmask_length.setter
-    def ipv6_netmask_length(self, value: Optional[pulumi.Input[_builtins.int]]):
+    def ipv6_netmask_length(self, value: pulumi.Input[Optional[_builtins.int]]):
         pulumi.set(self, "ipv6_netmask_length", value)
 
     @_builtins.property
@@ -305,14 +306,14 @@ class VpcArgs:
 
     @_builtins.property
     @pulumi.getter
-    def region(self) -> Optional[pulumi.Input[_builtins.str]]:
+    def region(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
         Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         """
         return pulumi.get(self, "region")
 
     @region.setter
-    def region(self, value: Optional[pulumi.Input[_builtins.str]]):
+    def region(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "region", value)
 
     @_builtins.property
@@ -341,14 +342,14 @@ class VpcArgs:
 
     @_builtins.property
     @pulumi.getter
-    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]:
+    def tags(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
         A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
     @tags.setter
-    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]]):
+    def tags(self, value: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]):
         pulumi.set(self, "tags", value)
 
     @_builtins.property
@@ -370,26 +371,26 @@ class Vpc(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 assign_generated_ipv6_cidr_block: Optional[pulumi.Input[_builtins.bool]] = None,
+                 assign_generated_ipv6_cidr_block: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_cidr_mask: Optional[_builtins.int] = None,
                  availability_zone_names: Optional[Sequence[_builtins.str]] = None,
                  cidr_block: Optional[_builtins.str] = None,
-                 enable_dns_hostnames: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_dns_support: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_network_address_usage_metrics: Optional[pulumi.Input[_builtins.bool]] = None,
-                 instance_tenancy: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
-                 ipv6_cidr_block: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_cidr_block_network_border_group: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
+                 enable_dns_hostnames: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_dns_support: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_network_address_usage_metrics: pulumi.Input[Optional[_builtins.bool]] = None,
+                 instance_tenancy: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
+                 ipv6_cidr_block: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_cidr_block_network_border_group: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
                  nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[_builtins.int] = None,
-                 region: Optional[pulumi.Input[_builtins.str]] = None,
+                 region: pulumi.Input[Optional[_builtins.str]] = None,
                  subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
                  __props__=None):
         """
@@ -432,6 +433,7 @@ class Vpc(pulumi.ComponentResource):
         ### Legacy
 
         The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the public subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
+
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -504,6 +506,7 @@ class Vpc(pulumi.ComponentResource):
 
         The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the public subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
 
+
         :param str resource_name: The name of the resource.
         :param VpcArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -519,26 +522,26 @@ class Vpc(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 assign_generated_ipv6_cidr_block: Optional[pulumi.Input[_builtins.bool]] = None,
+                 assign_generated_ipv6_cidr_block: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_cidr_mask: Optional[_builtins.int] = None,
                  availability_zone_names: Optional[Sequence[_builtins.str]] = None,
                  cidr_block: Optional[_builtins.str] = None,
-                 enable_dns_hostnames: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_dns_support: Optional[pulumi.Input[_builtins.bool]] = None,
-                 enable_network_address_usage_metrics: Optional[pulumi.Input[_builtins.bool]] = None,
-                 instance_tenancy: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv4_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
-                 ipv6_cidr_block: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_cidr_block_network_border_group: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_ipam_pool_id: Optional[pulumi.Input[_builtins.str]] = None,
-                 ipv6_netmask_length: Optional[pulumi.Input[_builtins.int]] = None,
+                 enable_dns_hostnames: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_dns_support: pulumi.Input[Optional[_builtins.bool]] = None,
+                 enable_network_address_usage_metrics: pulumi.Input[Optional[_builtins.bool]] = None,
+                 instance_tenancy: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv4_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
+                 ipv6_cidr_block: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_cidr_block_network_border_group: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_ipam_pool_id: pulumi.Input[Optional[_builtins.str]] = None,
+                 ipv6_netmask_length: pulumi.Input[Optional[_builtins.int]] = None,
                  nat_gateways: Optional[Union['NatGatewayConfigurationArgs', 'NatGatewayConfigurationArgsDict']] = None,
                  number_of_availability_zones: Optional[_builtins.int] = None,
-                 region: Optional[pulumi.Input[_builtins.str]] = None,
+                 region: pulumi.Input[Optional[_builtins.str]] = None,
                  subnet_specs: Optional[Sequence[Union['SubnetSpecArgs', 'SubnetSpecArgsDict']]] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 tags: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
