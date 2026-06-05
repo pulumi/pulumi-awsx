@@ -73,13 +73,25 @@ namespace Pulumi.Awsx.Ecr
     public sealed class RegistryImageArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
+        /// Authentication configuration for the Docker registry. It is only used for this resource.
+        /// </summary>
+        [Input("authConfig")]
+        public Input<Pulumi.Docker.Inputs.RegistryImageAuthConfigArgs>? AuthConfig { get; set; }
+
+        /// <summary>
+        /// Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+        /// </summary>
+        [Input("build")]
+        public Input<Pulumi.Docker.Inputs.RegistryImageBuildArgs>? Build { get; set; }
+
+        /// <summary>
+        /// If `True`, the verification of TLS certificates of the server/registry is disabled. Defaults to `False`
         /// </summary>
         [Input("insecureSkipVerify")]
         public Input<bool>? InsecureSkipVerify { get; set; }
 
         /// <summary>
-        /// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `false`
+        /// If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker registry on destroy operation. Defaults to `False`
         /// </summary>
         [Input("keepRemotely")]
         public Input<bool>? KeepRemotely { get; set; }
