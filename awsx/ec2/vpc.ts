@@ -45,6 +45,12 @@ interface VpcData {
   vpcId: pulumi.Output<string>;
 }
 
+interface GeneratedSubnet {
+  id: pulumi.Output<string>;
+  type: string;
+  azName: string;
+}
+
 export class Vpc extends schema.Vpc<VpcData> {
   constructor(name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
     super(name, args, opts);
@@ -78,7 +84,11 @@ export class Vpc extends schema.Vpc<VpcData> {
   }): Promise<VpcData> {
     Vpc.validateVpcArgs(props.args);
 
-    const { name, args } = props;
+    const { name } = props;
+    const endpointStrategy = props.args.vpcEndpointStrategy ?? "Legacy";
+    Vpc.validateVpcEndpointStrategy(endpointStrategy);
+    const args = Vpc.applyVpcEndpointDnsDefaults(props.args, endpointStrategy);
+
     if (args.availabilityZoneNames && args.numberOfAvailabilityZones) {
       throw new Error(
         "Only one of [availabilityZoneNames] and [numberOfAvailabilityZones] can be specified",
@@ -142,30 +152,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     const publicSubnetIds: pulumi.Output<string>[] = [];
     const privateSubnetIds: pulumi.Output<string>[] = [];
     const isolatedSubnetIds: pulumi.Output<string>[] = [];
-
-    args.vpcEndpointSpecs?.forEach((spec) => {
-      const vpcEndpoint = new aws.ec2.VpcEndpoint(
-        spec.serviceName,
-        {
-          autoAccept: spec.autoAccept,
-          policy: spec.policy,
-          privateDnsEnabled: spec.privateDnsEnabled,
-          routeTableIds: spec.routeTableIds,
-          securityGroupIds: spec.securityGroupIds,
-          subnetIds: spec.subnetIds,
-          tags: { ...sharedTags, ...spec.tags },
-          vpcEndpointType: spec.vpcEndpointType,
-          vpcId: vpc.id,
-          serviceName: spec.serviceName,
-          region: spec.region ?? args.region,
-        },
-        {
-          parent: vpc,
-          dependsOn: [vpc],
-        },
-      );
-      vpcEndpoints.push(vpcEndpoint);
-    });
+    const generatedSubnets: GeneratedSubnet[] = [];
 
     for (let i = 0; i < availabilityZones.length; i++) {
       let subnetIndex = i;
@@ -213,6 +200,11 @@ export class Vpc extends schema.Vpc<VpcData> {
           } else {
             isolatedSubnetIds.push(subnet.id);
           }
+          generatedSubnets.push({
+            id: subnet.id,
+            type: spec.type,
+            azName: spec.azName,
+          });
 
           const routeTable = new aws.ec2.RouteTable(
             spec.subnetName,
@@ -319,6 +311,29 @@ export class Vpc extends schema.Vpc<VpcData> {
         });
     }
 
+    args.vpcEndpointSpecs?.forEach((spec) => {
+      if (endpointStrategy === "Legacy") {
+        Vpc.warnIncompleteLegacyVpcEndpointSpec(spec, this);
+      }
+
+      const endpointArgs = Vpc.resolveVpcEndpointArgs(
+        spec,
+        endpointStrategy,
+        vpc,
+        routeTables,
+        generatedSubnets,
+        availabilityZones,
+        sharedTags,
+        args.region,
+      );
+
+      const vpcEndpoint = new aws.ec2.VpcEndpoint(spec.serviceName, endpointArgs, {
+        parent: vpc,
+        dependsOn: [vpc],
+      });
+      vpcEndpoints.push(vpcEndpoint);
+    });
+
     return {
       vpc,
       vpcEndpoints,
@@ -349,6 +364,204 @@ export class Vpc extends schema.Vpc<VpcData> {
         );
       }
     }
+  }
+
+  private static validateVpcEndpointStrategy(strategy: schema.VpcEndpointStrategyInputs) {
+    if (strategy !== "Legacy" && strategy !== "Auto") {
+      throw new Error(`Unsupported vpcEndpointStrategy "${strategy}". Expected "Legacy" or "Auto".`);
+    }
+  }
+
+  private static applyVpcEndpointDnsDefaults(
+    args: schema.VpcArgs,
+    strategy: schema.VpcEndpointStrategyInputs,
+  ): schema.VpcArgs {
+    if (strategy !== "Auto") {
+      return args;
+    }
+
+    const shouldEnableDns = args.vpcEndpointSpecs?.some((spec) => {
+      const endpointType = Vpc.requireKnownVpcEndpointType(spec);
+      if (endpointType !== "interface") {
+        return false;
+      }
+
+      return spec.privateDnsEnabled === undefined || spec.privateDnsEnabled === true;
+    });
+
+    if (!shouldEnableDns) {
+      return args;
+    }
+
+    Vpc.validateDnsAttributeForPrivateDns("enableDnsHostnames", args.enableDnsHostnames);
+    Vpc.validateDnsAttributeForPrivateDns("enableDnsSupport", args.enableDnsSupport);
+
+    return {
+      ...args,
+      enableDnsHostnames: args.enableDnsHostnames ?? true,
+      enableDnsSupport: args.enableDnsSupport ?? true,
+    };
+  }
+
+  private static validateDnsAttributeForPrivateDns(
+    name: "enableDnsHostnames" | "enableDnsSupport",
+    value: pulumi.Input<boolean> | undefined,
+  ) {
+    if (value === false) {
+      throw new Error(
+        `vpcEndpointStrategy "Auto" requires ${name} to be true when Interface endpoint private DNS is enabled.`,
+      );
+    }
+  }
+
+  private static warnIncompleteLegacyVpcEndpointSpec(
+    spec: schema.VpcEndpointSpecInputs,
+    resource: pulumi.Resource,
+  ) {
+    const endpointType = Vpc.tryGetVpcEndpointType(spec);
+    if (endpointType === undefined) {
+      return;
+    }
+
+    if (
+      endpointType === "interface" &&
+      spec.subnetIds === undefined &&
+      spec.subnetConfigurations === undefined
+    ) {
+      void pulumi.log.warn(
+        `VPC endpoint "${spec.serviceName}" is an Interface endpoint without subnetIds or subnetConfigurations. Specify vpcEndpointStrategy: "Auto" to use generated VPC subnets.`,
+        resource,
+      );
+    }
+
+    if (endpointType === "gateway" && spec.routeTableIds === undefined) {
+      void pulumi.log.warn(
+        `VPC endpoint "${spec.serviceName}" is a Gateway endpoint without routeTableIds. Specify vpcEndpointStrategy: "Auto" to use generated VPC route tables.`,
+        resource,
+      );
+    }
+  }
+
+  private static resolveVpcEndpointArgs(
+    spec: schema.VpcEndpointSpecInputs,
+    strategy: schema.VpcEndpointStrategyInputs,
+    vpc: aws.ec2.Vpc,
+    routeTables: aws.ec2.RouteTable[],
+    generatedSubnets: GeneratedSubnet[],
+    availabilityZones: string[],
+    sharedTags: pulumi.Input<Record<string, pulumi.Input<string>>>,
+    defaultRegion: pulumi.Input<string> | undefined,
+  ): aws.ec2.VpcEndpointArgs {
+    const region = spec.region ?? defaultRegion;
+    const endpointType =
+      strategy === "Auto" ? Vpc.requireKnownVpcEndpointType(spec) : Vpc.tryGetVpcEndpointType(spec);
+
+    const endpointArgs: aws.ec2.VpcEndpointArgs = {
+      autoAccept: spec.autoAccept,
+      dnsOptions: spec.dnsOptions,
+      ipAddressType: spec.ipAddressType,
+      policy: spec.policy,
+      privateDnsEnabled: spec.privateDnsEnabled,
+      region,
+      resourceConfigurationArn: spec.resourceConfigurationArn,
+      routeTableIds: spec.routeTableIds,
+      securityGroupIds: spec.securityGroupIds,
+      serviceName: spec.serviceName,
+      serviceNetworkArn: spec.serviceNetworkArn,
+      serviceRegion: spec.serviceRegion,
+      subnetConfigurations: spec.subnetConfigurations,
+      subnetIds: spec.subnetIds,
+      tags: { ...sharedTags, ...spec.tags },
+      vpcEndpointType: spec.vpcEndpointType,
+      vpcId: vpc.id,
+    };
+
+    if (strategy !== "Auto") {
+      return endpointArgs;
+    }
+
+    if (endpointType === "interface") {
+      if (spec.subnetIds === undefined && spec.subnetConfigurations === undefined) {
+        endpointArgs.subnetIds = Vpc.selectVpcEndpointSubnetIds(
+          generatedSubnets,
+          availabilityZones,
+        );
+      }
+      if (spec.privateDnsEnabled === undefined) {
+        endpointArgs.privateDnsEnabled = true;
+      }
+      if (spec.securityGroupIds === undefined) {
+        const securityGroup = new aws.ec2.SecurityGroup(
+          `${spec.serviceName}-sg`,
+          {
+            region,
+            vpcId: vpc.id,
+            tags: { ...sharedTags, ...spec.tags },
+          },
+          { parent: vpc, dependsOn: [vpc] },
+        );
+        new aws.ec2.SecurityGroupRule(
+          `${spec.serviceName}-ingress`,
+          {
+            region,
+            type: "ingress",
+            securityGroupId: securityGroup.id,
+            protocol: "tcp",
+            fromPort: 443,
+            toPort: 443,
+            cidrBlocks: [vpc.cidrBlock],
+          },
+          { parent: vpc, dependsOn: [securityGroup] },
+        );
+        endpointArgs.securityGroupIds = [securityGroup.id];
+      }
+    } else if (endpointType === "gateway" && spec.routeTableIds === undefined) {
+      endpointArgs.routeTableIds = routeTables.map((routeTable) => routeTable.id);
+    }
+
+    return endpointArgs;
+  }
+
+  private static selectVpcEndpointSubnetIds(
+    generatedSubnets: GeneratedSubnet[],
+    availabilityZones: string[],
+  ): pulumi.Output<string>[] {
+    const preferredTypes = ["private", "isolated", "public"];
+    const subnetIds: pulumi.Output<string>[] = [];
+
+    for (const azName of availabilityZones) {
+      for (const type of preferredTypes) {
+        const subnet = generatedSubnets.find(
+          (s) => s.azName === azName && s.type.toLowerCase() === type,
+        );
+        if (subnet) {
+          subnetIds.push(subnet.id);
+          break;
+        }
+      }
+    }
+
+    return subnetIds;
+  }
+
+  private static requireKnownVpcEndpointType(spec: schema.VpcEndpointSpecInputs): string {
+    const endpointType = Vpc.tryGetVpcEndpointType(spec);
+    if (endpointType === undefined) {
+      throw new Error(
+        `vpcEndpointStrategy "Auto" requires vpcEndpointType for endpoint "${spec.serviceName}" to be omitted or a plain string. Use vpcEndpointStrategy "Legacy" for dynamic endpoint types.`,
+      );
+    }
+    return endpointType;
+  }
+
+  private static tryGetVpcEndpointType(spec: schema.VpcEndpointSpecInputs): string | undefined {
+    if (spec.vpcEndpointType === undefined) {
+      return "gateway";
+    }
+    if (typeof spec.vpcEndpointType !== "string") {
+      return undefined;
+    }
+    return spec.vpcEndpointType.toLowerCase();
   }
 
   // Decide the cidrBlock input parameter for the underlying aws.ec2.Vpc resource.
