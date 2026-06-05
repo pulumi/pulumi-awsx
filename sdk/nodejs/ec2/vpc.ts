@@ -142,6 +142,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["subnetStrategy"] = args?.subnetStrategy;
             resourceInputs["tags"] = args?.tags;
             resourceInputs["vpcEndpointSpecs"] = args?.vpcEndpointSpecs;
+            resourceInputs["vpcEndpointStrategy"] = args?.vpcEndpointStrategy;
             resourceInputs["eips"] = undefined /*out*/;
             resourceInputs["internetGateway"] = undefined /*out*/;
             resourceInputs["isolatedSubnetIds"] = undefined /*out*/;
@@ -264,4 +265,8 @@ export interface VpcArgs {
      * A list of VPC Endpoints specs to be deployed as part of the VPC
      */
     vpcEndpointSpecs?: inputs.ec2.VpcEndpointSpecArgs[];
+    /**
+     * The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+     */
+    vpcEndpointStrategy?: enums.ec2.VpcEndpointStrategy;
 }

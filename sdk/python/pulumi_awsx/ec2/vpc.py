@@ -43,7 +43,8 @@ class VpcArgs:
                  subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
-                 vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None):
+                 vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None,
+                 vpc_endpoint_strategy: Optional['VpcEndpointStrategy'] = None):
         """
         The set of arguments for constructing a Vpc resource.
         :param pulumi.Input[_builtins.bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
@@ -67,6 +68,7 @@ class VpcArgs:
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence['VpcEndpointSpecArgs'] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
+        :param 'VpcEndpointStrategy' vpc_endpoint_strategy: The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
         """
         if assign_generated_ipv6_cidr_block is not None:
             pulumi.set(__self__, "assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
@@ -110,6 +112,8 @@ class VpcArgs:
             pulumi.set(__self__, "tags", tags)
         if vpc_endpoint_specs is not None:
             pulumi.set(__self__, "vpc_endpoint_specs", vpc_endpoint_specs)
+        if vpc_endpoint_strategy is not None:
+            pulumi.set(__self__, "vpc_endpoint_strategy", vpc_endpoint_strategy)
 
     @_builtins.property
     @pulumi.getter(name="assignGeneratedIpv6CidrBlock")
@@ -363,6 +367,18 @@ class VpcArgs:
     def vpc_endpoint_specs(self, value: Optional[Sequence['VpcEndpointSpecArgs']]):
         pulumi.set(self, "vpc_endpoint_specs", value)
 
+    @_builtins.property
+    @pulumi.getter(name="vpcEndpointStrategy")
+    def vpc_endpoint_strategy(self) -> Optional['VpcEndpointStrategy']:
+        """
+        The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+        """
+        return pulumi.get(self, "vpc_endpoint_strategy")
+
+    @vpc_endpoint_strategy.setter
+    def vpc_endpoint_strategy(self, value: Optional['VpcEndpointStrategy']):
+        pulumi.set(self, "vpc_endpoint_strategy", value)
+
 
 @pulumi.type_token("awsx:ec2:Vpc")
 class Vpc(pulumi.ComponentResource):
@@ -391,6 +407,7 @@ class Vpc(pulumi.ComponentResource):
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
+                 vpc_endpoint_strategy: Optional['VpcEndpointStrategy'] = None,
                  __props__=None):
         """
         The VPC component provides a VPC with configured subnets and NAT gateways.
@@ -456,6 +473,7 @@ class Vpc(pulumi.ComponentResource):
         :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
+        :param 'VpcEndpointStrategy' vpc_endpoint_strategy: The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
         """
         ...
     @overload
@@ -540,6 +558,7 @@ class Vpc(pulumi.ComponentResource):
                  subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[Union['VpcEndpointSpecArgs', 'VpcEndpointSpecArgsDict']]] = None,
+                 vpc_endpoint_strategy: Optional['VpcEndpointStrategy'] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -572,6 +591,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["subnet_strategy"] = subnet_strategy
             __props__.__dict__["tags"] = tags
             __props__.__dict__["vpc_endpoint_specs"] = vpc_endpoint_specs
+            __props__.__dict__["vpc_endpoint_strategy"] = vpc_endpoint_strategy
             __props__.__dict__["eips"] = None
             __props__.__dict__["internet_gateway"] = None
             __props__.__dict__["isolated_subnet_ids"] = None
