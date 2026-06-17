@@ -71,6 +71,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["dropInvalidHeaderFields"] = args?.dropInvalidHeaderFields;
             resourceInputs["enableDeletionProtection"] = args?.enableDeletionProtection;
             resourceInputs["enableHttp2"] = args?.enableHttp2;
+            resourceInputs["enablePrefixForIpv6SourceNat"] = args?.enablePrefixForIpv6SourceNat;
             resourceInputs["enableTlsVersionAndCipherSuiteHeaders"] = args?.enableTlsVersionAndCipherSuiteHeaders;
             resourceInputs["enableWafFailOpen"] = args?.enableWafFailOpen;
             resourceInputs["enableXffClientPort"] = args?.enableXffClientPort;
@@ -161,6 +162,10 @@ export interface ApplicationLoadBalancerArgs {
      * Whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
      */
     enableHttp2?: pulumi.Input<boolean | undefined>;
+    /**
+     * Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+     */
+    enablePrefixForIpv6SourceNat?: pulumi.Input<string | undefined>;
     /**
      * Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
      */
