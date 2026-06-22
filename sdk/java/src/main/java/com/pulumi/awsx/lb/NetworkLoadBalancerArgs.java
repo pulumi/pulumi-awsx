@@ -194,6 +194,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
+     * Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+     * 
+     */
+    @Import(name="enablePrefixForIpv6SourceNat")
+    private @Nullable Output<String> enablePrefixForIpv6SourceNat;
+
+    /**
+     * @return Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+     * 
+     */
+    public Optional<Output<String>> enablePrefixForIpv6SourceNat() {
+        return Optional.ofNullable(this.enablePrefixForIpv6SourceNat);
+    }
+
+    /**
      * Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
      * 
      */
@@ -575,6 +590,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.dropInvalidHeaderFields = $.dropInvalidHeaderFields;
         this.enableCrossZoneLoadBalancing = $.enableCrossZoneLoadBalancing;
         this.enableDeletionProtection = $.enableDeletionProtection;
+        this.enablePrefixForIpv6SourceNat = $.enablePrefixForIpv6SourceNat;
         this.enableTlsVersionAndCipherSuiteHeaders = $.enableTlsVersionAndCipherSuiteHeaders;
         this.enableWafFailOpen = $.enableWafFailOpen;
         this.enableXffClientPort = $.enableXffClientPort;
@@ -838,6 +854,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder enableDeletionProtection(Boolean enableDeletionProtection) {
             return enableDeletionProtection(Output.of(enableDeletionProtection));
+        }
+
+        /**
+         * @param enablePrefixForIpv6SourceNat Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enablePrefixForIpv6SourceNat(@Nullable Output<String> enablePrefixForIpv6SourceNat) {
+            $.enablePrefixForIpv6SourceNat = enablePrefixForIpv6SourceNat;
+            return this;
+        }
+
+        /**
+         * @param enablePrefixForIpv6SourceNat Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enablePrefixForIpv6SourceNat(String enablePrefixForIpv6SourceNat) {
+            return enablePrefixForIpv6SourceNat(Output.of(enablePrefixForIpv6SourceNat));
         }
 
         /**

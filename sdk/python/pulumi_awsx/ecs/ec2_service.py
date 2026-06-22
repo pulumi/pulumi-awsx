@@ -641,7 +641,6 @@ class EC2Service(pulumi.ComponentResource):
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
 
-
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
@@ -692,7 +691,6 @@ class EC2Service(pulumi.ComponentResource):
         """
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
         Creates Task definition if `taskDefinitionArgs` is specified.
-
 
         :param str resource_name: The name of the resource.
         :param EC2ServiceArgs args: The arguments to use to populate this resource's properties.

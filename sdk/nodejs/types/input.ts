@@ -652,7 +652,6 @@ export namespace ec2 {
      * * `accountId` (String) AWS Account where this resource is managed.
      * * `region` (String) Region where this resource is managed.
      *
-     *
      * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
      *
      * ```sh
@@ -830,7 +829,7 @@ export namespace ecs {
          */
         networkMode?: pulumi.Input<string | undefined>;
         /**
-         * Process namespace to use for the containers in the task. Valid values: host`, `task`.
+         * Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
          */
         pidMode?: pulumi.Input<string | undefined>;
         /**
@@ -931,7 +930,7 @@ export namespace ecs {
          */
         memory?: pulumi.Input<string | undefined>;
         /**
-         * Process namespace to use for the containers in the task. Valid values: host`, `task`.
+         * Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
          */
         pidMode?: pulumi.Input<string | undefined>;
         /**
@@ -1465,7 +1464,6 @@ export namespace lb {
      *
      * - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
      *
-     *
      * Using `pulumi import`, import listeners using their ARN. For example:
      *
      * ```sh
@@ -1706,7 +1704,6 @@ export namespace lb {
      * #### Required
      *
      * - `arn` (String) Amazon Resource Name (ARN) of the target group.
-     *
      *
      * Using `pulumi import`, import Target Groups using their ARN. For example:
      *

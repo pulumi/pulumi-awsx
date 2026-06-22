@@ -598,7 +598,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(pulumi.String(current.Arn)),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
 //					exampleAwsLb.Arn,
@@ -725,7 +725,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //				return err
 //			}
 //			_, err = route53.NewRecord(ctx, "ptfe_service", &route53.RecordArgs{
-//				ZoneId: pulumi.String(pulumi.String(internal.ZoneId)),
+//				ZoneId: pulumi.String(internal.ZoneId),
 //				Name:   pulumi.Sprintf("ptfe.%v", internal.Name),
 //				Type:   pulumi.String(route53.RecordTypeCNAME),
 //				Ttl:    pulumi.Int(300),
@@ -1008,7 +1008,7 @@ type VpcEndpointSpecInput interface {
 //			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(pulumi.String(current.Arn)),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
 //					exampleAwsLb.Arn,
@@ -1135,7 +1135,7 @@ type VpcEndpointSpecInput interface {
 //				return err
 //			}
 //			_, err = route53.NewRecord(ctx, "ptfe_service", &route53.RecordArgs{
-//				ZoneId: pulumi.String(pulumi.String(internal.ZoneId)),
+//				ZoneId: pulumi.String(internal.ZoneId),
 //				Name:   pulumi.Sprintf("ptfe.%v", internal.Name),
 //				Type:   pulumi.String(route53.RecordTypeCNAME),
 //				Ttl:    pulumi.Int(300),
@@ -1444,7 +1444,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(pulumi.String(current.Arn)),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
 //					exampleAwsLb.Arn,
@@ -1571,7 +1571,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //				return err
 //			}
 //			_, err = route53.NewRecord(ctx, "ptfe_service", &route53.RecordArgs{
-//				ZoneId: pulumi.String(pulumi.String(internal.ZoneId)),
+//				ZoneId: pulumi.String(internal.ZoneId),
 //				Name:   pulumi.Sprintf("ptfe.%v", internal.Name),
 //				Type:   pulumi.String(route53.RecordTypeCNAME),
 //				Ttl:    pulumi.Int(300),

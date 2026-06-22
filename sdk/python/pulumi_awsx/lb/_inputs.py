@@ -304,7 +304,6 @@ class ListenerArgsDict(TypedDict):
 
     - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 
-
     Using `pulumi import`, import listeners using their ARN. For example:
 
     ```sh
@@ -743,13 +742,11 @@ class ListenerArgs:
 
         - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
 
-
         Using `pulumi import`, import listeners using their ARN. For example:
 
         ```sh
         $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
         ```
-
 
 
         :param pulumi.Input[_builtins.str] alpn_policy: Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
@@ -1303,7 +1300,6 @@ class TargetGroupArgsDict(TypedDict):
 
     - `arn` (String) Amazon Resource Name (ARN) of the target group.
 
-
     Using `pulumi import`, import Target Groups using their ARN. For example:
 
     ```sh
@@ -1560,13 +1556,11 @@ class TargetGroupArgs:
 
         - `arn` (String) Amazon Resource Name (ARN) of the target group.
 
-
         Using `pulumi import`, import Target Groups using their ARN. For example:
 
         ```sh
         $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
         ```
-
 
 
         :param pulumi.Input[_builtins.bool] connection_termination: Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.

@@ -148,7 +148,7 @@ export interface FargateTaskDefinitionArgs {
      */
     memory?: pulumi.Input<string | undefined>;
     /**
-     * Process namespace to use for the containers in the task. Valid values: host`, `task`.
+     * Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
      */
     pidMode?: pulumi.Input<string | undefined>;
     /**
