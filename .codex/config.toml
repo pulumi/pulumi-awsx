@@ -1,0 +1,8 @@
+[mcp_servers.aws_documentation]
+command = "uvx"
+args = ["awslabs.aws-documentation-mcp-server@latest"]
+startup_timeout_sec = 60
+
+[mcp_servers.aws_documentation.env]
+FASTMCP_LOG_LEVEL = "ERROR"
+AWS_DOCUMENTATION_PARTITION = "aws"

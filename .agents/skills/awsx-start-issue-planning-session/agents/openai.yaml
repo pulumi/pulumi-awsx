@@ -1,0 +1,7 @@
+interface:
+  display_name: "AWSX Start Issue Planning Session"
+  short_description: "Start a planning-only AWSX issue session"
+  default_prompt: "Use $awsx-start-issue-planning-session with the issue or PR URL to produce a planning brief only."
+
+policy:
+  allow_implicit_invocation: false

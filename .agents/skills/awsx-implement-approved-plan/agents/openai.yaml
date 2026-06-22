@@ -1,0 +1,7 @@
+interface:
+  display_name: "AWSX Implement Approved Plan"
+  short_description: "Implement a reviewed AWSX issue plan"
+  default_prompt: "Use $awsx-implement-approved-plan with the issue URL and approved planning brief."
+
+policy:
+  allow_implicit_invocation: false

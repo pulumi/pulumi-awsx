@@ -20,6 +20,10 @@ ci-scripts/
 
 **/venv
 
+!.codex/
+.codex/*
+!.codex/config.toml
+
 !/awsx/yarn.lock
 
 sdk/java/build
