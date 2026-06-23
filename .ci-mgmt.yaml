@@ -2,6 +2,7 @@ provider: awsx
 aws: true
 major-version: 3
 template: generic
+generate-nightly-test-workflow: true
 buildProviderCmd: "OS=$(1) ARCH=$(2) OUT=$(3) yarn --cwd awsx build"
 testProviderCmd: "yarn --cwd awsx install --no-progress --frozen-lockfile && yarn --cwd awsx test"
 renovateCmd: "./scripts/renovate.sh"
