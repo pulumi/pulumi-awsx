@@ -29,11 +29,11 @@ For building the SDKs:
 - `make` builds the provider and all SDKs and installs for testing (same as `make build`)
 - `make development` is an alias for `make build` for backwards compatibility
 - `make build` builds the provider and all SDKs and installs them
-- `make test_provider` runs provider unit tests (Jest, no AWS required)
+- `make test_provider` runs the AWSX TypeScript/Jest tests (no AWS required)
 - `GOTESTARGS="-run TEST_NAME" make test` runs matching acceptance tests
 - `make clean` removes all build artifacts ready for a clean build
 - `make install_sdks` installs all SDKs
-- `make test` runs all acceptance tests
+- `make test` runs all acceptance tests; use CI for the full suite
 
 ### Implementing New Components
 
@@ -66,6 +66,10 @@ For running TypeScript examples locally:
 
 ## AI Review Workflow
 
+AWSX-specific review guidance lives in `REVIEW.md`. The shared gh-aw review
+plugin is sourced from `pulumi-labs/gh-aw-internal`; do not make repo-specific
+edits to the imported shared review plugin here.
+
 This repository includes these gh-aw workflow sources:
 - `.github/workflows/gh-aw-pr-review.md`
 - `.github/workflows/gh-aw-pr-rereview.md`
@@ -73,6 +77,7 @@ This repository includes these gh-aw workflow sources:
 They compile to:
 - `.github/workflows/gh-aw-pr-review.lock.yml`
 - `.github/workflows/gh-aw-pr-rereview.lock.yml`
+- `.github/aw/actions-lock.json`
 
 Behavior:
 - Auto review runs on `pull_request` opened events.

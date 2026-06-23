@@ -6,12 +6,68 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 ## Start Here
 - `Makefile` - canonical local command surface.
 - `.ci-mgmt.yaml` - source-of-truth for generated CI workflows and Make targets.
+- `docs/ai-harness/README.md` - current AI harness state and known gaps.
+- `docs/ai-harness/testing.md` - guidance for writing new AWSX tests.
+- `REVIEW.md` - AWSX-specific review notes that are not generic PR-review advice.
+- `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
+  for nontrivial issues where scope, API shape, compatibility, or spec needs
+  are unsettled.
+- `.agents/skills/awsx-start-issue-planning-session/SKILL.md` - manual-only
+  starter for planning an issue in a fresh session and stopping before edits.
+- `.agents/skills/awsx-implement-approved-plan/SKILL.md` - manual-only launcher
+  for implementing an already reviewed AWSX plan.
+- `.agents/skills/awsx-component-design/SKILL.md` - tactical authoring workflow
+  for modern `awsx/**` component changes.
+- `.agents/skills/awsx-breaking-change-evaluation/SKILL.md` - compatibility
+  and schema public-surface review workflow.
+- `.agents/skills/awsx-test-authoring/SKILL.md` - test-selection and assertion
+  guidance for modern AWSX changes.
+- `.agents/skills/awsx-aws-service-validation/SKILL.md` - AWS service fact,
+  docs, provider-surface, and regional availability validation.
+- `.claude/skills/` - symlinks to most repo-local `.agents/skills/` entries so
+  Claude Code sees the same skill sources; manual-only launcher skills may use
+  small Claude wrappers for Claude-specific invocation controls.
 - `provider/pkg/schemagen/` - schema generation logic.
 - `provider/cmd/pulumi-resource-awsx/` - provider schema output and embedding.
 - `awsx/` - TypeScript provider implementation + Jest tests.
 - `awsx-classic/` - legacy TypeScript components and compatibility surface.
 - `examples/` - integration/acceptance tests (real AWS resources).
 - `CONTRIBUTING.md` and `DEVELOPMENT.md` - contributor docs.
+
+## AI Harness
+- Keep harness docs small and AWSX-specific. Do not add placeholder docs or generic "remember to test" guidance.
+- Add harness material only when it captures a real repo pattern, repeated mistake, or concrete review rule.
+- If a session reveals missing guidance, update the smallest existing harness file first.
+
+Use the focused harness entry points this way:
+- `AGENTS.md` owns repo map, commands, generated boundaries, and path-triggered validation.
+- `REVIEW.md` owns the short AWSX-specific review checklist.
+- `.agents/skills/` is the skill source of truth. Keep `.claude/skills/` as
+  symlinks except when a skill needs Claude-specific invocation controls that
+  Codex skill validation does not allow in `.agents/skills`.
+- For GitHub issue implementation, use `.agents/skills/awsx-issue-planning/SKILL.md`
+  first unless the prompt explicitly says the plan/API shape is already
+  approved. For nontrivial issues, produce the planning brief and stop by
+  default; do not let the same session self-approve implementation unless the
+  prompt explicitly asks to proceed after planning without a maintainer review
+  checkpoint.
+- Use `.agents/skills/awsx-start-issue-planning-session/SKILL.md` and
+  `.agents/skills/awsx-implement-approved-plan/SKILL.md` only when explicitly
+  invoked as session launchers. They are control-flow wrappers around the
+  tactical AWSX skills, not ambient guidance.
+- Treat prior rollout summaries, memories, or old worktree diffs for the same
+  issue as historical attempts, not accepted design guidance.
+- `.agents/skills/awsx-issue-planning/SKILL.md` applies before editing when a
+  nontrivial issue needs scope, API-shape, current-usability, compatibility,
+  proof-strategy, or checked-in-spec decisions.
+- `.agents/skills/awsx-component-design/SKILL.md` applies when designing or reviewing modern `awsx/**` component shape: args, outputs, child resources, names, providers, regions, defaults, and `registerOutputs`.
+- `.agents/skills/awsx-breaking-change-evaluation/SKILL.md` applies when a change may affect existing users: schema or generated SDK surface, child identity, aliases, defaults, provider/region behavior, or upgrade previews.
+- `.agents/skills/awsx-test-authoring/SKILL.md` applies when choosing or writing proof: Jest mocks, schema/SDK checks, provider-upgrade tests, targeted acceptance tests, and assertion quality.
+- `.agents/skills/awsx-aws-service-validation/SKILL.md` applies when a change depends on AWS service behavior, API or CloudFormation constraints, regional availability, or disagreement between AWS docs and `@pulumi/aws`.
+- `docs/ai-harness/testing.md` is the human-readable overview for AWSX test choices; prefer the test-authoring skill for tactical rule-by-rule guidance.
+Known remaining harness gaps: final abstraction admission rules, component
+invariant audit for parentage/`registerOutputs`/region propagation, and modern
+component replay or snapshot fixture strategy.
 
 ## Command Canon
 - Build provider + SDKs + install SDKs: `make build`
@@ -20,8 +76,8 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - Build SDKs only: `make build_sdks`
 - Install SDKs only: `make install_sdks`
 - Lint: `make lint`
-- Provider unit tests (fast): `make test_provider`
-- Integration tests (AWS-backed): `make test`
+- AWSX TypeScript/Jest tests (fast): `make test_provider`
+- Full integration suite (AWS-backed, CI-only locally): `make test`
 - Targeted integration tests: `GOTESTARGS="-run TestName" make test`
 - Regenerate workflows/Makefile from ci-mgmt: `make ci-mgmt`
 
@@ -30,10 +86,12 @@ Never hand-edit generated outputs as the source of truth:
 - `sdk/**`
 - `provider/cmd/pulumi-resource-awsx/schema.json`
 - `provider/cmd/pulumi-resource-awsx/schema-embed.json`
-- `.github/workflows/**`
+- ci-mgmt-generated workflow YAML and gh-aw `.lock.yml` files under `.github/workflows/`
+- `.github/aw/actions-lock.json`
 - `Makefile`
 
 Use source files + regeneration commands instead.
+Some workflow source files also live under `.github/workflows/`. Edit those source files only when they are the source of truth, then regenerate/validate the generated outputs.
 
 When reviewing generated workflow or `Makefile` changes, do not assume they
 were hand-edited only because generated files changed. First check whether
@@ -47,7 +105,8 @@ change or documented regeneration reason.
 - `awsx-classic/**` -> run `yarn --cwd awsx-classic lint`
 - `provider/pkg/schemagen/**` -> run `make schema && make generate`
 - `.ci-mgmt.yaml` -> run `make ci-mgmt`
-- `examples/**` -> run targeted tests first, then full `make test` only if needed
+- `examples/**` -> run targeted acceptance tests locally; do not run the full `make test` suite locally
+- `docs/ai-harness/**` or `REVIEW.md` -> keep the guidance specific to AWSX and remove duplicated command lists
 
 ## Key Invariants
 - Schema generation changes can affect all language SDKs.

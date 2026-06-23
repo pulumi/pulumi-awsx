@@ -1,0 +1,4 @@
+interface:
+  display_name: "AWSX AWS Service Validation"
+  short_description: "Validate AWS service facts for AWSX"
+  default_prompt: "Use $awsx-aws-service-validation to validate the AWS service facts behind an AWSX change."
