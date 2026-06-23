@@ -749,3 +749,4 @@ class Vpc(pulumi.ComponentResource):
     @pulumi.getter(name="vpcId")
     def vpc_id(self) -> pulumi.Output[_builtins.str]:
         return pulumi.get(self, "vpc_id")
+
