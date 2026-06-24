@@ -24,6 +24,8 @@ import {
   compareSubnetSpecs,
   createIpv6SubnetCidrBlock,
   findSubnetGap,
+  getVpcEndpointDnsDefaults,
+  getVpcEndpointType,
   OverlappingSubnet,
   shouldCreateNatGateway,
   validateEips,
@@ -459,7 +461,9 @@ describe("child resource api", () => {
         share1: "parent",
         share2: "parent",
       },
-      vpcEndpointSpecs: [{ serviceName: "test", tags: { share2: "override" } }],
+      vpcEndpointSpecs: [
+        { serviceName: "test", routeTableIds: ["rtb-explicit"], tags: { share2: "override" } },
+      ],
       subnetStrategy: "Auto",
       subnetSpecs: [
         { type: "Public", tags: { share2: "override" } },
@@ -468,6 +472,27 @@ describe("child resource api", () => {
       ],
     });
   });
+
+  function mockedResourceId(resource: any): string {
+    return `mocked::${resource.type}::${resource.name}-id`;
+  }
+
+  function findCreatedResource(type: string, name: string): any {
+    const resource = newResources.find((r) => r.type === type && r.name === name);
+    expect(resource).toBeDefined();
+    return resource;
+  }
+
+  function findVpcEndpoint(vpcName: string, serviceName: string): any {
+    const endpoint = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/vpcEndpoint:VpcEndpoint" &&
+        resource.name === serviceName &&
+        resource.inputs.vpcId === `mocked::aws:ec2/vpc:Vpc::${vpcName}-id`,
+    );
+    expect(endpoint).toBeDefined();
+    return endpoint;
+  }
 
   it("internetGateway", async () => {
     const igw = await unwrap(vpc.internetGateway);
@@ -494,6 +519,620 @@ describe("child resource api", () => {
       expect(tags?.share1).toBe("parent");
       expect(tags?.share2).toBe("override");
     }
+  });
+
+  it("passes legacy endpoint specs through and warns when generated IDs are missing", async () => {
+    const warnSpy = jest.spyOn(pulumi.log, "warn").mockResolvedValue(undefined);
+    try {
+      const legacyVpc = new Vpc("legacy-endpoint", {
+        availabilityZoneNames: ["us-east-1a"],
+        natGateways: { strategy: "None" },
+        subnetStrategy: "Auto",
+        subnetSpecs: [{ type: "Private" }],
+        vpcEndpointSpecs: [
+          {
+            serviceName: "com.amazonaws.us-east-1.sqs",
+            vpcEndpointType: "Interface",
+          },
+        ],
+      });
+
+      await unwrap(legacyVpc.vpcEndpoints);
+
+      const endpoint = newResources.find(
+        (resource) =>
+          resource.type === "aws:ec2/vpcEndpoint:VpcEndpoint" &&
+          resource.name === "com.amazonaws.us-east-1.sqs" &&
+          resource.inputs.vpcId === "mocked::aws:ec2/vpc:Vpc::legacy-endpoint-id",
+      );
+      expect(endpoint).toBeDefined();
+      expect(endpoint?.inputs.subnetIds).toBeUndefined();
+      expect(endpoint?.inputs.routeTableIds).toBeUndefined();
+      expect(endpoint?.inputs.securityGroupIds).toBeUndefined();
+      expect(endpoint?.inputs.privateDnsEnabled).toBeUndefined();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('vpcEndpointStrategy: "Auto"'),
+        legacyVpc,
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("does not warn for complete legacy endpoint specs", async () => {
+    const warnSpy = jest.spyOn(pulumi.log, "warn").mockResolvedValue(undefined);
+    try {
+      const legacyVpc = new Vpc("legacy-complete-endpoint", {
+        availabilityZoneNames: ["us-east-1a"],
+        natGateways: { strategy: "None" },
+        subnetStrategy: "Auto",
+        subnetSpecs: [{ type: "Private" }],
+        vpcEndpointSpecs: [
+          {
+            serviceName: "com.amazonaws.us-east-1.sqs",
+            vpcEndpointType: "Interface",
+            subnetIds: ["subnet-explicit"],
+            securityGroupIds: ["sg-explicit"],
+            privateDnsEnabled: true,
+          },
+          {
+            serviceName: "com.amazonaws.us-east-1.dynamodb",
+            vpcEndpointType: "Gateway",
+            routeTableIds: ["rtb-explicit"],
+          },
+        ],
+      });
+
+      await unwrap(legacyVpc.vpcEndpoints);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("warns for Legacy gateway endpoint specs without route tables", async () => {
+    const warnSpy = jest.spyOn(pulumi.log, "warn").mockResolvedValue(undefined);
+    try {
+      const legacyVpc = new Vpc("legacy-gateway-warnings", {
+        availabilityZoneNames: ["us-east-1a"],
+        natGateways: { strategy: "None" },
+        subnetStrategy: "Auto",
+        subnetSpecs: [{ type: "Private" }],
+        vpcEndpointSpecs: [
+          {
+            serviceName: "com.amazonaws.us-east-1.dynamodb",
+            vpcEndpointType: "Gateway",
+          },
+          {
+            serviceName: "com.amazonaws.us-east-1.s3",
+          },
+        ],
+      });
+
+      await unwrap(legacyVpc.vpcEndpoints);
+
+      expect(warnSpy).toHaveBeenCalledTimes(2);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('VPC endpoint "com.amazonaws.us-east-1.dynamodb"'),
+        legacyVpc,
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('VPC endpoint "com.amazonaws.us-east-1.s3"'),
+        legacyVpc,
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("does not warn for dynamic Legacy endpoint types", async () => {
+    const warnSpy = jest.spyOn(pulumi.log, "warn").mockResolvedValue(undefined);
+    try {
+      const legacyVpc = new Vpc("legacy-dynamic-endpoint", {
+        availabilityZoneNames: ["us-east-1a"],
+        natGateways: { strategy: "None" },
+        subnetStrategy: "Auto",
+        subnetSpecs: [{ type: "Private" }],
+        vpcEndpointSpecs: [
+          {
+            serviceName: "com.amazonaws.us-east-1.sqs",
+            vpcEndpointType: pulumi.output("Interface"),
+          },
+        ],
+      });
+
+      await unwrap(legacyVpc.vpcEndpoints);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("defaults Auto gateway endpoints to generated route tables", async () => {
+    const autoVpc = new Vpc("auto-gateway-endpoint", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public" }, { type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [{ serviceName: "com.amazonaws.us-east-1.dynamodb" }],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+
+    const routeTableIds = newResources
+      .filter(
+        (resource) =>
+          resource.type === "aws:ec2/routeTable:RouteTable" &&
+          resource.name.startsWith("auto-gateway-endpoint"),
+      )
+      .map((resource) => `mocked::${resource.type}::${resource.name}-id`);
+
+    expect(await unwrap(endpoints[0].routeTableIds)).toEqual(routeTableIds);
+    expect(await unwrap(endpoints[0].vpcEndpointType)).toBeUndefined();
+  });
+
+  it("preserves explicit Auto gateway route tables", async () => {
+    const autoVpc = new Vpc("auto-gateway-explicit-endpoint", {
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.dynamodb",
+          routeTableIds: ["rtb-explicit"],
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    const endpoint = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/vpcEndpoint:VpcEndpoint" &&
+        resource.name === "com.amazonaws.us-east-1.dynamodb" &&
+        resource.inputs.vpcId === "mocked::aws:ec2/vpc:Vpc::auto-gateway-explicit-endpoint-id",
+    );
+    expect(endpoint?.inputs.routeTableIds).toEqual(["rtb-explicit"]);
+  });
+
+  it("defaults Auto interface endpoints to private subnets, private DNS, and a security group", async () => {
+    const autoVpc = new Vpc("auto-interface-endpoint", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+
+    const privateSubnetIds = newResources
+      .filter(
+        (resource) =>
+          resource.type === "aws:ec2/subnet:Subnet" &&
+          resource.name.startsWith("auto-interface-endpoint") &&
+          resource.inputs.tags.SubnetType === "Private",
+      )
+      .map((resource) => `mocked::${resource.type}::${resource.name}-id`);
+    const endpointSecurityGroup = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/securityGroup:SecurityGroup" &&
+        resource.name === "com.amazonaws.us-east-1.sqs-sg",
+    );
+    const ingress = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/securityGroupRule:SecurityGroupRule" &&
+        resource.name === "com.amazonaws.us-east-1.sqs-ingress",
+    );
+    const rawVpc = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/vpc:Vpc" && resource.name === "auto-interface-endpoint",
+    );
+
+    expect(await unwrap(endpoints[0].subnetIds)).toEqual(privateSubnetIds);
+    expect(await unwrap(endpoints[0].privateDnsEnabled)).toBe(true);
+    expect(await unwrap(endpoints[0].securityGroupIds)).toEqual([
+      `mocked::aws:ec2/securityGroup:SecurityGroup::com.amazonaws.us-east-1.sqs-sg-id`,
+    ]);
+    expect(endpointSecurityGroup?.inputs.vpcId).toBe(
+      "mocked::aws:ec2/vpc:Vpc::auto-interface-endpoint-id",
+    );
+    expect(ingress?.inputs).toMatchObject({
+      type: "ingress",
+      protocol: "tcp",
+      fromPort: 443,
+      toPort: 443,
+      cidrBlocks: ["10.0.0.0/16"],
+      securityGroupId:
+        "mocked::aws:ec2/securityGroup:SecurityGroup::com.amazonaws.us-east-1.sqs-sg-id",
+    });
+    expect(rawVpc?.inputs.enableDnsHostnames).toBe(true);
+    expect(rawVpc?.inputs.enableDnsSupport).toBe(true);
+  });
+
+  it("adds the VPC IPv6 CIDR to generated endpoint security group ingress for dualstack endpoints", async () => {
+    const autoVpc = new Vpc("auto-interface-dualstack-endpoint", {
+      assignGeneratedIpv6CidrBlock: true,
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          ipAddressType: "dualstack",
+        },
+      ],
+    });
+
+    await unwrap(autoVpc.vpcEndpoints);
+
+    const ingress = findCreatedResource(
+      "aws:ec2/securityGroupRule:SecurityGroupRule",
+      "com.amazonaws.us-east-1.sqs-ingress",
+    );
+    expect(ingress.inputs.cidrBlocks).toEqual(["10.0.0.0/16"]);
+    expect(ingress.inputs.ipv6CidrBlocks).toEqual(["2600:1f14:82a:ab00::/56"]);
+  });
+
+  it("falls back to isolated subnets for Auto interface endpoints when private subnets are absent", async () => {
+    const autoVpc = new Vpc("auto-interface-isolated-endpoint", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public" }, { type: "Isolated" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          securityGroupIds: ["sg-explicit"],
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+
+    const isolatedSubnetIds = newResources
+      .filter(
+        (resource) =>
+          resource.type === "aws:ec2/subnet:Subnet" &&
+          resource.name.startsWith("auto-interface-isolated-endpoint") &&
+          resource.inputs.tags.SubnetType === "Isolated",
+      )
+      .map((resource) => `mocked::${resource.type}::${resource.name}-id`);
+
+    expect(await unwrap(endpoints[0].subnetIds)).toEqual(isolatedSubnetIds);
+    expect(await unwrap(endpoints[0].securityGroupIds)).toEqual(["sg-explicit"]);
+    expect(
+      newResources.some(
+        (resource) =>
+          resource.type === "aws:ec2/securityGroup:SecurityGroup" &&
+          resource.inputs.vpcId === "mocked::aws:ec2/vpc:Vpc::auto-interface-isolated-endpoint-id",
+      ),
+    ).toBe(false);
+  });
+
+  it("falls back to public subnets for Auto interface endpoints when private and isolated subnets are absent", async () => {
+    const autoVpc = new Vpc("auto-interface-public-endpoint", {
+      availabilityZoneNames: ["us-east-1a", "us-east-1b"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Public" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          securityGroupIds: ["sg-explicit"],
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+
+    const publicSubnetIds = newResources
+      .filter(
+        (resource) =>
+          resource.type === "aws:ec2/subnet:Subnet" &&
+          resource.name.startsWith("auto-interface-public-endpoint") &&
+          resource.inputs.tags.SubnetType === "Public",
+      )
+      .map(mockedResourceId);
+
+    expect(await unwrap(endpoints[0].subnetIds)).toEqual(publicSubnetIds);
+    expect(await unwrap(endpoints[0].securityGroupIds)).toEqual(["sg-explicit"]);
+  });
+
+  it("preserves explicit Auto interface fields", async () => {
+    const autoVpc = new Vpc("auto-interface-explicit-endpoint", {
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          subnetIds: ["subnet-explicit"],
+          securityGroupIds: ["sg-explicit"],
+          privateDnsEnabled: false,
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    const endpoint = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/vpcEndpoint:VpcEndpoint" &&
+        resource.name === "com.amazonaws.us-east-1.sqs" &&
+        resource.inputs.vpcId === "mocked::aws:ec2/vpc:Vpc::auto-interface-explicit-endpoint-id",
+    );
+    const rawVpc = newResources.find(
+      (resource) =>
+        resource.type === "aws:ec2/vpc:Vpc" && resource.name === "auto-interface-explicit-endpoint",
+    );
+
+    expect(endpoint?.inputs.subnetIds).toEqual(["subnet-explicit"]);
+    expect(endpoint?.inputs.securityGroupIds).toEqual(["sg-explicit"]);
+    expect(endpoint?.inputs.privateDnsEnabled).toBe(false);
+    expect(rawVpc?.inputs.enableDnsHostnames).toBeUndefined();
+    expect(rawVpc?.inputs.enableDnsSupport).toBeUndefined();
+  });
+
+  it("preserves explicit Auto interface subnet configurations", async () => {
+    const subnetConfigurations = [{ subnetId: "subnet-explicit", ipv4: "10.0.1.10" }];
+    const autoVpc = new Vpc("auto-interface-subnet-configurations", {
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          subnetConfigurations,
+          securityGroupIds: ["sg-explicit"],
+          privateDnsEnabled: false,
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    const endpoint = findVpcEndpoint(
+      "auto-interface-subnet-configurations",
+      "com.amazonaws.us-east-1.sqs",
+    );
+    expect(endpoint.inputs.subnetConfigurations).toEqual(subnetConfigurations);
+    expect(endpoint.inputs.subnetIds).toBeUndefined();
+    expect(endpoint.inputs.securityGroupIds).toEqual(["sg-explicit"]);
+  });
+
+  it("preserves explicit Legacy interface subnet configurations", async () => {
+    const warnSpy = jest.spyOn(pulumi.log, "warn").mockResolvedValue(undefined);
+    const subnetConfigurations = [{ subnetId: "subnet-explicit", ipv4: "10.0.1.10" }];
+    try {
+      const legacyVpc = new Vpc("legacy-subnet-configurations", {
+        availabilityZoneNames: ["us-east-1a"],
+        natGateways: { strategy: "None" },
+        subnetStrategy: "Auto",
+        subnetSpecs: [{ type: "Private" }],
+        vpcEndpointSpecs: [
+          {
+            serviceName: "com.amazonaws.us-east-1.sqs",
+            vpcEndpointType: "Interface",
+            subnetConfigurations,
+            securityGroupIds: ["sg-explicit"],
+          },
+        ],
+      });
+
+      await unwrap(legacyVpc.vpcEndpoints);
+
+      const endpoint = findVpcEndpoint(
+        "legacy-subnet-configurations",
+        "com.amazonaws.us-east-1.sqs",
+      );
+      expect(endpoint.inputs.subnetConfigurations).toEqual(subnetConfigurations);
+      expect(endpoint.inputs.subnetIds).toBeUndefined();
+      expect(endpoint.inputs.securityGroupIds).toEqual(["sg-explicit"]);
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("leaves other Auto endpoint types as pass-through specs", async () => {
+    const endpointSpecs = [
+      {
+        serviceName: "com.amazonaws.us-east-1.gwlb",
+        vpcEndpointType: "GatewayLoadBalancer",
+      },
+      {
+        serviceName: "com.amazonaws.us-east-1.resource",
+        vpcEndpointType: "Resource",
+      },
+      {
+        serviceName: "com.amazonaws.us-east-1.service-network",
+        vpcEndpointType: "ServiceNetwork",
+      },
+    ];
+    const autoVpc = new Vpc("auto-other-endpoint-types", {
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: endpointSpecs,
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    for (const spec of endpointSpecs) {
+      const endpoint = findVpcEndpoint("auto-other-endpoint-types", spec.serviceName);
+      expect(endpoint.inputs.vpcEndpointType).toBe(spec.vpcEndpointType);
+      expect(endpoint.inputs.subnetIds).toBeUndefined();
+      expect(endpoint.inputs.routeTableIds).toBeUndefined();
+      expect(endpoint.inputs.securityGroupIds).toBeUndefined();
+      expect(endpoint.inputs.privateDnsEnabled).toBeUndefined();
+    }
+  });
+
+  it("uses the top-level region for Auto endpoints and generated endpoint security group resources", async () => {
+    const autoVpc = new Vpc("auto-endpoint-region", {
+      region: pulumiAws.Region.EUCentral1,
+      availabilityZoneNames: ["eu-central-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.eu-central-1.sqs",
+          vpcEndpointType: "Interface",
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    const endpoint = findCreatedResource(
+      "aws:ec2/vpcEndpoint:VpcEndpoint",
+      "com.amazonaws.eu-central-1.sqs",
+    );
+    const securityGroup = findCreatedResource(
+      "aws:ec2/securityGroup:SecurityGroup",
+      "com.amazonaws.eu-central-1.sqs-sg",
+    );
+    const ingress = findCreatedResource(
+      "aws:ec2/securityGroupRule:SecurityGroupRule",
+      "com.amazonaws.eu-central-1.sqs-ingress",
+    );
+    expect(endpoint.inputs.region).toBe(pulumiAws.Region.EUCentral1);
+    expect(securityGroup.inputs.region).toBe(pulumiAws.Region.EUCentral1);
+    expect(ingress.inputs.region).toBe(pulumiAws.Region.EUCentral1);
+  });
+
+  it("uses spec region overrides for Auto endpoints and generated endpoint security group resources", async () => {
+    const autoVpc = new Vpc("auto-endpoint-region-override", {
+      region: pulumiAws.Region.EUCentral1,
+      availabilityZoneNames: ["eu-central-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          region: pulumiAws.Region.USEast1,
+        },
+      ],
+    });
+
+    const endpoints = await unwrap(autoVpc.vpcEndpoints);
+    await unwrap(endpoints[0].id);
+
+    const endpoint = findCreatedResource(
+      "aws:ec2/vpcEndpoint:VpcEndpoint",
+      "com.amazonaws.us-east-1.sqs",
+    );
+    const securityGroup = findCreatedResource(
+      "aws:ec2/securityGroup:SecurityGroup",
+      "com.amazonaws.us-east-1.sqs-sg",
+    );
+    const ingress = findCreatedResource(
+      "aws:ec2/securityGroupRule:SecurityGroupRule",
+      "com.amazonaws.us-east-1.sqs-ingress",
+    );
+    expect(endpoint.inputs.region).toBe(pulumiAws.Region.USEast1);
+    expect(securityGroup.inputs.region).toBe(pulumiAws.Region.USEast1);
+    expect(ingress.inputs.region).toBe(pulumiAws.Region.USEast1);
+  });
+
+  it("rejects dynamic Auto endpoint types", () => {
+    expect(() =>
+      getVpcEndpointType(
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: pulumi.output("Interface"),
+        },
+        "Auto",
+      ),
+    ).toThrow('vpcEndpointStrategy "Auto" requires vpcEndpointType');
+  });
+
+  it("rejects literal DNS conflicts for Auto interface private DNS", () => {
+    expect(() =>
+      getVpcEndpointDnsDefaults(
+        {
+          enableDnsHostnames: false,
+          vpcEndpointSpecs: [
+            {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+          ],
+        },
+        "Auto",
+        [
+          {
+            spec: {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+            endpointType: "interface",
+          },
+        ],
+      ),
+    ).toThrow("requires enableDnsHostnames to be true");
+  });
+
+  it("rejects literal DNS support conflicts for Auto interface private DNS", () => {
+    expect(() =>
+      getVpcEndpointDnsDefaults(
+        {
+          enableDnsSupport: false,
+          vpcEndpointSpecs: [
+            {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+          ],
+        },
+        "Auto",
+        [
+          {
+            spec: {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+            endpointType: "interface",
+          },
+        ],
+      ),
+    ).toThrow("requires enableDnsSupport to be true");
   });
 
   it("subnets", async () => {
@@ -591,7 +1230,8 @@ describe("child resource api", () => {
     ]);
 
     const regionalChildren = newResources.filter(
-      (resource) => childResourceTypes.has(resource.type) && resource.name.startsWith("test-region"),
+      (resource) =>
+        childResourceTypes.has(resource.type) && resource.name.startsWith("test-region"),
     );
     expect(regionalChildren.length).toBeGreaterThan(0);
     for (const resource of regionalChildren) {
@@ -611,10 +1251,7 @@ describe("child resource api", () => {
     const ipv6Vpc = new Vpc("test-ipv6-defaulting", {
       assignGeneratedIpv6CidrBlock: true,
       subnetStrategy: "Auto",
-      subnetSpecs: [
-        { type: "Public" },
-        { type: "Private", assignIpv6AddressOnCreation: false },
-      ],
+      subnetSpecs: [{ type: "Public" }, { type: "Private", assignIpv6AddressOnCreation: false }],
     });
 
     const subnets = await unwrap(ipv6Vpc.subnets);
@@ -633,7 +1270,6 @@ describe("child resource api", () => {
       }
     }
   });
-
 });
 
 describe("AutoMerge strategy merges partial SubnetSpecs with defaults", () => {

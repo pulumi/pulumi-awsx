@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ec2;
 
 import com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy;
+import com.pulumi.awsx.ec2.enums.VpcEndpointStrategy;
 import com.pulumi.awsx.ec2.inputs.NatGatewayConfigurationArgs;
 import com.pulumi.awsx.ec2.inputs.SubnetSpecArgs;
 import com.pulumi.awsx.ec2.inputs.VpcEndpointSpecArgs;
@@ -338,6 +339,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.vpcEndpointSpecs);
     }
 
+    /**
+     * The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+     * 
+     */
+    @Import(name="vpcEndpointStrategy")
+    private @Nullable VpcEndpointStrategy vpcEndpointStrategy;
+
+    /**
+     * @return The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+     * 
+     */
+    public Optional<VpcEndpointStrategy> vpcEndpointStrategy() {
+        return Optional.ofNullable(this.vpcEndpointStrategy);
+    }
+
     private VpcArgs() {}
 
     private VpcArgs(VpcArgs $) {
@@ -362,6 +378,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.subnetStrategy = $.subnetStrategy;
         this.tags = $.tags;
         this.vpcEndpointSpecs = $.vpcEndpointSpecs;
+        this.vpcEndpointStrategy = $.vpcEndpointStrategy;
     }
 
     public static Builder builder() {
@@ -771,6 +788,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder vpcEndpointSpecs(VpcEndpointSpecArgs... vpcEndpointSpecs) {
             return vpcEndpointSpecs(List.of(vpcEndpointSpecs));
+        }
+
+        /**
+         * @param vpcEndpointStrategy The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder vpcEndpointStrategy(@Nullable VpcEndpointStrategy vpcEndpointStrategy) {
+            $.vpcEndpointStrategy = vpcEndpointStrategy;
+            return this;
         }
 
         public VpcArgs build() {

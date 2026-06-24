@@ -334,6 +334,12 @@ namespace Pulumi.Awsx.Ec2
             set => _vpcEndpointSpecs = value;
         }
 
+        /// <summary>
+        /// The strategy to use when applying VPC endpoint specs. Optional. Defaults to `Legacy`.
+        /// </summary>
+        [Input("vpcEndpointStrategy")]
+        public Pulumi.Awsx.Ec2.VpcEndpointStrategy? VpcEndpointStrategy { get; set; }
+
         public VpcArgs()
         {
         }
