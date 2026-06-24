@@ -16,11 +16,11 @@ import { calculateFargateMemoryAndCPU, maxMemGB, maxVCPU } from "./fargateMemory
 
 describe("max vcpu and memory", () => {
   it("max cpu", async () => {
-    expect(maxVCPU).toBeGreaterThanOrEqual(16);
+    expect(maxVCPU).toBeGreaterThanOrEqual(32);
   });
 
   it("max memory", async () => {
-    expect(maxMemGB).toBeGreaterThanOrEqual(120);
+    expect(maxMemGB).toBeGreaterThanOrEqual(244);
   });
 
   it("can request valid exact values", async () => {
@@ -67,16 +67,16 @@ describe("max vcpu and memory", () => {
     expect(() => {
       calculateFargateMemoryAndCPU([
         {
-          cpu: 16 * 1024,
-          memory: 120 * 1024,
+          cpu: 17 * 1024,
+          memory: 123 * 1024,
         },
         {
-          cpu: 16 * 1024,
-          memory: 120 * 1024,
+          cpu: 17 * 1024,
+          memory: 123 * 1024,
         },
       ]);
     }).toThrowError(
-      `Requested resources exceed the maximum allowed for Fargate. Requested: 32 vCPU and 240GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
+      `Requested resources exceed the maximum allowed for Fargate. Requested: 34 vCPU and 246GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
     );
   });
   it("throws error if containers request more CPU than fargate allows", async () => {
