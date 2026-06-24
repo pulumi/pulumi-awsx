@@ -40,6 +40,7 @@ const allConfigs = [
   ...cpuMemoryConfigs({ vcpu: 4, memGBs: range(8, 30) }),
   ...cpuMemoryConfigs({ vcpu: 8, memGBs: range(16, 60) }),
   ...cpuMemoryConfigs({ vcpu: 16, memGBs: range(32, 120) }),
+  ...cpuMemoryConfigs({ vcpu: 32, memGBs: [64, 120, 244] })
 ].sort((c1, c2) => c1.cost - c2.cost);
 
 // exported for tests
