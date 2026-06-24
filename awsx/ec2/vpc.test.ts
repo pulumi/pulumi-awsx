@@ -24,6 +24,8 @@ import {
   compareSubnetSpecs,
   createIpv6SubnetCidrBlock,
   findSubnetGap,
+  getVpcEndpointDnsDefaults,
+  getVpcEndpointType,
   OverlappingSubnet,
   shouldCreateNatGateway,
   validateEips,
@@ -759,6 +761,33 @@ describe("child resource api", () => {
     expect(rawVpc?.inputs.enableDnsSupport).toBe(true);
   });
 
+  it("adds the VPC IPv6 CIDR to generated endpoint security group ingress for dualstack endpoints", async () => {
+    const autoVpc = new Vpc("auto-interface-dualstack-endpoint", {
+      assignGeneratedIpv6CidrBlock: true,
+      availabilityZoneNames: ["us-east-1a"],
+      natGateways: { strategy: "None" },
+      subnetStrategy: "Auto",
+      subnetSpecs: [{ type: "Private" }],
+      vpcEndpointStrategy: "Auto",
+      vpcEndpointSpecs: [
+        {
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: "Interface",
+          ipAddressType: "dualstack",
+        },
+      ],
+    });
+
+    await unwrap(autoVpc.vpcEndpoints);
+
+    const ingress = findCreatedResource(
+      "aws:ec2/securityGroupRule:SecurityGroupRule",
+      "com.amazonaws.us-east-1.sqs-ingress",
+    );
+    expect(ingress.inputs.cidrBlocks).toEqual(["10.0.0.0/16"]);
+    expect(ingress.inputs.ipv6CidrBlocks).toEqual(["2600:1f14:82a:ab00::/56"]);
+  });
+
   it("falls back to isolated subnets for Auto interface endpoints when private subnets are absent", async () => {
     const autoVpc = new Vpc("auto-interface-isolated-endpoint", {
       availabilityZoneNames: ["us-east-1a", "us-east-1b"],
@@ -1044,14 +1073,10 @@ describe("child resource api", () => {
 
   it("rejects dynamic Auto endpoint types", () => {
     expect(() =>
-      (Vpc as any).applyVpcEndpointDnsDefaults(
+      getVpcEndpointType(
         {
-          vpcEndpointSpecs: [
-            {
-              serviceName: "com.amazonaws.us-east-1.sqs",
-              vpcEndpointType: pulumi.output("Interface"),
-            },
-          ],
+          serviceName: "com.amazonaws.us-east-1.sqs",
+          vpcEndpointType: pulumi.output("Interface"),
         },
         "Auto",
       ),
@@ -1060,7 +1085,7 @@ describe("child resource api", () => {
 
   it("rejects literal DNS conflicts for Auto interface private DNS", () => {
     expect(() =>
-      (Vpc as any).applyVpcEndpointDnsDefaults(
+      getVpcEndpointDnsDefaults(
         {
           enableDnsHostnames: false,
           vpcEndpointSpecs: [
@@ -1071,13 +1096,22 @@ describe("child resource api", () => {
           ],
         },
         "Auto",
+        [
+          {
+            spec: {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+            endpointType: "interface",
+          },
+        ],
       ),
     ).toThrow("requires enableDnsHostnames to be true");
   });
 
   it("rejects literal DNS support conflicts for Auto interface private DNS", () => {
     expect(() =>
-      (Vpc as any).applyVpcEndpointDnsDefaults(
+      getVpcEndpointDnsDefaults(
         {
           enableDnsSupport: false,
           vpcEndpointSpecs: [
@@ -1088,6 +1122,15 @@ describe("child resource api", () => {
           ],
         },
         "Auto",
+        [
+          {
+            spec: {
+              serviceName: "com.amazonaws.us-east-1.sqs",
+              vpcEndpointType: "Interface",
+            },
+            endpointType: "interface",
+          },
+        ],
       ),
     ).toThrow("requires enableDnsSupport to be true");
   });
