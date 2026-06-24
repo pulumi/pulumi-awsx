@@ -6,7 +6,6 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.41.11
 	github.com/aws/aws-sdk-go-v2/config v1.32.20
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.38.0
-	github.com/aws/aws-sdk-go-v2/service/lambda v1.38.0
 	github.com/pulumi/providertest v0.5.1
 	github.com/pulumi/pulumi/pkg/v3 v3.246.0
 	github.com/pulumi/pulumi/sdk/v3 v3.246.0
