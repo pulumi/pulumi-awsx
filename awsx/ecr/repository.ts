@@ -37,6 +37,10 @@ export class Repository extends schema.Repository {
         {
           repository: this.repository.name,
           policy: buildLifecyclePolicy(lifecyclePolicy),
+          // Thread the component's top-level region through to the lifecycle
+          // policy so it is evaluated in the same region as the repository
+          // rather than the ambient provider region (see #1935, #1933).
+          ...(args.region !== undefined ? { region: args.region } : {}),
         },
         {
           parent: this,
