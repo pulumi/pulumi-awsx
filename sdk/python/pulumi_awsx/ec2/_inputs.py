@@ -409,7 +409,6 @@ class VpcEndpointSpecArgsDict(TypedDict):
     * `account_id` (String) AWS Account where this resource is managed.
     * `region` (String) Region where this resource is managed.
 
-
     Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 
     ```sh
@@ -678,13 +677,11 @@ class VpcEndpointSpecArgs:
         * `account_id` (String) AWS Account where this resource is managed.
         * `region` (String) Region where this resource is managed.
 
-
         Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 
         ```sh
         $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint example vpce-3ecf2a57
         ```
-
 
 
         :param _builtins.str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).

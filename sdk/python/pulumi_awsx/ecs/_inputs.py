@@ -124,7 +124,7 @@ class EC2ServiceTaskDefinitionArgsDict(TypedDict):
     """
     pid_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
     """
-    Process namespace to use for the containers in the task. Valid values: host`, `task`.
+    Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
     """
     placement_constraints: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]]
     """
@@ -216,7 +216,7 @@ class EC2ServiceTaskDefinitionArgs:
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
         :param pulumi.Input[_builtins.str] network_mode: Docker networking mode to use for the containers in the task. Valid values: `awsvpc`, `bridge`, `host`, and `none`.
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -419,7 +419,7 @@ class EC2ServiceTaskDefinitionArgs:
     @pulumi.getter(name="pidMode")
     def pid_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         """
         return pulumi.get(self, "pid_mode")
 
@@ -597,7 +597,7 @@ class FargateServiceTaskDefinitionArgsDict(TypedDict):
     """
     pid_mode: NotRequired[pulumi.Input[Optional[_builtins.str]]]
     """
-    Process namespace to use for the containers in the task. Valid values: host`, `task`.
+    Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
     """
     placement_constraints: NotRequired[pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgsDict']]]]]
     """
@@ -687,7 +687,7 @@ class FargateServiceTaskDefinitionArgs:
         :param '_awsx.DefaultLogGroupArgs' log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -876,7 +876,7 @@ class FargateServiceTaskDefinitionArgs:
     @pulumi.getter(name="pidMode")
     def pid_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         """
         return pulumi.get(self, "pid_mode")
 

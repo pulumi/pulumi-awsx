@@ -66,6 +66,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["dropInvalidHeaderFields"] = args?.dropInvalidHeaderFields;
             resourceInputs["enableCrossZoneLoadBalancing"] = args?.enableCrossZoneLoadBalancing;
             resourceInputs["enableDeletionProtection"] = args?.enableDeletionProtection;
+            resourceInputs["enablePrefixForIpv6SourceNat"] = args?.enablePrefixForIpv6SourceNat;
             resourceInputs["enableTlsVersionAndCipherSuiteHeaders"] = args?.enableTlsVersionAndCipherSuiteHeaders;
             resourceInputs["enableWafFailOpen"] = args?.enableWafFailOpen;
             resourceInputs["enableXffClientPort"] = args?.enableXffClientPort;
@@ -151,6 +152,10 @@ export interface NetworkLoadBalancerArgs {
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      */
     enableDeletionProtection?: pulumi.Input<boolean | undefined>;
+    /**
+     * Whether to use an IPv6 prefix from each subnet for source NAT. `ipAddressType` must be `dualstack`. Valid values: `on`, `off`.
+     */
+    enablePrefixForIpv6SourceNat?: pulumi.Input<string | undefined>;
     /**
      * Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
      */

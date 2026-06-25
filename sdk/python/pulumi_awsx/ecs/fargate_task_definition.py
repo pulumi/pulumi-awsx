@@ -64,7 +64,7 @@ class FargateTaskDefinitionArgs:
         :param '_awsx.DefaultLogGroupArgs' log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -253,7 +253,7 @@ class FargateTaskDefinitionArgs:
     @pulumi.getter(name="pidMode")
     def pid_mode(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         """
         return pulumi.get(self, "pid_mode")
 
@@ -407,7 +407,6 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
 
-
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param Union['TaskDefinitionContainerDefinitionArgs', 'TaskDefinitionContainerDefinitionArgsDict'] container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -428,7 +427,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         :param Union['_awsx.DefaultLogGroupArgs', '_awsx.DefaultLogGroupArgsDict'] log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[_builtins.str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
-        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host`, `task`.
+        :param pulumi.Input[_builtins.str] pid_mode: Process namespace to use for the containers in the task. Valid values: host` ,  `task`.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[_builtins.str] region: Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
@@ -454,7 +453,6 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         Create a TaskDefinition resource with the given unique name, arguments, and options.
         Creates required log-group and task & execution roles.
         Presents required Service load balancers if target group included in port mappings.
-
 
         :param str resource_name: The name of the resource.
         :param FargateTaskDefinitionArgs args: The arguments to use to populate this resource's properties.

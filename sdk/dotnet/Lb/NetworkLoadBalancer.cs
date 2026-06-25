@@ -134,6 +134,12 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? EnableDeletionProtection { get; set; }
 
         /// <summary>
+        /// Whether to use an IPv6 prefix from each subnet for source NAT. `IpAddressType` must be `Dualstack`. Valid values: `On`, `Off`.
+        /// </summary>
+        [Input("enablePrefixForIpv6SourceNat")]
+        public Input<string>? EnablePrefixForIpv6SourceNat { get; set; }
+
+        /// <summary>
         /// Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `Application`. Defaults to `False`
         /// </summary>
         [Input("enableTlsVersionAndCipherSuiteHeaders")]

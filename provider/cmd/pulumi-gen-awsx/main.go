@@ -16,8 +16,10 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -33,6 +35,10 @@ import (
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
+	pkghost "github.com/pulumi/pulumi/pkg/v3/host"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/diag"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/diag/colors"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/plugin"
 
 	gen "github.com/pulumi/pulumi-awsx/provider/v3/pkg/schemagen"
 	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/version"
@@ -175,11 +181,30 @@ func filterSchema(pkgSpec schema.PackageSpec, version string, language Language)
 }
 
 func bindSchema(pkgSpec schema.PackageSpec) (*schema.Package, error) {
-	pkg, err := schema.ImportSpec(pkgSpec, nil, schema.ValidationOptions{})
+	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	return pkg, nil
+
+	// AWSX schemas contain refs to package schemas such as aws. ImportSpec needs
+	// an explicit loader so those refs resolve through a fully initialized host.
+	ctx := context.Background()
+	sink := diag.DefaultSink(io.Discard, io.Discard, diag.FormatOptions{Color: colors.Never})
+	pluginHost, err := pkghost.New(ctx, sink, sink, nil, nil, schema.NewLoaderServerFromContext, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer pluginHost.Close()
+
+	// The loader only needs the plugin context for schema resolution during codegen.
+	pluginContext, err := plugin.NewContext(
+		ctx, sink, sink, pluginHost, nil, cwd, nil, false, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer pluginContext.Close()
+
+	return schema.ImportSpec(pkgSpec, nil, schema.NewPluginLoader(pluginContext), schema.ValidationOptions{})
 }
 
 func genDotNet(pkg *schema.Package, outdir string) error {

@@ -334,6 +334,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
     readonly enableHttp2?: pulumi.Input<boolean>;
+    readonly enablePrefixForIpv6SourceNat?: pulumi.Input<string>;
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
@@ -380,6 +381,7 @@ export interface NetworkLoadBalancerArgs {
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
+    readonly enablePrefixForIpv6SourceNat?: pulumi.Input<string>;
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
