@@ -1,3 +1,0 @@
-name: ecs-dotnet
-runtime: dotnet
-description: A minimal C# Pulumi program
