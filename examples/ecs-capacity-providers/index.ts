@@ -87,6 +87,7 @@ const service = new ecs.FargateService(
   },
   {
     transforms: [transform],
+    dependsOn: [capacityProvider],
   },
 );
 
@@ -104,5 +105,6 @@ const service2 = new ecs.FargateService(
   },
   {
     transforms: [transform],
+    dependsOn: [capacityProvider],
   },
 );
