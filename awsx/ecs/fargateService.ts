@@ -57,6 +57,19 @@ export class FargateService extends schema.FargateService {
       throw new Error("Either `taskDefinition` or `taskDefinitionArgs` must be provided.");
     }
 
+    if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
+      throw new Error(
+        "Only one of `capacityProviderStrategies` or `useClusterDefaultCapacityProviderStrategy` can be provided.",
+      );
+    }
+
+    // ECS uses the cluster default capacity provider strategy only when neither
+    // a launch type nor a service-level capacity provider strategy is provided.
+    const launchType =
+      args.capacityProviderStrategies || args.useClusterDefaultCapacityProviderStrategy
+        ? undefined
+        : "FARGATE";
+
     this.service = new aws.ecs.Service(
       name,
       {
@@ -66,7 +79,7 @@ export class FargateService extends schema.FargateService {
           args.networkConfiguration ??
           getDefaultNetworkConfiguration(name, this, args.assignPublicIp),
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
-        launchType: "FARGATE",
+        launchType,
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
         waitForSteadyState: utils
           .ifUndefined(args.continueBeforeSteadyState, false)

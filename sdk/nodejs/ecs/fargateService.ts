@@ -51,6 +51,7 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["alarms"] = args?.alarms;
             resourceInputs["assignPublicIp"] = args?.assignPublicIp;
             resourceInputs["availabilityZoneRebalancing"] = args?.availabilityZoneRebalancing;
+            resourceInputs["capacityProviderStrategies"] = args?.capacityProviderStrategies;
             resourceInputs["cluster"] = args?.cluster;
             resourceInputs["continueBeforeSteadyState"] = args?.continueBeforeSteadyState;
             resourceInputs["deploymentCircuitBreaker"] = args?.deploymentCircuitBreaker;
@@ -80,6 +81,7 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["taskDefinition"] = args?.taskDefinition;
             resourceInputs["taskDefinitionArgs"] = args?.taskDefinitionArgs;
             resourceInputs["triggers"] = args?.triggers;
+            resourceInputs["useClusterDefaultCapacityProviderStrategy"] = args?.useClusterDefaultCapacityProviderStrategy;
             resourceInputs["volumeConfiguration"] = args?.volumeConfiguration;
             resourceInputs["vpcLatticeConfigurations"] = args?.vpcLatticeConfigurations;
             resourceInputs["service"] = undefined /*out*/;
@@ -108,6 +110,10 @@ export interface FargateServiceArgs {
      * ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
      */
     availabilityZoneRebalancing?: pulumi.Input<string | undefined>;
+    /**
+     * Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+     */
+    capacityProviderStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceCapacityProviderStrategy>[] | undefined>;
     /**
      * ARN of an ECS cluster.
      */
@@ -227,6 +233,10 @@ export interface FargateServiceArgs {
      * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
      */
     triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
+    /**
+     * If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     */
+    useClusterDefaultCapacityProviderStrategy?: boolean;
     /**
      * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
      */

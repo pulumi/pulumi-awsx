@@ -81,6 +81,7 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["taskDefinition"] = args?.taskDefinition;
             resourceInputs["taskDefinitionArgs"] = args?.taskDefinitionArgs;
             resourceInputs["triggers"] = args?.triggers;
+            resourceInputs["useClusterDefaultCapacityProviderStrategy"] = args?.useClusterDefaultCapacityProviderStrategy;
             resourceInputs["volumeConfiguration"] = args?.volumeConfiguration;
             resourceInputs["vpcLatticeConfigurations"] = args?.vpcLatticeConfigurations;
             resourceInputs["service"] = undefined /*out*/;
@@ -232,6 +233,10 @@ export interface EC2ServiceArgs {
      * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
      */
     triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
+    /**
+     * If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     */
+    useClusterDefaultCapacityProviderStrategy?: boolean;
     /**
      * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
      */

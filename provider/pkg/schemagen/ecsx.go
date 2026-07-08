@@ -91,6 +91,19 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 
+	inputProperties["useClusterDefaultCapacityProviderStrategy"] = schema.PropertySpec{
+		Description: "If `true`, this service will use the cluster's default capacity provider " +
+			"strategy. When enabled, this provider omits both `launchType` and " +
+			"`capacityProviderStrategies` from the ECS service. Only one of " +
+			"[useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be " +
+			"provided. The cluster must have a default capacity provider strategy configured, " +
+			"or ECS service creation or update will fail.",
+		TypeSpec: schema.TypeSpec{
+			Type:  "boolean",
+			Plain: true,
+		},
+	}
+
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
@@ -127,7 +140,6 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "launchType")
 	delete(inputProperties, "taskDefinition")
 	delete(inputProperties, "waitForSteadyState")
-	delete(inputProperties, "capacityProviderStrategies")
 	delete(inputProperties, "orderedPlacementStrategies")
 
 	// Adjust docs to change of default value in https://github.com/pulumi/pulumi-awsx/pull/787
@@ -136,6 +148,19 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Description: strings.Replace(desiredCount.Description, "Defaults to 0.", "Defaults to 1.", 1),
 			TypeSpec:    desiredCount.TypeSpec,
 		}
+	}
+
+	inputProperties["useClusterDefaultCapacityProviderStrategy"] = schema.PropertySpec{
+		Description: "If `true`, this service will use the cluster's default capacity provider " +
+			"strategy. When enabled, this provider omits both `launchType` and " +
+			"`capacityProviderStrategies` from the ECS service. Only one of " +
+			"[useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be " +
+			"provided. The cluster must have a default capacity provider strategy configured, " +
+			"or ECS service creation or update will fail.",
+		TypeSpec: schema.TypeSpec{
+			Type:  "boolean",
+			Plain: true,
+		},
 	}
 
 	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{

@@ -26,6 +26,7 @@ class FargateServiceArgs:
                  alarms: pulumi.Input[Optional['pulumi_aws.ecs.ServiceAlarmsArgs']] = None,
                  assign_public_ip: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_rebalancing: pulumi.Input[Optional[_builtins.str]] = None,
+                 capacity_provider_strategies: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] = None,
                  cluster: pulumi.Input[Optional[_builtins.str]] = None,
                  continue_before_steady_state: pulumi.Input[Optional[_builtins.bool]] = None,
                  deployment_circuit_breaker: pulumi.Input[Optional['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] = None,
@@ -55,6 +56,7 @@ class FargateServiceArgs:
                  task_definition: pulumi.Input[Optional[_builtins.str]] = None,
                  task_definition_args: Optional['FargateServiceTaskDefinitionArgs'] = None,
                  triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 use_cluster_default_capacity_provider_strategy: Optional[_builtins.bool] = None,
                  volume_configuration: pulumi.Input[Optional['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']] = None,
                  vpc_lattice_configurations: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] = None):
         """
@@ -63,6 +65,7 @@ class FargateServiceArgs:
         :param pulumi.Input['pulumi_aws.ecs.ServiceAlarmsArgs'] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[_builtins.bool] assign_public_ip: Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
         :param pulumi.Input[_builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[_builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -95,6 +98,7 @@ class FargateServiceArgs:
         :param pulumi.Input[_builtins.str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'FargateServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+        :param _builtins.bool use_cluster_default_capacity_provider_strategy: If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
         :param pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs'] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]] vpc_lattice_configurations: The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         """
@@ -104,6 +108,8 @@ class FargateServiceArgs:
             pulumi.set(__self__, "assign_public_ip", assign_public_ip)
         if availability_zone_rebalancing is not None:
             pulumi.set(__self__, "availability_zone_rebalancing", availability_zone_rebalancing)
+        if capacity_provider_strategies is not None:
+            pulumi.set(__self__, "capacity_provider_strategies", capacity_provider_strategies)
         if cluster is not None:
             pulumi.set(__self__, "cluster", cluster)
         if continue_before_steady_state is not None:
@@ -162,6 +168,8 @@ class FargateServiceArgs:
             pulumi.set(__self__, "task_definition_args", task_definition_args)
         if triggers is not None:
             pulumi.set(__self__, "triggers", triggers)
+        if use_cluster_default_capacity_provider_strategy is not None:
+            pulumi.set(__self__, "use_cluster_default_capacity_provider_strategy", use_cluster_default_capacity_provider_strategy)
         if volume_configuration is not None:
             pulumi.set(__self__, "volume_configuration", volume_configuration)
         if vpc_lattice_configurations is not None:
@@ -202,6 +210,18 @@ class FargateServiceArgs:
     @availability_zone_rebalancing.setter
     def availability_zone_rebalancing(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "availability_zone_rebalancing", value)
+
+    @_builtins.property
+    @pulumi.getter(name="capacityProviderStrategies")
+    def capacity_provider_strategies(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]:
+        """
+        Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
+        """
+        return pulumi.get(self, "capacity_provider_strategies")
+
+    @capacity_provider_strategies.setter
+    def capacity_provider_strategies(self, value: pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]):
+        pulumi.set(self, "capacity_provider_strategies", value)
 
     @_builtins.property
     @pulumi.getter
@@ -555,6 +575,18 @@ class FargateServiceArgs:
         pulumi.set(self, "triggers", value)
 
     @_builtins.property
+    @pulumi.getter(name="useClusterDefaultCapacityProviderStrategy")
+    def use_cluster_default_capacity_provider_strategy(self) -> Optional[_builtins.bool]:
+        """
+        If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+        """
+        return pulumi.get(self, "use_cluster_default_capacity_provider_strategy")
+
+    @use_cluster_default_capacity_provider_strategy.setter
+    def use_cluster_default_capacity_provider_strategy(self, value: Optional[_builtins.bool]):
+        pulumi.set(self, "use_cluster_default_capacity_provider_strategy", value)
+
+    @_builtins.property
     @pulumi.getter(name="volumeConfiguration")
     def volume_configuration(self) -> pulumi.Input[Optional['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]:
         """
@@ -588,6 +620,7 @@ class FargateService(pulumi.ComponentResource):
                  alarms: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']]] = None,
                  assign_public_ip: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_rebalancing: pulumi.Input[Optional[_builtins.str]] = None,
+                 capacity_provider_strategies: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]] = None,
                  cluster: pulumi.Input[Optional[_builtins.str]] = None,
                  continue_before_steady_state: pulumi.Input[Optional[_builtins.bool]] = None,
                  deployment_circuit_breaker: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -617,6 +650,7 @@ class FargateService(pulumi.ComponentResource):
                  task_definition: pulumi.Input[Optional[_builtins.str]] = None,
                  task_definition_args: Optional[Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict']] = None,
                  triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 use_cluster_default_capacity_provider_strategy: Optional[_builtins.bool] = None,
                  volume_configuration: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]] = None,
                  vpc_lattice_configurations: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]]] = None,
                  __props__=None):
@@ -629,6 +663,7 @@ class FargateService(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']] alarms: Information about the CloudWatch alarms. See below.
         :param pulumi.Input[_builtins.bool] assign_public_ip: Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         :param pulumi.Input[_builtins.str] availability_zone_rebalancing: ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]] capacity_provider_strategies: Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `force_new_deployment = true`. See below. Conflicts with `launch_type`.
         :param pulumi.Input[_builtins.str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[_builtins.bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -661,6 +696,7 @@ class FargateService(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
+        :param _builtins.bool use_cluster_default_capacity_provider_strategy: If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] vpc_lattice_configurations: The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         """
@@ -692,6 +728,7 @@ class FargateService(pulumi.ComponentResource):
                  alarms: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceAlarmsArgs']]] = None,
                  assign_public_ip: pulumi.Input[Optional[_builtins.bool]] = None,
                  availability_zone_rebalancing: pulumi.Input[Optional[_builtins.str]] = None,
+                 capacity_provider_strategies: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceCapacityProviderStrategyArgs']]]]] = None,
                  cluster: pulumi.Input[Optional[_builtins.str]] = None,
                  continue_before_steady_state: pulumi.Input[Optional[_builtins.bool]] = None,
                  deployment_circuit_breaker: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -721,6 +758,7 @@ class FargateService(pulumi.ComponentResource):
                  task_definition: pulumi.Input[Optional[_builtins.str]] = None,
                  task_definition_args: Optional[Union['FargateServiceTaskDefinitionArgs', 'FargateServiceTaskDefinitionArgsDict']] = None,
                  triggers: pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]] = None,
+                 use_cluster_default_capacity_provider_strategy: Optional[_builtins.bool] = None,
                  volume_configuration: pulumi.Input[Optional[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']]] = None,
                  vpc_lattice_configurations: pulumi.Input[Optional[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]]] = None,
                  __props__=None):
@@ -737,6 +775,7 @@ class FargateService(pulumi.ComponentResource):
             __props__.__dict__["alarms"] = alarms
             __props__.__dict__["assign_public_ip"] = assign_public_ip
             __props__.__dict__["availability_zone_rebalancing"] = availability_zone_rebalancing
+            __props__.__dict__["capacity_provider_strategies"] = capacity_provider_strategies
             __props__.__dict__["cluster"] = cluster
             __props__.__dict__["continue_before_steady_state"] = continue_before_steady_state
             __props__.__dict__["deployment_circuit_breaker"] = deployment_circuit_breaker
@@ -766,6 +805,7 @@ class FargateService(pulumi.ComponentResource):
             __props__.__dict__["task_definition"] = task_definition
             __props__.__dict__["task_definition_args"] = task_definition_args
             __props__.__dict__["triggers"] = triggers
+            __props__.__dict__["use_cluster_default_capacity_provider_strategy"] = use_cluster_default_capacity_provider_strategy
             __props__.__dict__["volume_configuration"] = volume_configuration
             __props__.__dict__["vpc_lattice_configurations"] = vpc_lattice_configurations
             __props__.__dict__["service"] = None
