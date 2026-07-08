@@ -98,7 +98,8 @@ func TestAccEcsService(t *testing.T) {
 }
 
 func TestAccEcsFargateCapacityProviders(t *testing.T) {
-	test := getNodeJSBaseOptions(t).
+	// This is a YAML program, so it does not need the nodejs SDK dependencies.
+	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "ecs-capacity-providers"),
