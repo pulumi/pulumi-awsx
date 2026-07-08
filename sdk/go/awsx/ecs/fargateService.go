@@ -46,6 +46,8 @@ type fargateServiceArgs struct {
 	AssignPublicIp *bool `pulumi:"assignPublicIp"`
 	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
 	AvailabilityZoneRebalancing *string `pulumi:"availabilityZoneRebalancing"`
+	// Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+	CapacityProviderStrategies []ecs.ServiceCapacityProviderStrategy `pulumi:"capacityProviderStrategies"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -107,6 +109,8 @@ type fargateServiceArgs struct {
 	TaskDefinitionArgs *FargateServiceTaskDefinition `pulumi:"taskDefinitionArgs"`
 	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
 	Triggers map[string]string `pulumi:"triggers"`
+	// If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+	UseClusterDefaultCapacityProviderStrategy *bool `pulumi:"useClusterDefaultCapacityProviderStrategy"`
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration *ecs.ServiceVolumeConfiguration `pulumi:"volumeConfiguration"`
 	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
@@ -121,6 +125,8 @@ type FargateServiceArgs struct {
 	AssignPublicIp pulumi.BoolPtrInput
 	// ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.
 	AvailabilityZoneRebalancing pulumi.StringPtrInput
+	// Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+	CapacityProviderStrategies ecs.ServiceCapacityProviderStrategyArrayInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -182,6 +188,8 @@ type FargateServiceArgs struct {
 	TaskDefinitionArgs *FargateServiceTaskDefinitionArgs
 	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
 	Triggers pulumi.StringMapInput
+	// If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+	UseClusterDefaultCapacityProviderStrategy *bool
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration ecs.ServiceVolumeConfigurationPtrInput
 	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.

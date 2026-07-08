@@ -200,6 +200,7 @@ export interface EC2ServiceArgs {
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly useClusterDefaultCapacityProviderStrategy?: boolean;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
     readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }
@@ -247,6 +248,7 @@ export interface FargateServiceArgs {
     readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly assignPublicIp?: pulumi.Input<boolean>;
     readonly availabilityZoneRebalancing?: pulumi.Input<string>;
+    readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -276,6 +278,7 @@ export interface FargateServiceArgs {
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
     readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly useClusterDefaultCapacityProviderStrategy?: boolean;
     readonly volumeConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceVolumeConfiguration>;
     readonly vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceVpcLatticeConfiguration>[]>;
 }

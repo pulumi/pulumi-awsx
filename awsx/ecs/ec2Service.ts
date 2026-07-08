@@ -53,12 +53,25 @@ export class EC2Service extends schema.EC2Service {
       throw new Error("Either `taskDefinition` or `taskDefinitionArgs` must be provided.");
     }
 
+    if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
+      throw new Error(
+        "Only one of `capacityProviderStrategies` or `useClusterDefaultCapacityProviderStrategy` can be provided.",
+      );
+    }
+
+    // ECS uses the cluster default capacity provider strategy only when neither
+    // a launch type nor a service-level capacity provider strategy is provided.
+    const launchType =
+      args.capacityProviderStrategies || args.useClusterDefaultCapacityProviderStrategy
+        ? undefined
+        : "EC2";
+
     this.service = new aws.ecs.Service(
       name,
       {
         ...args,
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
-        launchType: "EC2",
+        launchType,
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
         waitForSteadyState: utils
           .ifUndefined(args.continueBeforeSteadyState, false)

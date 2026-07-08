@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ecs;
 
 import com.pulumi.aws.ecs.inputs.ServiceAlarmsArgs;
+import com.pulumi.aws.ecs.inputs.ServiceCapacityProviderStrategyArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentCircuitBreakerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceDeploymentControllerArgs;
@@ -74,6 +75,21 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
      */
     public Optional<Output<String>> availabilityZoneRebalancing() {
         return Optional.ofNullable(this.availabilityZoneRebalancing);
+    }
+
+    /**
+     * Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+     * 
+     */
+    @Import(name="capacityProviderStrategies")
+    private @Nullable Output<List<ServiceCapacityProviderStrategyArgs>> capacityProviderStrategies;
+
+    /**
+     * @return Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+     * 
+     */
+    public Optional<Output<List<ServiceCapacityProviderStrategyArgs>>> capacityProviderStrategies() {
+        return Optional.ofNullable(this.capacityProviderStrategies);
     }
 
     /**
@@ -518,6 +534,21 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
+     * If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     * 
+     */
+    @Import(name="useClusterDefaultCapacityProviderStrategy")
+    private @Nullable Boolean useClusterDefaultCapacityProviderStrategy;
+
+    /**
+     * @return If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     * 
+     */
+    public Optional<Boolean> useClusterDefaultCapacityProviderStrategy() {
+        return Optional.ofNullable(this.useClusterDefaultCapacityProviderStrategy);
+    }
+
+    /**
      * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
      * 
      */
@@ -553,6 +584,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         this.alarms = $.alarms;
         this.assignPublicIp = $.assignPublicIp;
         this.availabilityZoneRebalancing = $.availabilityZoneRebalancing;
+        this.capacityProviderStrategies = $.capacityProviderStrategies;
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
@@ -582,6 +614,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         this.taskDefinition = $.taskDefinition;
         this.taskDefinitionArgs = $.taskDefinitionArgs;
         this.triggers = $.triggers;
+        this.useClusterDefaultCapacityProviderStrategy = $.useClusterDefaultCapacityProviderStrategy;
         this.volumeConfiguration = $.volumeConfiguration;
         this.vpcLatticeConfigurations = $.vpcLatticeConfigurations;
     }
@@ -665,6 +698,37 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder availabilityZoneRebalancing(String availabilityZoneRebalancing) {
             return availabilityZoneRebalancing(Output.of(availabilityZoneRebalancing));
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(@Nullable Output<List<ServiceCapacityProviderStrategyArgs>> capacityProviderStrategies) {
+            $.capacityProviderStrategies = capacityProviderStrategies;
+            return this;
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(List<ServiceCapacityProviderStrategyArgs> capacityProviderStrategies) {
+            return capacityProviderStrategies(Output.of(capacityProviderStrategies));
+        }
+
+        /**
+         * @param capacityProviderStrategies Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `forceNewDeployment = true`. See below. Conflicts with `launchType`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder capacityProviderStrategies(ServiceCapacityProviderStrategyArgs... capacityProviderStrategies) {
+            return capacityProviderStrategies(List.of(capacityProviderStrategies));
         }
 
         /**
@@ -1290,6 +1354,17 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder triggers(Map<String,String> triggers) {
             return triggers(Output.of(triggers));
+        }
+
+        /**
+         * @param useClusterDefaultCapacityProviderStrategy If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder useClusterDefaultCapacityProviderStrategy(@Nullable Boolean useClusterDefaultCapacityProviderStrategy) {
+            $.useClusterDefaultCapacityProviderStrategy = useClusterDefaultCapacityProviderStrategy;
+            return this;
         }
 
         /**

@@ -294,6 +294,12 @@ namespace Pulumi.Awsx.Ecs
         }
 
         /// <summary>
+        /// If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+        /// </summary>
+        [Input("useClusterDefaultCapacityProviderStrategy")]
+        public bool? UseClusterDefaultCapacityProviderStrategy { get; set; }
+
+        /// <summary>
         /// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
         /// </summary>
         [Input("volumeConfiguration")]

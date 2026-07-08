@@ -87,11 +87,21 @@ func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestAccEcsCapacityProviderService(t *testing.T) {
+func TestAccEcsService(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "ecs", "nodejs"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccEcsFargateCapacityProviders(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ecs-capacity-providers"),
 		})
 
 	integration.ProgramTest(t, &test)

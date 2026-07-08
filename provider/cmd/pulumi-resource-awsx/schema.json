@@ -2709,6 +2709,11 @@
                     },
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
                 },
+                "useClusterDefaultCapacityProviderStrategy": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail."
+                },
                 "volumeConfiguration": {
                     "$ref": "/aws/v7.34.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",
                     "description": "Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.\n"
@@ -2897,6 +2902,13 @@
                     "type": "string",
                     "description": "ECS automatically redistributes tasks within a service across Availability Zones (AZs) to mitigate the risk of impaired application availability due to underlying infrastructure failures and task lifecycle activities. The valid values are `ENABLED` and `DISABLED`. When creating a new service, if no value is specified, it defaults to `ENABLED` if the service is compatible with AvailabilityZoneRebalancing. When updating an existing service, if no value is specified it defaults to the existing service's AvailabilityZoneRebalancing value. If the service never had an AvailabilityZoneRebalancing value set, Amazon ECS treats this as `DISABLED`.\n"
                 },
+                "capacityProviderStrategies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.34.0/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
+                    },
+                    "description": "Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires \u003cspan pulumi-lang-nodejs=\"`forceNewDeployment \" pulumi-lang-dotnet=\"`ForceNewDeployment \" pulumi-lang-go=\"`forceNewDeployment \" pulumi-lang-python=\"`force_new_deployment \" pulumi-lang-yaml=\"`forceNewDeployment \" pulumi-lang-java=\"`forceNewDeployment \" pulumi-lang-hcl=\"`force_new_deployment \"\u003e`forceNewDeployment \u003c/span\u003e= true`. See below. Conflicts with \u003cspan pulumi-lang-nodejs=\"`launchType`\" pulumi-lang-dotnet=\"`LaunchType`\" pulumi-lang-go=\"`launchType`\" pulumi-lang-python=\"`launch_type`\" pulumi-lang-yaml=\"`launchType`\" pulumi-lang-java=\"`launchType`\" pulumi-lang-hcl=\"`launch_type`\"\u003e`launchType`\u003c/span\u003e.\n"
+                },
                 "cluster": {
                     "type": "string",
                     "description": "ARN of an ECS cluster.\n",
@@ -3029,6 +3041,11 @@
                         "type": "string"
                     },
                     "description": "Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `\"plantimestamp()\"`. When using the triggers property you also need to set the forceNewDeployment property to True.\n"
+                },
+                "useClusterDefaultCapacityProviderStrategy": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail."
                 },
                 "volumeConfiguration": {
                     "$ref": "/aws/v7.34.0/schema.json#/types/aws:ecs/ServiceVolumeConfiguration:ServiceVolumeConfiguration",

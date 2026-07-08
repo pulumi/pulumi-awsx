@@ -74,6 +74,18 @@ namespace Pulumi.Awsx.Ecs
         [Input("availabilityZoneRebalancing")]
         public Input<string>? AvailabilityZoneRebalancing { get; set; }
 
+        [Input("capacityProviderStrategies")]
+        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>? _capacityProviderStrategies;
+
+        /// <summary>
+        /// Capacity provider strategies to use for the service. Can be one or more. Updating this argument requires `ForceNewDeployment = true`. See below. Conflicts with `LaunchType`.
+        /// </summary>
+        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs> CapacityProviderStrategies
+        {
+            get => _capacityProviderStrategies ?? (_capacityProviderStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>());
+            set => _capacityProviderStrategies = value;
+        }
+
         /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
@@ -274,6 +286,12 @@ namespace Pulumi.Awsx.Ecs
             get => _triggers ?? (_triggers = new InputMap<string>());
             set => _triggers = value;
         }
+
+        /// <summary>
+        /// If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+        /// </summary>
+        [Input("useClusterDefaultCapacityProviderStrategy")]
+        public bool? UseClusterDefaultCapacityProviderStrategy { get; set; }
 
         /// <summary>
         /// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.

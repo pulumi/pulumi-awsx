@@ -535,6 +535,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     * 
+     */
+    @Import(name="useClusterDefaultCapacityProviderStrategy")
+    private @Nullable Boolean useClusterDefaultCapacityProviderStrategy;
+
+    /**
+     * @return If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+     * 
+     */
+    public Optional<Boolean> useClusterDefaultCapacityProviderStrategy() {
+        return Optional.ofNullable(this.useClusterDefaultCapacityProviderStrategy);
+    }
+
+    /**
      * Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
      * 
      */
@@ -600,6 +615,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.taskDefinition = $.taskDefinition;
         this.taskDefinitionArgs = $.taskDefinitionArgs;
         this.triggers = $.triggers;
+        this.useClusterDefaultCapacityProviderStrategy = $.useClusterDefaultCapacityProviderStrategy;
         this.volumeConfiguration = $.volumeConfiguration;
         this.vpcLatticeConfigurations = $.vpcLatticeConfigurations;
     }
@@ -1349,6 +1365,17 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder triggers(Map<String,String> triggers) {
             return triggers(Output.of(triggers));
+        }
+
+        /**
+         * @param useClusterDefaultCapacityProviderStrategy If `true`, this service will use the cluster&#39;s default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder useClusterDefaultCapacityProviderStrategy(@Nullable Boolean useClusterDefaultCapacityProviderStrategy) {
+            $.useClusterDefaultCapacityProviderStrategy = useClusterDefaultCapacityProviderStrategy;
+            return this;
         }
 
         /**
