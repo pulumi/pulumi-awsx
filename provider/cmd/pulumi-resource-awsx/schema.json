@@ -650,6 +650,20 @@
                 }
             ]
         },
+        "awsx:ec2:SubnetNamingStrategy": {
+            "description": "Strategy for naming the subnets generated for each availability zone.",
+            "type": "string",
+            "enum": [
+                {
+                    "description": "Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.",
+                    "value": "Legacy"
+                },
+                {
+                    "description": "Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.",
+                    "value": "AvailabilityZone"
+                }
+            ]
+        },
         "awsx:ec2:SubnetSpec": {
             "description": "Configuration for a VPC subnet.",
             "properties": {
@@ -2303,6 +2317,11 @@
                 "region": {
                     "type": "string",
                     "description": "Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.\n"
+                },
+                "subnetNaming": {
+                    "$ref": "#/types/awsx:ec2:SubnetNamingStrategy",
+                    "plain": true,
+                    "description": "The strategy to use when naming the VPC's subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`."
                 },
                 "subnetSpecs": {
                     "type": "array",

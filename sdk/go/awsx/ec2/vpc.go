@@ -156,6 +156,8 @@ type vpcArgs struct {
 	NumberOfAvailabilityZones *int `pulumi:"numberOfAvailabilityZones"`
 	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
 	Region *string `pulumi:"region"`
+	// The strategy to use when naming the VPC's subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+	SubnetNaming *SubnetNamingStrategy `pulumi:"subnetNaming"`
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
@@ -204,6 +206,8 @@ type VpcArgs struct {
 	NumberOfAvailabilityZones *int
 	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
 	Region pulumi.StringPtrInput
+	// The strategy to use when naming the VPC's subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+	SubnetNaming *SubnetNamingStrategy
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpecArgs
 	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.

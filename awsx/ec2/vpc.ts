@@ -27,6 +27,7 @@ import {
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
 } from "./subnetDistributorNew";
+import { validateAzSuffixes } from "./subnetNaming";
 import { Netmask } from "netmask";
 import { isIPv6 } from "net";
 
@@ -135,6 +136,10 @@ export class Vpc extends schema.Vpc<VpcData> {
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const assignGeneratedIpv6CidrBlock = args.assignGeneratedIpv6CidrBlock ?? false;
 
+    if ((args.subnetNaming ?? "Legacy") === "AvailabilityZone") {
+      validateAzSuffixes(availabilityZones);
+    }
+
     const sharedTags = { Name: name, ...args.tags };
 
     const cidrBlock = Vpc.decideCidrBlockVpcInput(args);
@@ -199,8 +204,12 @@ export class Vpc extends schema.Vpc<VpcData> {
             assignIpv6AddressOnCreation,
             subnetIndex,
           );
+          // The Pulumi resource name is always the index-based legacy name so that subnetNaming
+          // never changes a child's identity (a subnet rename would force a delete/recreate that
+          // fails while ENIs are attached). subnetNaming="AvailabilityZone" only changes the AWS
+          // "Name" tag, from e.g. "vpc-public-1" to "vpc-public-1a".
           const subnet = new aws.ec2.Subnet(
-            spec.subnetName,
+            spec.legacySubnetName,
             {
               region: args.region,
               vpcId: vpc.id,
@@ -238,7 +247,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           });
 
           const routeTable = new aws.ec2.RouteTable(
-            spec.subnetName,
+            spec.legacySubnetName,
             {
               region: args.region,
               vpcId: vpc.id,
@@ -253,7 +262,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           routeTables.push(routeTable);
 
           const routeTableAssoc = new aws.ec2.RouteTableAssociation(
-            spec.subnetName,
+            spec.legacySubnetName,
             {
               region: args.region,
               routeTableId: routeTable.id,
@@ -303,7 +312,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           if (spec.type.toLowerCase() === "public") {
             // Public subnets communicate directly with the internet via the Internet Gateway.
             const route = new aws.ec2.Route(
-              spec.subnetName,
+              spec.legacySubnetName,
               {
                 region: args.region,
                 routeTableId: routeTable.id,
@@ -325,7 +334,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                   : natGateways[i].id;
 
               const route = new aws.ec2.Route(
-                spec.subnetName,
+                spec.legacySubnetName,
                 {
                   region: args.region,
                   routeTableId: routeTable.id,
@@ -554,12 +563,15 @@ export class Vpc extends schema.Vpc<VpcData> {
     args: {
       readonly subnetSpecs?: schema.SubnetSpecInputs[];
       readonly subnetStrategy?: schema.SubnetAllocationStrategyInputs;
+      readonly subnetNaming?: schema.SubnetNamingStrategyInputs;
       readonly availabilityZoneCidrMask?: number;
     },
   ): {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
+    const subnetNaming = args.subnetNaming ?? "Legacy";
+
     const parsedSpecs: NormalizedSubnetInputs = (() => {
       if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
         assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
@@ -583,10 +595,12 @@ export class Vpc extends schema.Vpc<VpcData> {
             cidrBlock,
             availabilityZones,
             parsedSpecs?.normalizedSpecs,
+            undefined,
+            subnetNaming,
           );
           return legacySubnetSpecs;
         case "ExplicitAllocator":
-          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
+          return getSubnetSpecsExplicit(name, availabilityZones, a.specs, subnetNaming);
         case "NewAllocator":
         default:
           return subnetStrategy === "AutoMerge"
@@ -596,6 +610,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 availabilityZones,
                 parsedSpecs?.normalizedSpecs,
                 args.availabilityZoneCidrMask,
+                subnetNaming,
               )
             : getSubnetSpecs(
                 name,
@@ -603,6 +618,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 availabilityZones,
                 parsedSpecs?.normalizedSpecs,
                 args.availabilityZoneCidrMask,
+                subnetNaming,
               );
       }
     })();
@@ -639,7 +655,9 @@ export class Vpc extends schema.Vpc<VpcData> {
 
   async getDefaultAzs(azCount?: number, region?: string): Promise<string[]> {
     const desiredCount = azCount ?? 3;
-    const result = await aws.getAvailabilityZones(region ? { region } : undefined, { parent: this });
+    const result = await aws.getAvailabilityZones(region ? { region } : undefined, {
+      parent: this,
+    });
     if (!result.names) {
       throw new Error(
         "Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.",
@@ -881,6 +899,9 @@ export function extractSubnetSpecInputFromLegacyLayout(
   availabilityZones: string[],
 ): schema.SubnetSpecInputs[] {
   const singleAzLength = subnetSpecs.length / availabilityZones.length;
+  // Note this is always handed spec.legacySubnetName, never spec.subnetName: the index-based name is
+  // the only one this can strip a suffix from, and it keeps the derived layout (and the
+  // "specify subnetStrategy explicitly" warning built from it) identical under either naming.
   function extractName(subnetName: string, type: schema.SubnetTypeInputs) {
     const withoutVpcPrefix = subnetName.replace(`${vpcName}-`, "");
     const subnetSpecName = withoutVpcPrefix.replace(/-\d+$/, "");
@@ -907,7 +928,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
     }
     subnetSpecInputs.push({
       type: subnet.type,
-      ...extractName(subnet.subnetName, subnet.type),
+      ...extractName(subnet.legacySubnetName, subnet.type),
       cidrMask: netmask.bitmask,
       assignIpv6AddressOnCreation: subnet.assignIpv6AddressOnCreation,
       ...(subnet.tags ? { tags: subnet.tags } : {}),
@@ -1025,8 +1046,8 @@ export function shouldCreateNatGateway(
 }
 
 export function compareSubnetSpecs(
-  spec1: Omit<SubnetSpec, "cidrBlock">,
-  spec2: Omit<SubnetSpec, "cidrBlock">,
+  spec1: Pick<SubnetSpec, "type">,
+  spec2: Pick<SubnetSpec, "type">,
 ): number {
   if (spec1.type === spec2.type) {
     return 0;

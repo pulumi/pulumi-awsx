@@ -36,3 +36,6 @@ sdk/java/gradlew.bat
 .envrc
 go.work
 go.work.sum
+
+# Local, per-developer Claude Code settings. The .claude/skills symlinks are tracked; this is not.
+.claude/settings.local.json

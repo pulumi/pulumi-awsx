@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ec2;
 
 import com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy;
+import com.pulumi.awsx.ec2.enums.SubnetNamingStrategy;
 import com.pulumi.awsx.ec2.enums.VpcEndpointStrategy;
 import com.pulumi.awsx.ec2.inputs.NatGatewayConfigurationArgs;
 import com.pulumi.awsx.ec2.inputs.SubnetSpecArgs;
@@ -280,6 +281,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+     * 
+     */
+    @Import(name="subnetNaming")
+    private @Nullable SubnetNamingStrategy subnetNaming;
+
+    /**
+     * @return The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+     * 
+     */
+    public Optional<SubnetNamingStrategy> subnetNaming() {
+        return Optional.ofNullable(this.subnetNaming);
+    }
+
+    /**
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
      * 
      */
@@ -374,6 +390,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.natGateways = $.natGateways;
         this.numberOfAvailabilityZones = $.numberOfAvailabilityZones;
         this.region = $.region;
+        this.subnetNaming = $.subnetNaming;
         this.subnetSpecs = $.subnetSpecs;
         this.subnetStrategy = $.subnetStrategy;
         this.tags = $.tags;
@@ -714,6 +731,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder region(String region) {
             return region(Output.of(region));
+        }
+
+        /**
+         * @param subnetNaming The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetNaming(@Nullable SubnetNamingStrategy subnetNaming) {
+            $.subnetNaming = subnetNaming;
+            return this;
         }
 
         /**

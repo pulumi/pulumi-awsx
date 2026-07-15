@@ -16,9 +16,10 @@
 // and used in accordance with MPL v2.0 license
 
 import * as pulumi from "@pulumi/pulumi";
-import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
+import { SubnetNamingStrategyInputs, SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import * as ipAddress from "ip-address";
 import { BigInteger } from "jsbn";
+import { subnetNames } from "./subnetNaming";
 import { SubnetSpec } from "./subnetSpecs";
 
 export function getSubnetSpecsLegacy(
@@ -27,6 +28,7 @@ export function getSubnetSpecsLegacy(
   azNames: string[],
   subnetInputs?: SubnetSpecInputs[],
   azCidrMask?: number,
+  naming: SubnetNamingStrategyInputs = "Legacy",
 ): SubnetSpec[] {
   // Design:
   // 1. Split the VPC CIDR block evenly between the AZs.
@@ -49,7 +51,7 @@ export function getSubnetSpecsLegacy(
   }
 
   if (subnetInputs === undefined) {
-    return generateDefaultSubnets(vpcName, vpcCidr, azNames, azBases);
+    return generateDefaultSubnets(vpcName, vpcCidr, azNames, azBases, naming);
   }
 
   const ipv4 = new ipAddress.Address4(azBases[0]);
@@ -92,7 +94,7 @@ export function getSubnetSpecsLegacy(
         azName: azNames[i],
         cidrBlock: nextAddress.address,
         type: "Private",
-        subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`,
+        ...subnetNames(vpcName, privateSubnetsIn[j], i + 1, azNames[i], naming),
         assignIpv6AddressOnCreation: privateSubnetsIn[j].assignIpv6AddressOnCreation,
         tags: privateSubnetsIn[j].tags,
       });
@@ -124,7 +126,7 @@ export function getSubnetSpecsLegacy(
         azName: azNames[i],
         cidrBlock: nextAddress.address,
         type: "Public",
-        subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`,
+        ...subnetNames(vpcName, publicSubnetsIn[j], i + 1, azNames[i], naming),
         assignIpv6AddressOnCreation: publicSubnetsIn[j].assignIpv6AddressOnCreation,
         tags: publicSubnetsIn[j].tags,
       });
@@ -166,7 +168,7 @@ export function getSubnetSpecsLegacy(
         azName: azNames[i],
         cidrBlock: nextAddress.address,
         type: "Isolated",
-        subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`,
+        ...subnetNames(vpcName, isolatedSubnetsIn[j], i + 1, azNames[i], naming),
         assignIpv6AddressOnCreation: isolatedSubnetsIn[j].assignIpv6AddressOnCreation,
         tags: isolatedSubnetsIn[j].tags,
       });
@@ -184,6 +186,7 @@ function generateDefaultSubnets(
   vpcCidr: string,
   azNames: string[],
   azBases: string[],
+  naming: SubnetNamingStrategyInputs,
 ): SubnetSpec[] {
   const privateSubnets: SubnetSpec[] = [];
 
@@ -192,7 +195,7 @@ function generateDefaultSubnets(
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(azBases[i], 1, 0),
       type: "Private",
-      subnetName: `${vpcName}-private-${i + 1}`,
+      ...subnetNames(vpcName, { type: "Private" }, i + 1, azNames[i], naming),
     });
   }
 
@@ -205,7 +208,7 @@ function generateDefaultSubnets(
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(splitBase, 1, 0),
       type: "Public",
-      subnetName: `${vpcName}-public-${i + 1}`,
+      ...subnetNames(vpcName, { type: "Public" }, i + 1, azNames[i], naming),
     });
   }
 

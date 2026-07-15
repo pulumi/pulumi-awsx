@@ -37,6 +37,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:NatGatewayConfiguration":  natGatewayConfigurationType(),
 			"awsx:ec2:SubnetType":               subnetType(),
 			"awsx:ec2:SubnetAllocationStrategy": subnetAllocationStrategy(),
+			"awsx:ec2:SubnetNamingStrategy":     subnetNamingStrategy(),
 			"awsx:ec2:VpcEndpointStrategy":      vpcEndpointStrategy(),
 			"awsx:ec2:SubnetSpec":               subnetSpecType(),
 			"awsx:ec2:ResolvedSubnetSpec":       resolvedSubnetSpecType(),
@@ -141,6 +142,14 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Description: "The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.",
 			TypeSpec: schema.TypeSpec{
 				Ref:   localRef("ec2", "SubnetAllocationStrategy"),
+				Plain: true,
+			},
+		},
+		"subnetNaming": {
+			Description: "The strategy to use when naming the VPC's subnets and their associated route " +
+				"tables, route table associations and routes. Optional. Defaults to `Legacy`.",
+			TypeSpec: schema.TypeSpec{
+				Ref:   localRef("ec2", "SubnetNamingStrategy"),
 				Plain: true,
 			},
 		},
@@ -503,6 +512,27 @@ func subnetAllocationStrategy() schema.ComplexTypeSpec {
 			{
 				Value:       "Exact",
 				Description: "Whole range of VPC must be accounted for, using \"Unused\" spec types for deliberate gaps.",
+			},
+		},
+	}
+}
+
+func subnetNamingStrategy() schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "string",
+			Description: "Strategy for naming the subnets generated for each availability zone.",
+		},
+		Enum: []schema.EnumValueSpec{
+			{
+				Value: "Legacy",
+				Description: "Suffix each subnet with the 1-based index of its availability zone, " +
+					"e.g. `vpc-public-1`, `vpc-public-2`.",
+			},
+			{
+				Value: "AvailabilityZone",
+				Description: "Suffix each subnet with the availability zone it is created in, " +
+					"e.g. `vpc-public-1a`, `vpc-public-1b`.",
 			},
 		},
 	}

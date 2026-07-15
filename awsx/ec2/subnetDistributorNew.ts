@@ -16,8 +16,9 @@
 // and used in accordance with MPL v2.0 license
 
 import * as pulumi from "@pulumi/pulumi";
-import { SubnetSpecInputs } from "../schema-types";
+import { SubnetNamingStrategyInputs, SubnetSpecInputs } from "../schema-types";
 import { Netmask } from "netmask";
+import { subnetNames } from "./subnetNaming";
 import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
 
 export function getSubnetSpecs(
@@ -26,6 +27,7 @@ export function getSubnetSpecs(
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
+  naming: SubnetNamingStrategyInputs = "Legacy",
 ): SubnetSpecPartial[] {
   const allocatedCidrBlocks = inputApply(
     vpcCidr,
@@ -48,7 +50,7 @@ export function getSubnetSpecs(
         cidrBlock,
         type: subnetSpec.type,
         azName,
-        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       };
@@ -62,6 +64,7 @@ export function getSubnetSpecsAutoMerge(
   azNames: string[],
   userSubnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
+  naming: SubnetNamingStrategyInputs = "Legacy",
 ): SubnetSpecPartial[] {
   const allocatedCidrBlocks = inputApply(
     vpcCidr,
@@ -76,7 +79,10 @@ export function getSubnetSpecsAutoMerge(
     (x) => x,
     (x) => x,
   );
-  const subnetSpecs = mergeWithDefaultSubnetSpecs(userSubnetInputs ?? [], defaultSubnetInputsBare());
+  const subnetSpecs = mergeWithDefaultSubnetSpecs(
+    userSubnetInputs ?? [],
+    defaultSubnetInputsBare(),
+  );
   return azNames.flatMap((azName, azIndex) => {
     const azNum = azIndex + 1;
     return subnetSpecs.map((subnetSpec, subnetIndex) => {
@@ -91,7 +97,7 @@ export function getSubnetSpecsAutoMerge(
         cidrBlock,
         type: subnetSpec.type,
         azName,
-        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       };
@@ -107,8 +113,11 @@ function subnetAllocationID(
   azNum: number,
   subnetSpecIndex: number,
 ): SubnetAllocationID {
-  const name = subnetName(vpcName, subnetSpec, azNum);
-  return `${name}#${subnetSpecIndex}`;
+  // Deliberately pinned to the index-based name, independent of the subnetNaming strategy: this is
+  // an in-memory key for the CIDR allocation table, never persisted, and the address ranges a user
+  // gets must not depend on what their subnets are called.
+  const specName = subnetSpec.name ?? subnetSpec.type.toLowerCase();
+  return `${vpcName}-${specName}-${azNum}#${subnetSpecIndex}`;
 }
 
 function allocateSubnetCidrBlocks(
@@ -288,6 +297,7 @@ export function getSubnetSpecsExplicit(
   vpcName: string,
   azNames: string[],
   subnetInputs: ExplicitSubnetSpecInputs[],
+  naming: SubnetNamingStrategyInputs = "Legacy",
 ): SubnetSpec[] {
   const subnets: SubnetSpec[] = [];
   for (let azIndex = 0; azIndex < azNames.length; azIndex++) {
@@ -299,7 +309,7 @@ export function getSubnetSpecsExplicit(
         cidrBlock: subnetCidr,
         type: subnetSpec.type,
         azName,
-        subnetName: subnetName(vpcName, subnetSpec, azNum),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       });
@@ -307,11 +317,6 @@ export function getSubnetSpecsExplicit(
   }
 
   return subnets;
-}
-
-function subnetName(vpcName: string, subnet: SubnetSpecInputs, azNum: number): string {
-  const specName = subnet.name ?? subnet.type.toLowerCase();
-  return `${vpcName}-${specName}-${azNum}`;
 }
 
 export type NormalizedSubnetInputs =
@@ -354,7 +359,7 @@ export function validateAndNormalizeSubnetInputs(
       if (unnamedCount > 1 || uniqueNamedSpecs.size < namedSpecs.length) {
         issues.push(
           `Multiple subnet specs of type "${type}" require unique names. ` +
-          `You can have at most one unnamed subnet per type. All other subnets of the same type must have unique "name" properties to avoid duplicate resource names.`,
+            `You can have at most one unnamed subnet per type. All other subnets of the same type must have unique "name" properties to avoid duplicate resource names.`,
         );
       }
     }

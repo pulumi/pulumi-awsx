@@ -146,16 +146,19 @@ describe("default subnet layout", () => {
             {
               cidrBlock: "10.0.0.0/19",
               subnetName: "vpcName-private-1",
+              legacySubnetName: "vpcName-private-1",
               type: "Private",
             },
             {
               cidrBlock: "10.0.32.0/20",
               subnetName: "vpcName-public-1",
+              legacySubnetName: "vpcName-public-1",
               type: "Public",
             },
             {
               cidrBlock: "10.0.48.0/24",
               subnetName: "vpcName-isolated-1",
+              legacySubnetName: "vpcName-isolated-1",
               type: "Isolated",
             },
           ]);
@@ -280,36 +283,42 @@ describe("getSubnetSpecs", () => {
         cidrBlock: "10.0.0.0/19",
         azName: "us-east-1a",
         subnetName: "vpcname-private-1",
+        legacySubnetName: "vpcname-private-1",
       },
       {
         type: "Private",
         cidrBlock: "10.0.64.0/19",
         azName: "us-east-1b",
         subnetName: "vpcname-private-2",
+        legacySubnetName: "vpcname-private-2",
       },
       {
         type: "Private",
         cidrBlock: "10.0.128.0/19",
         azName: "us-east-1c",
         subnetName: "vpcname-private-3",
+        legacySubnetName: "vpcname-private-3",
       },
       {
         type: "Public",
         cidrBlock: "10.0.32.0/20",
         azName: "us-east-1a",
         subnetName: "vpcname-public-1",
+        legacySubnetName: "vpcname-public-1",
       },
       {
         type: "Public",
         cidrBlock: "10.0.96.0/20",
         azName: "us-east-1b",
         subnetName: "vpcname-public-2",
+        legacySubnetName: "vpcname-public-2",
       },
       {
         type: "Public",
         cidrBlock: "10.0.160.0/20",
         azName: "us-east-1c",
         subnetName: "vpcname-public-3",
+        legacySubnetName: "vpcname-public-3",
       },
     ];
     expect(result).toEqual(expected);
@@ -336,6 +345,7 @@ describe("getSubnetSpecs", () => {
           cidrBlock: "10.0.0.0/19",
           azName: "us-east-1a",
           subnetName: "vpcname-foo-1",
+          legacySubnetName: "vpcname-foo-1",
           tags: {
             Name: "test",
             Owner: "user1",
@@ -346,6 +356,7 @@ describe("getSubnetSpecs", () => {
           cidrBlock: "10.0.64.0/19",
           azName: "us-east-1b",
           subnetName: "vpcname-foo-2",
+          legacySubnetName: "vpcname-foo-2",
           tags: {
             Name: "test",
             Owner: "user1",
@@ -356,6 +367,7 @@ describe("getSubnetSpecs", () => {
           cidrBlock: "10.0.128.0/19",
           azName: "us-east-1c",
           subnetName: "vpcname-foo-3",
+          legacySubnetName: "vpcname-foo-3",
           tags: {
             Name: "test",
             Owner: "user1",
@@ -391,36 +403,42 @@ describe("getSubnetSpecs", () => {
         cidrBlock: "10.0.0.0/19",
         azName: "us-east-1a",
         subnetName: "vpcname-foo-1",
+        legacySubnetName: "vpcname-foo-1",
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.32.0/20",
         azName: "us-east-1a",
         subnetName: "vpcname-bar-1",
+        legacySubnetName: "vpcname-bar-1",
       },
       {
         type: slash19Type,
         cidrBlock: "10.0.64.0/19",
         azName: "us-east-1b",
         subnetName: "vpcname-foo-2",
+        legacySubnetName: "vpcname-foo-2",
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.96.0/20",
         azName: "us-east-1b",
         subnetName: "vpcname-bar-2",
+        legacySubnetName: "vpcname-bar-2",
       },
       {
         type: slash19Type,
         cidrBlock: "10.0.128.0/19",
         azName: "us-east-1c",
         subnetName: "vpcname-foo-3",
+        legacySubnetName: "vpcname-foo-3",
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.160.0/20",
         azName: "us-east-1c",
         subnetName: "vpcname-bar-3",
+        legacySubnetName: "vpcname-bar-3",
       },
     ];
 

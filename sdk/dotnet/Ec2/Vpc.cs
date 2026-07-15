@@ -292,6 +292,12 @@ namespace Pulumi.Awsx.Ec2
         [Input("region")]
         public Input<string>? Region { get; set; }
 
+        /// <summary>
+        /// The strategy to use when naming the VPC's subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+        /// </summary>
+        [Input("subnetNaming")]
+        public Pulumi.Awsx.Ec2.SubnetNamingStrategy? SubnetNaming { get; set; }
+
         [Input("subnetSpecs")]
         private List<Inputs.SubnetSpecArgs>? _subnetSpecs;
 

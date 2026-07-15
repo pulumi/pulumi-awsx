@@ -9,6 +9,7 @@ from enum import Enum
 __all__ = [
     'NatGatewayStrategy',
     'SubnetAllocationStrategy',
+    'SubnetNamingStrategy',
     'SubnetType',
     'VpcEndpointStrategy',
 ]
@@ -53,6 +54,21 @@ class SubnetAllocationStrategy(_builtins.str, Enum):
     EXACT = "Exact"
     """
     Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
+    """
+
+
+@pulumi.type_token("awsx:ec2:SubnetNamingStrategy")
+class SubnetNamingStrategy(_builtins.str, Enum):
+    """
+    Strategy for naming the subnets generated for each availability zone.
+    """
+    LEGACY = "Legacy"
+    """
+    Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+    """
+    AVAILABILITY_ZONE = "AvailabilityZone"
+    """
+    Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
     """
 
 
