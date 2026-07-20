@@ -20,15 +20,15 @@ export interface SubnetSpec {
   cidrBlock: string;
   type: SubnetTypeInputs;
   azName: string;
+  // The Pulumi resource name for the subnet and its route table/association/routes. Always the
+  // index-based form (e.g. "vpc-public-1") regardless of subnetNameTagStrategy, so the strategy
+  // never changes a child's identity. extractSubnetSpecInputFromLegacyLayout also depends on it to
+  // recover a spec name by stripping the index.
+  resourceName: string;
   // The AWS "Name" tag applied to the subnet and the resources named after it. Under
-  // subnetNaming="AvailabilityZone" this is the AZ-suffixed form, e.g. "vpc-public-1a".
-  subnetName: string;
-  // The index-based name (e.g. "vpc-public-1"), always the subnetNaming="Legacy" form regardless of
-  // the naming strategy in effect. This is the Pulumi resource name for the subnet and its route
-  // table/association/routes, so subnetNaming never changes a child's identity - only the Name tag.
-  // extractSubnetSpecInputFromLegacyLayout also depends on it to recover a spec name by stripping
-  // the index.
-  legacySubnetName: string;
+  // subnetNameTagStrategy="AvailabilityZone" this is the AZ-suffixed form, e.g. "vpc-public-1a";
+  // otherwise it matches resourceName.
+  nameTag: string;
   assignIpv6AddressOnCreation?: boolean;
   tags?: pulumi.Input<{
     [key: string]: pulumi.Input<string>;

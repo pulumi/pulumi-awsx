@@ -94,35 +94,35 @@ namespace Pulumi.Awsx.Ec2
     }
 
     /// <summary>
-    /// Strategy for naming the subnets generated for each availability zone.
+    /// Strategy for the AWS `Name` tag applied to the subnets generated for each availability zone. Does not affect Pulumi logical resource names or URNs.
     /// </summary>
     [EnumType]
-    public readonly struct SubnetNamingStrategy : IEquatable<SubnetNamingStrategy>
+    public readonly struct SubnetNameTagStrategy : IEquatable<SubnetNameTagStrategy>
     {
         private readonly string _value;
 
-        private SubnetNamingStrategy(string value)
+        private SubnetNameTagStrategy(string value)
         {
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
-        /// Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+        /// Suffix each `Name` tag with the 1-based index of the subnet's availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
         /// </summary>
-        public static SubnetNamingStrategy Legacy { get; } = new SubnetNamingStrategy("Legacy");
+        public static SubnetNameTagStrategy Legacy { get; } = new SubnetNameTagStrategy("Legacy");
         /// <summary>
-        /// Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
+        /// Suffix each `Name` tag with the availability zone the subnet is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
         /// </summary>
-        public static SubnetNamingStrategy AvailabilityZone { get; } = new SubnetNamingStrategy("AvailabilityZone");
+        public static SubnetNameTagStrategy AvailabilityZone { get; } = new SubnetNameTagStrategy("AvailabilityZone");
 
-        public static bool operator ==(SubnetNamingStrategy left, SubnetNamingStrategy right) => left.Equals(right);
-        public static bool operator !=(SubnetNamingStrategy left, SubnetNamingStrategy right) => !left.Equals(right);
+        public static bool operator ==(SubnetNameTagStrategy left, SubnetNameTagStrategy right) => left.Equals(right);
+        public static bool operator !=(SubnetNameTagStrategy left, SubnetNameTagStrategy right) => !left.Equals(right);
 
-        public static explicit operator string(SubnetNamingStrategy value) => value._value;
+        public static explicit operator string(SubnetNameTagStrategy value) => value._value;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is SubnetNamingStrategy other && Equals(other);
-        public bool Equals(SubnetNamingStrategy other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+        public override bool Equals(object? obj) => obj is SubnetNameTagStrategy other && Equals(other);
+        public bool Equals(SubnetNameTagStrategy other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;

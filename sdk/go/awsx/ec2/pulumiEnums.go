@@ -355,127 +355,127 @@ func (in *subnetAllocationStrategyPtr) ToSubnetAllocationStrategyPtrOutputWithCo
 	return pulumi.ToOutputWithContext(ctx, in).(SubnetAllocationStrategyPtrOutput)
 }
 
-// Strategy for naming the subnets generated for each availability zone.
-type SubnetNamingStrategy string
+// Strategy for the AWS `Name` tag applied to the subnets generated for each availability zone. Does not affect Pulumi logical resource names or URNs.
+type SubnetNameTagStrategy string
 
 const (
-	// Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
-	SubnetNamingStrategyLegacy = SubnetNamingStrategy("Legacy")
-	// Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
-	SubnetNamingStrategyAvailabilityZone = SubnetNamingStrategy("AvailabilityZone")
+	// Suffix each `Name` tag with the 1-based index of the subnet's availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+	SubnetNameTagStrategyLegacy = SubnetNameTagStrategy("Legacy")
+	// Suffix each `Name` tag with the availability zone the subnet is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
+	SubnetNameTagStrategyAvailabilityZone = SubnetNameTagStrategy("AvailabilityZone")
 )
 
-func (SubnetNamingStrategy) ElementType() reflect.Type {
-	return reflect.TypeOf((*SubnetNamingStrategy)(nil)).Elem()
+func (SubnetNameTagStrategy) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetNameTagStrategy)(nil)).Elem()
 }
 
-func (e SubnetNamingStrategy) ToSubnetNamingStrategyOutput() SubnetNamingStrategyOutput {
-	return pulumi.ToOutput(e).(SubnetNamingStrategyOutput)
+func (e SubnetNameTagStrategy) ToSubnetNameTagStrategyOutput() SubnetNameTagStrategyOutput {
+	return pulumi.ToOutput(e).(SubnetNameTagStrategyOutput)
 }
 
-func (e SubnetNamingStrategy) ToSubnetNamingStrategyOutputWithContext(ctx context.Context) SubnetNamingStrategyOutput {
-	return pulumi.ToOutputWithContext(ctx, e).(SubnetNamingStrategyOutput)
+func (e SubnetNameTagStrategy) ToSubnetNameTagStrategyOutputWithContext(ctx context.Context) SubnetNameTagStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(SubnetNameTagStrategyOutput)
 }
 
-func (e SubnetNamingStrategy) ToSubnetNamingStrategyPtrOutput() SubnetNamingStrategyPtrOutput {
-	return e.ToSubnetNamingStrategyPtrOutputWithContext(context.Background())
+func (e SubnetNameTagStrategy) ToSubnetNameTagStrategyPtrOutput() SubnetNameTagStrategyPtrOutput {
+	return e.ToSubnetNameTagStrategyPtrOutputWithContext(context.Background())
 }
 
-func (e SubnetNamingStrategy) ToSubnetNamingStrategyPtrOutputWithContext(ctx context.Context) SubnetNamingStrategyPtrOutput {
-	return SubnetNamingStrategy(e).ToSubnetNamingStrategyOutputWithContext(ctx).ToSubnetNamingStrategyPtrOutputWithContext(ctx)
+func (e SubnetNameTagStrategy) ToSubnetNameTagStrategyPtrOutputWithContext(ctx context.Context) SubnetNameTagStrategyPtrOutput {
+	return SubnetNameTagStrategy(e).ToSubnetNameTagStrategyOutputWithContext(ctx).ToSubnetNameTagStrategyPtrOutputWithContext(ctx)
 }
 
-func (e SubnetNamingStrategy) ToStringOutput() pulumi.StringOutput {
+func (e SubnetNameTagStrategy) ToStringOutput() pulumi.StringOutput {
 	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
 }
 
-func (e SubnetNamingStrategy) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+func (e SubnetNameTagStrategy) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
 	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
 }
 
-func (e SubnetNamingStrategy) ToStringPtrOutput() pulumi.StringPtrOutput {
+func (e SubnetNameTagStrategy) ToStringPtrOutput() pulumi.StringPtrOutput {
 	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
 }
 
-func (e SubnetNamingStrategy) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+func (e SubnetNameTagStrategy) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
 	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
 }
 
-type SubnetNamingStrategyOutput struct{ *pulumi.OutputState }
+type SubnetNameTagStrategyOutput struct{ *pulumi.OutputState }
 
-func (SubnetNamingStrategyOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*SubnetNamingStrategy)(nil)).Elem()
+func (SubnetNameTagStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetNameTagStrategy)(nil)).Elem()
 }
 
-func (o SubnetNamingStrategyOutput) ToSubnetNamingStrategyOutput() SubnetNamingStrategyOutput {
+func (o SubnetNameTagStrategyOutput) ToSubnetNameTagStrategyOutput() SubnetNameTagStrategyOutput {
 	return o
 }
 
-func (o SubnetNamingStrategyOutput) ToSubnetNamingStrategyOutputWithContext(ctx context.Context) SubnetNamingStrategyOutput {
+func (o SubnetNameTagStrategyOutput) ToSubnetNameTagStrategyOutputWithContext(ctx context.Context) SubnetNameTagStrategyOutput {
 	return o
 }
 
-func (o SubnetNamingStrategyOutput) ToSubnetNamingStrategyPtrOutput() SubnetNamingStrategyPtrOutput {
-	return o.ToSubnetNamingStrategyPtrOutputWithContext(context.Background())
+func (o SubnetNameTagStrategyOutput) ToSubnetNameTagStrategyPtrOutput() SubnetNameTagStrategyPtrOutput {
+	return o.ToSubnetNameTagStrategyPtrOutputWithContext(context.Background())
 }
 
-func (o SubnetNamingStrategyOutput) ToSubnetNamingStrategyPtrOutputWithContext(ctx context.Context) SubnetNamingStrategyPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v SubnetNamingStrategy) *SubnetNamingStrategy {
+func (o SubnetNameTagStrategyOutput) ToSubnetNameTagStrategyPtrOutputWithContext(ctx context.Context) SubnetNameTagStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v SubnetNameTagStrategy) *SubnetNameTagStrategy {
 		return &v
-	}).(SubnetNamingStrategyPtrOutput)
+	}).(SubnetNameTagStrategyPtrOutput)
 }
 
-func (o SubnetNamingStrategyOutput) ToStringOutput() pulumi.StringOutput {
+func (o SubnetNameTagStrategyOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
 
-func (o SubnetNamingStrategyOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetNamingStrategy) string {
+func (o SubnetNameTagStrategyOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetNameTagStrategy) string {
 		return string(e)
 	}).(pulumi.StringOutput)
 }
 
-func (o SubnetNamingStrategyOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+func (o SubnetNameTagStrategyOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
 	return o.ToStringPtrOutputWithContext(context.Background())
 }
 
-func (o SubnetNamingStrategyOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetNamingStrategy) *string {
+func (o SubnetNameTagStrategyOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetNameTagStrategy) *string {
 		v := string(e)
 		return &v
 	}).(pulumi.StringPtrOutput)
 }
 
-type SubnetNamingStrategyPtrOutput struct{ *pulumi.OutputState }
+type SubnetNameTagStrategyPtrOutput struct{ *pulumi.OutputState }
 
-func (SubnetNamingStrategyPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**SubnetNamingStrategy)(nil)).Elem()
+func (SubnetNameTagStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**SubnetNameTagStrategy)(nil)).Elem()
 }
 
-func (o SubnetNamingStrategyPtrOutput) ToSubnetNamingStrategyPtrOutput() SubnetNamingStrategyPtrOutput {
+func (o SubnetNameTagStrategyPtrOutput) ToSubnetNameTagStrategyPtrOutput() SubnetNameTagStrategyPtrOutput {
 	return o
 }
 
-func (o SubnetNamingStrategyPtrOutput) ToSubnetNamingStrategyPtrOutputWithContext(ctx context.Context) SubnetNamingStrategyPtrOutput {
+func (o SubnetNameTagStrategyPtrOutput) ToSubnetNameTagStrategyPtrOutputWithContext(ctx context.Context) SubnetNameTagStrategyPtrOutput {
 	return o
 }
 
-func (o SubnetNamingStrategyPtrOutput) Elem() SubnetNamingStrategyOutput {
-	return o.ApplyT(func(v *SubnetNamingStrategy) SubnetNamingStrategy {
+func (o SubnetNameTagStrategyPtrOutput) Elem() SubnetNameTagStrategyOutput {
+	return o.ApplyT(func(v *SubnetNameTagStrategy) SubnetNameTagStrategy {
 		if v != nil {
 			return *v
 		}
-		var ret SubnetNamingStrategy
+		var ret SubnetNameTagStrategy
 		return ret
-	}).(SubnetNamingStrategyOutput)
+	}).(SubnetNameTagStrategyOutput)
 }
 
-func (o SubnetNamingStrategyPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+func (o SubnetNameTagStrategyPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
 	return o.ToStringPtrOutputWithContext(context.Background())
 }
 
-func (o SubnetNamingStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e *SubnetNamingStrategy) *string {
+func (o SubnetNameTagStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *SubnetNameTagStrategy) *string {
 		if e == nil {
 			return nil
 		}
@@ -484,43 +484,43 @@ func (o SubnetNamingStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.
 	}).(pulumi.StringPtrOutput)
 }
 
-// SubnetNamingStrategyInput is an input type that accepts values of the SubnetNamingStrategy enum
-// A concrete instance of `SubnetNamingStrategyInput` can be one of the following:
+// SubnetNameTagStrategyInput is an input type that accepts values of the SubnetNameTagStrategy enum
+// A concrete instance of `SubnetNameTagStrategyInput` can be one of the following:
 //
-//	SubnetNamingStrategyLegacy
-//	SubnetNamingStrategyAvailabilityZone
-type SubnetNamingStrategyInput interface {
+//	SubnetNameTagStrategyLegacy
+//	SubnetNameTagStrategyAvailabilityZone
+type SubnetNameTagStrategyInput interface {
 	pulumi.Input
 
-	ToSubnetNamingStrategyOutput() SubnetNamingStrategyOutput
-	ToSubnetNamingStrategyOutputWithContext(context.Context) SubnetNamingStrategyOutput
+	ToSubnetNameTagStrategyOutput() SubnetNameTagStrategyOutput
+	ToSubnetNameTagStrategyOutputWithContext(context.Context) SubnetNameTagStrategyOutput
 }
 
-var subnetNamingStrategyPtrType = reflect.TypeOf((**SubnetNamingStrategy)(nil)).Elem()
+var subnetNameTagStrategyPtrType = reflect.TypeOf((**SubnetNameTagStrategy)(nil)).Elem()
 
-type SubnetNamingStrategyPtrInput interface {
+type SubnetNameTagStrategyPtrInput interface {
 	pulumi.Input
 
-	ToSubnetNamingStrategyPtrOutput() SubnetNamingStrategyPtrOutput
-	ToSubnetNamingStrategyPtrOutputWithContext(context.Context) SubnetNamingStrategyPtrOutput
+	ToSubnetNameTagStrategyPtrOutput() SubnetNameTagStrategyPtrOutput
+	ToSubnetNameTagStrategyPtrOutputWithContext(context.Context) SubnetNameTagStrategyPtrOutput
 }
 
-type subnetNamingStrategyPtr string
+type subnetNameTagStrategyPtr string
 
-func SubnetNamingStrategyPtr(v string) SubnetNamingStrategyPtrInput {
-	return (*subnetNamingStrategyPtr)(&v)
+func SubnetNameTagStrategyPtr(v string) SubnetNameTagStrategyPtrInput {
+	return (*subnetNameTagStrategyPtr)(&v)
 }
 
-func (*subnetNamingStrategyPtr) ElementType() reflect.Type {
-	return subnetNamingStrategyPtrType
+func (*subnetNameTagStrategyPtr) ElementType() reflect.Type {
+	return subnetNameTagStrategyPtrType
 }
 
-func (in *subnetNamingStrategyPtr) ToSubnetNamingStrategyPtrOutput() SubnetNamingStrategyPtrOutput {
-	return pulumi.ToOutput(in).(SubnetNamingStrategyPtrOutput)
+func (in *subnetNameTagStrategyPtr) ToSubnetNameTagStrategyPtrOutput() SubnetNameTagStrategyPtrOutput {
+	return pulumi.ToOutput(in).(SubnetNameTagStrategyPtrOutput)
 }
 
-func (in *subnetNamingStrategyPtr) ToSubnetNamingStrategyPtrOutputWithContext(ctx context.Context) SubnetNamingStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, in).(SubnetNamingStrategyPtrOutput)
+func (in *subnetNameTagStrategyPtr) ToSubnetNameTagStrategyPtrOutputWithContext(ctx context.Context) SubnetNameTagStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(SubnetNameTagStrategyPtrOutput)
 }
 
 // A type of subnet within a VPC.
@@ -870,8 +870,8 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayStrategyPtrInput)(nil)).Elem(), NatGatewayStrategy("None"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetAllocationStrategyInput)(nil)).Elem(), SubnetAllocationStrategy("Legacy"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetAllocationStrategyPtrInput)(nil)).Elem(), SubnetAllocationStrategy("Legacy"))
-	pulumi.RegisterInputType(reflect.TypeOf((*SubnetNamingStrategyInput)(nil)).Elem(), SubnetNamingStrategy("Legacy"))
-	pulumi.RegisterInputType(reflect.TypeOf((*SubnetNamingStrategyPtrInput)(nil)).Elem(), SubnetNamingStrategy("Legacy"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetNameTagStrategyInput)(nil)).Elem(), SubnetNameTagStrategy("Legacy"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetNameTagStrategyPtrInput)(nil)).Elem(), SubnetNameTagStrategy("Legacy"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypeInput)(nil)).Elem(), SubnetType("Public"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypePtrInput)(nil)).Elem(), SubnetType("Public"))
 	pulumi.RegisterInputType(reflect.TypeOf((*VpcEndpointStrategyInput)(nil)).Elem(), VpcEndpointStrategy("Legacy"))
@@ -880,8 +880,8 @@ func init() {
 	pulumi.RegisterOutputType(NatGatewayStrategyPtrOutput{})
 	pulumi.RegisterOutputType(SubnetAllocationStrategyOutput{})
 	pulumi.RegisterOutputType(SubnetAllocationStrategyPtrOutput{})
-	pulumi.RegisterOutputType(SubnetNamingStrategyOutput{})
-	pulumi.RegisterOutputType(SubnetNamingStrategyPtrOutput{})
+	pulumi.RegisterOutputType(SubnetNameTagStrategyOutput{})
+	pulumi.RegisterOutputType(SubnetNameTagStrategyPtrOutput{})
 	pulumi.RegisterOutputType(SubnetTypeOutput{})
 	pulumi.RegisterOutputType(SubnetTypePtrOutput{})
 	pulumi.RegisterOutputType(VpcEndpointStrategyOutput{})

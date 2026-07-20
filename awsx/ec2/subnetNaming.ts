@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SubnetNamingStrategyInputs, SubnetSpecInputs } from "../schema-types";
+import { SubnetNameTagStrategyInputs, SubnetSpecInputs } from "../schema-types";
 
 /**
  * Matches the region portion of an availability zone name, up to but not including the region's
@@ -31,7 +31,7 @@ const azRegionPrefix = /^[a-z]{2}(?:-[a-z]+)+-/;
 
 /**
  * The portion of an availability zone name used to name subnets under
- * `subnetNaming="AvailabilityZone"`, e.g. `us-east-1a` -> `1a`.
+ * `subnetNameTagStrategy="AvailabilityZone"`, e.g. `us-east-1a` -> `1a`.
  *
  * Falls back to the full availability zone name for anything that doesn't parse, which keeps the
  * result unique (AZ names are unique) at the cost of being verbose.
@@ -41,36 +41,35 @@ export function azSuffix(azName: string): string {
 }
 
 /**
- * The AWS "Name" tag applied to a generated subnet, and to the route table and routes that hang off
- * it. This is the strategy-dependent name; the Pulumi resource name is always the index-based
- * `legacySubnetName` so that subnetNaming never changes a child's identity.
+ * A generated subnet's name under a given strategy: the vpc name, the spec name and an
+ * availability-zone suffix that is either the AZ's 1-based index or the AZ itself.
  */
 export function subnetName(
   vpcName: string,
   spec: Pick<SubnetSpecInputs, "name" | "type">,
   azNum: number,
   azName: string,
-  naming: SubnetNamingStrategyInputs,
+  strategy: SubnetNameTagStrategyInputs,
 ): string {
   const specName = spec.name ?? spec.type.toLowerCase();
-  const suffix = naming === "AvailabilityZone" ? azSuffix(azName) : `${azNum}`;
+  const suffix = strategy === "AvailabilityZone" ? azSuffix(azName) : `${azNum}`;
   return `${vpcName}-${specName}-${suffix}`;
 }
 
 /**
- * Both names for a generated subnet: `subnetName`, the strategy-dependent AWS "Name" tag, and
- * `legacySubnetName`, the index-based Pulumi resource name. See `SubnetSpec` for how each is used.
+ * Both names for a generated subnet: `resourceName`, the index-based Pulumi resource name, and
+ * `nameTag`, the strategy-dependent AWS "Name" tag. See `SubnetSpec` for how each is used.
  */
 export function subnetNames(
   vpcName: string,
   spec: Pick<SubnetSpecInputs, "name" | "type">,
   azNum: number,
   azName: string,
-  naming: SubnetNamingStrategyInputs,
-): { subnetName: string; legacySubnetName: string } {
+  strategy: SubnetNameTagStrategyInputs,
+): { resourceName: string; nameTag: string } {
   return {
-    subnetName: subnetName(vpcName, spec, azNum, azName, naming),
-    legacySubnetName: subnetName(vpcName, spec, azNum, azName, "Legacy"),
+    resourceName: subnetName(vpcName, spec, azNum, azName, "Legacy"),
+    nameTag: subnetName(vpcName, spec, azNum, azName, strategy),
   };
 }
 
@@ -86,7 +85,7 @@ export function validateAzSuffixes(azNames: string[]): void {
     const collidesWith = seen.get(suffix);
     if (collidesWith !== undefined) {
       throw new Error(
-        `subnetNaming="AvailabilityZone" requires availability zones with distinct suffixes, but ` +
+        `subnetNameTagStrategy="AvailabilityZone" requires availability zones with distinct suffixes, but ` +
           `"${collidesWith}" and "${azName}" both reduce to "${suffix}".`,
       );
     }

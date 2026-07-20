@@ -18,7 +18,7 @@ import {
   NatGatewayStrategyInputs,
   SubnetTypeInputs,
   SubnetAllocationStrategyInputs,
-  SubnetNamingStrategyInputs,
+  SubnetNameTagStrategyInputs,
 } from "../schema-types";
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
@@ -40,6 +40,7 @@ import {
   validateSubnets,
   Vpc,
 } from "./vpc";
+import * as subnetNaming from "./subnetNaming";
 import { Netmask, long2ip, ip2long } from "netmask";
 import * as runtime from "@pulumi/pulumi/runtime";
 import * as pulumiAws from "@pulumi/aws";
@@ -85,8 +86,8 @@ describe("validateNatGatewayStrategy", () => {
     const specs = inputs.map((x) => {
       return {
         type: x,
-        subnetName: "dummy",
-        legacySubnetName: "dummy",
+        nameTag: "dummy",
+        resourceName: "dummy",
         cidrBlock: "dummy",
         azName: "us-dummy-1a",
       };
@@ -176,8 +177,8 @@ describe("compareSubnetSpecs", () => {
       return {
         type: x as SubnetTypeInputs,
         azName: "dummy",
-        subnetName: "dummy",
-        legacySubnetName: "dummy",
+        nameTag: "dummy",
+        resourceName: "dummy",
         cidrBlock: "dummy",
       };
     });
@@ -219,33 +220,33 @@ describe("createIpv6SubnetCidrBlock", () => {
 describe("getOverlappingSubnets", () => {
   const subnet1 = {
     cidrBlock: "10.0.0.0/16",
-    subnetName: "subnet1",
-    legacySubnetName: "subnet1",
+    nameTag: "subnet1",
+    resourceName: "subnet1",
   };
 
   // Named thus because it's contained in subnet1:
   const subnet1a = {
     cidrBlock: "10.0.0.0/24",
-    subnetName: "subnet1",
-    legacySubnetName: "subnet1",
+    nameTag: "subnet1",
+    resourceName: "subnet1",
   };
 
   const subnet2 = {
     cidrBlock: "10.1.0.0/16",
-    subnetName: "subnet2",
-    legacySubnetName: "subnet2",
+    nameTag: "subnet2",
+    resourceName: "subnet2",
   };
 
   const subnet2a = {
     cidrBlock: "10.1.0.0/20",
-    subnetName: "subnet2",
-    legacySubnetName: "subnet2",
+    nameTag: "subnet2",
+    resourceName: "subnet2",
   };
 
   const subnet3 = {
     cidrBlock: "10.2.0.0/16",
-    subnetName: "subnet2",
-    legacySubnetName: "subnet2",
+    nameTag: "subnet2",
+    resourceName: "subnet2",
   };
 
   it("should return nothing for subnets that do not overlap", () => {
@@ -279,15 +280,15 @@ describe("validateSubnets", () => {
       {
         type: "Public" as SubnetTypeInputs,
         cidrBlock: "10.0.0.0/16",
-        subnetName: "subnet1",
-        legacySubnetName: "subnet1",
+        nameTag: "subnet1",
+        resourceName: "subnet1",
         azName: "us-east-1a",
       },
       {
         type: "Private" as SubnetTypeInputs,
         cidrBlock: "10.0.1.0/16",
-        subnetName: "subnet2",
-        legacySubnetName: "subnet2",
+        nameTag: "subnet2",
+        resourceName: "subnet2",
         azName: "us-east-1a",
       },
     ];
@@ -304,15 +305,15 @@ describe("validateSubnets", () => {
       {
         type: "Public" as SubnetTypeInputs,
         cidrBlock: "10.0.0.0/16",
-        subnetName: "subnet1",
-        legacySubnetName: "subnet1",
+        nameTag: "subnet1",
+        resourceName: "subnet1",
         azName: "us-east-1a",
       },
       {
         type: "Private" as SubnetTypeInputs,
         cidrBlock: "10.0.0.0/24",
-        subnetName: "subnet2",
-        legacySubnetName: "subnet2",
+        nameTag: "subnet2",
+        resourceName: "subnet2",
         azName: "us-east-1a",
       },
     ];
@@ -1488,7 +1489,7 @@ describe("subnet naming", () => {
   const vpcCidr = "10.0.0.0/16";
 
   const legacySpecs = () => getSubnetSpecsLegacy("vpc", vpcCidr, azs, undefined, undefined);
-  const autoSpecs = (naming?: SubnetNamingStrategyInputs) =>
+  const autoSpecs = (naming?: SubnetNameTagStrategyInputs) =>
     getSubnetSpecs(
       "vpc",
       vpcCidr,
@@ -1508,7 +1509,7 @@ describe("subnet naming", () => {
         undefined,
         "AvailabilityZone",
       );
-      expect(specs.map((s) => s.subnetName)).toEqual([
+      expect(specs.map((s) => s.nameTag)).toEqual([
         "vpc-private-2a",
         "vpc-private-2b",
         "vpc-private-2c",
@@ -1520,7 +1521,7 @@ describe("subnet naming", () => {
 
     it("NewAllocator (Auto)", () => {
       const specs = autoSpecs("AvailabilityZone");
-      expect(specs.map((s) => s.subnetName).sort()).toEqual([
+      expect(specs.map((s) => s.nameTag).sort()).toEqual([
         "vpc-private-2a",
         "vpc-private-2b",
         "vpc-private-2c",
@@ -1541,7 +1542,7 @@ describe("subnet naming", () => {
       );
       // A *named* user spec is an addition rather than an override, so AutoMerge keeps both default
       // specs alongside it. All three - the user's and both merged-in defaults - must be suffixed.
-      expect(specs.map((s) => s.subnetName).sort()).toEqual([
+      expect(specs.map((s) => s.nameTag).sort()).toEqual([
         "vpc-dmz-2a",
         "vpc-dmz-2b",
         "vpc-dmz-2c",
@@ -1564,7 +1565,7 @@ describe("subnet naming", () => {
         ],
         "AvailabilityZone",
       );
-      expect(specs.map((s) => s.subnetName).sort()).toEqual([
+      expect(specs.map((s) => s.nameTag).sort()).toEqual([
         "vpc-private-2a",
         "vpc-private-2b",
         "vpc-private-2c",
@@ -1577,7 +1578,7 @@ describe("subnet naming", () => {
 
   describe("backwards compatibility", () => {
     it("defaults to the index-based names when the strategy is unset", () => {
-      expect(legacySpecs().map((s) => s.subnetName)).toEqual([
+      expect(legacySpecs().map((s) => s.nameTag)).toEqual([
         "vpc-private-1",
         "vpc-private-2",
         "vpc-private-3",
@@ -1587,7 +1588,7 @@ describe("subnet naming", () => {
       ]);
       expect(
         autoSpecs()
-          .map((s) => s.subnetName)
+          .map((s) => s.nameTag)
           .sort(),
       ).toEqual([
         "vpc-private-1",
@@ -1608,15 +1609,15 @@ describe("subnet naming", () => {
         undefined,
         "AvailabilityZone",
       );
-      expect(legacy.map((s) => s.legacySubnetName)).toEqual(legacySpecs().map((s) => s.subnetName));
+      expect(legacy.map((s) => s.resourceName)).toEqual(legacySpecs().map((s) => s.nameTag));
 
       const auto = autoSpecs("AvailabilityZone");
-      expect(auto.map((s) => s.legacySubnetName)).toEqual(autoSpecs().map((s) => s.subnetName));
+      expect(auto.map((s) => s.resourceName)).toEqual(autoSpecs().map((s) => s.nameTag));
     });
 
     it("leaves the subnet name and the legacy name identical under Legacy naming", () => {
       for (const spec of [...legacySpecs(), ...autoSpecs("Legacy")]) {
-        expect(spec.subnetName).toBe(spec.legacySubnetName);
+        expect(spec.nameTag).toBe(spec.resourceName);
       }
     });
 
@@ -1636,7 +1637,7 @@ describe("subnet naming", () => {
     it("derives an identical subnet layout under either naming strategy", () => {
       // subnetLayout is a component output and feeds the "specify subnetStrategy explicitly"
       // warning. It is built by stripping the trailing index, so it must read the legacy name.
-      const layoutOf = (naming: SubnetNamingStrategyInputs) =>
+      const layoutOf = (naming: SubnetNameTagStrategyInputs) =>
         extractSubnetSpecInputFromLegacyLayout(
           getSubnetSpecsLegacy("vpc", vpcCidr, azs, undefined, undefined, naming),
           "vpc",
@@ -1668,7 +1669,7 @@ describe("subnet naming", () => {
       "AvailabilityZone",
     );
     const nameFor = (specs: typeof forward, az: string) =>
-      specs.find((s) => s.azName === az)!.subnetName;
+      specs.find((s) => s.azName === az)!.nameTag;
     expect(nameFor(forward, "us-west-2a")).toBe("vpc-public-2a");
     expect(nameFor(reversed, "us-west-2a")).toBe("vpc-public-2a");
     expect(nameFor(forward, "us-west-2b")).toBe("vpc-public-2b");
@@ -1677,7 +1678,7 @@ describe("subnet naming", () => {
 });
 
 describe("subnet naming child resources", () => {
-  // subnetNaming="AvailabilityZone" only changes the AWS "Name" tag on the subnet and the route
+  // subnetNameTagStrategy="AvailabilityZone" only changes the AWS "Name" tag on the subnet and the route
   // table hanging off it. The Pulumi resource names - of the subnet, its route table, route table
   // association and route - stay index-based, so opting in never renames (and therefore never
   // replaces) a child. That means no aliases are needed anywhere.
@@ -1698,14 +1699,14 @@ describe("subnet naming child resources", () => {
     });
   });
 
-  function makeVpc(name: string, subnetNaming?: SubnetNamingStrategyInputs): Vpc {
+  function makeVpc(name: string, nameTagStrategy?: SubnetNameTagStrategyInputs): Vpc {
     newResources = [];
     return new Vpc(name, {
       cidrBlock: "10.0.0.0/16",
       availabilityZoneNames: azs,
       subnetStrategy: "Auto",
       subnetSpecs: [{ type: "Public" }, { type: "Private" }],
-      ...(subnetNaming ? { subnetNaming } : {}),
+      ...(nameTagStrategy ? { subnetNameTagStrategy: nameTagStrategy } : {}),
     });
   }
 
@@ -1738,7 +1739,7 @@ describe("subnet naming child resources", () => {
     }
   }
 
-  describe('subnetNaming: "AvailabilityZone"', () => {
+  describe('subnetNameTagStrategy: "AvailabilityZone"', () => {
     let vpc: Vpc;
     beforeEach(async () => {
       vpc = makeVpc("vpc", "AvailabilityZone");
@@ -1833,6 +1834,30 @@ describe("subnet naming child resources", () => {
           .map((r) => r.name)
           .sort(),
       ).toEqual(["vpc-1", "vpc-2", "vpc-3"]);
+    });
+  });
+
+  describe("availability zone suffix validation", () => {
+    // Proves the component wires up validateAzSuffixes, and only under the opt-in strategy - a
+    // regression that dropped the call, or ran it under Legacy, would otherwise go unnoticed.
+    // The guard's own throw path is covered in subnetNaming.test.ts and can't be driven through
+    // the component: a throw inside initialize() surfaces as an unhandled rejection out of the
+    // ComponentResource constructor, which no caller can catch.
+    let guard: jest.SpyInstance;
+
+    beforeEach(() => {
+      guard = jest.spyOn(subnetNaming, "validateAzSuffixes");
+    });
+    afterEach(() => guard.mockRestore());
+
+    it('validates the availability zones under subnetNameTagStrategy: "AvailabilityZone"', async () => {
+      await settle(makeVpc("vpc3", "AvailabilityZone"));
+      expect(guard).toHaveBeenCalledWith(azs);
+    });
+
+    it("does not validate them under default naming, which never looks at the suffix", async () => {
+      await settle(makeVpc("vpc4"));
+      expect(guard).not.toHaveBeenCalled();
     });
   });
 

@@ -16,7 +16,7 @@
 // and used in accordance with MPL v2.0 license
 
 import * as pulumi from "@pulumi/pulumi";
-import { SubnetNamingStrategyInputs, SubnetSpecInputs } from "../schema-types";
+import { SubnetNameTagStrategyInputs, SubnetSpecInputs } from "../schema-types";
 import { Netmask } from "netmask";
 import { subnetNames } from "./subnetNaming";
 import { SubnetSpec, SubnetSpecPartial } from "./subnetSpecs";
@@ -27,7 +27,7 @@ export function getSubnetSpecs(
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-  naming: SubnetNamingStrategyInputs = "Legacy",
+  nameTagStrategy: SubnetNameTagStrategyInputs = "Legacy",
 ): SubnetSpecPartial[] {
   const allocatedCidrBlocks = inputApply(
     vpcCidr,
@@ -50,7 +50,7 @@ export function getSubnetSpecs(
         cidrBlock,
         type: subnetSpec.type,
         azName,
-        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, nameTagStrategy),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       };
@@ -64,7 +64,7 @@ export function getSubnetSpecsAutoMerge(
   azNames: string[],
   userSubnetInputs: SubnetSpecInputs[] | undefined,
   azCidrMask?: number,
-  naming: SubnetNamingStrategyInputs = "Legacy",
+  nameTagStrategy: SubnetNameTagStrategyInputs = "Legacy",
 ): SubnetSpecPartial[] {
   const allocatedCidrBlocks = inputApply(
     vpcCidr,
@@ -97,7 +97,7 @@ export function getSubnetSpecsAutoMerge(
         cidrBlock,
         type: subnetSpec.type,
         azName,
-        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, nameTagStrategy),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       };
@@ -113,7 +113,7 @@ function subnetAllocationID(
   azNum: number,
   subnetSpecIndex: number,
 ): SubnetAllocationID {
-  // Deliberately pinned to the index-based name, independent of the subnetNaming strategy: this is
+  // Deliberately pinned to the index-based name, independent of subnetNameTagStrategy: this is
   // an in-memory key for the CIDR allocation table, never persisted, and the address ranges a user
   // gets must not depend on what their subnets are called.
   const specName = subnetSpec.name ?? subnetSpec.type.toLowerCase();
@@ -297,7 +297,7 @@ export function getSubnetSpecsExplicit(
   vpcName: string,
   azNames: string[],
   subnetInputs: ExplicitSubnetSpecInputs[],
-  naming: SubnetNamingStrategyInputs = "Legacy",
+  nameTagStrategy: SubnetNameTagStrategyInputs = "Legacy",
 ): SubnetSpec[] {
   const subnets: SubnetSpec[] = [];
   for (let azIndex = 0; azIndex < azNames.length; azIndex++) {
@@ -309,7 +309,7 @@ export function getSubnetSpecsExplicit(
         cidrBlock: subnetCidr,
         type: subnetSpec.type,
         azName,
-        ...subnetNames(vpcName, subnetSpec, azNum, azName, naming),
+        ...subnetNames(vpcName, subnetSpec, azNum, azName, nameTagStrategy),
         assignIpv6AddressOnCreation: subnetSpec.assignIpv6AddressOnCreation,
         tags: subnetSpec.tags,
       });

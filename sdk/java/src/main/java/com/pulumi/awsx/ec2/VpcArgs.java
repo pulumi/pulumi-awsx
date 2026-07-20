@@ -4,7 +4,7 @@
 package com.pulumi.awsx.ec2;
 
 import com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy;
-import com.pulumi.awsx.ec2.enums.SubnetNamingStrategy;
+import com.pulumi.awsx.ec2.enums.SubnetNameTagStrategy;
 import com.pulumi.awsx.ec2.enums.VpcEndpointStrategy;
 import com.pulumi.awsx.ec2.inputs.NatGatewayConfigurationArgs;
 import com.pulumi.awsx.ec2.inputs.SubnetSpecArgs;
@@ -281,18 +281,18 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+     * Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
      * 
      */
-    @Import(name="subnetNaming")
-    private @Nullable SubnetNamingStrategy subnetNaming;
+    @Import(name="subnetNameTagStrategy")
+    private @Nullable SubnetNameTagStrategy subnetNameTagStrategy;
 
     /**
-     * @return The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+     * @return Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
      * 
      */
-    public Optional<SubnetNamingStrategy> subnetNaming() {
-        return Optional.ofNullable(this.subnetNaming);
+    public Optional<SubnetNameTagStrategy> subnetNameTagStrategy() {
+        return Optional.ofNullable(this.subnetNameTagStrategy);
     }
 
     /**
@@ -390,7 +390,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.natGateways = $.natGateways;
         this.numberOfAvailabilityZones = $.numberOfAvailabilityZones;
         this.region = $.region;
-        this.subnetNaming = $.subnetNaming;
+        this.subnetNameTagStrategy = $.subnetNameTagStrategy;
         this.subnetSpecs = $.subnetSpecs;
         this.subnetStrategy = $.subnetStrategy;
         this.tags = $.tags;
@@ -734,13 +734,13 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param subnetNaming The strategy to use when naming the VPC&#39;s subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+         * @param subnetNameTagStrategy Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
          * 
          * @return builder
          * 
          */
-        public Builder subnetNaming(@Nullable SubnetNamingStrategy subnetNaming) {
-            $.subnetNaming = subnetNaming;
+        public Builder subnetNameTagStrategy(@Nullable SubnetNameTagStrategy subnetNameTagStrategy) {
+            $.subnetNameTagStrategy = subnetNameTagStrategy;
             return this;
         }
 

@@ -37,7 +37,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:NatGatewayConfiguration":  natGatewayConfigurationType(),
 			"awsx:ec2:SubnetType":               subnetType(),
 			"awsx:ec2:SubnetAllocationStrategy": subnetAllocationStrategy(),
-			"awsx:ec2:SubnetNamingStrategy":     subnetNamingStrategy(),
+			"awsx:ec2:SubnetNameTagStrategy":    subnetNameTagStrategy(),
 			"awsx:ec2:VpcEndpointStrategy":      vpcEndpointStrategy(),
 			"awsx:ec2:SubnetSpec":               subnetSpecType(),
 			"awsx:ec2:ResolvedSubnetSpec":       resolvedSubnetSpecType(),
@@ -145,11 +145,12 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				Plain: true,
 			},
 		},
-		"subnetNaming": {
-			Description: "The strategy to use when naming the VPC's subnets and their associated route " +
-				"tables, route table associations and routes. Optional. Defaults to `Legacy`.",
+		"subnetNameTagStrategy": {
+			Description: "Controls the AWS `Name` tags applied to generated subnets and their associated " +
+				"route tables. Pulumi logical resource names and URNs are unchanged. Optional; " +
+				"defaults to `Legacy`.",
 			TypeSpec: schema.TypeSpec{
-				Ref:   localRef("ec2", "SubnetNamingStrategy"),
+				Ref:   localRef("ec2", "SubnetNameTagStrategy"),
 				Plain: true,
 			},
 		},
@@ -517,22 +518,23 @@ func subnetAllocationStrategy() schema.ComplexTypeSpec {
 	}
 }
 
-func subnetNamingStrategy() schema.ComplexTypeSpec {
+func subnetNameTagStrategy() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "string",
-			Description: "Strategy for naming the subnets generated for each availability zone.",
+			Type: "string",
+			Description: "Strategy for the AWS `Name` tag applied to the subnets generated for each " +
+				"availability zone. Does not affect Pulumi logical resource names or URNs.",
 		},
 		Enum: []schema.EnumValueSpec{
 			{
 				Value: "Legacy",
-				Description: "Suffix each subnet with the 1-based index of its availability zone, " +
-					"e.g. `vpc-public-1`, `vpc-public-2`.",
+				Description: "Suffix each `Name` tag with the 1-based index of the subnet's " +
+					"availability zone, e.g. `vpc-public-1`, `vpc-public-2`.",
 			},
 			{
 				Value: "AvailabilityZone",
-				Description: "Suffix each subnet with the availability zone it is created in, " +
-					"e.g. `vpc-public-1a`, `vpc-public-1b`.",
+				Description: "Suffix each `Name` tag with the availability zone the subnet is created " +
+					"in, e.g. `vpc-public-1a`, `vpc-public-1b`.",
 			},
 		},
 	}

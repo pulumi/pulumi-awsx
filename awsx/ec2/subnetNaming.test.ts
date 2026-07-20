@@ -217,22 +217,21 @@ describe("subnetName", () => {
 describe("subnetNames", () => {
   it("returns the legacy name unchanged alongside the AZ name", () => {
     expect(subnetNames("vpc", { type: "Public" }, 2, "us-west-2b", "AvailabilityZone")).toEqual({
-      subnetName: "vpc-public-2b",
-      legacySubnetName: "vpc-public-2",
+      nameTag: "vpc-public-2b",
+      resourceName: "vpc-public-2",
     });
   });
 
   it("returns identical names under Legacy naming, which is what suppresses the aliases", () => {
     const names = subnetNames("vpc", { type: "Public" }, 2, "us-west-2b", "Legacy");
-    expect(names.subnetName).toBe(names.legacySubnetName);
-    expect(names.subnetName).toBe("vpc-public-2");
+    expect(names.nameTag).toBe(names.resourceName);
+    expect(names.nameTag).toBe("vpc-public-2");
   });
 
   it("keeps the legacy name index-based for every AZ, regardless of the AZ's own shape", () => {
     const azs = azsByRegion["us-west-2 (with local zones)"];
     const legacy = azs.map(
-      (az, i) =>
-        subnetNames("vpc", { type: "Public" }, i + 1, az, "AvailabilityZone").legacySubnetName,
+      (az, i) => subnetNames("vpc", { type: "Public" }, i + 1, az, "AvailabilityZone").resourceName,
     );
     expect(legacy).toEqual([
       "vpc-public-1",

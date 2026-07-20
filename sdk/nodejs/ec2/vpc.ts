@@ -154,7 +154,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["natGateways"] = args?.natGateways;
             resourceInputs["numberOfAvailabilityZones"] = args?.numberOfAvailabilityZones;
             resourceInputs["region"] = args?.region;
-            resourceInputs["subnetNaming"] = args?.subnetNaming;
+            resourceInputs["subnetNameTagStrategy"] = args?.subnetNameTagStrategy;
             resourceInputs["subnetSpecs"] = args?.subnetSpecs;
             resourceInputs["subnetStrategy"] = args?.subnetStrategy;
             resourceInputs["tags"] = args?.tags;
@@ -273,9 +273,9 @@ export interface VpcArgs {
      */
     region?: pulumi.Input<string | undefined>;
     /**
-     * The strategy to use when naming the VPC's subnets and their associated route tables, route table associations and routes. Optional. Defaults to `Legacy`.
+     * Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
      */
-    subnetNaming?: enums.ec2.SubnetNamingStrategy;
+    subnetNameTagStrategy?: enums.ec2.SubnetNameTagStrategy;
     /**
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
      */

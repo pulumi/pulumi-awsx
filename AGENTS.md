@@ -137,10 +137,10 @@ change or documented regeneration reason.
 - A child's Pulumi resource name is its identity. Changing one replaces the resource, and for a
   subnet that means a delete/recreate that fails while ENIs are attached. Prefer expressing a
   user-visible naming change through the AWS `Name` tag and keeping the Pulumi resource name stable.
-  `subnetNaming` in `awsx/ec2/vpc.ts` does exactly this: the resource name is always the index-based
-  `legacySubnetName`, and `subnetNaming="AvailabilityZone"` only changes the `Name` tag - so no
-  aliases are needed. If a change genuinely must rename a resource, it has to be opt-in and carry an
-  `alias` back to the old name.
+  `subnetNameTagStrategy` in `awsx/ec2/vpc.ts` does exactly this: a spec's `resourceName` is always
+  the index-based name and is what every child is created under, while `nameTag` is the only thing
+  `subnetNameTagStrategy="AvailabilityZone"` changes - so no aliases are needed. If a change
+  genuinely must rename a resource, it has to be opt-in and carry an `alias` back to the old name.
 
 ## Forbidden Actions
 - No destructive git (`git reset --hard`, force push, checkout discard) without explicit approval.

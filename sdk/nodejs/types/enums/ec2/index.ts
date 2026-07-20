@@ -46,21 +46,21 @@ export const SubnetAllocationStrategy = {
  */
 export type SubnetAllocationStrategy = (typeof SubnetAllocationStrategy)[keyof typeof SubnetAllocationStrategy];
 
-export const SubnetNamingStrategy = {
+export const SubnetNameTagStrategy = {
     /**
-     * Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+     * Suffix each `Name` tag with the 1-based index of the subnet's availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
      */
     Legacy: "Legacy",
     /**
-     * Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
+     * Suffix each `Name` tag with the availability zone the subnet is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
      */
     AvailabilityZone: "AvailabilityZone",
 } as const;
 
 /**
- * Strategy for naming the subnets generated for each availability zone.
+ * Strategy for the AWS `Name` tag applied to the subnets generated for each availability zone. Does not affect Pulumi logical resource names or URNs.
  */
-export type SubnetNamingStrategy = (typeof SubnetNamingStrategy)[keyof typeof SubnetNamingStrategy];
+export type SubnetNameTagStrategy = (typeof SubnetNameTagStrategy)[keyof typeof SubnetNameTagStrategy];
 
 export const SubnetType = {
     /**

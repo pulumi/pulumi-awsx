@@ -9,25 +9,25 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
     /**
-     * Strategy for naming the subnets generated for each availability zone.
+     * Strategy for the AWS `Name` tag applied to the subnets generated for each availability zone. Does not affect Pulumi logical resource names or URNs.
      * 
      */
     @EnumType
-    public enum SubnetNamingStrategy {
+    public enum SubnetNameTagStrategy {
         /**
-         * Suffix each subnet with the 1-based index of its availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+         * Suffix each `Name` tag with the 1-based index of the subnet&#39;s availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
          * 
          */
         Legacy("Legacy"),
         /**
-         * Suffix each subnet with the availability zone it is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
+         * Suffix each `Name` tag with the availability zone the subnet is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
          * 
          */
         AvailabilityZone("AvailabilityZone");
 
         private final String value;
 
-        SubnetNamingStrategy(String value) {
+        SubnetNameTagStrategy(String value) {
             this.value = Objects.requireNonNull(value);
         }
 
@@ -38,7 +38,7 @@ import java.util.StringJoiner;
 
         @Override
         public java.lang.String toString() {
-            return new StringJoiner(", ", "SubnetNamingStrategy[", "]")
+            return new StringJoiner(", ", "SubnetNameTagStrategy[", "]")
                 .add("value='" + this.value + "'")
                 .toString();
         }
