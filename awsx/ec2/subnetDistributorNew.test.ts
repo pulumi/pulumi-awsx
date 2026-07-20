@@ -216,7 +216,8 @@ describe("validating exact layouts", () => {
         azName: "az",
         type: "Public",
         cidrBlock: "10.0.0.0/16",
-        subnetName: "sub1",
+        nameTag: "sub1",
+        resourceName: "sub1",
       },
     ]);
   });
@@ -228,14 +229,16 @@ describe("validating exact layouts", () => {
           azName: "",
           type: "Public",
           cidrBlock: "10.0.0.0/18",
-          subnetName: "sub1",
+          nameTag: "sub1",
+          resourceName: "sub1",
         },
         // "10.0.1.0/16" is missing
         {
           azName: "",
           type: "Public",
           cidrBlock: "10.0.128.0/17",
-          subnetName: "sub2",
+          nameTag: "sub2",
+          resourceName: "sub2",
         },
       ]),
     ).toThrowError(
@@ -266,7 +269,8 @@ describe("validating exact layouts", () => {
           azName: "",
           type: "Public",
           cidrBlock: "10.0.128.0/17",
-          subnetName: "sub1",
+          nameTag: "sub1",
+          resourceName: "sub1",
         },
       ]),
     ).toThrowError(
@@ -411,25 +415,29 @@ describe("explicit subnet layouts", () => {
       {
         azName: "us-east-1a",
         cidrBlock: "10.0.0.0/18",
-        subnetName: "vpcName-public-1",
+        nameTag: "vpcName-public-1",
+        resourceName: "vpcName-public-1",
         type: "Public",
       },
       {
         azName: "us-east-1a",
         cidrBlock: "10.0.96.0/19",
-        subnetName: "vpcName-private-1",
+        nameTag: "vpcName-private-1",
+        resourceName: "vpcName-private-1",
         type: "Private",
       },
       {
         azName: "us-east-1b",
         cidrBlock: "10.0.64.0/19",
-        subnetName: "vpcName-public-2",
+        nameTag: "vpcName-public-2",
+        resourceName: "vpcName-public-2",
         type: "Public",
       },
       {
         azName: "us-east-1b",
         cidrBlock: "10.0.128.0/20",
-        subnetName: "vpcName-private-2",
+        nameTag: "vpcName-private-2",
+        resourceName: "vpcName-private-2",
         type: "Private",
       },
     ]);
@@ -445,29 +453,19 @@ describe("merging SubnetSpecs with defaults for AutoMerge", () => {
   }> = [
     {
       name: "adds missing default types when user only specifies Public with tags",
-      userSpecs: [
-        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
-      ],
+      userSpecs: [{ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
       defaults: undefined,
-      expected: [
-        { type: "Private" },
-        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
-      ],
+      expected: [{ type: "Private" }, { type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
     },
     {
       name: "preserves subnet sizing for user-provided types while adding defaults",
       userSpecs: [{ type: "Public", cidrMask: 20 }],
       defaults: undefined,
-      expected: [
-        { type: "Private" },
-        { type: "Public", cidrMask: 20 },
-      ],
+      expected: [{ type: "Private" }, { type: "Public", cidrMask: 20 }],
     },
     {
       name: "preserves default cidr sizing when merging onto concrete defaults",
-      userSpecs: [
-        { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
-      ],
+      userSpecs: [{ type: "Public", tags: { "kubernetes.io/role/elb": "1" } }],
       defaults: defaultSubnetInputs(17),
       expected: [
         { type: "Private", cidrMask: 18 },

@@ -101,6 +101,7 @@ export interface VpcArgs {
     readonly natGateways?: NatGatewayConfigurationInputs;
     readonly numberOfAvailabilityZones?: number;
     readonly region?: pulumi.Input<string>;
+    readonly subnetNameTagStrategy?: SubnetNameTagStrategyInputs;
     readonly subnetSpecs?: SubnetSpecInputs[];
     readonly subnetStrategy?: SubnetAllocationStrategyInputs;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
@@ -661,6 +662,8 @@ export interface ResolvedSubnetSpecOutputs {
 }
 export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "AutoMerge" | "Exact";
 export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "AutoMerge" | "Exact";
+export type SubnetNameTagStrategyInputs = "Legacy" | "AvailabilityZone";
+export type SubnetNameTagStrategyOutputs = "Legacy" | "AvailabilityZone";
 export interface SubnetSpecInputs {
     readonly assignIpv6AddressOnCreation?: boolean;
     readonly cidrBlocks?: string[];

@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ec2;
 
 import com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy;
+import com.pulumi.awsx.ec2.enums.SubnetNameTagStrategy;
 import com.pulumi.awsx.ec2.enums.VpcEndpointStrategy;
 import com.pulumi.awsx.ec2.inputs.NatGatewayConfigurationArgs;
 import com.pulumi.awsx.ec2.inputs.SubnetSpecArgs;
@@ -280,6 +281,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
+     * 
+     */
+    @Import(name="subnetNameTagStrategy")
+    private @Nullable SubnetNameTagStrategy subnetNameTagStrategy;
+
+    /**
+     * @return Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
+     * 
+     */
+    public Optional<SubnetNameTagStrategy> subnetNameTagStrategy() {
+        return Optional.ofNullable(this.subnetNameTagStrategy);
+    }
+
+    /**
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Public subnets, and Isolated subnets are allocated last.
      * 
      */
@@ -374,6 +390,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.natGateways = $.natGateways;
         this.numberOfAvailabilityZones = $.numberOfAvailabilityZones;
         this.region = $.region;
+        this.subnetNameTagStrategy = $.subnetNameTagStrategy;
         this.subnetSpecs = $.subnetSpecs;
         this.subnetStrategy = $.subnetStrategy;
         this.tags = $.tags;
@@ -714,6 +731,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder region(String region) {
             return region(Output.of(region));
+        }
+
+        /**
+         * @param subnetNameTagStrategy Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetNameTagStrategy(@Nullable SubnetNameTagStrategy subnetNameTagStrategy) {
+            $.subnetNameTagStrategy = subnetNameTagStrategy;
+            return this;
         }
 
         /**

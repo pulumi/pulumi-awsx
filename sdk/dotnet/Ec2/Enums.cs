@@ -94,6 +94,43 @@ namespace Pulumi.Awsx.Ec2
     }
 
     /// <summary>
+    /// Strategy for the AWS `Name` tag applied to the subnets generated for each availability zone. Does not affect Pulumi logical resource names or URNs.
+    /// </summary>
+    [EnumType]
+    public readonly struct SubnetNameTagStrategy : IEquatable<SubnetNameTagStrategy>
+    {
+        private readonly string _value;
+
+        private SubnetNameTagStrategy(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Suffix each `Name` tag with the 1-based index of the subnet's availability zone, e.g. `vpc-public-1`, `vpc-public-2`.
+        /// </summary>
+        public static SubnetNameTagStrategy Legacy { get; } = new SubnetNameTagStrategy("Legacy");
+        /// <summary>
+        /// Suffix each `Name` tag with the availability zone the subnet is created in, e.g. `vpc-public-1a`, `vpc-public-1b`.
+        /// </summary>
+        public static SubnetNameTagStrategy AvailabilityZone { get; } = new SubnetNameTagStrategy("AvailabilityZone");
+
+        public static bool operator ==(SubnetNameTagStrategy left, SubnetNameTagStrategy right) => left.Equals(right);
+        public static bool operator !=(SubnetNameTagStrategy left, SubnetNameTagStrategy right) => !left.Equals(right);
+
+        public static explicit operator string(SubnetNameTagStrategy value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is SubnetNameTagStrategy other && Equals(other);
+        public bool Equals(SubnetNameTagStrategy other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    /// <summary>
     /// A type of subnet within a VPC.
     /// </summary>
     [EnumType]

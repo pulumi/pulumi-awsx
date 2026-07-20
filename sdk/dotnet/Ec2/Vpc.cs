@@ -292,6 +292,12 @@ namespace Pulumi.Awsx.Ec2
         [Input("region")]
         public Input<string>? Region { get; set; }
 
+        /// <summary>
+        /// Controls the AWS `Name` tags applied to generated subnets and their associated route tables. Pulumi logical resource names and URNs are unchanged. Optional; defaults to `Legacy`.
+        /// </summary>
+        [Input("subnetNameTagStrategy")]
+        public Pulumi.Awsx.Ec2.SubnetNameTagStrategy? SubnetNameTagStrategy { get; set; }
+
         [Input("subnetSpecs")]
         private List<Inputs.SubnetSpecArgs>? _subnetSpecs;
 

@@ -81,11 +81,29 @@ component replay or snapshot fixture strategy.
 - Targeted integration tests: `GOTESTARGS="-run TestName" make test`
 - Regenerate workflows/Makefile from ci-mgmt: `make ci-mgmt`
 
+Prefer the `make` targets. If you must regenerate without the `mise`/`upstream`
+prerequisites they depend on, note two traps:
+- `pulumi-gen-awsx` resolves its input path relative to the working directory,
+  so it must be run **from the repo root** (`go build -o /tmp/pgen
+  ./cmd/pulumi-gen-awsx` from `provider/`, then `/tmp/pgen schema --out
+  provider/cmd/pulumi-resource-awsx` from the root). Run from `provider/` it
+  exits 1 with no message.
+- The SDK generators stamp the version, so running them without `VERSION` set
+  rewrites `sdk/nodejs/package.json`, `sdk/python/pyproject.toml`, the
+  `pulumi-plugin.json` files, `Pulumi.Awsx.csproj`, `sdk/java/build.gradle`, and
+  `sdk/go/awsx/internal/pulumiUtilities.go`. Revert that churn; keep only the
+  API diff.
+
+`yarn --cwd awsx lint` currently fails on a pre-existing `no-unused-expression`
+in `awsx/ec2/vpc.ts`. Check the failure against `master` before attributing it
+to your change.
+
 ## Generated Boundaries
 Never hand-edit generated outputs as the source of truth:
 - `sdk/**`
 - `provider/cmd/pulumi-resource-awsx/schema.json`
 - `provider/cmd/pulumi-resource-awsx/schema-embed.json`
+- `awsx/schema-types.ts` (regenerate with `yarn --cwd awsx gen-types` after a schema change)
 - ci-mgmt-generated workflow YAML and gh-aw `.lock.yml` files under `.github/workflows/`
 - `.github/aw/actions-lock.json`
 - `Makefile`
@@ -112,6 +130,17 @@ change or documented regeneration reason.
 - Schema generation changes can affect all language SDKs.
 - `make test` creates real AWS resources and can incur cost.
 - CI/workflow edits should be made via `.ci-mgmt.yaml`, not by hand in generated workflow files.
+- AWSX components are **remote** components (`super(..., true /*remote*/)`): their children are
+  constructed inside the provider, not in the user's program. Client-side `transformations` never
+  see those children; only engine-side `transforms` do. Say `transforms` when recommending a
+  user-side escape hatch, and do not assume a user can reach a child resource any other way.
+- A child's Pulumi resource name is its identity. Changing one replaces the resource, and for a
+  subnet that means a delete/recreate that fails while ENIs are attached. Prefer expressing a
+  user-visible naming change through the AWS `Name` tag and keeping the Pulumi resource name stable.
+  `subnetNameTagStrategy` in `awsx/ec2/vpc.ts` does exactly this: a spec's `resourceName` is always
+  the index-based name and is what every child is created under, while `nameTag` is the only thing
+  `subnetNameTagStrategy="AvailabilityZone"` changes - so no aliases are needed. If a change
+  genuinely must rename a resource, it has to be opt-in and carry an `alias` back to the old name.
 
 ## Forbidden Actions
 - No destructive git (`git reset --hard`, force push, checkout discard) without explicit approval.

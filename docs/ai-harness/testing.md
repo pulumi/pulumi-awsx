@@ -32,7 +32,33 @@ Pattern to reuse:
 - unwrap `pulumi.Output` values;
 - assert resource types, names, tags, provider region, or invoke inputs.
 
-`awsx/ec2/vpc.test.ts` has examples under `describe("child resource api")`.
+`awsx/ec2/vpc.test.ts` has examples under `describe("child resource api")` and
+`describe("subnet naming child resources")`.
+
+Three traps in this harness, all of which produce a passing-looking test that is
+actually wrong:
+
+**Await each child's `urn`, not the collections.** A component's child
+collections (`vpc.subnets`, `vpc.natGateways`, ...) are plain arrays, not
+`Output`s, so awaiting them resolves immediately and races the mock's
+`newResource` callback. Resources registered late in the component - NAT
+gateways, routes, route table associations - are then simply missing from the
+recorded list, and an assertion on them silently sees an empty array. A
+resource's `urn` only resolves once it has actually been registered, so await
+that for every child before asserting.
+
+**Assert aliases via `__aliases`, not by comparing URNs.** Aliases are readable
+in tests as `(resource as any).__aliases`, collapsed to URNs. Do not compare an
+alias URN against `resource.urn`: the mock monitor builds a shorter parent type
+chain than the client-side alias computation does, so the prefixes differ even
+when the alias is correct. Assert that the alias contains the expected type
+token and ends with the expected name.
+
+**Component `initialize` is async.** Argument validation that throws inside it
+surfaces as an unhandled promise rejection, which `expect(...).toThrow()` will
+not catch - it crashes the worker instead. Test validators by calling them
+directly (`Vpc.validateVpcArgs`, and the helpers in `awsx/ec2/subnetNaming.ts`),
+the way the existing suite does.
 
 ## Schema Or SDK Shape
 

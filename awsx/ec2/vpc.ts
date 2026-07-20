@@ -27,6 +27,7 @@ import {
   NormalizedSubnetInputs,
   ExplicitSubnetSpecInputs,
 } from "./subnetDistributorNew";
+import { validateAzSuffixes } from "./subnetNaming";
 import { Netmask } from "netmask";
 import { isIPv6 } from "net";
 
@@ -135,6 +136,10 @@ export class Vpc extends schema.Vpc<VpcData> {
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const assignGeneratedIpv6CidrBlock = args.assignGeneratedIpv6CidrBlock ?? false;
 
+    if ((args.subnetNameTagStrategy ?? "Legacy") === "AvailabilityZone") {
+      validateAzSuffixes(availabilityZones);
+    }
+
     const sharedTags = { Name: name, ...args.tags };
 
     const cidrBlock = Vpc.decideCidrBlockVpcInput(args);
@@ -199,8 +204,13 @@ export class Vpc extends schema.Vpc<VpcData> {
             assignIpv6AddressOnCreation,
             subnetIndex,
           );
+          // The Pulumi resource name is always the index-based legacy name, so
+          // subnetNameTagStrategy never changes a child's identity (a subnet rename would force a
+          // delete/recreate that fails while ENIs are attached).
+          // subnetNameTagStrategy="AvailabilityZone" only changes the AWS "Name" tag, from e.g.
+          // "vpc-public-1" to "vpc-public-1a".
           const subnet = new aws.ec2.Subnet(
-            spec.subnetName,
+            spec.resourceName,
             {
               region: args.region,
               vpcId: vpc.id,
@@ -213,7 +223,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               tags: {
                 ...sharedTags,
                 ...spec.tags,
-                Name: spec.subnetName,
+                Name: spec.nameTag,
                 SubnetType: spec.type,
               },
             },
@@ -238,13 +248,13 @@ export class Vpc extends schema.Vpc<VpcData> {
           });
 
           const routeTable = new aws.ec2.RouteTable(
-            spec.subnetName,
+            spec.resourceName,
             {
               region: args.region,
               vpcId: vpc.id,
               tags: {
                 ...sharedTags,
-                Name: spec.subnetName,
+                Name: spec.nameTag,
                 SubnetType: spec.type,
               },
             },
@@ -253,7 +263,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           routeTables.push(routeTable);
 
           const routeTableAssoc = new aws.ec2.RouteTableAssociation(
-            spec.subnetName,
+            spec.resourceName,
             {
               region: args.region,
               routeTableId: routeTable.id,
@@ -303,7 +313,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           if (spec.type.toLowerCase() === "public") {
             // Public subnets communicate directly with the internet via the Internet Gateway.
             const route = new aws.ec2.Route(
-              spec.subnetName,
+              spec.resourceName,
               {
                 region: args.region,
                 routeTableId: routeTable.id,
@@ -325,7 +335,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                   : natGateways[i].id;
 
               const route = new aws.ec2.Route(
-                spec.subnetName,
+                spec.resourceName,
                 {
                   region: args.region,
                   routeTableId: routeTable.id,
@@ -554,12 +564,15 @@ export class Vpc extends schema.Vpc<VpcData> {
     args: {
       readonly subnetSpecs?: schema.SubnetSpecInputs[];
       readonly subnetStrategy?: schema.SubnetAllocationStrategyInputs;
+      readonly subnetNameTagStrategy?: schema.SubnetNameTagStrategyInputs;
       readonly availabilityZoneCidrMask?: number;
     },
   ): {
     subnetSpecs: SubnetSpecPartial[];
     subnetLayout: pulumi.Output<schema.ResolvedSubnetSpecOutputs[]>;
   } {
+    const nameTagStrategy = args.subnetNameTagStrategy ?? "Legacy";
+
     const parsedSpecs: NormalizedSubnetInputs = (() => {
       if (subnetStrategy === "AutoMerge" && args.subnetSpecs !== undefined) {
         assertAutoMergeCompatibleSubnetSpecs(args.subnetSpecs);
@@ -583,10 +596,12 @@ export class Vpc extends schema.Vpc<VpcData> {
             cidrBlock,
             availabilityZones,
             parsedSpecs?.normalizedSpecs,
+            undefined,
+            nameTagStrategy,
           );
           return legacySubnetSpecs;
         case "ExplicitAllocator":
-          return getSubnetSpecsExplicit(name, availabilityZones, a.specs);
+          return getSubnetSpecsExplicit(name, availabilityZones, a.specs, nameTagStrategy);
         case "NewAllocator":
         default:
           return subnetStrategy === "AutoMerge"
@@ -596,6 +611,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 availabilityZones,
                 parsedSpecs?.normalizedSpecs,
                 args.availabilityZoneCidrMask,
+                nameTagStrategy,
               )
             : getSubnetSpecs(
                 name,
@@ -603,6 +619,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 availabilityZones,
                 parsedSpecs?.normalizedSpecs,
                 args.availabilityZoneCidrMask,
+                nameTagStrategy,
               );
       }
     })();
@@ -639,7 +656,9 @@ export class Vpc extends schema.Vpc<VpcData> {
 
   async getDefaultAzs(azCount?: number, region?: string): Promise<string[]> {
     const desiredCount = azCount ?? 3;
-    const result = await aws.getAvailabilityZones(region ? { region } : undefined, { parent: this });
+    const result = await aws.getAvailabilityZones(region ? { region } : undefined, {
+      parent: this,
+    });
     if (!result.names) {
       throw new Error(
         "Could not fetch default Availability Zones. If this is an opt-in region, please enable the region first. Alternatively, you may specify an explicit list of zones in `availabilityZoneNames`.",
@@ -881,6 +900,9 @@ export function extractSubnetSpecInputFromLegacyLayout(
   availabilityZones: string[],
 ): schema.SubnetSpecInputs[] {
   const singleAzLength = subnetSpecs.length / availabilityZones.length;
+  // Note this is always handed spec.resourceName, never spec.nameTag: the index-based name is
+  // the only one this can strip a suffix from, and it keeps the derived layout (and the
+  // "specify subnetStrategy explicitly" warning built from it) identical under either naming.
   function extractName(subnetName: string, type: schema.SubnetTypeInputs) {
     const withoutVpcPrefix = subnetName.replace(`${vpcName}-`, "");
     const subnetSpecName = withoutVpcPrefix.replace(/-\d+$/, "");
@@ -907,7 +929,7 @@ export function extractSubnetSpecInputFromLegacyLayout(
     }
     subnetSpecInputs.push({
       type: subnet.type,
-      ...extractName(subnet.subnetName, subnet.type),
+      ...extractName(subnet.resourceName, subnet.type),
       cidrMask: netmask.bitmask,
       assignIpv6AddressOnCreation: subnet.assignIpv6AddressOnCreation,
       ...(subnet.tags ? { tags: subnet.tags } : {}),
@@ -1025,8 +1047,8 @@ export function shouldCreateNatGateway(
 }
 
 export function compareSubnetSpecs(
-  spec1: Omit<SubnetSpec, "cidrBlock">,
-  spec2: Omit<SubnetSpec, "cidrBlock">,
+  spec1: Pick<SubnetSpec, "type">,
+  spec2: Pick<SubnetSpec, "type">,
 ): number {
   if (spec1.type === spec2.type) {
     return 0;
@@ -1051,7 +1073,7 @@ export function compareSubnetSpecs(
 
 export interface OverlappingSubnet {
   cidrBlock: string;
-  subnetName: string;
+  resourceName: string;
 }
 
 export function getOverlappingSubnets(specs: OverlappingSubnet[]): OverlappingSubnet[] {
@@ -1077,7 +1099,9 @@ export function validateSubnets(
     let msg =
       "The following subnets overlap with at least one other subnet. Make the CIDR for the VPC larger, reduce the size of the subnets per AZ, or use less Availability Zones:\n\n";
     for (let i = 0; i < overlappingSubnets.length; i++) {
-      msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${overlappingSubnets[i].cidrBlock}\n`;
+      msg += `${i + 1}. ${overlappingSubnets[i].resourceName}: ${
+        overlappingSubnets[i].cidrBlock
+      }\n`;
     }
 
     throw new Error(msg);
@@ -1095,7 +1119,7 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
       // Check the first subnet against the VPC CIDR
       if (currentNetmask.base !== vpcNetmask.base) {
         gaps.push(
-          `${spec.subnetName} (${spec.cidrBlock}) does not start at the beginning of the VPC (${vpcCidr})`,
+          `${spec.resourceName} (${spec.cidrBlock}) does not start at the beginning of the VPC (${vpcCidr})`,
         );
       }
       continue;
@@ -1104,14 +1128,14 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
     const expectedNext = prevNetmask.next();
     if (currentNetmask.base !== expectedNext.base) {
       gaps.push(
-        `${prev.subnetName} (${prev.cidrBlock}) <=> ${spec.subnetName} (${spec.cidrBlock})`,
+        `${prev.resourceName} (${prev.cidrBlock}) <=> ${spec.resourceName} (${spec.cidrBlock})`,
       );
     }
   }
   const lastBlockNetmask = new Netmask(current!.cidrBlock);
   if (lastBlockNetmask.last !== vpcNetmask.last) {
     gaps.push(
-      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${
+      `${current!.resourceName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${
         vpcNetmask.last
       }})`,
     );
