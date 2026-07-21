@@ -1649,10 +1649,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@7.34.0":
-  version "7.34.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-7.34.0.tgz#fe31ccfaec9e68688f1b786256e2b85cd67ec600"
-  integrity sha512-lWsOuo1EoMk3QkIdSE0XmA+x1uw/fYWr+a2dipkKqznwSdvD3hhMWLoQvrZ/Lk+4uxcSJo9wPBZAeFShD5Q06Q==
+"@pulumi/aws@7.38.0":
+  version "7.38.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-7.38.0.tgz#2fc1849ddd359e8e4b1765f4c60da9fb4962e3f3"
+  integrity sha512-lb9d3RYuOeiqYPr8FnC1aEnz0suVFBI5U+1NuuEh1UgVtDmHmpoSOwo2FOoP43VWokQAvBsxJf8Fdwr45GrSHw==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
     mime "^2.0.0"
