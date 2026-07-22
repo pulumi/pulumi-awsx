@@ -36,9 +36,9 @@ import (
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 	pkghost "github.com/pulumi/pulumi/pkg/v3/host"
+	"github.com/pulumi/pulumi/pkg/v3/resource/plugin"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag/colors"
-	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/plugin"
 
 	gen "github.com/pulumi/pulumi-awsx/provider/v3/pkg/schemagen"
 	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/version"
