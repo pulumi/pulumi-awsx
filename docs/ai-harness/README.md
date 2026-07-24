@@ -6,6 +6,10 @@ generated-file rules, and basic repo map. Do not duplicate those here.
 Current harness files:
 
 - `docs/ai-harness/testing.md` - how to choose and write new AWSX tests.
+- `.agents/skills/triage-provider-issue/SKILL.md` - APM-managed initial issue
+  assessment when ownership or the next evidence artifact is unclear.
+- `.agents/skills/stage-pulumi-provider-repro/SKILL.md` - APM-managed durable
+  Pulumi repro staging.
 - `REVIEW.md` - AWSX-specific review notes.
 - `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
   for nontrivial AWSX issues where scope, API shape, compatibility, or spec
@@ -31,13 +35,15 @@ Routing:
 - Use `AGENTS.md` first for repo map, commands, generated boundaries, and
   required validation.
 - Use `REVIEW.md` for the short AWSX-specific review checklist.
-- Treat `.agents/skills/` as the source of truth for skill content. Keep
-  `.claude/skills/` as symlinks except when a skill needs Claude-specific
-  invocation controls that Codex skill validation does not allow in
-  `.agents/skills`.
-- Use `$awsx-issue-planning` first for GitHub issue implementation unless the
-  prompt explicitly says the plan/API shape is already approved. For nontrivial
-  issues, the planning brief is the first-session deliverable; stop there unless
+- Treat repo-owned `.agents/skills/awsx-*` entries as the source of truth for
+  AWSX skill content. Core provider skills are declared in `apm.yml` and
+  deployed locally; do not edit the deployed copies.
+- Start with `$triage-provider-issue` when ownership or the next evidence
+  artifact is unclear. Use `$stage-pulumi-provider-repro` when triage selects a
+  durable Pulumi repro.
+- Once AWSX ownership is established, use `$awsx-issue-planning` when a
+  nontrivial issue still has unsettled scope, API shape, compatibility, or spec
+  needs. The planning brief is the first-session deliverable; stop there unless
   the prompt explicitly asks to proceed after planning without a maintainer
   review checkpoint.
 - Use `$awsx-start-issue-planning-session` and

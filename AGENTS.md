@@ -9,9 +9,13 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - `docs/ai-harness/README.md` - current AI harness state and known gaps.
 - `docs/ai-harness/testing.md` - guidance for writing new AWSX tests.
 - `REVIEW.md` - AWSX-specific review notes that are not generic PR-review advice.
+- `.agents/skills/triage-provider-issue/SKILL.md` - APM-managed initial issue
+  assessment when ownership or the next evidence artifact is unclear.
+- `.agents/skills/stage-pulumi-provider-repro/SKILL.md` - APM-managed durable
+  Pulumi repro staging when triage selects that next step.
 - `.agents/skills/awsx-issue-planning/SKILL.md` - pre-implementation planning
-  for nontrivial issues where scope, API shape, compatibility, or spec needs
-  are unsettled.
+  for nontrivial AWSX issues where scope, API shape, compatibility, or spec
+  needs are unsettled.
 - `.agents/skills/awsx-start-issue-planning-session/SKILL.md` - manual-only
   starter for planning an issue in a fresh session and stopping before edits.
 - `.agents/skills/awsx-implement-approved-plan/SKILL.md` - manual-only launcher
@@ -42,15 +46,19 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 Use the focused harness entry points this way:
 - `AGENTS.md` owns repo map, commands, generated boundaries, and path-triggered validation.
 - `REVIEW.md` owns the short AWSX-specific review checklist.
-- `.agents/skills/` is the skill source of truth. Keep `.claude/skills/` as
-  symlinks except when a skill needs Claude-specific invocation controls that
-  Codex skill validation does not allow in `.agents/skills`.
-- For GitHub issue implementation, use `.agents/skills/awsx-issue-planning/SKILL.md`
-  first unless the prompt explicitly says the plan/API shape is already
-  approved. For nontrivial issues, produce the planning brief and stop by
-  default; do not let the same session self-approve implementation unless the
-  prompt explicitly asks to proceed after planning without a maintainer review
-  checkpoint.
+- Repo-owned `.agents/skills/awsx-*` entries are the source of truth for AWSX
+  skills. Core provider skills are declared in `apm.yml` and deployed locally;
+  do not edit their generated copies under `.agents/skills/` or
+  `.claude/skills/`.
+- Start issue work with `triage-provider-issue` when ownership or the next
+  evidence artifact is unclear. Use `stage-pulumi-provider-repro` when triage
+  selects a durable Pulumi repro.
+- Once AWSX ownership is established, use
+  `.agents/skills/awsx-issue-planning/SKILL.md` when a nontrivial issue still
+  has unsettled scope, API shape, compatibility, or spec needs. Produce the
+  planning brief and stop by default; do not let the same session self-approve
+  implementation unless the prompt explicitly asks to proceed after planning
+  without a maintainer review checkpoint.
 - Use `.agents/skills/awsx-start-issue-planning-session/SKILL.md` and
   `.agents/skills/awsx-implement-approved-plan/SKILL.md` only when explicitly
   invoked as session launchers. They are control-flow wrappers around the

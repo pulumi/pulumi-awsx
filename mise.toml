@@ -1,5 +1,21 @@
+[settings]
+experimental = true
+
+[hooks]
+postinstall = "mise deps install agent-skills"
+
 [tools]
+"pipx:apm-cli" = "0.26.0"
 golangci-lint = "2.7.0"
 # Root mise.toml is the supported repo-local override for versions generated
 # into .config/mise.toml by ci-mgmt.
 "github:pulumi/schema-tools" = "0.7.1"
+
+[deps.agent-skills]
+sources = ["apm.yml", "apm.lock.yaml"]
+outputs = [
+  "apm_modules/",
+  ".agents/skills/",
+  ".claude/skills/",
+]
+run = "apm install --frozen"
