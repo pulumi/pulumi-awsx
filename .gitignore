@@ -37,5 +37,25 @@ sdk/java/gradlew.bat
 go.work
 go.work.sum
 
-# Local, per-developer Claude Code settings. The .claude/skills symlinks are tracked; this is not.
+# Local, per-developer Claude Code settings. The repo-owned .claude/skills
+# entries are tracked; APM-managed skills are deployed locally.
 .claude/settings.local.json
+
+# APM-managed agent dependencies
+apm_modules/
+.agents/skills/*
+!.agents/skills/awsx-aws-service-validation/
+!.agents/skills/awsx-breaking-change-evaluation/
+!.agents/skills/awsx-component-design/
+!.agents/skills/awsx-implement-approved-plan/
+!.agents/skills/awsx-issue-planning/
+!.agents/skills/awsx-start-issue-planning-session/
+!.agents/skills/awsx-test-authoring/
+.claude/skills/*
+!.claude/skills/awsx-aws-service-validation
+!.claude/skills/awsx-breaking-change-evaluation
+!.claude/skills/awsx-component-design
+!.claude/skills/awsx-implement-approved-plan/
+!.claude/skills/awsx-issue-planning
+!.claude/skills/awsx-start-issue-planning-session/
+!.claude/skills/awsx-test-authoring
