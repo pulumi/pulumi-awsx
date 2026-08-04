@@ -7,7 +7,7 @@ require (
 	github.com/pulumi/providertest v0.5.1
 	github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.107.2
 	github.com/pulumi/pulumi-terraform-bridge/v3 v3.116.0
-	github.com/pulumi/pulumi/pkg/v3 v3.253.0
+	github.com/pulumi/pulumi/pkg/v3 v3.256.0
 	github.com/pulumi/pulumi/sdk/v3 v3.253.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
