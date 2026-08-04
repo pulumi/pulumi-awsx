@@ -108,7 +108,7 @@ jobs:
         with:
           environment: logins/pulumi-ci
       - name: Verify nodejs release
-        uses: pulumi/verify-provider-release@679d5e6838ac4f68696bfa1bf9e2c5da94509dd6 # v1.3.1
+        uses: pulumi/verify-provider-release@52165c3d89dbd49691b82c056f377f37e6c21012 # v1.3.2
         with:
           runtime: nodejs
           directory: examples/vpc/nodejs/default-args
@@ -119,7 +119,7 @@ jobs:
           ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify python release
-        uses: pulumi/verify-provider-release@679d5e6838ac4f68696bfa1bf9e2c5da94509dd6 # v1.3.1
+        uses: pulumi/verify-provider-release@52165c3d89dbd49691b82c056f377f37e6c21012 # v1.3.2
         with:
           runtime: python
           directory: examples/cloudtrail/python
@@ -131,7 +131,7 @@ jobs:
           ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify dotnet release
-        uses: pulumi/verify-provider-release@679d5e6838ac4f68696bfa1bf9e2c5da94509dd6 # v1.3.1
+        uses: pulumi/verify-provider-release@52165c3d89dbd49691b82c056f377f37e6c21012 # v1.3.2
         with:
           runtime: dotnet
           directory: examples/cloudtrail/dotnet
@@ -142,7 +142,7 @@ jobs:
           ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify go release
-        uses: pulumi/verify-provider-release@679d5e6838ac4f68696bfa1bf9e2c5da94509dd6 # v1.3.1
+        uses: pulumi/verify-provider-release@52165c3d89dbd49691b82c056f377f37e6c21012 # v1.3.2
         if: inputs.skipGoSdk == false
         with:
           runtime: go
