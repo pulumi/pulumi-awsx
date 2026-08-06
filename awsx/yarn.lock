@@ -1664,13 +1664,13 @@
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
-"@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.6.0.tgz#127a0c69a06b47a9418dce12cc70a181ff680284"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
+"@pulumi/docker@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-5.1.0.tgz#1b01c7d5402668aa054990303f0ef595e4f3f714"
+  integrity sha512-ooaxCDZxsu2ApVIQK/RO9Zx56DRK1JWCqwZrQwfMSz5WO37uKxgMefHDNdHezyPPCw9NOs9aihiZEKoywjLQFw==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
-    semver "^5.4.0"
+    semver "^7.0.0"
 
 "@pulumi/pulumi@3.200.0", "@pulumi/pulumi@^3.142.0":
   version "3.200.0"
@@ -2669,13 +2669,13 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-"docker-classic@npm:@pulumi/docker@4.6.0":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.6.0.tgz#127a0c69a06b47a9418dce12cc70a181ff680284"
-  integrity sha512-9XBQtKGYQykJgXS3nWXk/mp7vSZ4kpwGJcp8yPMwvlUDiIDS4lLPp7ieOJl/qVETXkW8EtQ8qxlJ/n8kTBgiBA==
+"docker-classic@npm:@pulumi/docker@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-5.1.0.tgz#1b01c7d5402668aa054990303f0ef595e4f3f714"
+  integrity sha512-ooaxCDZxsu2ApVIQK/RO9Zx56DRK1JWCqwZrQwfMSz5WO37uKxgMefHDNdHezyPPCw9NOs9aihiZEKoywjLQFw==
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
-    semver "^5.4.0"
+    semver "^7.0.0"
 
 eastasianwidth@^0.2.0:
   version "0.2.0"
@@ -5065,7 +5065,7 @@ sax@>=0.6.0:
   resolved "https://registry.npmjs.org/sax/-/sax-1.2.4.tgz"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
-semver@^5.3.0, semver@^5.4.0:
+semver@^5.3.0:
   version "5.7.2"
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.2.tgz"
   integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
@@ -5075,10 +5075,10 @@ semver@^6.3.0, semver@^6.3.1:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
-semver@^7.1.1, semver@^7.3.5, semver@^7.3.7, semver@^7.5.0, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4:
-  version "7.6.3"
-  resolved "https://registry.npmjs.org/semver/-/semver-7.6.3.tgz"
-  integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==
+semver@^7.0.0, semver@^7.1.1, semver@^7.3.5, semver@^7.3.7, semver@^7.5.0, semver@^7.5.2, semver@^7.5.3, semver@^7.5.4:
+  version "7.8.5"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.8.5.tgz#39b646037dd50c14fb451e7e4cac58ed8b863f69"
+  integrity sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==
 
 shebang-command@^2.0.0:
   version "2.0.0"
