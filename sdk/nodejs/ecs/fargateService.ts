@@ -242,7 +242,7 @@ export interface FargateServiceArgs {
      */
     volumeConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceVolumeConfiguration | undefined>;
     /**
-     * The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+     * VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
      */
     vpcLatticeConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceVpcLatticeConfiguration>[] | undefined>;
 }
