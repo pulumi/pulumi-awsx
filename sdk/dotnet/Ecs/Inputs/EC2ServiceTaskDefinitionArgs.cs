@@ -54,7 +54,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<bool>? EnableFaultInjection { get; set; }
 
         /// <summary>
-        /// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+        /// Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         /// </summary>
         [Input("ephemeralStorage")]
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionEphemeralStorageArgs>? EphemeralStorage { get; set; }
