@@ -7,8 +7,8 @@
     },
     "dependencies": {
         "@pulumi/aws": "7.40.0",
-        "@pulumi/docker": "^5.0.0",
-        "@pulumi/pulumi": "^3.0.0"
+        "@pulumi/docker": "5.1.0",
+        "@pulumi/pulumi": "3.256.0"
     },
     "devDependencies": {
         "@types/node": "^18.0.0"
