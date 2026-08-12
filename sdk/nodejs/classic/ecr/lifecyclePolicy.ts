@@ -65,7 +65,7 @@ function convertRules(rules: pulumi.Unwrap<LifecyclePolicyRule>[]): LifecyclePol
         throw new Error(`At most one [selection: "any"] rule can be provided.`);
     }
 
-    // Place the 'any' rule last so it has higest priority.
+    // Place the 'any' rule last so it has highest priority.
     const orderedRules = [...nonAnyRules, ...anyRules];
 
     let rulePriority = 1;

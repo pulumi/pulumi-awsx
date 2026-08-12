@@ -73,8 +73,8 @@ func PkgVersion() (semver.Version, error) {
 	if !SdkVersion.Equals(semver.Version{}) {
 		return SdkVersion, nil
 	}
-	type sentinal struct{}
-	pkgPath := reflect.TypeOf(sentinal{}).PkgPath()
+	type sentinel struct{}
+	pkgPath := reflect.TypeOf(sentinel{}).PkgPath()
 	re := regexp.MustCompile("^.*/pulumi-awsx/sdk(/v\\d+)?")
 	if match := re.FindStringSubmatch(pkgPath); match != nil {
 		vStr := match[1]
@@ -140,7 +140,7 @@ func callPlainInner(
 		return nil, err
 	}
 
-	// Ingoring deps silently. They are typically non-empty, r.f() calls include r as a dependency.
+	// Ignoring deps silently. They are typically non-empty, r.f() calls include r as a dependency.
 	known := outputData.Known
 	value := outputData.Value
 	secret := outputData.Secret

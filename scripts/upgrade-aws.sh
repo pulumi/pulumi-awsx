@@ -26,5 +26,5 @@ echo "V=$VER"
 # We need to run this before rebuilding the SDKs or they may be missing types
 make provider
 
-# Rebulid the SDKs, which will also rebuild the schema and all other files.
+# Rebuild the SDKs, which will also rebuild the schema and all other files.
 make build_sdks

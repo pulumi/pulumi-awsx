@@ -83,7 +83,7 @@ export async function callAsync<T>(
         !isKnown ? "an unknown value"
         : isSecret ? "a secret value"
         : undefined;
-    // Ingoring o.resources silently. They are typically non-empty, r.f() calls include r as a dependency.
+    // Ignoring o.resources silently. They are typically non-empty, r.f() calls include r as a dependency.
     if (problem) {
         throw new Error(`Plain resource method "${tok}" incorrectly returned ${problem}. ` +
             "This is an error in the provider, please report this to the provider developer.");

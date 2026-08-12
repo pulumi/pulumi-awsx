@@ -84,7 +84,7 @@ This was likely caused by running a 'checkout' command but not running
 To turn the commits in the 'pulumi/patch-checkout' branch back into patches, run:
   ${original_exec} check_in
 
-To disgard changes in the 'pulumi/patch-checkout' branch, use the 'force' flag (-f):
+To discard changes in the 'pulumi/patch-checkout' branch, use the 'force' flag (-f):
   ${original_exec} ${original_cmd} -f
 
 EOF

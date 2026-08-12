@@ -51,7 +51,7 @@ export function computeImageFromAsset(
 
   // If we haven't, build and push the local build context to the ECR repository.  Then return
   // the unique image name we pushed to.  The name will change if the image changes ensuring
-  // the TaskDefinition get's replaced IFF the built image changes.
+  // the TaskDefinition gets replaced IFF the built image changes.
 
   const registryCredentials = getDockerCredentials(
     { repositoryUrl: repositoryUrl, registryId: inputRegistryId },

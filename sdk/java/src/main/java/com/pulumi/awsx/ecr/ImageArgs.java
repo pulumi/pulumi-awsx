@@ -20,14 +20,14 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     public static final ImageArgs Empty = new ImageArgs();
 
     /**
-     * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+     * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
      * 
      */
     @Import(name="args")
     private @Nullable Output<Map<String,String>> args;
 
     /**
-     * @return An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+     * @return An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
      * 
      */
     public Optional<Output<Map<String,String>>> args() {
@@ -219,7 +219,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param args An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+         * @param args An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
          * 
          * @return builder
          * 
@@ -230,7 +230,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param args An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+         * @param args An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
          * 
          * @return builder
          * 
