@@ -99,14 +99,14 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
     }
 
     /**
-     * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+     * Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      * 
      */
     @Import(name="ephemeralStorage")
     private @Nullable Output<TaskDefinitionEphemeralStorageArgs> ephemeralStorage;
 
     /**
-     * @return The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+     * @return Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
      * 
      */
     public Optional<Output<TaskDefinitionEphemeralStorageArgs>> ephemeralStorage() {
@@ -466,7 +466,7 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
         }
 
         /**
-         * @param ephemeralStorage The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+         * @param ephemeralStorage Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          * 
          * @return builder
          * 
@@ -477,7 +477,7 @@ public final class FargateTaskDefinitionArgs extends com.pulumi.resources.Resour
         }
 
         /**
-         * @param ephemeralStorage The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+         * @param ephemeralStorage Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
          * 
          * @return builder
          * 

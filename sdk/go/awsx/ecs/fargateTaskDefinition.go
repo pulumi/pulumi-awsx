@@ -64,7 +64,7 @@ type fargateTaskDefinitionArgs struct {
 	Cpu *string `pulumi:"cpu"`
 	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
 	EnableFaultInjection *bool `pulumi:"enableFaultInjection"`
-	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+	// Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
 	// Will be created automatically if not defined.
@@ -121,7 +121,7 @@ type FargateTaskDefinitionArgs struct {
 	Cpu pulumi.StringPtrInput
 	// Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
 	EnableFaultInjection pulumi.BoolPtrInput
-	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+	// Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
 	// Will be created automatically if not defined.

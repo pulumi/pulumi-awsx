@@ -100,7 +100,7 @@ class FargateServiceArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
         :param _builtins.bool use_cluster_default_capacity_provider_strategy: If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
         :param pulumi.Input['pulumi_aws.ecs.ServiceVolumeConfigurationArgs'] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]] vpc_lattice_configurations: The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]] vpc_lattice_configurations: VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         """
         if alarms is not None:
             pulumi.set(__self__, "alarms", alarms)
@@ -602,7 +602,7 @@ class FargateServiceArgs:
     @pulumi.getter(name="vpcLatticeConfigurations")
     def vpc_lattice_configurations(self) -> pulumi.Input[Optional[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]]:
         """
-        The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         """
         return pulumi.get(self, "vpc_lattice_configurations")
 
@@ -698,7 +698,7 @@ class FargateService(pulumi.ComponentResource):
         :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `"plantimestamp()"`. When using the triggers property you also need to set the forceNewDeployment property to True.
         :param _builtins.bool use_cluster_default_capacity_provider_strategy: If `true`, this service will use the cluster's default capacity provider strategy. When enabled, this provider omits both `launchType` and `capacityProviderStrategies` from the ECS service. Only one of [useClusterDefaultCapacityProviderStrategy] or [capacityProviderStrategies] can be provided. The cluster must have a default capacity provider strategy configured, or ECS service creation or update will fail.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVolumeConfigurationArgs']] volume_configuration: Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
-        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] vpc_lattice_configurations: The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceVpcLatticeConfigurationArgs']]]] vpc_lattice_configurations: VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         """
         ...
     @overload

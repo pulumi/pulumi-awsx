@@ -113,7 +113,7 @@ type ec2serviceArgs struct {
 	UseClusterDefaultCapacityProviderStrategy *bool `pulumi:"useClusterDefaultCapacityProviderStrategy"`
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration *ecs.ServiceVolumeConfiguration `pulumi:"volumeConfiguration"`
-	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	// VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
 	VpcLatticeConfigurations []ecs.ServiceVpcLatticeConfiguration `pulumi:"vpcLatticeConfigurations"`
 }
 
@@ -192,7 +192,7 @@ type EC2ServiceArgs struct {
 	UseClusterDefaultCapacityProviderStrategy *bool
 	// Configuration for a volume specified in the task definition as a volume that is configured at launch time. Currently, the only supported volume type is an Amazon EBS volume. See below.
 	VolumeConfiguration ecs.ServiceVolumeConfigurationPtrInput
-	// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+	// VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
 	VpcLatticeConfigurations ecs.ServiceVpcLatticeConfigurationArrayInput
 }
 

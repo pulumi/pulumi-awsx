@@ -288,7 +288,7 @@ var _ = internal.GetEnvOrDefault
 //						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
+//							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
 //					},
@@ -460,10 +460,10 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -502,10 +502,10 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -884,7 +884,7 @@ type ListenerInput interface {
 //						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
+//							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
 //					},
@@ -1056,10 +1056,10 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -1098,10 +1098,10 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -1547,7 +1547,7 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
+//							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
 //					},
@@ -1719,10 +1719,10 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -1761,10 +1761,10 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID(),
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
+//						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
@@ -2333,7 +2333,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //				Name:     pulumi.String("tf-example-lb-tg"),
 //				Port:     pulumi.Int(80),
 //				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
+//				VpcId:    main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -2370,7 +2370,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("HTTP"),
 //				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
+//				VpcId:      main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -2632,7 +2632,7 @@ type TargetGroupInput interface {
 //				Name:     pulumi.String("tf-example-lb-tg"),
 //				Port:     pulumi.Int(80),
 //				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
+//				VpcId:    main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -2669,7 +2669,7 @@ type TargetGroupInput interface {
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("HTTP"),
 //				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
+//				VpcId:      main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -2973,7 +2973,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //				Name:     pulumi.String("tf-example-lb-tg"),
 //				Port:     pulumi.Int(80),
 //				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
+//				VpcId:    main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -3010,7 +3010,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("HTTP"),
 //				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
+//				VpcId:      main.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err

@@ -94,7 +94,7 @@ class EC2ServiceTaskDefinitionArgsDict(TypedDict):
     """
     ephemeral_storage: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]]
     """
-    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
     """
     execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
     """
@@ -207,7 +207,7 @@ class EC2ServiceTaskDefinitionArgs:
                Either [container] or [containers] must be provided.
         :param pulumi.Input[_builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
-        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
         :param pulumi.Input[_builtins.str] family: An optional unique name for your task definition. If not specified, then a default will be created.
@@ -333,7 +333,7 @@ class EC2ServiceTaskDefinitionArgs:
     @pulumi.getter(name="ephemeralStorage")
     def ephemeral_storage(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
         """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+        Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         """
         return pulumi.get(self, "ephemeral_storage")
 
@@ -571,7 +571,7 @@ class FargateServiceTaskDefinitionArgsDict(TypedDict):
     """
     ephemeral_storage: NotRequired[pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgsDict']]]
     """
-    The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+    Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
     """
     execution_role: NotRequired['_awsx.DefaultRoleWithPolicyArgsDict']
     """
@@ -679,7 +679,7 @@ class FargateServiceTaskDefinitionArgs:
                Either [container] or [containers] must be provided.
         :param pulumi.Input[_builtins.str] cpu: The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
         :param pulumi.Input[_builtins.bool] enable_fault_injection: Enables fault injection and allows for fault injection requests to be accepted from the task's containers. Default is `false`.
-        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+        :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs'] ephemeral_storage: Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         :param '_awsx.DefaultRoleWithPolicyArgs' execution_role: The execution role that the Amazon ECS container agent and the Docker daemon can assume.
                Will be created automatically if not defined.
         :param pulumi.Input[_builtins.str] family: An optional unique name for your task definition. If not specified, then a default will be created.
@@ -802,7 +802,7 @@ class FargateServiceTaskDefinitionArgs:
     @pulumi.getter(name="ephemeralStorage")
     def ephemeral_storage(self) -> pulumi.Input[Optional['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']]:
         """
-        The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+        Amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
         """
         return pulumi.get(self, "ephemeral_storage")
 
