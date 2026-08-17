@@ -35,7 +35,7 @@ class ImageArgs:
         The set of arguments for constructing a Image resource.
 
         :param pulumi.Input[_builtins.str] repository_url: Url of the repository
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
         :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] cache_from: Images to consider as cache sources
         :param pulumi.Input[_builtins.str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
@@ -84,7 +84,7 @@ class ImageArgs:
     @pulumi.getter
     def args(self) -> pulumi.Input[Optional[Mapping[str, pulumi.Input[_builtins.str]]]]:
         """
-        An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+        An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
         """
         return pulumi.get(self, "args")
 
@@ -224,7 +224,7 @@ class Image(pulumi.ComponentResource):
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+        :param pulumi.Input[Mapping[str, pulumi.Input[_builtins.str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
         :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[_builtins.str]]] cache_from: Images to consider as cache sources
         :param pulumi.Input[_builtins.str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.

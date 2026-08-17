@@ -262,7 +262,7 @@ def call_plain(
 
     output = pulumi.runtime.call(tok, props, res, typ)
 
-    # Ingoring deps silently. They are typically non-empty, r.f() calls include r as a dependency.
+    # Ignoring deps silently. They are typically non-empty, r.f() calls include r as a dependency.
     result, known, secret, _ = _sync_await(asyncio.create_task(_await_output(output)))
 
     problem = None

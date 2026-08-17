@@ -282,7 +282,7 @@ func dockerBuildProperties() map[string]schema.PropertySpec {
 		"args": {
 			Description: "An optional map of named build-time argument variables to " +
 				"set during the Docker build.  This flag allows you to pass " +
-				"built-time variables that can be accessed like environment " +
+				"build-time variables that can be accessed like environment " +
 				"variables inside the `RUN` instruction.",
 			TypeSpec: schema.TypeSpec{
 				Type: "object",

@@ -118,7 +118,7 @@ const config = new Config("containers");
 const redisPassword = config.require("redisPassword");
 
 /**
- * A simple Cache abstration, built on top of a Redis container Service.
+ * A simple Cache abstraction, built on top of a Redis container Service.
  */
 class FargateCache {
     get: (key: string) => Promise<string>;

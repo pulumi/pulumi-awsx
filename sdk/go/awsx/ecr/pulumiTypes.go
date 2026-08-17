@@ -15,7 +15,7 @@ var _ = internal.GetEnvOrDefault
 
 // Arguments for building a docker image
 type DockerBuild struct {
-	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args map[string]string `pulumi:"args"`
 	// The version of the Docker builder.
 	BuilderVersion *BuilderVersion `pulumi:"builderVersion"`

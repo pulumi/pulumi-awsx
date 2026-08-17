@@ -40,7 +40,7 @@ func NewImage(ctx *pulumi.Context,
 }
 
 type imageArgs struct {
-	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args map[string]string `pulumi:"args"`
 	// The version of the Docker builder.
 	BuilderVersion *BuilderVersion `pulumi:"builderVersion"`
@@ -66,7 +66,7 @@ type imageArgs struct {
 
 // The set of arguments for constructing a Image resource.
 type ImageArgs struct {
-	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass build-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args pulumi.StringMapInput
 	// The version of the Docker builder.
 	BuilderVersion *BuilderVersion

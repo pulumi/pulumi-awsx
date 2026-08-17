@@ -382,7 +382,7 @@ class ExplicitLocationTopology extends VpcTopology {
                     // at least route things.
                     let publicSubnetForAz: SubnetDescription | undefined;
                     if (azToPublicSubnets.has(az)) {
-                        // ok, we've got a public subnet for this az.  Just place hte natgateway in
+                        // ok, we've got a public subnet for this az.  Just place the natgateway in
                         // the first public subnet in that az.
 
                         publicSubnetForAz = azToPublicSubnets.get(az)![0];

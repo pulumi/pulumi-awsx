@@ -342,7 +342,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
     private static getProvider(opts: pulumi.InvokeOptions = {}) {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
-        // logically by hte stack.
+        // logically by the stack.
         const provider = opts.provider ? opts.provider :
                          opts.parent   ? opts.parent.getProvider("aws::") : undefined;
         return provider;
@@ -386,7 +386,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
     public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
-        // logically by hte stack.
+        // logically by the stack.
         const provider = Vpc.getProvider(opts);
 
         let vpc = providerToDefaultVpc.get(provider);
