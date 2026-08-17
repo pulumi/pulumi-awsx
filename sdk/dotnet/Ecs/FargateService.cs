@@ -303,7 +303,7 @@ namespace Pulumi.Awsx.Ecs
         private InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs>? _vpcLatticeConfigurations;
 
         /// <summary>
-        /// The VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
+        /// VPC Lattice configuration for your service that allows Lattice to connect, secure, and monitor your service across multiple accounts and VPCs. See below.
         /// </summary>
         public InputList<Pulumi.Aws.Ecs.Inputs.ServiceVpcLatticeConfigurationArgs> VpcLatticeConfigurations
         {
