@@ -98,7 +98,7 @@ publishing {
                 inceptionYear = "2022"
                 name = "pulumi-awsx"
                 packaging = "jar"
-                description = "Pulumi Amazon Web Services (AWS) AWSX Components."
+                description = $/Pulumi Amazon Web Services (AWS) AWSX Components./$
 
                 url = "https://github.com/pulumi/pulumi-awsx"
 
