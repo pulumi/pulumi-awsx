@@ -31,7 +31,7 @@
     "@pulumi/pulumi": "3.200.0",
     "@types/aws-lambda": "^8.10.23",
     "docker-classic": "npm:@pulumi/docker@4.6.0",
-    "ip-address": "^8.1.0",
+    "ip-address": "^10.0.0",
     "mime": "^3.0.0",
     "netmask": "^2.0.2"
   },
