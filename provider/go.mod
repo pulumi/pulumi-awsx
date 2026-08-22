@@ -4,8 +4,8 @@ go 1.25.11
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/pulumi/providertest v0.5.1
-	github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.112.0
+	github.com/pulumi/providertest v0.7.0
+	github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.112.1
 	github.com/pulumi/pulumi-terraform-bridge/v3 v3.116.0
 	github.com/pulumi/pulumi/pkg/v3 v3.259.0
 	github.com/pulumi/pulumi/sdk/v3 v3.259.0
