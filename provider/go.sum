@@ -359,10 +359,10 @@ github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 h1:vkHw5I/plNdTr435
 github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231/go.mod h1:murToZ2N9hNJzewjHBgfFdXhZKjY3z5cYC1VXk+lbFE=
 github.com/pulumi/inflector v0.2.1 h1:bqyiish3tq//vLeLiEstSFE5K7RNjy/ce47ed4QATu8=
 github.com/pulumi/inflector v0.2.1/go.mod h1:HUFCjcPTz96YtTuUlwG3i3EZG4WlniBvR9bd+iJxCUY=
-github.com/pulumi/providertest v0.5.1 h1:0dHomNoWc4ZOAsE1zyoMH3aUjjBN4ducl/TFDpvxOzw=
-github.com/pulumi/providertest v0.5.1/go.mod h1:OBpIGSQrw1FW9VNaHBtKCRxEoTISvx8JsxECmRqRgRQ=
-github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.112.0 h1:1g5LGKQsaiTy6eFN2DlYf7aChS7pK2eko8BoOfnlr2I=
-github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.112.0/go.mod h1:p6/KsL0K9pFUJL8sPWOtyR/ujLNSmKPVzoL1IV5wgUs=
+github.com/pulumi/providertest v0.7.0 h1:nXydemrnkJfil6sd8AtvO81gJOTzYc1wFfgtco4zWDc=
+github.com/pulumi/providertest v0.7.0/go.mod h1:R7nigJF1sE3yUtNQSozNSfsUl/gK4xIDW0Mxmacl6IY=
+github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.113.0 h1:Qy/YYw4RqrD4/V2i+MVIHvhia8mX/He0Llm5asyUyGc=
+github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.113.0/go.mod h1:TgM6TXBsmKCVr9chv/6lMRRifdMtoA1fcEbX7oHK7VA=
 github.com/pulumi/pulumi-terraform-bridge/v3 v3.116.0 h1:2PWpxcEZHmlUxKk4BHlLMVkw3MHpsY1OQ3X4wIGqExA=
 github.com/pulumi/pulumi-terraform-bridge/v3 v3.116.0/go.mod h1:JFSUy/LtBs5glDWDM4oVoyEleJY+wXJKIrushUd80dw=
 github.com/pulumi/pulumi/pkg/v3 v3.259.0 h1:Zf4wiLmgdhTAyq5dtTVnNY26BjtGrJ85ZQYut2qG6xM=
