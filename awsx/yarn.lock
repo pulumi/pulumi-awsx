@@ -1915,11 +1915,6 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
-"@types/jsbn@^1.2.32":
-  version "1.2.32"
-  resolved "https://registry.npmjs.org/@types/jsbn/-/jsbn-1.2.32.tgz"
-  integrity sha512-zRragkEedY3qLrwZtFqTtvRutVpQdYXicWVj8MjVuL7ahNJWmbvGV6MiRRtNmU7uZQf0ylbSsqANxD16b2GqFg==
-
 "@types/json-schema@^7.0.15":
   version "7.0.15"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.15.tgz"

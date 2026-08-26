@@ -18,7 +18,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetNameTagStrategyInputs, SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import * as ipAddress from "ip-address";
-import { BigInteger } from "jsbn";
 import { subnetNames } from "./subnetNaming";
 import { SubnetSpec } from "./subnetSpecs";
 
@@ -73,8 +72,8 @@ export function getSubnetSpecsLegacy(
     const isolatedSubnetsOut: SubnetSpec[] = [];
 
     // Start at one address before the base address for the AZ:
-    let currentAddress = ipAddress.Address4.fromBigInteger(
-      new ipAddress.Address4(azBases[i]).startAddress().bigInteger().subtract(BigInteger.ONE),
+    let currentAddress = ipAddress.Address4.fromBigInt(
+      new ipAddress.Address4(azBases[i]).startAddress().bigInt() - BigInt(1),
     );
 
     for (let j = 0; j < privateSubnetsIn.length; j++) {
@@ -216,8 +215,6 @@ function generateDefaultSubnets(
 }
 
 function cidrSubnetV4(ipRange: string, newBits: number, netNum: number): string {
-  const BigInteger = require("jsbn").BigInteger;
-
   const ipv4 = new ipAddress.Address4(ipRange);
 
   const newSubnetMask = ipv4.subnetMask + newBits;
@@ -227,12 +224,12 @@ function cidrSubnetV4(ipRange: string, newBits: number, netNum: number): string 
     );
   }
 
-  const addressBI = ipv4.bigInteger();
-  const newAddressBase = Math.pow(2, 32 - newSubnetMask);
-  const netNumBI = new BigInteger(netNum.toString());
+  const addressBI = ipv4.bigInt();
+  const newAddressBase = BigInt(Math.pow(2, 32 - newSubnetMask));
+  const netNumBI = BigInt(netNum);
 
-  const newAddressBI = addressBI.add(new BigInteger(newAddressBase.toString()).multiply(netNumBI));
-  const newAddress = ipAddress.Address4.fromBigInteger(newAddressBI).address;
+  const newAddressBI = addressBI + newAddressBase * netNumBI;
+  const newAddress = ipAddress.Address4.fromBigInt(newAddressBI).address;
 
   return `${newAddress}/${newSubnetMask}`;
 }
@@ -241,8 +238,8 @@ export function validateRanges(specs: SubnetSpec[]) {
   const ranges = specs
     .map((spec) => new ipAddress.Address4(spec.cidrBlock))
     .map((addr) => {
-      const start = addr.startAddress().bigInteger();
-      const end = addr.endAddress().bigInteger();
+      const start = addr.startAddress().bigInt();
+      const end = addr.endAddress().bigInt();
       return { addr, start, end };
     });
   let previous = ranges[0];
@@ -261,12 +258,12 @@ export function validateRanges(specs: SubnetSpec[]) {
 }
 
 function isOverlapping(a: ipAddress.Address4, b: ipAddress.Address4): boolean {
-  const aStart = a.startAddress().bigInteger();
-  const aEnd = a.endAddress().bigInteger();
-  const bStart = b.startAddress().bigInteger();
-  const bEnd = b.endAddress().bigInteger();
+  const aStart = a.startAddress().bigInt();
+  const aEnd = a.endAddress().bigInt();
+  const bStart = b.startAddress().bigInt();
+  const bEnd = b.endAddress().bigInt();
 
-  return aStart.compareTo(bEnd) <= 0 && bStart.compareTo(aEnd) <= 0;
+  return aStart <= bEnd && bStart <= aEnd;
 }
 
 export function nextBlock(
@@ -280,9 +277,9 @@ export function nextBlock(
   // 3. Now find the last address in the new sized block.
   const lastAddressInNewSizeBlock = lastAddressInNewMask.endAddress();
   // 4. Add 1 to get the first address in the next block.
-  const nextAddressNumber = lastAddressInNewSizeBlock.bigInteger().add(BigInteger.ONE);
+  const nextAddressNumber = lastAddressInNewSizeBlock.bigInt() + BigInt(1);
   // 5. Create the next block and add the new mask.
-  const nextAddress = ipAddress.Address4.fromBigInteger(nextAddressNumber);
+  const nextAddress = ipAddress.Address4.fromBigInt(nextAddressNumber);
   return new ipAddress.Address4(nextAddress.address + "/" + nextCidrMask);
 }
 
