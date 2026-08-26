@@ -9,7 +9,7 @@ postinstall = "mise deps install agent-skills"
 golangci-lint = "2.7.0"
 # Root mise.toml is the supported repo-local override for versions generated
 # into .config/mise.toml by ci-mgmt.
-"github:pulumi/schema-tools" = "0.7.1"
+"github:pulumi/schema-tools" = "0.8.1"
 
 [deps.agent-skills]
 sources = ["apm.yml", "apm.lock.yaml"]
