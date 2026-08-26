@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "jsPlugins": [
+    {
+      "name": "jsdoc-js",
+      "specifier": "eslint-plugin-jsdoc"
+    }
+  ],
+  "rules": {
+    "no-underscore-dangle": ["warn", { "allow": ["_logGroup"] }],
+    "jsdoc-js/require-jsdoc": [
+      "error",
+      {
+        "checkConstructors": false,
+        "enableFixer": false,
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": true
+        }
+      }
+    ],
+    "jsdoc-js/require-description": "error",
+    "jsdoc-js/require-param": "error",
+    "jsdoc-js/require-returns": "error",
+    "typescript/explicit-function-return-type": "error"
+  }
+}
