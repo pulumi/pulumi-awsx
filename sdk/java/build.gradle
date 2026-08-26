@@ -12,7 +12,7 @@ group = "com.pulumi"
 
 def resolvedVersion = System.getenv("PACKAGE_VERSION") ?:
     (project.version == "unspecified"
-         ? "3.0.0-alpha.0+dev"
+         ? "3.9.0-alpha.1787742623+5bb3dff"
          : project.version)
 
 def signingKey = System.getenv("SIGNING_KEY")
@@ -46,8 +46,8 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.pulumi:aws:7.42.0")
-    implementation("com.pulumi:docker:4.6.0")
-    implementation("com.pulumi:docker-build:0.0.14")
+    implementation("com.pulumi:docker:4.11.2")
+    implementation("com.pulumi:docker-build:0.0.22")
     implementation("com.pulumi:pulumi:1.0.0")
 }
 

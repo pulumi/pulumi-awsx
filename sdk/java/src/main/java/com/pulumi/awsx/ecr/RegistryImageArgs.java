@@ -5,6 +5,8 @@ package com.pulumi.awsx.ecr;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import com.pulumi.docker.inputs.RegistryImageAuthConfigArgs;
+import com.pulumi.docker.inputs.RegistryImageBuildArgs;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Boolean;
 import java.lang.String;
@@ -17,6 +19,36 @@ import javax.annotation.Nullable;
 public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final RegistryImageArgs Empty = new RegistryImageArgs();
+
+    /**
+     * Authentication configuration for the Docker registry. It is only used for this resource.
+     * 
+     */
+    @Import(name="authConfig")
+    private @Nullable Output<RegistryImageAuthConfigArgs> authConfig;
+
+    /**
+     * @return Authentication configuration for the Docker registry. It is only used for this resource.
+     * 
+     */
+    public Optional<Output<RegistryImageAuthConfigArgs>> authConfig() {
+        return Optional.ofNullable(this.authConfig);
+    }
+
+    /**
+     * Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+     * 
+     */
+    @Import(name="build")
+    private @Nullable Output<RegistryImageBuildArgs> build;
+
+    /**
+     * @return Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+     * 
+     */
+    public Optional<Output<RegistryImageBuildArgs>> build() {
+        return Optional.ofNullable(this.build);
+    }
 
     /**
      * If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
@@ -111,6 +143,8 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
     private RegistryImageArgs() {}
 
     private RegistryImageArgs(RegistryImageArgs $) {
+        this.authConfig = $.authConfig;
+        this.build = $.build;
         this.insecureSkipVerify = $.insecureSkipVerify;
         this.keepRemotely = $.keepRemotely;
         this.repositoryUrl = $.repositoryUrl;
@@ -135,6 +169,48 @@ public final class RegistryImageArgs extends com.pulumi.resources.ResourceArgs {
 
         public Builder(RegistryImageArgs defaults) {
             $ = new RegistryImageArgs(Objects.requireNonNull(defaults));
+        }
+
+        /**
+         * @param authConfig Authentication configuration for the Docker registry. It is only used for this resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authConfig(@Nullable Output<RegistryImageAuthConfigArgs> authConfig) {
+            $.authConfig = authConfig;
+            return this;
+        }
+
+        /**
+         * @param authConfig Authentication configuration for the Docker registry. It is only used for this resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authConfig(RegistryImageAuthConfigArgs authConfig) {
+            return authConfig(Output.of(authConfig));
+        }
+
+        /**
+         * @param build Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder build(@Nullable Output<RegistryImageBuildArgs> build) {
+            $.build = build;
+            return this;
+        }
+
+        /**
+         * @param build Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder build(RegistryImageBuildArgs build) {
+            return build(Output.of(build));
         }
 
         /**
