@@ -61,6 +61,8 @@ export class RegistryImage extends pulumi.ComponentResource {
             if (args?.sourceImage === undefined && !opts.urn) {
                 throw new Error("Missing required property 'sourceImage'");
             }
+            resourceInputs["authConfig"] = args?.authConfig;
+            resourceInputs["build"] = args?.build;
             resourceInputs["insecureSkipVerify"] = args?.insecureSkipVerify;
             resourceInputs["keepRemotely"] = args?.keepRemotely;
             resourceInputs["repositoryUrl"] = args?.repositoryUrl;
@@ -80,6 +82,14 @@ export class RegistryImage extends pulumi.ComponentResource {
  * The set of arguments for constructing a RegistryImage resource.
  */
 export interface RegistryImageArgs {
+    /**
+     * Authentication configuration for the Docker registry. It is only used for this resource.
+     */
+    authConfig?: pulumi.Input<pulumiDocker.types.input.RegistryImageAuthConfig | undefined>;
+    /**
+     * Configuration to build an image. Requires the `Use containerd for pulling and storing images` option to be disabled in the Docker Host(https://github.com/kreuzwerker/terraform-provider-docker/issues/534). Please see [docker build command reference](https://docs.docker.com/engine/reference/commandline/build/#options) too.
+     */
+    build?: pulumi.Input<pulumiDocker.types.input.RegistryImageBuild | undefined>;
     /**
      * If `true`, the verification of TLS certificates of the server/registry is disabled. Defaults to `false`
      */
