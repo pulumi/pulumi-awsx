@@ -524,9 +524,6 @@ export namespace ec2 {
      * import * as aws from "@pulumi/aws";
      *
      * const ec2 = new aws.ec2.VpcEndpoint("ec2", {
-     *     vpcId: example.id,
-     *     serviceName: "com.amazonaws.us-west-2.ec2",
-     *     vpcEndpointType: "Interface",
      *     subnetConfigurations: [
      *         {
      *             ipv4: "10.0.1.10",
@@ -537,6 +534,9 @@ export namespace ec2 {
      *             subnetId: example2.id,
      *         },
      *     ],
+     *     vpcId: example.id,
+     *     serviceName: "com.amazonaws.us-west-2.ec2",
+     *     vpcEndpointType: "Interface",
      *     subnetIds: [
      *         example1.id,
      *         example2.id,
@@ -1170,15 +1170,15 @@ export namespace lb {
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndTargetGroup = new aws.lb.TargetGroup("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
+     *     defaultActions: [{
+     *         type: "forward",
+     *         targetGroupArn: frontEndTargetGroup.arn,
+     *     }],
      *     loadBalancerArn: frontEnd.arn,
      *     port: 443,
      *     protocol: "HTTPS",
      *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-     *     defaultActions: [{
-     *         type: "forward",
-     *         targetGroupArn: frontEndTargetGroup.arn,
-     *     }],
      * });
      * ```
      *
@@ -1192,13 +1192,7 @@ export namespace lb {
      * const frontEndBlue = new aws.lb.TargetGroup("front_end_blue", {});
      * const frontEndGreen = new aws.lb.TargetGroup("front_end_green", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 443,
-     *     protocol: "HTTPS",
-     *     sslPolicy: "ELBSecurityPolicy-2016-08",
-     *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     defaultActions: [{
-     *         type: "forward",
      *         forward: {
      *             targetGroups: [
      *                 {
@@ -1211,7 +1205,13 @@ export namespace lb {
      *                 },
      *             ],
      *         },
+     *         type: "forward",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 443,
+     *     protocol: "HTTPS",
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
+     *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      * });
      * ```
      *
@@ -1222,16 +1222,16 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const frontEnd = new aws.lb.Listener("front_end", {
+     *     defaultActions: [{
+     *         type: "forward",
+     *         targetGroupArn: frontEndAwsLbTargetGroup.arn,
+     *     }],
      *     loadBalancerArn: frontEndAwsLb.arn,
      *     port: 443,
      *     protocol: "TLS",
      *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpnPolicy: "HTTP2Preferred",
-     *     defaultActions: [{
-     *         type: "forward",
-     *         targetGroupArn: frontEndAwsLbTargetGroup.arn,
-     *     }],
      * });
      * ```
      *
@@ -1243,17 +1243,17 @@ export namespace lb {
      *
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [{
-     *         type: "redirect",
      *         redirect: {
      *             port: "443",
      *             protocol: "HTTPS",
      *             statusCode: "HTTP_301",
      *         },
+     *         type: "redirect",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1265,17 +1265,17 @@ export namespace lb {
      *
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [{
-     *         type: "fixed-response",
      *         fixedResponse: {
      *             contentType: "text/plain",
      *             messageBody: "Fixed response content",
      *             statusCode: "200",
      *         },
+     *         type: "fixed-response",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1291,23 +1291,23 @@ export namespace lb {
      * const client = new aws.cognito.UserPoolClient("client", {});
      * const domain = new aws.cognito.UserPoolDomain("domain", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [
      *         {
-     *             type: "authenticate-cognito",
      *             authenticateCognito: {
      *                 userPoolArn: pool.arn,
      *                 userPoolClientId: client.id,
      *                 userPoolDomain: domain.domain,
      *             },
+     *             type: "authenticate-cognito",
      *         },
      *         {
      *             type: "forward",
      *             targetGroupArn: frontEndTargetGroup.arn,
      *         },
      *     ],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1320,12 +1320,8 @@ export namespace lb {
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndTargetGroup = new aws.lb.TargetGroup("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [
      *         {
-     *             type: "authenticate-oidc",
      *             authenticateOidc: {
      *                 authorizationEndpoint: "https://example.com/authorization_endpoint",
      *                 clientId: "client_id",
@@ -1334,12 +1330,16 @@ export namespace lb {
      *                 tokenEndpoint: "https://example.com/token_endpoint",
      *                 userInfoEndpoint: "https://example.com/user_info_endpoint",
      *             },
+     *             type: "authenticate-oidc",
      *         },
      *         {
      *             type: "forward",
      *             targetGroupArn: frontEndTargetGroup.arn,
      *         },
      *     ],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1350,17 +1350,9 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const test = new aws.lb.Listener("test", {
-     *     loadBalancerArn: testAwsLb.id,
-     *     protocol: "HTTPS",
-     *     port: 443,
-     *     sslPolicy: "ELBSecurityPolicy-2016-08",
-     *     certificateArn: testAwsIamServerCertificate.arn,
      *     defaultActions: [
      *         {
-     *             type: "jwt-validation",
      *             jwtValidation: {
-     *                 issuer: "https://example.com",
-     *                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
      *                 additionalClaims: [
      *                     {
      *                         format: "string-array",
@@ -1376,13 +1368,21 @@ export namespace lb {
      *                         values: ["value1"],
      *                     },
      *                 ],
+     *                 issuer: "https://example.com",
+     *                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
      *             },
+     *             type: "jwt-validation",
      *         },
      *         {
      *             targetGroupArn: testAwsLbTargetGroup.id,
      *             type: "forward",
      *         },
      *     ],
+     *     loadBalancerArn: testAwsLb.id,
+     *     protocol: "HTTPS",
+     *     port: 443,
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
+     *     certificateArn: testAwsIamServerCertificate.arn,
      * });
      * ```
      *
@@ -1393,28 +1393,28 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const example = new aws.lb.LoadBalancer("example", {
-     *     loadBalancerType: "gateway",
-     *     name: "example",
      *     subnetMappings: [{
      *         subnetId: exampleAwsSubnet.id,
      *     }],
+     *     loadBalancerType: "gateway",
+     *     name: "example",
      * });
      * const exampleTargetGroup = new aws.lb.TargetGroup("example", {
-     *     name: "example",
-     *     port: 6081,
-     *     protocol: "GENEVE",
-     *     vpcId: exampleAwsVpc.id,
      *     healthCheck: {
      *         port: "80",
      *         protocol: "HTTP",
      *     },
+     *     name: "example",
+     *     port: 6081,
+     *     protocol: "GENEVE",
+     *     vpcId: exampleAwsVpc.id,
      * });
      * const exampleListener = new aws.lb.Listener("example", {
-     *     loadBalancerArn: example.id,
      *     defaultActions: [{
      *         targetGroupArn: exampleTargetGroup.id,
      *         type: "forward",
      *     }],
+     *     loadBalancerArn: example.id,
      * });
      * ```
      *
@@ -1427,15 +1427,15 @@ export namespace lb {
      * const example = new aws.lb.LoadBalancer("example", {loadBalancerType: "application"});
      * const exampleTargetGroup = new aws.lb.TargetGroup("example", {});
      * const exampleListener = new aws.lb.Listener("example", {
-     *     loadBalancerArn: example.id,
-     *     defaultActions: [{
-     *         targetGroupArn: exampleTargetGroup.id,
-     *         type: "forward",
-     *     }],
      *     mutualAuthentication: {
      *         mode: "verify",
      *         trustStoreArn: "...",
      *     },
+     *     defaultActions: [{
+     *         targetGroupArn: exampleTargetGroup.id,
+     *         type: "forward",
+     *     }],
+     *     loadBalancerArn: example.id,
      * });
      * ```
      *
@@ -1445,7 +1445,7 @@ export namespace lb {
      *
      * #### Required
      *
-     * - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+     * - `arn` (String) ARN of the load balancer listener.
      *
      * Using `pulumi import`, import listeners using their ARN. For example:
      *
@@ -1646,13 +1646,13 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+     *     targetHealthStates: [{
+     *         enableUnhealthyConnectionTermination: false,
+     *     }],
      *     name: "tf-example-lb-nlb-tg",
      *     port: 25,
      *     protocol: "TCP",
      *     vpcId: main.id,
-     *     targetHealthStates: [{
-     *         enableUnhealthyConnectionTermination: false,
-     *     }],
      * });
      * ```
      *
@@ -1663,10 +1663,6 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const tcp_example = new aws.lb.TargetGroup("tcp-example", {
-     *     name: "tf-example-lb-nlb-tg",
-     *     port: 80,
-     *     protocol: "TCP",
-     *     vpcId: main.id,
      *     targetGroupHealth: {
      *         dnsFailover: {
      *             minimumHealthyTargetsCount: "1",
@@ -1677,6 +1673,10 @@ export namespace lb {
      *             minimumHealthyTargetsPercentage: "off",
      *         },
      *     },
+     *     name: "tf-example-lb-nlb-tg",
+     *     port: 80,
+     *     protocol: "TCP",
+     *     vpcId: main.id,
      * });
      * ```
      *
@@ -1686,7 +1686,7 @@ export namespace lb {
      *
      * #### Required
      *
-     * - `arn` (String) Amazon Resource Name (ARN) of the target group.
+     * - `arn` (String) ARN of the target group.
      *
      * Using `pulumi import`, import Target Groups using their ARN. For example:
      *
@@ -1797,7 +1797,7 @@ export namespace lb {
          *
          * Note that you can't specify targets for a target group using both instance IDs and IP addresses.
          *
-         * If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+         * If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
          *
          * Network Load Balancers do not support the `lambda` target type.
          *
