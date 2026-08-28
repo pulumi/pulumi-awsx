@@ -307,9 +307,6 @@ class VpcEndpointSpecArgsDict(TypedDict):
     import pulumi_aws as aws
 
     ec2 = aws.ec2.VpcEndpoint("ec2",
-        vpc_id=example["id"],
-        service_name="com.amazonaws.us-west-2.ec2",
-        vpc_endpoint_type="Interface",
         subnet_configurations=[
             {
                 "ipv4": "10.0.1.10",
@@ -320,6 +317,9 @@ class VpcEndpointSpecArgsDict(TypedDict):
                 "subnet_id": example2["id"],
             },
         ],
+        vpc_id=example["id"],
+        service_name="com.amazonaws.us-west-2.ec2",
+        vpc_endpoint_type="Interface",
         subnet_ids=[
             example1["id"],
             example2["id"],
@@ -575,9 +575,6 @@ class VpcEndpointSpecArgs:
         import pulumi_aws as aws
 
         ec2 = aws.ec2.VpcEndpoint("ec2",
-            vpc_id=example["id"],
-            service_name="com.amazonaws.us-west-2.ec2",
-            vpc_endpoint_type="Interface",
             subnet_configurations=[
                 {
                     "ipv4": "10.0.1.10",
@@ -588,6 +585,9 @@ class VpcEndpointSpecArgs:
                     "subnet_id": example2["id"],
                 },
             ],
+            vpc_id=example["id"],
+            service_name="com.amazonaws.us-west-2.ec2",
+            vpc_endpoint_type="Interface",
             subnet_ids=[
                 example1["id"],
                 example2["id"],
