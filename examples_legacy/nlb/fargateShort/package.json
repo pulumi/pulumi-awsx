@@ -10,7 +10,7 @@
         "@pulumi/aws": "^7.0.0"
     },
     "devDependencies": {
-        "@types/node": "^8.0.0"
+        "@types/node": "^24.0.0"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
