@@ -10,7 +10,7 @@
 
 Pulumi's framework for Amazon Web Services (AWS) infrastructure.
 
-To use this package, [install the Pulumi CLI](https://www.pulumi.com/docs/get-started/install/). For a streamlined Pulumi walkthrough, including language runtime installation and AWS configuration, see the [Crosswalk for AWS documentation](https://www.pulumi.com/docs/guides/crosswalk/aws/).
+To use this package, [install the Pulumi CLI](https://www.pulumi.com/docs/get-started/install/). For a streamlined Pulumi walkthrough, including language runtime installation and AWS configuration, see the [AWS Guides](https://www.pulumi.com/docs/iac/guides/clouds/aws/).
 
 The AWS Infrastructure package is intended to provide [component](https://www.pulumi.com/docs/intro/concepts/resources/components/) wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/awsx` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/awsx/ecs` or `@pulumi/awsx/ec2`).  These [components](https://www.pulumi.com/docs/intro/concepts/resources/components/) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
 
@@ -26,7 +26,7 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
 * [`lb`](https://github.com/pulumi/pulumi-awsx/tree/master/awsx/lb).  A module for simply setting up [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/). This module provides convenient ways to set up either `Network` or `Application` load balancers, along with the appropriate ELB Target Groups and Listeners in order to have a high availability, automatically-scaled service.  These ELB components also work well with the other awsx components.  For example, an `lb.defaultTarget` can be passed in directly as the `portMapping` target of an `ecs.FargateService`.
 
 <div>
-    <a href="https://www.pulumi.com/docs/guides/crosswalk/aws/" title="Get Started">
+    <a href="https://www.pulumi.com/docs/iac/guides/clouds/aws/" title="Get Started">
        <img src="https://www.pulumi.com/images/get-started.svg?" width="120">
     </a>
 </div>
@@ -109,7 +109,6 @@ Before version 1, this package only supported components in TypeScript. All the 
 
 ## References
 
-* [Tutorial](https://www.pulumi.com/blog/crosswalk-for-aws-1-0/)
 * [API Reference Documentation](https://www.pulumi.com/registry/packages/awsx/api-docs/)
 * [Examples](./examples)
-* [Crosswalk for AWS Guide](https://www.pulumi.com/docs/guides/crosswalk/aws/)
+* [AWS Guides](https://www.pulumi.com/docs/iac/guides/clouds/aws/)
