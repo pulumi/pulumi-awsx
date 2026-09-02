@@ -20,6 +20,8 @@ if typing.TYPE_CHECKING:
     ecr = __ecr
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
+    import pulumi_awsx.experimental as __experimental
+    experimental = __experimental
     import pulumi_awsx.lb as __lb
     lb = __lb
 else:
@@ -28,6 +30,7 @@ else:
     ec2 = _utilities.lazy_import('pulumi_awsx.ec2')
     ecr = _utilities.lazy_import('pulumi_awsx.ecr')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
+    experimental = _utilities.lazy_import('pulumi_awsx.experimental')
     lb = _utilities.lazy_import('pulumi_awsx.lb')
 
 _utilities.register(
@@ -69,6 +72,22 @@ _utilities.register(
    "awsx:ecs:EC2TaskDefinition": "EC2TaskDefinition",
    "awsx:ecs:FargateService": "FargateService",
    "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "experimental/cloudwatch",
+  "fqn": "pulumi_awsx.experimental.cloudwatch",
+  "classes": {
+   "awsx:experimental/cloudwatch:LogGroup": "LogGroup"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "experimental/ecs",
+  "fqn": "pulumi_awsx.experimental.ecs",
+  "classes": {
+   "awsx:experimental/ecs:FargateTaskDefinitionV2": "FargateTaskDefinitionV2"
   }
  },
  {

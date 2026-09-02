@@ -50,5 +50,19 @@ export namespace ecr {
 export namespace ecs {
 }
 
+export namespace experimental {
+    export namespace cloudwatch {
+        export interface LogGroupReference {
+            arn: string;
+            name: string;
+            region: string;
+        }
+
+    }
+
+    export namespace ecs {
+    }
+}
+
 export namespace lb {
 }

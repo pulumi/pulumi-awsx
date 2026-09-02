@@ -26,6 +26,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	_ "embed"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -48,7 +50,12 @@ import (
 const (
 	Tool       = "pulumi-gen-awsx"
 	packageDir = "awsx"
+
+	fargateContainerDefinitionOptionsOverlayPath = "awsx/experimental/ecs/fargateContainerDefinitionOptions.go"
 )
+
+//go:embed overlays/go/experimental/ecs/fargateContainerDefinitionOptions.go.txt
+var fargateContainerDefinitionOptionsOverlay []byte
 
 // Language is the SDK language.
 type Language string
@@ -220,6 +227,7 @@ func genGo(pkg *schema.Package, outdir string) error {
 	if err != nil {
 		return err
 	}
+	files[fargateContainerDefinitionOptionsOverlayPath] = fargateContainerDefinitionOptionsOverlay
 	return writeFiles(outdir, files)
 }
 

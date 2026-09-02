@@ -1153,6 +1153,442 @@ export namespace ecs {
     }
 }
 
+export namespace experimental {
+    export namespace cloudwatch {
+        export interface LogGroupReferenceArgs {
+            arn: pulumi.Input<string>;
+            name: pulumi.Input<string>;
+            region: pulumi.Input<string>;
+        }
+    }
+
+    export namespace ecs {
+        export interface ContainerDependencyArgs {
+            /**
+             * The condition that the other container must satisfy.
+             */
+            condition: enums.experimental.ecs.ContainerDependencyCondition;
+            /**
+             * The name of the other container.
+             */
+            containerName: string;
+        }
+
+        export interface ContainerPortRangeArgs {
+            end: number;
+            start: number;
+        }
+
+        export interface CredentialSpecArgs {
+            /**
+             * The Active Directory authentication mode.
+             */
+            authenticationMode: enums.experimental.ecs.CredentialSpecAuthenticationMode;
+            /**
+             * An S3 object that contains the credential specification file.
+             */
+            s3Bucket?: inputs.experimental.ecs.S3BucketCredentialSpecArgs;
+            /**
+             * An SSM parameter that contains the credential specification file.
+             */
+            ssmParameter?: pulumiAws.ssm.Parameter;
+        }
+
+        export interface EnvironmentFileArgs {
+            /**
+             * The bucket that contains the environment file.
+             */
+            bucket: pulumiAws.s3.Bucket;
+            /**
+             * The object key of the environment file.
+             */
+            key: pulumi.Input<string>;
+        }
+
+        export interface FargateAwsLogsLogDriverArgs {
+            /**
+             * A multiline start pattern in Python strftime format.
+             */
+            datetimeFormat?: string;
+            /**
+             * The log group to log to.
+             *
+             * Default - A log group is created automatically.
+             */
+            logGroup?: inputs.experimental.cloudwatch.LogGroupReferenceArgs;
+            /**
+             * Size, in bytes, of the buffer used in non-blocking mode.
+             *
+             * Default - The AWS default of 10 MiB when mode is non-blocking.
+             */
+            maxBufferSizeBytes?: number;
+            /**
+             * The delivery mode for log messages.
+             */
+            mode?: enums.experimental.ecs.AwsLogDriverMode;
+            /**
+             * A multiline start pattern expressed as a regular expression.
+             */
+            multilinePattern?: string;
+            /**
+             * Prefix used for the container's log streams.
+             */
+            streamPrefix: pulumi.Input<string>;
+        }
+
+        export interface FargateContainerDefinitionOptionsArgs {
+            /**
+             * The command passed to the container.
+             *
+             * Default - The command configured in the container image.
+             */
+            command?: pulumi.Input<string>[];
+            /**
+             * The minimum number of CPU units reserved for the container.
+             *
+             * The total CPU reserved by all containers must not exceed the task-level CPU value.
+             *
+             * Default - No minimum CPU reservation.
+             */
+            cpu?: number;
+            /**
+             * Credential specifications used for Active Directory authentication.
+             */
+            credentialSpecs?: inputs.experimental.ecs.CredentialSpecArgs[];
+            /**
+             * The dependencies that control the container startup and shutdown order.
+             *
+             * ECS applies startup dependencies in reverse order during shutdown.
+             *
+             * Default - No container dependencies.
+             */
+            dependsOn?: pulumi.Input<inputs.experimental.ecs.ContainerDependencyArgs>[];
+            /**
+             * Labels to add to the container.
+             *
+             * Default - No labels.
+             */
+            dockerLabels?: {[key: string]: pulumi.Input<string>};
+            /**
+             * The entry point passed to the container.
+             *
+             * Default - The entry point configured in the container image.
+             *
+             * For more information, see [Dockerfile
+             * ENTRYPOINT](https://docs.docker.com/reference/dockerfile/#entrypoint).
+             */
+            entryPoint?: string[];
+            /**
+             * Environment variables passed to the container.
+             */
+            environment?: {[key: string]: string};
+            /**
+             * Environment files passed to the container.
+             */
+            environmentFiles?: inputs.experimental.ecs.EnvironmentFileArgs[];
+            /**
+             * Whether the container is essential to the task.
+             *
+             * If an essential container stops, ECS stops all other containers in the task. Each task must
+             * have at least one essential container.
+             *
+             * Default - `true`.
+             */
+            essential?: boolean;
+            /**
+             * The health check command and settings for the container.
+             *
+             * ECS only monitors health checks specified in the task definition. It does not monitor a health
+             * check that is configured only in the container image.
+             *
+             * Default - No ECS container health check.
+             *
+             * For more information, see [Determine Amazon ECS task health using container health
+             * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
+             */
+            healthCheck?: inputs.experimental.ecs.HealthCheckArgs;
+            /**
+             * The image used to start the container.
+             */
+            image: pulumi.Input<string>;
+            /**
+             * Whether to keep standard input open for the container when no client is attached.
+             *
+             * Default - `false`.
+             */
+            interactive?: boolean;
+            /**
+             * Linux-specific options applied to the container.
+             *
+             * This property is not supported for Windows containers.
+             */
+            linuxParameters?: inputs.experimental.ecs.FargateLinuxParametersArgs;
+            logging?: inputs.experimental.ecs.FargateLogDriverArgs;
+            /**
+             * The hard memory limit for the container, in MiB.
+             *
+             * ECS stops the container if it uses more than this limit. Container-level memory is optional
+             * because Fargate requires a task-level memory value.
+             *
+             * If you set both container-level memory values, `memory` must be greater than
+             * `memoryReservation`.
+             *
+             * Default - No container-level hard memory limit.
+             */
+            memory?: number;
+            /**
+             * The soft memory limit reserved for the container, in MiB.
+             *
+             * The container can use more memory when it is available, up to its hard memory limit. This
+             * property is not supported for Windows containers.
+             *
+             * If you set both container-level memory values, `memory` must be greater than
+             * `memoryReservation`.
+             *
+             * Default - No container-level soft memory reservation.
+             */
+            memoryReservation?: number;
+            /**
+             * Port mappings exposed by the container.
+             */
+            portMappings?: inputs.experimental.ecs.FargatePortMappingArgs[];
+            /**
+             * Whether to allocate a TTY for the container.
+             *
+             * Default - `false`.
+             */
+            pseudoTerminal?: boolean;
+            /**
+             * Whether the container has read-only access to its root file system.
+             *
+             * Default - `false`.
+             */
+            readonlyRootFilesystem?: boolean;
+            /**
+             * Secret environment variables passed to the container.
+             */
+            secrets?: {[key: string]: inputs.experimental.ecs.SecretArgs};
+            /**
+             * The time, in seconds, to wait for this container's startup dependencies to become ready.
+             *
+             * Valid values are from 2 through 120 seconds.
+             *
+             * Default - No container-specific startup timeout.
+             */
+            startTimeout?: number;
+            /**
+             * The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
+             * normally.
+             *
+             * Valid values are from 2 through 120 seconds.
+             *
+             * Default - 30 seconds.
+             */
+            stopTimeout?: number;
+            /**
+             * Namespaced kernel parameters to set in the container.
+             *
+             * Default - No system controls.
+             *
+             * For more information, see [System
+             * controls](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols).
+             */
+            systemControls?: inputs.experimental.ecs.SystemControlArgs[];
+            /**
+             * Resource limits to set for the container.
+             *
+             * This property is supported for Linux containers, but not Windows containers. Fargate uses the
+             * operating system defaults except for `nofile`, for which both the soft and hard limits default
+             * to 65,535.
+             */
+            ulimits?: inputs.experimental.ecs.UlimitArgs[];
+            /**
+             * The user that runs commands inside the container.
+             *
+             * The value can be a user name, user ID, or a user and group pair supported by the container
+             * operating system. This property is not supported for Windows containers.
+             *
+             * Default - The user configured in the container image, or the root user if the image does not
+             * configure one.
+             */
+            user?: string;
+            /**
+             * Whether ECS resolves the image tag to an image digest.
+             *
+             * Digest resolution makes deployments use a consistent image version.
+             *
+             * Default - `enabled`.
+             */
+            versionConsistency?: enums.experimental.ecs.ContainerDefinitionVersionConsistency;
+            /**
+             * Data volumes to mount from another container in the same task.
+             *
+             * Each entry identifies the source container and whether this container has read-only access to
+             * its volumes.
+             *
+             * Default - No inherited volumes.
+             */
+            volumesFrom?: inputs.experimental.ecs.VolumeFromArgs[];
+            /**
+             * The working directory in which commands run inside the container.
+             *
+             * Default - The working directory configured in the container image, or `/` if the image does not
+             * configure one.
+             */
+            workingDirectory?: string;
+        }
+
+        export interface FargateKernelCapabilitiesArgs {
+            /**
+             * Linux capabilities to add to the container.
+             *
+             * Fargate supports adding only `SYS_PTRACE`.
+             */
+            add?: string[];
+            /**
+             * Linux capabilities to remove from the container.
+             */
+            drop?: string[];
+        }
+
+        export interface FargateLinuxParametersArgs {
+            /**
+             * Linux capabilities to add to or remove from the container.
+             */
+            capabilities?: inputs.experimental.ecs.FargateKernelCapabilitiesArgs;
+            /**
+             * Run an init process that forwards signals and reaps processes.
+             */
+            initProcessEnabled?: boolean;
+        }
+
+        export interface FargateLogDriverArgs {
+            cloudwatch: inputs.experimental.ecs.FargateAwsLogsLogDriverArgs;
+        }
+
+        export interface FargatePortMappingArgs {
+            /**
+             * The application protocol used by ECS Service Connect.
+             */
+            appProtocol?: enums.experimental.ecs.PortMappingAppProtocol;
+            /**
+             * The port number exposed by the container.
+             *
+             * Do not set this property when `containerPortRange` is set.
+             */
+            containerPort?: number;
+            /**
+             * A range of container ports, in the form `start-end`.
+             *
+             * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
+             * to the same container port range.
+             */
+            containerPortRange?: inputs.experimental.ecs.ContainerPortRangeArgs;
+            /**
+             * The name used by ECS Service Connect and VPC Lattice.
+             */
+            name?: string;
+            /**
+             * The protocol used for the port mapping.
+             *
+             * Default - 'tcp'
+             */
+            protocol?: enums.experimental.ecs.PortMappingProtocol;
+        }
+
+        export interface HealthCheckArgs {
+            /**
+             * The command that the container runs to determine whether it is healthy.
+             *
+             * The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+             *
+             * Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+             */
+            command: string[];
+            /**
+             * The time, in seconds, between health checks. Valid values are from 5 through 300.
+             *
+             * Default - 30 seconds.
+             */
+            interval?: number;
+            /**
+             * The number of consecutive failures required before the container becomes unhealthy. Valid
+             * values are from 1 through 10.
+             *
+             * Default - 3.
+             */
+            retries?: number;
+            /**
+             * The startup grace period, in seconds, during which failed checks do not count toward the retry
+             * limit. Valid values are from 0 through 300.
+             *
+             * Default - No startup grace period.
+             */
+            startPeriod?: number;
+            /**
+             * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
+             * 60.
+             *
+             * Default - 5 seconds.
+             */
+            timeout?: number;
+        }
+
+        export interface S3BucketCredentialSpecArgs {
+            /**
+             * The bucket that contains the credential specification file.
+             */
+            bucket: pulumiAws.s3.Bucket;
+            /**
+             * The key of the credential specification file.
+             */
+            key: pulumi.Input<string>;
+        }
+
+        export interface SecretArgs {
+            secretsManager?: inputs.experimental.ecs.SecretsManagerSecretArgs;
+            ssmParameter?: pulumiAws.ssm.Parameter;
+        }
+
+        export interface SecretsManagerSecretArgs {
+            jsonKey?: pulumi.Input<string | undefined>;
+            secret: pulumiAws.secretsmanager.Secret;
+            versionId?: pulumi.Input<string | undefined>;
+            versionStage?: pulumi.Input<string | undefined>;
+        }
+
+        export interface SystemControlArgs {
+            /**
+             * The namespaced kernel parameter name.
+             */
+            namespace?: string;
+            /**
+             * The value assigned to the parameter.
+             */
+            value?: string;
+        }
+
+        export interface UlimitArgs {
+            hardLimit: number;
+            name: enums.experimental.ecs.UlimitName;
+            softLimit: number;
+        }
+
+        export interface VolumeFromArgs {
+            /**
+             * Whether this container has read-only access to the volumes.
+             *
+             * Default - `false`.
+             */
+            readOnly?: boolean;
+            /**
+             * The name of the container from which to mount volumes.
+             */
+            sourceContainer?: string;
+        }
+    }
+}
+
 export namespace lb {
     /**
      * Provides a Load Balancer Listener resource.

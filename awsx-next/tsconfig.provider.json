@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "rootDir": ".",
+    "outDir": "../awsx/bin/node_modules/@pulumi/awsx-experimental",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "isolatedModules": false
+  },
+  "include": ["index.ts", "src/**/*.ts"],
+  "exclude": ["tests", "scripts"]
+}
