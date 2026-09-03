@@ -64,11 +64,11 @@ jobs:
           ARCH: ${{ matrix.arch }}
           OS: ${{ matrix.os }}
           OUT: ${{ github.workspace }}/artifacts/pulumi-resource-awsx${{ matrix.os == 'windows' && '.exe' || '' }}
-          SCHEMA: ${{ github.workspace }}/provider/cmd/pulumi-resource-awsx/schema-embed.json
+          SCHEMA: ${{ github.workspace }}/provider/cmd/pulumi-resource-awsx/schema.json
         run: |
           mkdir -p artifacts
           start=$SECONDS
-          yarn --cwd awsx build
+          (cd awsx && ./scripts/build.sh)
           duration=$((SECONDS - start))
           binary="artifacts/pulumi-resource-awsx${{ matrix.os == 'windows' && '.exe' || '' }}"
           sha256sum "$binary" | tee "artifacts/SHA256SUMS"
