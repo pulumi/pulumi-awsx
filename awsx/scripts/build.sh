@@ -40,7 +40,7 @@ case "${ARCH}" in
         ;;
 esac
 
-TARGET="node26.8.1-${NODEOS}-${NODEARCH}"
+TARGET="node24.20.0-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
 yarn install --no-progress --frozen-lockfile
