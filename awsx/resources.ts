@@ -12,28 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
-import { Trail } from "./cloudtrail";
-import * as ec2 from "./ec2";
-import { Image, RegistryImage, Repository } from "./ecr";
-import * as ecs from "./ecs";
-import * as lb from "./lb";
-import * as schemaTypes from "./schema-types";
+import type * as pulumi from "@pulumi/pulumi";
+import type * as schemaTypes from "./schema-types";
 
+// Each entry loads its owning module on first use so that constructing one
+// component type does not pull in the modules (and their transitive AWS/Docker
+// SDK graph) of the others.
 const resources: schemaTypes.ResourceConstructor = {
-  "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
-  "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
-  "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),
-  "awsx:ecs:EC2TaskDefinition": (...args) => new ecs.EC2TaskDefinition(...args),
-  "awsx:ecs:FargateTaskDefinition": (...args) => new ecs.FargateTaskDefinition(...args),
-  "awsx:lb:ApplicationLoadBalancer": (...args) => new lb.ApplicationLoadBalancer(...args),
-  "awsx:lb:NetworkLoadBalancer": (...args) => new lb.NetworkLoadBalancer(...args),
-  "awsx:lb:TargetGroupAttachment": (...args) => new lb.TargetGroupAttachment(...args),
-  "awsx:ec2:Vpc": (...args) => new ec2.Vpc(...args),
-  "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
-  "awsx:ecr:Repository": (...args) => new Repository(...args),
-  "awsx:ecr:Image": (...args) => new Image(...args),
-  "awsx:ecr:RegistryImage": (...args) => new RegistryImage(...args),
+  "awsx:cloudtrail:Trail": (...args) =>
+    new (require("./cloudtrail") as typeof import("./cloudtrail")).Trail(...args),
+  "awsx:ecs:FargateService": (...args) =>
+    new (require("./ecs") as typeof import("./ecs")).FargateService(...args),
+  "awsx:ecs:EC2Service": (...args) =>
+    new (require("./ecs") as typeof import("./ecs")).EC2Service(...args),
+  "awsx:ecs:EC2TaskDefinition": (...args) =>
+    new (require("./ecs") as typeof import("./ecs")).EC2TaskDefinition(...args),
+  "awsx:ecs:FargateTaskDefinition": (...args) =>
+    new (require("./ecs") as typeof import("./ecs")).FargateTaskDefinition(...args),
+  "awsx:lb:ApplicationLoadBalancer": (...args) =>
+    new (require("./lb") as typeof import("./lb")).ApplicationLoadBalancer(...args),
+  "awsx:lb:NetworkLoadBalancer": (...args) =>
+    new (require("./lb") as typeof import("./lb")).NetworkLoadBalancer(...args),
+  "awsx:lb:TargetGroupAttachment": (...args) =>
+    new (require("./lb") as typeof import("./lb")).TargetGroupAttachment(...args),
+  "awsx:ec2:Vpc": (...args) => new (require("./ec2") as typeof import("./ec2")).Vpc(...args),
+  "awsx:ec2:DefaultVpc": (...args) =>
+    new (require("./ec2") as typeof import("./ec2")).DefaultVpc(...args),
+  "awsx:ecr:Repository": (...args) =>
+    new (require("./ecr") as typeof import("./ecr")).Repository(...args),
+  "awsx:ecr:Image": (...args) => new (require("./ecr") as typeof import("./ecr")).Image(...args),
+  "awsx:ecr:RegistryImage": (...args) =>
+    new (require("./ecr") as typeof import("./ecr")).RegistryImage(...args),
 };
 
 export function construct(
@@ -51,5 +60,5 @@ export function construct(
 }
 
 export const functions: schemaTypes.Functions = {
-  "awsx:ec2:getDefaultVpc": () => ec2.getDefaultVpc({}),
+  "awsx:ec2:getDefaultVpc": () => (require("./ec2") as typeof import("./ec2")).getDefaultVpc({}),
 };

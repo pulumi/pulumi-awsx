@@ -40,11 +40,16 @@ export class EC2Service extends schema.EC2Service {
     if (args.taskDefinition !== undefined && args.taskDefinitionArgs !== undefined) {
       throw new Error("Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.");
     }
+    // Child AWS resources reuse the provider given to this component rather than
+    // spinning up a separate default provider instance.
+    const provider = opts.provider;
+
     let taskDefinitionIdentifier = args.taskDefinition;
     let taskDefinition: EC2TaskDefinition | undefined;
     if (args.taskDefinitionArgs) {
       taskDefinition = new EC2TaskDefinition(name, args.taskDefinitionArgs, {
         parent: this,
+        provider,
       });
       this.taskDefinition = taskDefinition.taskDefinition;
       taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
@@ -78,7 +83,7 @@ export class EC2Service extends schema.EC2Service {
           .apply((x) => !x),
         taskDefinition: taskDefinitionIdentifier,
       },
-      { parent: this },
+      { parent: this, provider },
     );
 
     this.registerOutputs();
