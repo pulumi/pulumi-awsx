@@ -9,16 +9,18 @@ set -euo pipefail
 : ${OUT?"Environment variable OUT must be set to the desired output path for the binary"}
 : ${SCHEMA?"Environment variable SCHEMA must point to a file with Pulumi Package Schema to embed in the build"}
 
-NODEOS=""
+BUNOS=""
+BUNLIBC=""
 case "${OS}" in
     "linux")
-        NODEOS="linuxstatic"
+        BUNOS="linux"
+        BUNLIBC="-musl"
         ;;
     "darwin")
-        NODEOS="macos"
+        BUNOS="darwin"
         ;;
     "windows")
-        NODEOS="win"
+        BUNOS="windows"
         ;;
     *)
         echo "Unsupported OS: ${OS}"
@@ -26,13 +28,13 @@ case "${OS}" in
         ;;
 esac
 
-NODEARCH=""
+BUNARCH=""
 case "${ARCH}" in
     "amd64")
-        NODEARCH="x64"
+        BUNARCH="x64"
         ;;
     "arm64")
-        NODEARCH="arm64"
+        BUNARCH="arm64"
         ;;
     *)
         echo "Unsupported ARCH: ${ARCH}"
@@ -40,14 +42,30 @@ case "${ARCH}" in
         ;;
 esac
 
-TARGET="node16-${NODEOS}-${NODEARCH}"
+TARGET="bun-${BUNOS}-${BUNARCH}${BUNLIBC}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
 yarn install --no-progress --frozen-lockfile
 yarn check-duplicate-deps
 yarn gen-types
 yarn tsc
-cp ${SCHEMA} bin/schema.json
+cp "${SCHEMA}" bin/schema.json
 cp package.json bin/package.json
 yarn --cwd bin version --new-version "${VERSION}" --no-git-tag-version
-yarn run pkg . --no-bytecode --public-packages "*" --public --target "${TARGET}" --output "${OUT}"
+yarn run bun build ./bin/index.js \
+    --compile \
+    --target "${TARGET}" \
+    --outfile "${OUT}" \
+    --no-compile-autoload-dotenv \
+    --no-compile-autoload-bunfig
+
+if [[ "${OS}" == "darwin" ]]; then
+    if command -v codesign >/dev/null 2>&1; then
+        codesign --force --sign - --entitlements scripts/bun-entitlements.plist "${OUT}"
+    elif command -v ldid >/dev/null 2>&1; then
+        ldid -Sscripts/bun-entitlements.plist "${OUT}"
+    else
+        echo "codesign or ldid is required to sign a macOS executable" >&2
+        exit 1
+    fi
+fi
