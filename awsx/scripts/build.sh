@@ -51,3 +51,7 @@ cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 yarn --cwd bin version --new-version "${VERSION}" --no-git-tag-version
 yarn run pkg . --sea --target "${TARGET}" --output "${OUT}"
+
+if [[ "${OS}" == "windows" ]]; then
+    node scripts/strip-pe-certificate.js "${OUT}"
+fi

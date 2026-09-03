@@ -9,6 +9,7 @@ on:
       - .github/workflows/provider-packaging-experiment.yml
       - awsx/package.json
       - awsx/scripts/build.sh
+      - awsx/scripts/strip-pe-certificate.js
       - awsx/yarn.lock
       - mise.toml
       - scripts/smoke-provider.mjs
