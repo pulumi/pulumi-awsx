@@ -2,7 +2,7 @@
 
 ## Summary
 
-Replace the archived `vercel/pkg` build with `@yao-pkg/pkg` enhanced SEA mode and embed a stock Node.js 26 runtime. Change Linux artifacts from fully static Node binaries to official, dynamically linked Node binaries.
+Replace the archived `vercel/pkg` build with `@yao-pkg/pkg` enhanced SEA mode and embed the exact Node.js 24.20.0 LTS runtime. Change Linux artifacts from fully static Node binaries to official, dynamically linked Node binaries.
 
 This addresses #2130 without creating and maintaining a custom AWSX bundler. Enhanced SEA uses Node.js SEA APIs while `@yao-pkg/pkg` supplies dependency walking, a virtual filesystem, cross-platform packaging, resource injection, and signing support.
 
@@ -35,7 +35,7 @@ Document the new minimum as Linux kernel 4.18, glibc 2.28, and `GLIBCXX_3.4.25`.
 ## Implementation
 
 1. Replace the `pkg` development dependency with a pinned `@yao-pkg/pkg` version.
-2. Update the build target from Node.js 16 to an exact Node.js 26 patch release.
+2. Update the build target from Node.js 16 to the exact Node.js 24.20.0 LTS release.
 3. Invoke `pkg` with enhanced SEA mode:
    - add `--sea`;
    - remove standard-mode-only `--no-bytecode`, `--public`, and `--public-packages` flags;
@@ -59,12 +59,11 @@ Document the new minimum as Linux kernel 4.18, glibc 2.28, and `GLIBCXX_3.4.25`.
 - Compare compressed artifact sizes with the current release. Select a supported SEA compression mode if needed.
 - Confirm and record the embedded Node.js version from each artifact.
 
-A local proof has already built the AWSX provider with `@yao-pkg/pkg@6.22.0` enhanced SEA and stock Node.js 24 for Linux x64. The cross-built executable started successfully in a Linux x64 container and printed its gRPC port. This proves the basic AWSX dependency graph, schema asset, and provider startup path, but not the complete release matrix.
+The Node.js 26.8.1 experiment built and started successfully on all six native release platforms, but both Linux architectures failed in Debian 10, Debian 12, and `pulumi/pulumi-base` because those images do not contain `libatomic.so.1`. Node.js 24.20.0 is the selected candidate because an earlier Node.js 24 Linux x64 proof started without that new dependency. The full Node.js 24 matrix remains the final validation gate.
 
 ## Risks and fallback
 
-- Node.js 26 is not LTS until October 2026. Delay the runtime selection or use Node.js 24 LTS if the PR is ready before Node.js 26 enters LTS.
-- `@yao-pkg/pkg` documentation currently lists Node.js 22 and 24 targets. Require documented Node.js 26 support or complete matrix validation before release.
-- Node.js 26 has an open `--build-sea` macOS x64 defect. Enhanced SEA currently uses the older SEA blob plus `postject` path, but macOS startup validation remains mandatory.
+- Node.js 24.20.0 is LTS and is explicitly supported by `@yao-pkg/pkg` targets.
+- Node.js SEA and the enhanced SEA implementation remain experimental surfaces, so native startup validation remains mandatory.
 - Enhanced SEA can produce larger files. Use supported compression and compare release download sizes.
-- If any release target fails, use `@yao-pkg/pkg` standard mode with Node.js 26 as the temporary fallback. Standard mode preserves `linuxstatic`, but it continues to use patched `pkg-fetch` runtimes and does not complete the SEA migration.
+- If any release target fails, use `@yao-pkg/pkg` standard mode with Node.js 24 as the temporary fallback. Standard mode preserves `linuxstatic`, but it continues to use patched `pkg-fetch` runtimes and does not complete the SEA migration.
