@@ -33,6 +33,7 @@ func TestNodeJSCompatibility(t *testing.T) {
 		t.Run("Node"+nodeMajor, func(t *testing.T) {
 			node := miseExecutable(t, "node@"+nodeMajor, "node")
 			path := filepath.Dir(node) + string(os.PathListSeparator) + os.Getenv("PATH")
+			pulumi, pulumiEnv := pulumiWithNode(t, node)
 
 			for _, testCase := range []struct {
 				name                   string
@@ -46,7 +47,8 @@ func TestNodeJSCompatibility(t *testing.T) {
 					test := integration.ProgramTestOptions{
 						Dir:          filepath.Join(getCwd(t), "compatibility", testCase.dir),
 						Dependencies: []string{"@pulumi/awsx"},
-						Env:          []string{"PATH=" + path},
+						Bin:          pulumi,
+						Env:          append([]string{"PATH=" + path}, pulumiEnv...),
 						NoParallel:   true,
 						Quick:        true,
 						RunBuild:     true,
@@ -102,16 +104,40 @@ func TestNodeJSCompatibility(t *testing.T) {
 
 func miseExecutable(t *testing.T, tool, executable string) string {
 	t.Helper()
-	command := exec.Command("mise", "x", tool, "--", executable, "-e", "console.log(process.execPath)")
-	output, err := command.Output()
+
+	// Use the installation path directly so child processes cannot fall back to the repository's default runtime.
+	output, err := exec.Command("mise", "install", tool).CombinedOutput()
+	require.NoError(t, err, "install %s with Mise:\n%s", tool, output)
+
+	command := exec.Command("mise", "where", tool)
+	output, err = command.Output()
 	if exitError, ok := err.(*exec.ExitError); ok {
-		t.Fatalf("find %s executable with Mise: %v\n%s", tool, err, exitError.Stderr)
+		t.Fatalf("find %s installation with Mise: %v\n%s", tool, err, exitError.Stderr)
 	}
 	require.NoError(t, err)
 
-	path := strings.TrimSpace(string(output))
+	path := filepath.Join(strings.TrimSpace(string(output)), "bin", executable)
 	require.FileExists(t, path)
 	return path
+}
+
+func pulumiWithNode(t *testing.T, node string) (string, []string) {
+	t.Helper()
+
+	pulumi, err := exec.LookPath("pulumi")
+	require.NoError(t, err)
+
+	wrapper := filepath.Join(t.TempDir(), "pulumi")
+	err = os.WriteFile(wrapper, []byte(`#!/bin/sh
+export PATH="${AWSX_TEST_NODE_DIR}:${PATH}"
+exec "${AWSX_TEST_PULUMI}" "$@"
+`), 0o700)
+	require.NoError(t, err)
+
+	return wrapper, []string{
+		"AWSX_TEST_NODE_DIR=" + filepath.Dir(node),
+		"AWSX_TEST_PULUMI=" + pulumi,
+	}
 }
 
 func registerBunLink(t *testing.T, bun, bunInstall string) {
