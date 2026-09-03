@@ -64,9 +64,10 @@ jobs:
           ARCH: ${{ matrix.arch }}
           OS: ${{ matrix.os }}
           OUT: ${{ github.workspace }}/artifacts/pulumi-resource-awsx${{ matrix.os == 'windows' && '.exe' || '' }}
-          SCHEMA: ${{ github.workspace }}/provider/cmd/pulumi-resource-awsx/schema.json
+          SCHEMA: ${{ runner.temp }}/schema.json
         run: |
           mkdir -p artifacts
+          jq '.version = "0.0.0"' provider/cmd/pulumi-resource-awsx/schema.json > "$SCHEMA"
           start=$SECONDS
           (cd awsx && ./scripts/build.sh)
           duration=$((SECONDS - start))
