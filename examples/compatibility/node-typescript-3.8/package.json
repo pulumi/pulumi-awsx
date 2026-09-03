@@ -1,0 +1,14 @@
+{
+  "name": "awsx-node-typescript-3-8-compatibility",
+  "private": true,
+  "scripts": {
+    "build": "node check-types.js"
+  },
+  "dependencies": {
+    "@pulumi/awsx": "*"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.21",
+    "typescript": "3.8.3"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "skipLibCheck": true
+  },
+  "files": ["index.ts"]
+}

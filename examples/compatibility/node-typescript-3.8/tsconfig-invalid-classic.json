@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "files": ["invalid-classic.ts"]
+}

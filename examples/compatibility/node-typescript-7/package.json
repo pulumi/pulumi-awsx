@@ -1,0 +1,15 @@
+{
+  "name": "awsx-node-typescript-7-compatibility",
+  "private": true,
+  "scripts": {
+    "build": "node check-types.js"
+  },
+  "dependencies": {
+    "@pulumi/awsx": "*",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@typescript/native": "npm:typescript@7"
+  }
+}
