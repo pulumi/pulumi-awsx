@@ -26,22 +26,18 @@ function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
 }
 
 function subnetSpecNoMask() {
-  return fc.constantFrom("Private", "Public", "Isolated").map(
-    (type): SubnetSpecInputs => ({
-      type: type as SubnetTypeInputs,
-    }),
-  );
+  return fc.constantFrom("Private", "Public", "Isolated").map((type): SubnetSpecInputs => ({
+    type: type as SubnetTypeInputs,
+  }));
 }
 
 function subnetSpec() {
   return fc
     .record({ type: fc.constantFrom("Private", "Public", "Isolated"), cidrMask: cidrMask() })
-    .map(
-      ({ type, cidrMask }): SubnetSpecInputs => ({
-        type: type as SubnetTypeInputs,
-        cidrMask,
-      }),
-    );
+    .map(({ type, cidrMask }): SubnetSpecInputs => ({
+      type: type as SubnetTypeInputs,
+      cidrMask,
+    }));
 }
 
 describe("default subnet layout", () => {
