@@ -237,7 +237,7 @@ describe("validating exact layouts", () => {
           resourceName: "sub2",
         },
       ]),
-    ).toThrowError(
+    ).toThrow(
       "There are gaps in the subnet ranges. Please fix the following gaps: sub1 (10.0.0.0/18) <=> sub2 (10.0.128.0/17)",
     );
   });
@@ -253,7 +253,7 @@ describe("validating exact layouts", () => {
     );
     expect(() => {
       validatePartialSubnetSpecs(result, (ss) => validateNoGaps(vpcCidr, ss));
-    }).toThrowError(
+    }).toThrow(
       "Please fix the following gaps: vpcName-isolated-1 (ending 10.0.191.254) ends before VPC ends (at 10.0.255.254})",
     );
   });
@@ -269,7 +269,7 @@ describe("validating exact layouts", () => {
           resourceName: "sub1",
         },
       ]),
-    ).toThrowError(
+    ).toThrow(
       "Please fix the following gaps: sub1 (10.0.128.0/17) does not start at the beginning of the VPC (10.0.0.0/16)",
     );
   });
@@ -334,7 +334,7 @@ describe("validating exact layouts", () => {
         fc.property(cidrMask({ min: 27 }), (azCidrMask) => {
           expect(() => {
             defaultSubnetInputs(azCidrMask);
-          }).toThrowError();
+          }).toThrow();
         }),
       );
     });
@@ -581,7 +581,7 @@ describe("validating and normalizing inputs", () => {
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "isolated" require unique names/);
+    ).toThrow(/Multiple subnet specs of type "isolated" require unique names/);
   });
   it("allows one named and one unnamed subnet of the same type", () => {
     const result = validateAndNormalizeSubnetInputs(
@@ -603,7 +603,7 @@ describe("validating and normalizing inputs", () => {
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "public" require unique names/);
+    ).toThrow(/Multiple subnet specs of type "public" require unique names/);
   });
   it("detects duplicate subnet types with duplicate names", () => {
     expect(() =>
@@ -614,7 +614,7 @@ describe("validating and normalizing inputs", () => {
         ],
         2,
       ),
-    ).toThrowError(/Multiple subnet specs of type "public" require unique names/);
+    ).toThrow(/Multiple subnet specs of type "public" require unique names/);
   });
   it("allows duplicate subnet types with unique names", () => {
     const result = validateAndNormalizeSubnetInputs(
@@ -636,14 +636,14 @@ describe("validating and normalizing inputs", () => {
     expect(result!.normalizedSpecs).toHaveLength(3);
   });
   it("detects invalid sizes", () => {
-    expect(() => validateAndNormalizeSubnetInputs([{ type: "Public", size: 100 }], 1)).toThrowError(
+    expect(() => validateAndNormalizeSubnetInputs([{ type: "Public", size: 100 }], 1)).toThrow(
       "The following subnet sizes are invalid: 100. Valid sizes are: ",
     );
   });
   it("detects mismatched size and netmask", () => {
     expect(() =>
       validateAndNormalizeSubnetInputs([{ type: "Public", size: 4096, cidrMask: 21 }], 1),
-    ).toThrowError("Subnet size 4096 does not match the expected size for a /21 subnet (2048).");
+    ).toThrow("Subnet size 4096 does not match the expected size for a /21 subnet (2048).");
   });
   it("allows size only", () => {
     const result = validateAndNormalizeSubnetInputs([{ type: "Public", size: 1024 }], 1);
@@ -664,7 +664,7 @@ describe("validating and normalizing inputs", () => {
     it("detects block count mismatching AZ count", () => {
       expect(() =>
         validateAndNormalizeSubnetInputs([{ type: "Public", cidrBlocks: ["10.0.0.0/16"] }], 2),
-      ).toThrowError(
+      ).toThrow(
         "The number of CIDR blocks in subnetSpecs[0] must match the number of availability zones (2).",
       );
     });
@@ -674,7 +674,7 @@ describe("validating and normalizing inputs", () => {
           [{ type: "Public", cidrBlocks: ["10.0.0.0/16"] }, { type: "Private" }],
           1,
         ),
-      ).toThrowError(
+      ).toThrow(
         "If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.",
       );
     });
@@ -684,9 +684,7 @@ describe("validating and normalizing inputs", () => {
           [{ type: "Public", cidrBlocks: ["10.0.0.0/16"], cidrMask: 17 }],
           1,
         ),
-      ).toThrowError(
-        "The cidrMask in subnetSpecs[0] must match all cidrBlocks or be left undefined.",
-      );
+      ).toThrow("The cidrMask in subnetSpecs[0] must match all cidrBlocks or be left undefined.");
     });
     it("detects cidr blocks with mismatched netmask", () => {
       expect(() =>
@@ -694,7 +692,7 @@ describe("validating and normalizing inputs", () => {
           [{ type: "Public", cidrBlocks: ["10.0.0.0/16"], size: 1024 }],
           1,
         ),
-      ).toThrowError("The size in subnetSpecs[0] must match all cidrBlocks or be left undefined.");
+      ).toThrow("The size in subnetSpecs[0] must match all cidrBlocks or be left undefined.");
     });
     it("allows all argument to be in agreement", () => {
       validateAndNormalizeSubnetInputs(
