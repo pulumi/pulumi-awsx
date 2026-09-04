@@ -19,6 +19,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-platform-compatibility'
     permissions:
       contents: read
+      pull-requests: write
       id-token: write
     uses: ./.github/workflows/prerequisites.yml
     secrets: inherit
