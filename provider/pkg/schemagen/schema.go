@@ -92,9 +92,9 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"mime":                 "^2.0.0",
 				},
 				"devDependencies": map[string]string{
-					"@types/node": "^18",
+					"@types/node": "^22",
 					"@types/mime": "^2.0.0",
-					"typescript":  "^5.7.0",
+					"typescript":  "^7.0.0",
 				},
 				"respectSchemaVersion": true,
 			}),

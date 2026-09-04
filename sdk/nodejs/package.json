@@ -26,8 +26,8 @@
     },
     "devDependencies": {
         "@types/mime": "^2.0.0",
-        "@types/node": "^18",
-        "typescript": "^5.7.0"
+        "@types/node": "^22",
+        "typescript": "^7.0.0"
     },
     "pulumi": {
         "resource": true,
