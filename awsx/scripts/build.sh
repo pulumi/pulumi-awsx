@@ -43,14 +43,13 @@ esac
 TARGET="node24.20.0-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
-yarn install --no-progress --frozen-lockfile
-yarn check-duplicate-deps
-yarn gen-types
-yarn tsc
+npm ci
+npm run gen-types
+npm run tsc
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
-yarn --cwd bin version --new-version "${VERSION}" --no-git-tag-version
-yarn run pkg . --sea --target "${TARGET}" --output "${OUT}"
+npm --prefix bin version "${VERSION}" --no-git-tag-version
+npm exec -- pkg . --sea --target "${TARGET}" --output "${OUT}"
 
 if [[ "${OS}" == "windows" ]]; then
     node scripts/strip-pe-certificate.js "${OUT}"

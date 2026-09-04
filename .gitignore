@@ -24,7 +24,7 @@ ci-scripts/
 .codex/*
 !.codex/config.toml
 
-!/awsx/yarn.lock
+!/awsx/package-lock.json
 
 sdk/java/build
 sdk/java/.gradle
