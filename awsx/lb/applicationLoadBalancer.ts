@@ -44,9 +44,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
       defaultSecurityGroup,
       listener,
       listeners,
-      /* tslint:disable */ //rest args will always be last so don't have trailing commas
       ...restArgs
-      /* tslint:enable */
     } = args;
     const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
