@@ -91,26 +91,25 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.vpcId = data.vpcId;
   }
 
-  protected async initialize(props: {
-    name: string;
-    args: schema.VpcArgs;
-    opts: pulumi.ComponentResourceOptions;
-  }): Promise<VpcData> {
-    Vpc.validateVpcArgs(props.args);
+  protected async initialize(
+    inputs: schema.VpcArgs,
+    _opts: pulumi.ComponentResourceOptions,
+    name: string,
+  ): Promise<VpcData> {
+    Vpc.validateVpcArgs(inputs);
 
-    const { name } = props;
-    const endpointStrategy = props.args.vpcEndpointStrategy ?? "Legacy";
-    const endpointSpecs = (props.args.vpcEndpointSpecs ?? []).map((spec) => ({
+    const endpointStrategy = inputs.vpcEndpointStrategy ?? "Legacy";
+    const endpointSpecs = (inputs.vpcEndpointSpecs ?? []).map((spec) => ({
       spec,
       endpointType: getVpcEndpointType(spec, endpointStrategy),
     }));
     const { enableDnsHostnames, enableDnsSupport } = getVpcEndpointDnsDefaults(
-      props.args,
+      inputs,
       endpointStrategy,
       endpointSpecs,
     );
     const args: schema.VpcArgs = {
-      ...props.args,
+      ...inputs,
       enableDnsHostnames,
       enableDnsSupport,
     };
