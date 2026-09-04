@@ -44,6 +44,7 @@ TARGET="node24.20.0-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
 npm ci
+npm run check-duplicate-deps
 npm run gen-types
 npm run tsc
 cp ${SCHEMA} bin/schema.json

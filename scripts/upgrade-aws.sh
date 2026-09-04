@@ -12,6 +12,7 @@ echo "V=$VER"
 
 # Strips the v from the version to get the correct npm version.
 npm --prefix awsx install --save-exact "@pulumi/aws@${VER#v}"
+npm --prefix awsx run dedupe-deps
 
 # Upgrade our SDK go dependency.
 (cd sdk && go get -u github.com/pulumi/pulumi-aws/sdk/v7)

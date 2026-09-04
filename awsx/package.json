@@ -21,7 +21,9 @@
     "tsc": "npm run typecheck && npm run emit",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
     "emit": "node ./node_modules/typescript/bin/tsc6 --incremental --noCheck",
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "dedupe-deps": "npm dedupe",
+    "check-duplicate-deps": "npm run dedupe-deps && git diff --exit-code -- package-lock.json"
   },
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
