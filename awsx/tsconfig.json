@@ -1,12 +1,19 @@
 {
     "compilerOptions": {
         "outDir": "bin",
-        "target": "ES2017",
+        "target": "ES2022",
         "lib": [
-            "ES2019.Array"
+            "ES2022"
+        ],
+        // TypeScript 6 no longer loads visible @types packages automatically.
+        "types": [
+            "node",
+            "jest"
         ],
         "module": "commonjs",
         "moduleResolution": "node",
+        // Keep legacy CommonJS resolution until dependencies support Node16 resolution.
+        "ignoreDeprecations": "6.0",
         "sourceMap": true,
         "stripInternal": true,
         "experimentalDecorators": true,

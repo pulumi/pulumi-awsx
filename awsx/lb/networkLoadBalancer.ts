@@ -43,9 +43,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       defaultTargetGroupPort,
       listener,
       listeners,
-      /* tslint:disable */ //rest args will always be last so don't have trailing commas
       ...restArgs
-      /* tslint:enable */
     } = args;
     const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
