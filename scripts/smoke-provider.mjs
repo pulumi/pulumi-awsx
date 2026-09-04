@@ -72,10 +72,17 @@ async function startOnce() {
         settled = true;
         if (child.exitCode === null && child.signalCode === null) {
             child.kill();
-            await Promise.race([
-                new Promise((resolve) => child.once("exit", resolve)),
-                new Promise((resolve) => setTimeout(resolve, 2_000)),
-            ]);
+            await new Promise((resolve) => {
+                const onExit = () => {
+                    clearTimeout(timer);
+                    resolve();
+                };
+                const timer = setTimeout(() => {
+                    child.off("exit", onExit);
+                    resolve();
+                }, 2_000);
+                child.once("exit", onExit);
+            });
             if (child.exitCode === null && child.signalCode === null) {
                 child.kill("SIGKILL");
             }
@@ -89,7 +96,10 @@ for (let index = 0; index < iterations; index++) {
 }
 
 const timings = results.map((result) => result.startupMilliseconds).sort((a, b) => a - b);
-const median = timings[Math.floor(timings.length / 2)];
+const middle = Math.floor(timings.length / 2);
+const median = timings.length % 2 === 0
+    ? (timings[middle - 1] + timings[middle]) / 2
+    : timings[middle];
 const report = {
     executable,
     iterations,
