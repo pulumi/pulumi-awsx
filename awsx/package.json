@@ -18,12 +18,10 @@
     "format": "oxfmt --write .",
     "lint": "oxlint --deny-warnings .",
     "test": "jest",
-    "tsc": "yarn typecheck && yarn emit",
+    "tsc": "npm run typecheck && npm run emit",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
     "emit": "node ./node_modules/typescript/bin/tsc6 --incremental --noCheck",
-    "start": "ts-node index.ts",
-    "dedupe-deps": "yarn-deduplicate",
-    "check-duplicate-deps": "yarn-deduplicate --fail"
+    "start": "ts-node index.ts"
   },
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
@@ -56,9 +54,7 @@
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
     "ts-node": "^10.7.0",
-    "typedoc": "^0.25.13",
-    "typescript": "npm:@typescript/typescript6@6.0.2",
-    "yarn-deduplicate": "^6.0.2"
+    "typescript": "npm:@typescript/typescript6@6.0.2"
   },
   "jest": {
     "modulePathIgnorePatterns": [
