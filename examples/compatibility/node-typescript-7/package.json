@@ -5,7 +5,7 @@
     "build": "node check-types.js"
   },
   "dependencies": {
-    "@pulumi/awsx": "*",
+    "@pulumi/awsx": "3.9.0",
     "typescript": "npm:@typescript/typescript6@6.0.2"
   },
   "devDependencies": {
