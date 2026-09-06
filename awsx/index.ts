@@ -14,7 +14,6 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { Repository } from "./ecr";
 import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
@@ -26,7 +25,11 @@ class Provider implements pulumi.provider.Provider {
       construct: (name, type, urn) => {
         switch (type) {
           case "awsx:ecr:Repository":
-            return new Repository(name, <any>undefined, { urn });
+            return new (require("./ecr") as typeof import("./ecr")).Repository(
+              name,
+              <any>undefined,
+              { urn },
+            );
           default:
             throw new Error(`unknown resource type ${type}`);
         }

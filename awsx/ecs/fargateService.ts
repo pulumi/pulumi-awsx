@@ -44,11 +44,16 @@ export class FargateService extends schema.FargateService {
     if (args.networkConfiguration !== undefined && args.assignPublicIp !== undefined) {
       throw new Error("Only one of `networkConfiguration` or `assignPublicIp` can be provided.");
     }
+    // Forward the provider this component was given so the child AWS resources
+    // reuse it instead of triggering a separate default provider instance.
+    const provider = opts.provider;
+
     let taskDefinitionIdentifier = args.taskDefinition;
     let taskDefinition: FargateTaskDefinition | undefined;
     if (args.taskDefinitionArgs) {
       taskDefinition = new FargateTaskDefinition(name, args.taskDefinitionArgs, {
         parent: this,
+        provider,
       });
       this.taskDefinition = taskDefinition.taskDefinition;
       taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
@@ -77,7 +82,7 @@ export class FargateService extends schema.FargateService {
         ...args,
         networkConfiguration:
           args.networkConfiguration ??
-          getDefaultNetworkConfiguration(name, this, args.assignPublicIp),
+          getDefaultNetworkConfiguration(name, this, args.assignPublicIp, provider),
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
         launchType,
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
@@ -86,7 +91,7 @@ export class FargateService extends schema.FargateService {
           .apply((x) => !x),
         taskDefinition: taskDefinitionIdentifier,
       },
-      { parent: this },
+      { parent: this, provider },
     );
 
     this.registerOutputs();
@@ -97,8 +102,9 @@ function getDefaultNetworkConfiguration(
   name: string,
   parent: pulumi.Resource,
   assignPublicIp?: pulumi.Input<boolean>,
+  provider?: pulumi.ProviderResource,
 ): aws.types.input.ecs.ServiceNetworkConfiguration {
-  const defaultVpc = pulumi.output(getDefaultVpc({ parent }));
+  const defaultVpc = pulumi.output(getDefaultVpc({ parent, provider }));
   const sg = new aws.ec2.SecurityGroup(
     `${name}-sg`,
     {
@@ -124,6 +130,7 @@ function getDefaultNetworkConfiguration(
     },
     {
       parent,
+      provider,
     },
   );
   assignPublicIp = assignPublicIp ?? false;

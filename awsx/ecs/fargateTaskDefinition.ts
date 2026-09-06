@@ -56,9 +56,18 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
       },
     );
 
+    // Child AWS resources reuse the provider given to this component rather than
+    // spinning up a separate default provider instance.
+    const provider = opts.provider;
+
     const containers = normalizeTaskDefinitionContainers(args);
 
-    const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
+    const { logGroup, logGroupId } = defaultLogGroup(
+      name,
+      args.logGroup,
+      {},
+      { parent: this, provider },
+    );
     this.logGroup = logGroup;
 
     const taskRole = role.defaultRoleWithPolicies(
@@ -68,7 +77,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
         assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
         policyArns: role.defaultTaskRolePolicyARNs(),
       },
-      { parent: this },
+      { parent: this, provider },
     );
     const executionRole = role.defaultRoleWithPolicies(
       `${name}-execution`,
@@ -77,7 +86,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
         assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
         policyArns: role.defaultExecutionRolePolicyARNs(),
       },
-      { parent: this },
+      { parent: this, provider },
     );
     this.taskRole = taskRole.role;
     this.executionRole = executionRole.role;
@@ -95,7 +104,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
         taskRole.roleArn,
         executionRole.roleArn,
       ),
-      { parent: this },
+      { parent: this, provider },
     );
   }
 }
