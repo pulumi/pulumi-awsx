@@ -39,15 +39,15 @@ class ListenerArgsDict(TypedDict):
     front_end = aws.lb.LoadBalancer("front_end")
     front_end_target_group = aws.lb.TargetGroup("front_end")
     front_end_listener = aws.lb.Listener("front_end",
+        default_actions=[{
+            "type": "forward",
+            "target_group_arn": front_end_target_group.arn,
+        }],
         load_balancer_arn=front_end.arn,
         port=443,
         protocol="HTTPS",
         ssl_policy="ELBSecurityPolicy-2016-08",
-        certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-        default_actions=[{
-            "type": "forward",
-            "target_group_arn": front_end_target_group.arn,
-        }])
+        certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
     ```
 
     With weighted target groups:
@@ -60,13 +60,7 @@ class ListenerArgsDict(TypedDict):
     front_end_blue = aws.lb.TargetGroup("front_end_blue")
     front_end_green = aws.lb.TargetGroup("front_end_green")
     front_end_listener = aws.lb.Listener("front_end",
-        load_balancer_arn=front_end.arn,
-        port=443,
-        protocol="HTTPS",
-        ssl_policy="ELBSecurityPolicy-2016-08",
-        certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
         default_actions=[{
-            "type": "forward",
             "forward": {
                 "target_groups": [
                     {
@@ -79,7 +73,13 @@ class ListenerArgsDict(TypedDict):
                     },
                 ],
             },
-        }])
+            "type": "forward",
+        }],
+        load_balancer_arn=front_end.arn,
+        port=443,
+        protocol="HTTPS",
+        ssl_policy="ELBSecurityPolicy-2016-08",
+        certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
     ```
 
     To a NLB:
@@ -89,16 +89,16 @@ class ListenerArgsDict(TypedDict):
     import pulumi_aws as aws
 
     front_end = aws.lb.Listener("front_end",
+        default_actions=[{
+            "type": "forward",
+            "target_group_arn": front_end_aws_lb_target_group["arn"],
+        }],
         load_balancer_arn=front_end_aws_lb["arn"],
         port=443,
         protocol="TLS",
         ssl_policy="ELBSecurityPolicy-2016-08",
         certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-        alpn_policy="HTTP2Preferred",
-        default_actions=[{
-            "type": "forward",
-            "target_group_arn": front_end_aws_lb_target_group["arn"],
-        }])
+        alpn_policy="HTTP2Preferred")
     ```
 
     ### Redirect Action
@@ -109,17 +109,17 @@ class ListenerArgsDict(TypedDict):
 
     front_end = aws.lb.LoadBalancer("front_end")
     front_end_listener = aws.lb.Listener("front_end",
-        load_balancer_arn=front_end.arn,
-        port=80,
-        protocol="HTTP",
         default_actions=[{
-            "type": "redirect",
             "redirect": {
                 "port": "443",
                 "protocol": "HTTPS",
                 "status_code": "HTTP_301",
             },
-        }])
+            "type": "redirect",
+        }],
+        load_balancer_arn=front_end.arn,
+        port=80,
+        protocol="HTTP")
     ```
 
     ### Fixed-response Action
@@ -130,17 +130,17 @@ class ListenerArgsDict(TypedDict):
 
     front_end = aws.lb.LoadBalancer("front_end")
     front_end_listener = aws.lb.Listener("front_end",
-        load_balancer_arn=front_end.arn,
-        port=80,
-        protocol="HTTP",
         default_actions=[{
-            "type": "fixed-response",
             "fixed_response": {
                 "content_type": "text/plain",
                 "message_body": "Fixed response content",
                 "status_code": "200",
             },
-        }])
+            "type": "fixed-response",
+        }],
+        load_balancer_arn=front_end.arn,
+        port=80,
+        protocol="HTTP")
     ```
 
     ### Authenticate-cognito Action
@@ -155,23 +155,23 @@ class ListenerArgsDict(TypedDict):
     client = aws.cognito.UserPoolClient("client")
     domain = aws.cognito.UserPoolDomain("domain")
     front_end_listener = aws.lb.Listener("front_end",
-        load_balancer_arn=front_end.arn,
-        port=80,
-        protocol="HTTP",
         default_actions=[
             {
-                "type": "authenticate-cognito",
                 "authenticate_cognito": {
                     "user_pool_arn": pool.arn,
                     "user_pool_client_id": client.id,
                     "user_pool_domain": domain.domain,
                 },
+                "type": "authenticate-cognito",
             },
             {
                 "type": "forward",
                 "target_group_arn": front_end_target_group.arn,
             },
-        ])
+        ],
+        load_balancer_arn=front_end.arn,
+        port=80,
+        protocol="HTTP")
     ```
 
     ### Authenticate-OIDC Action
@@ -183,12 +183,8 @@ class ListenerArgsDict(TypedDict):
     front_end = aws.lb.LoadBalancer("front_end")
     front_end_target_group = aws.lb.TargetGroup("front_end")
     front_end_listener = aws.lb.Listener("front_end",
-        load_balancer_arn=front_end.arn,
-        port=80,
-        protocol="HTTP",
         default_actions=[
             {
-                "type": "authenticate-oidc",
                 "authenticate_oidc": {
                     "authorization_endpoint": "https://example.com/authorization_endpoint",
                     "client_id": "client_id",
@@ -197,12 +193,16 @@ class ListenerArgsDict(TypedDict):
                     "token_endpoint": "https://example.com/token_endpoint",
                     "user_info_endpoint": "https://example.com/user_info_endpoint",
                 },
+                "type": "authenticate-oidc",
             },
             {
                 "type": "forward",
                 "target_group_arn": front_end_target_group.arn,
             },
-        ])
+        ],
+        load_balancer_arn=front_end.arn,
+        port=80,
+        protocol="HTTP")
     ```
 
     ### JWT Validation Action
@@ -212,17 +212,9 @@ class ListenerArgsDict(TypedDict):
     import pulumi_aws as aws
 
     test = aws.lb.Listener("test",
-        load_balancer_arn=test_aws_lb["id"],
-        protocol="HTTPS",
-        port=443,
-        ssl_policy="ELBSecurityPolicy-2016-08",
-        certificate_arn=test_aws_iam_server_certificate["arn"],
         default_actions=[
             {
-                "type": "jwt-validation",
                 "jwt_validation": {
-                    "issuer": "https://example.com",
-                    "jwks_endpoint": "https://example.com/.well-known/jwks.json",
                     "additional_claims": [
                         {
                             "format": "string-array",
@@ -238,13 +230,21 @@ class ListenerArgsDict(TypedDict):
                             "values": ["value1"],
                         },
                     ],
+                    "issuer": "https://example.com",
+                    "jwks_endpoint": "https://example.com/.well-known/jwks.json",
                 },
+                "type": "jwt-validation",
             },
             {
                 "target_group_arn": test_aws_lb_target_group["id"],
                 "type": "forward",
             },
-        ])
+        ],
+        load_balancer_arn=test_aws_lb["id"],
+        protocol="HTTPS",
+        port=443,
+        ssl_policy="ELBSecurityPolicy-2016-08",
+        certificate_arn=test_aws_iam_server_certificate["arn"])
     ```
 
     ### Gateway Load Balancer Listener
@@ -254,26 +254,26 @@ class ListenerArgsDict(TypedDict):
     import pulumi_aws as aws
 
     example = aws.lb.LoadBalancer("example",
-        load_balancer_type="gateway",
-        name="example",
         subnet_mappings=[{
             "subnet_id": example_aws_subnet["id"],
-        }])
+        }],
+        load_balancer_type="gateway",
+        name="example")
     example_target_group = aws.lb.TargetGroup("example",
-        name="example",
-        port=6081,
-        protocol="GENEVE",
-        vpc_id=example_aws_vpc["id"],
         health_check={
             "port": "80",
             "protocol": "HTTP",
-        })
+        },
+        name="example",
+        port=6081,
+        protocol="GENEVE",
+        vpc_id=example_aws_vpc["id"])
     example_listener = aws.lb.Listener("example",
-        load_balancer_arn=example.id,
         default_actions=[{
             "target_group_arn": example_target_group.id,
             "type": "forward",
-        }])
+        }],
+        load_balancer_arn=example.id)
     ```
 
     ### Mutual TLS Authentication
@@ -285,15 +285,15 @@ class ListenerArgsDict(TypedDict):
     example = aws.lb.LoadBalancer("example", load_balancer_type="application")
     example_target_group = aws.lb.TargetGroup("example")
     example_listener = aws.lb.Listener("example",
-        load_balancer_arn=example.id,
+        mutual_authentication={
+            "mode": "verify",
+            "trust_store_arn": "...",
+        },
         default_actions=[{
             "target_group_arn": example_target_group.id,
             "type": "forward",
         }],
-        mutual_authentication={
-            "mode": "verify",
-            "trust_store_arn": "...",
-        })
+        load_balancer_arn=example.id)
     ```
 
     ## Import
@@ -302,7 +302,7 @@ class ListenerArgsDict(TypedDict):
 
     #### Required
 
-    - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+    - `arn` (String) ARN of the load balancer listener.
 
     Using `pulumi import`, import listeners using their ARN. For example:
 
@@ -477,15 +477,15 @@ class ListenerArgs:
         front_end = aws.lb.LoadBalancer("front_end")
         front_end_target_group = aws.lb.TargetGroup("front_end")
         front_end_listener = aws.lb.Listener("front_end",
+            default_actions=[{
+                "type": "forward",
+                "target_group_arn": front_end_target_group.arn,
+            }],
             load_balancer_arn=front_end.arn,
             port=443,
             protocol="HTTPS",
             ssl_policy="ELBSecurityPolicy-2016-08",
-            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-            default_actions=[{
-                "type": "forward",
-                "target_group_arn": front_end_target_group.arn,
-            }])
+            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
         ```
 
         With weighted target groups:
@@ -498,13 +498,7 @@ class ListenerArgs:
         front_end_blue = aws.lb.TargetGroup("front_end_blue")
         front_end_green = aws.lb.TargetGroup("front_end_green")
         front_end_listener = aws.lb.Listener("front_end",
-            load_balancer_arn=front_end.arn,
-            port=443,
-            protocol="HTTPS",
-            ssl_policy="ELBSecurityPolicy-2016-08",
-            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
             default_actions=[{
-                "type": "forward",
                 "forward": {
                     "target_groups": [
                         {
@@ -517,7 +511,13 @@ class ListenerArgs:
                         },
                     ],
                 },
-            }])
+                "type": "forward",
+            }],
+            load_balancer_arn=front_end.arn,
+            port=443,
+            protocol="HTTPS",
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
         ```
 
         To a NLB:
@@ -527,16 +527,16 @@ class ListenerArgs:
         import pulumi_aws as aws
 
         front_end = aws.lb.Listener("front_end",
+            default_actions=[{
+                "type": "forward",
+                "target_group_arn": front_end_aws_lb_target_group["arn"],
+            }],
             load_balancer_arn=front_end_aws_lb["arn"],
             port=443,
             protocol="TLS",
             ssl_policy="ELBSecurityPolicy-2016-08",
             certificate_arn="arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-            alpn_policy="HTTP2Preferred",
-            default_actions=[{
-                "type": "forward",
-                "target_group_arn": front_end_aws_lb_target_group["arn"],
-            }])
+            alpn_policy="HTTP2Preferred")
         ```
 
         ### Redirect Action
@@ -547,17 +547,17 @@ class ListenerArgs:
 
         front_end = aws.lb.LoadBalancer("front_end")
         front_end_listener = aws.lb.Listener("front_end",
-            load_balancer_arn=front_end.arn,
-            port=80,
-            protocol="HTTP",
             default_actions=[{
-                "type": "redirect",
                 "redirect": {
                     "port": "443",
                     "protocol": "HTTPS",
                     "status_code": "HTTP_301",
                 },
-            }])
+                "type": "redirect",
+            }],
+            load_balancer_arn=front_end.arn,
+            port=80,
+            protocol="HTTP")
         ```
 
         ### Fixed-response Action
@@ -568,17 +568,17 @@ class ListenerArgs:
 
         front_end = aws.lb.LoadBalancer("front_end")
         front_end_listener = aws.lb.Listener("front_end",
-            load_balancer_arn=front_end.arn,
-            port=80,
-            protocol="HTTP",
             default_actions=[{
-                "type": "fixed-response",
                 "fixed_response": {
                     "content_type": "text/plain",
                     "message_body": "Fixed response content",
                     "status_code": "200",
                 },
-            }])
+                "type": "fixed-response",
+            }],
+            load_balancer_arn=front_end.arn,
+            port=80,
+            protocol="HTTP")
         ```
 
         ### Authenticate-cognito Action
@@ -593,23 +593,23 @@ class ListenerArgs:
         client = aws.cognito.UserPoolClient("client")
         domain = aws.cognito.UserPoolDomain("domain")
         front_end_listener = aws.lb.Listener("front_end",
-            load_balancer_arn=front_end.arn,
-            port=80,
-            protocol="HTTP",
             default_actions=[
                 {
-                    "type": "authenticate-cognito",
                     "authenticate_cognito": {
                         "user_pool_arn": pool.arn,
                         "user_pool_client_id": client.id,
                         "user_pool_domain": domain.domain,
                     },
+                    "type": "authenticate-cognito",
                 },
                 {
                     "type": "forward",
                     "target_group_arn": front_end_target_group.arn,
                 },
-            ])
+            ],
+            load_balancer_arn=front_end.arn,
+            port=80,
+            protocol="HTTP")
         ```
 
         ### Authenticate-OIDC Action
@@ -621,12 +621,8 @@ class ListenerArgs:
         front_end = aws.lb.LoadBalancer("front_end")
         front_end_target_group = aws.lb.TargetGroup("front_end")
         front_end_listener = aws.lb.Listener("front_end",
-            load_balancer_arn=front_end.arn,
-            port=80,
-            protocol="HTTP",
             default_actions=[
                 {
-                    "type": "authenticate-oidc",
                     "authenticate_oidc": {
                         "authorization_endpoint": "https://example.com/authorization_endpoint",
                         "client_id": "client_id",
@@ -635,12 +631,16 @@ class ListenerArgs:
                         "token_endpoint": "https://example.com/token_endpoint",
                         "user_info_endpoint": "https://example.com/user_info_endpoint",
                     },
+                    "type": "authenticate-oidc",
                 },
                 {
                     "type": "forward",
                     "target_group_arn": front_end_target_group.arn,
                 },
-            ])
+            ],
+            load_balancer_arn=front_end.arn,
+            port=80,
+            protocol="HTTP")
         ```
 
         ### JWT Validation Action
@@ -650,17 +650,9 @@ class ListenerArgs:
         import pulumi_aws as aws
 
         test = aws.lb.Listener("test",
-            load_balancer_arn=test_aws_lb["id"],
-            protocol="HTTPS",
-            port=443,
-            ssl_policy="ELBSecurityPolicy-2016-08",
-            certificate_arn=test_aws_iam_server_certificate["arn"],
             default_actions=[
                 {
-                    "type": "jwt-validation",
                     "jwt_validation": {
-                        "issuer": "https://example.com",
-                        "jwks_endpoint": "https://example.com/.well-known/jwks.json",
                         "additional_claims": [
                             {
                                 "format": "string-array",
@@ -676,13 +668,21 @@ class ListenerArgs:
                                 "values": ["value1"],
                             },
                         ],
+                        "issuer": "https://example.com",
+                        "jwks_endpoint": "https://example.com/.well-known/jwks.json",
                     },
+                    "type": "jwt-validation",
                 },
                 {
                     "target_group_arn": test_aws_lb_target_group["id"],
                     "type": "forward",
                 },
-            ])
+            ],
+            load_balancer_arn=test_aws_lb["id"],
+            protocol="HTTPS",
+            port=443,
+            ssl_policy="ELBSecurityPolicy-2016-08",
+            certificate_arn=test_aws_iam_server_certificate["arn"])
         ```
 
         ### Gateway Load Balancer Listener
@@ -692,26 +692,26 @@ class ListenerArgs:
         import pulumi_aws as aws
 
         example = aws.lb.LoadBalancer("example",
-            load_balancer_type="gateway",
-            name="example",
             subnet_mappings=[{
                 "subnet_id": example_aws_subnet["id"],
-            }])
+            }],
+            load_balancer_type="gateway",
+            name="example")
         example_target_group = aws.lb.TargetGroup("example",
-            name="example",
-            port=6081,
-            protocol="GENEVE",
-            vpc_id=example_aws_vpc["id"],
             health_check={
                 "port": "80",
                 "protocol": "HTTP",
-            })
+            },
+            name="example",
+            port=6081,
+            protocol="GENEVE",
+            vpc_id=example_aws_vpc["id"])
         example_listener = aws.lb.Listener("example",
-            load_balancer_arn=example.id,
             default_actions=[{
                 "target_group_arn": example_target_group.id,
                 "type": "forward",
-            }])
+            }],
+            load_balancer_arn=example.id)
         ```
 
         ### Mutual TLS Authentication
@@ -723,15 +723,15 @@ class ListenerArgs:
         example = aws.lb.LoadBalancer("example", load_balancer_type="application")
         example_target_group = aws.lb.TargetGroup("example")
         example_listener = aws.lb.Listener("example",
-            load_balancer_arn=example.id,
+            mutual_authentication={
+                "mode": "verify",
+                "trust_store_arn": "...",
+            },
             default_actions=[{
                 "target_group_arn": example_target_group.id,
                 "type": "forward",
             }],
-            mutual_authentication={
-                "mode": "verify",
-                "trust_store_arn": "...",
-            })
+            load_balancer_arn=example.id)
         ```
 
         ## Import
@@ -740,7 +740,7 @@ class ListenerArgs:
 
         #### Required
 
-        - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+        - `arn` (String) ARN of the load balancer listener.
 
         Using `pulumi import`, import listeners using their ARN. For example:
 
@@ -1260,13 +1260,13 @@ class TargetGroupArgsDict(TypedDict):
     import pulumi_aws as aws
 
     tcp_example = aws.lb.TargetGroup("tcp-example",
+        target_health_states=[{
+            "enable_unhealthy_connection_termination": False,
+        }],
         name="tf-example-lb-nlb-tg",
         port=25,
         protocol="TCP",
-        vpc_id=main["id"],
-        target_health_states=[{
-            "enable_unhealthy_connection_termination": False,
-        }])
+        vpc_id=main["id"])
     ```
 
     ### Target group with health requirements
@@ -1276,10 +1276,6 @@ class TargetGroupArgsDict(TypedDict):
     import pulumi_aws as aws
 
     tcp_example = aws.lb.TargetGroup("tcp-example",
-        name="tf-example-lb-nlb-tg",
-        port=80,
-        protocol="TCP",
-        vpc_id=main["id"],
         target_group_health={
             "dns_failover": {
                 "minimum_healthy_targets_count": "1",
@@ -1289,7 +1285,11 @@ class TargetGroupArgsDict(TypedDict):
                 "minimum_healthy_targets_count": 1,
                 "minimum_healthy_targets_percentage": "off",
             },
-        })
+        },
+        name="tf-example-lb-nlb-tg",
+        port=80,
+        protocol="TCP",
+        vpc_id=main["id"])
     ```
 
     ## Import
@@ -1298,7 +1298,7 @@ class TargetGroupArgsDict(TypedDict):
 
     #### Required
 
-    - `arn` (String) Amazon Resource Name (ARN) of the target group.
+    - `arn` (String) ARN of the target group.
 
     Using `pulumi import`, import Target Groups using their ARN. For example:
 
@@ -1409,7 +1409,7 @@ class TargetGroupArgsDict(TypedDict):
 
     Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 
-    If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+    If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 
     Network Load Balancers do not support the `lambda` target type.
 
@@ -1516,13 +1516,13 @@ class TargetGroupArgs:
         import pulumi_aws as aws
 
         tcp_example = aws.lb.TargetGroup("tcp-example",
+            target_health_states=[{
+                "enable_unhealthy_connection_termination": False,
+            }],
             name="tf-example-lb-nlb-tg",
             port=25,
             protocol="TCP",
-            vpc_id=main["id"],
-            target_health_states=[{
-                "enable_unhealthy_connection_termination": False,
-            }])
+            vpc_id=main["id"])
         ```
 
         ### Target group with health requirements
@@ -1532,10 +1532,6 @@ class TargetGroupArgs:
         import pulumi_aws as aws
 
         tcp_example = aws.lb.TargetGroup("tcp-example",
-            name="tf-example-lb-nlb-tg",
-            port=80,
-            protocol="TCP",
-            vpc_id=main["id"],
             target_group_health={
                 "dns_failover": {
                     "minimum_healthy_targets_count": "1",
@@ -1545,7 +1541,11 @@ class TargetGroupArgs:
                     "minimum_healthy_targets_count": 1,
                     "minimum_healthy_targets_percentage": "off",
                 },
-            })
+            },
+            name="tf-example-lb-nlb-tg",
+            port=80,
+            protocol="TCP",
+            vpc_id=main["id"])
         ```
 
         ## Import
@@ -1554,7 +1554,7 @@ class TargetGroupArgs:
 
         #### Required
 
-        - `arn` (String) Amazon Resource Name (ARN) of the target group.
+        - `arn` (String) ARN of the target group.
 
         Using `pulumi import`, import Target Groups using their ARN. For example:
 
@@ -1595,7 +1595,7 @@ class TargetGroupArgs:
                
                Note that you can't specify targets for a target group using both instance IDs and IP addresses.
                
-               If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+               If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
                
                Network Load Balancers do not support the `lambda` target type.
                
@@ -1942,7 +1942,7 @@ class TargetGroupArgs:
 
         Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 
-        If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+        If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 
         Network Load Balancers do not support the `lambda` target type.
 

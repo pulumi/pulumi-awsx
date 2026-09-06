@@ -43,17 +43,17 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -91,14 +91,8 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("forward"),
 //						Forward: &lb.ListenerDefaultActionForwardArgs{
 //							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
 //								&lb.ListenerDefaultActionForwardTargetGroupArgs{
@@ -111,8 +105,14 @@ var _ = internal.GetEnvOrDefault
 //								},
 //							},
 //						},
+//						Type: pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -138,18 +138,18 @@ var _ = internal.GetEnvOrDefault
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //			})
 //			if err != nil {
 //				return err
@@ -179,19 +179,19 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
 //						Redirect: &lb.ListenerDefaultActionRedirectArgs{
 //							Port:       pulumi.String("443"),
 //							Protocol:   pulumi.String("HTTPS"),
 //							StatusCode: pulumi.String("HTTP_301"),
 //						},
+//						Type: pulumi.String("redirect"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -221,19 +221,19 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
 //						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
 //							ContentType: pulumi.String("text/plain"),
 //							MessageBody: pulumi.String("Fixed response content"),
 //							StatusCode:  pulumi.String("200"),
 //						},
+//						Type: pulumi.String("fixed-response"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -280,23 +280,23 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
 //							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
+//						Type: pulumi.String("authenticate-cognito"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -330,12 +330,8 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
 //						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
 //							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
 //							ClientId:              pulumi.String("client_id"),
@@ -344,12 +340,16 @@ var _ = internal.GetEnvOrDefault
 //							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
 //							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
 //						},
+//						Type: pulumi.String("authenticate-oidc"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -375,17 +375,9 @@ var _ = internal.GetEnvOrDefault
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
-//				Protocol:        pulumi.String("HTTPS"),
-//				Port:            pulumi.Int(443),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("jwt-validation"),
 //						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
-//							Issuer:       pulumi.String("https://example.com"),
-//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
 //								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
 //									Format: pulumi.String("string-array"),
@@ -403,13 +395,21 @@ var _ = internal.GetEnvOrDefault
 //									},
 //								},
 //							},
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //						},
+//						Type: pulumi.String("jwt-validation"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //			})
 //			if err != nil {
 //				return err
@@ -435,38 +435,38 @@ var _ = internal.GetEnvOrDefault
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			example, err := lb.NewLoadBalancer(ctx, "example", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				Name:             pulumi.String("example"),
 //				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
 //					&lb.LoadBalancerSubnetMappingArgs{
 //						SubnetId: pulumi.Any(exampleAwsSubnet.Id),
 //					},
 //				},
+//				LoadBalancerType: pulumi.String("gateway"),
+//				Name:             pulumi.String("example"),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("example"),
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //				HealthCheck: &lb.TargetGroupHealthCheckArgs{
 //					Port:     pulumi.String("80"),
 //					Protocol: pulumi.String("HTTP"),
 //				},
+//				Name:     pulumi.String("example"),
+//				Port:     pulumi.Int(6081),
+//				Protocol: pulumi.String("GENEVE"),
+//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -502,17 +502,17 @@ var _ = internal.GetEnvOrDefault
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
+//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
+//					Mode:          pulumi.String("verify"),
+//					TrustStoreArn: pulumi.String("..."),
+//				},
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
-//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
-//					Mode:          pulumi.String("verify"),
-//					TrustStoreArn: pulumi.String("..."),
-//				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -529,7 +529,7 @@ var _ = internal.GetEnvOrDefault
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+// - `arn` (String) ARN of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
 //
@@ -639,17 +639,17 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -687,14 +687,8 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("forward"),
 //						Forward: &lb.ListenerDefaultActionForwardArgs{
 //							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
 //								&lb.ListenerDefaultActionForwardTargetGroupArgs{
@@ -707,8 +701,14 @@ type ListenerInput interface {
 //								},
 //							},
 //						},
+//						Type: pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -734,18 +734,18 @@ type ListenerInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //			})
 //			if err != nil {
 //				return err
@@ -775,19 +775,19 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
 //						Redirect: &lb.ListenerDefaultActionRedirectArgs{
 //							Port:       pulumi.String("443"),
 //							Protocol:   pulumi.String("HTTPS"),
 //							StatusCode: pulumi.String("HTTP_301"),
 //						},
+//						Type: pulumi.String("redirect"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -817,19 +817,19 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
 //						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
 //							ContentType: pulumi.String("text/plain"),
 //							MessageBody: pulumi.String("Fixed response content"),
 //							StatusCode:  pulumi.String("200"),
 //						},
+//						Type: pulumi.String("fixed-response"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -876,23 +876,23 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
 //							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
+//						Type: pulumi.String("authenticate-cognito"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -926,12 +926,8 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
 //						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
 //							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
 //							ClientId:              pulumi.String("client_id"),
@@ -940,12 +936,16 @@ type ListenerInput interface {
 //							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
 //							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
 //						},
+//						Type: pulumi.String("authenticate-oidc"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -971,17 +971,9 @@ type ListenerInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
-//				Protocol:        pulumi.String("HTTPS"),
-//				Port:            pulumi.Int(443),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("jwt-validation"),
 //						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
-//							Issuer:       pulumi.String("https://example.com"),
-//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
 //								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
 //									Format: pulumi.String("string-array"),
@@ -999,13 +991,21 @@ type ListenerInput interface {
 //									},
 //								},
 //							},
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //						},
+//						Type: pulumi.String("jwt-validation"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //			})
 //			if err != nil {
 //				return err
@@ -1031,38 +1031,38 @@ type ListenerInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			example, err := lb.NewLoadBalancer(ctx, "example", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				Name:             pulumi.String("example"),
 //				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
 //					&lb.LoadBalancerSubnetMappingArgs{
 //						SubnetId: pulumi.Any(exampleAwsSubnet.Id),
 //					},
 //				},
+//				LoadBalancerType: pulumi.String("gateway"),
+//				Name:             pulumi.String("example"),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("example"),
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //				HealthCheck: &lb.TargetGroupHealthCheckArgs{
 //					Port:     pulumi.String("80"),
 //					Protocol: pulumi.String("HTTP"),
 //				},
+//				Name:     pulumi.String("example"),
+//				Port:     pulumi.Int(6081),
+//				Protocol: pulumi.String("GENEVE"),
+//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -1098,17 +1098,17 @@ type ListenerInput interface {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
+//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
+//					Mode:          pulumi.String("verify"),
+//					TrustStoreArn: pulumi.String("..."),
+//				},
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
-//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
-//					Mode:          pulumi.String("verify"),
-//					TrustStoreArn: pulumi.String("..."),
-//				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -1125,7 +1125,7 @@ type ListenerInput interface {
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+// - `arn` (String) ARN of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
 //
@@ -1302,17 +1302,17 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -1350,14 +1350,8 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("forward"),
 //						Forward: &lb.ListenerDefaultActionForwardArgs{
 //							TargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{
 //								&lb.ListenerDefaultActionForwardTargetGroupArgs{
@@ -1370,8 +1364,14 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //								},
 //							},
 //						},
+//						Type: pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("HTTPS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
 //			})
 //			if err != nil {
 //				return err
@@ -1397,18 +1397,18 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),
+//				Port:            pulumi.Int(443),
+//				Protocol:        pulumi.String("TLS"),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
 //			})
 //			if err != nil {
 //				return err
@@ -1438,19 +1438,19 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
 //						Redirect: &lb.ListenerDefaultActionRedirectArgs{
 //							Port:       pulumi.String("443"),
 //							Protocol:   pulumi.String("HTTPS"),
 //							StatusCode: pulumi.String("HTTP_301"),
 //						},
+//						Type: pulumi.String("redirect"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -1480,19 +1480,19 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
 //						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
 //							ContentType: pulumi.String("text/plain"),
 //							MessageBody: pulumi.String("Fixed response content"),
 //							StatusCode:  pulumi.String("200"),
 //						},
+//						Type: pulumi.String("fixed-response"),
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -1539,23 +1539,23 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
 //						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
 //							UserPoolArn:      pool.Arn,
 //							UserPoolClientId: client.ID().ToIDOutput().ToStringOutput(),
 //							UserPoolDomain:   domain.Domain,
 //						},
+//						Type: pulumi.String("authenticate-cognito"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -1589,12 +1589,8 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "front_end", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEnd.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
 //						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
 //							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
 //							ClientId:              pulumi.String("client_id"),
@@ -1603,12 +1599,16 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
 //							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
 //						},
+//						Type: pulumi.String("authenticate-oidc"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						Type:           pulumi.String("forward"),
 //						TargetGroupArn: frontEndTargetGroup.Arn,
 //					},
 //				},
+//				LoadBalancerArn: frontEnd.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
 //			})
 //			if err != nil {
 //				return err
@@ -1634,17 +1634,9 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewListener(ctx, "test", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
-//				Protocol:        pulumi.String("HTTPS"),
-//				Port:            pulumi.Int(443),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("jwt-validation"),
 //						JwtValidation: &lb.ListenerDefaultActionJwtValidationArgs{
-//							Issuer:       pulumi.String("https://example.com"),
-//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //							AdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{
 //								&lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{
 //									Format: pulumi.String("string-array"),
@@ -1662,13 +1654,21 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //									},
 //								},
 //							},
+//							Issuer:       pulumi.String("https://example.com"),
+//							JwksEndpoint: pulumi.String("https://example.com/.well-known/jwks.json"),
 //						},
+//						Type: pulumi.String("jwt-validation"),
 //					},
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: pulumi.Any(testAwsLb.Id),
+//				Protocol:        pulumi.String("HTTPS"),
+//				Port:            pulumi.Int(443),
+//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+//				CertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),
 //			})
 //			if err != nil {
 //				return err
@@ -1694,38 +1694,38 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			example, err := lb.NewLoadBalancer(ctx, "example", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				Name:             pulumi.String("example"),
 //				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
 //					&lb.LoadBalancerSubnetMappingArgs{
 //						SubnetId: pulumi.Any(exampleAwsSubnet.Id),
 //					},
 //				},
+//				LoadBalancerType: pulumi.String("gateway"),
+//				Name:             pulumi.String("example"),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("example"),
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //				HealthCheck: &lb.TargetGroupHealthCheckArgs{
 //					Port:     pulumi.String("80"),
 //					Protocol: pulumi.String("HTTP"),
 //				},
+//				Name:     pulumi.String("example"),
+//				Port:     pulumi.Int(6081),
+//				Protocol: pulumi.String("GENEVE"),
+//				VpcId:    pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -1761,17 +1761,17 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //				return err
 //			}
 //			_, err = lb.NewListener(ctx, "example", &lb.ListenerArgs{
-//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
+//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
+//					Mode:          pulumi.String("verify"),
+//					TrustStoreArn: pulumi.String("..."),
+//				},
 //				DefaultActions: lb.ListenerDefaultActionArray{
 //					&lb.ListenerDefaultActionArgs{
 //						TargetGroupArn: exampleTargetGroup.ID().ToIDOutput().ToStringOutput(),
 //						Type:           pulumi.String("forward"),
 //					},
 //				},
-//				MutualAuthentication: &lb.ListenerMutualAuthenticationArgs{
-//					Mode:          pulumi.String("verify"),
-//					TrustStoreArn: pulumi.String("..."),
-//				},
+//				LoadBalancerArn: example.ID().ToIDOutput().ToStringOutput(),
 //			})
 //			if err != nil {
 //				return err
@@ -1788,7 +1788,7 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+// - `arn` (String) ARN of the load balancer listener.
 //
 // Using `pulumi import`, import listeners using their ARN. For example:
 //
@@ -2453,15 +2453,15 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(25),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
 //					&lb.TargetGroupTargetHealthStateArgs{
 //						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -2487,10 +2487,6 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
 //					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
 //						MinimumHealthyTargetsCount:      pulumi.String("1"),
@@ -2501,6 +2497,10 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //						MinimumHealthyTargetsPercentage: pulumi.String("off"),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -2517,7 +2517,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the target group.
+// - `arn` (String) ARN of the target group.
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
@@ -2580,7 +2580,7 @@ type TargetGroup struct {
 	//
 	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 	//
-	// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+	// If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 	//
 	// Network Load Balancers do not support the `lambda` target type.
 	//
@@ -2752,15 +2752,15 @@ type TargetGroupInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(25),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
 //					&lb.TargetGroupTargetHealthStateArgs{
 //						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -2786,10 +2786,6 @@ type TargetGroupInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
 //					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
 //						MinimumHealthyTargetsCount:      pulumi.String("1"),
@@ -2800,6 +2796,10 @@ type TargetGroupInput interface {
 //						MinimumHealthyTargetsPercentage: pulumi.String("off"),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -2816,7 +2816,7 @@ type TargetGroupInput interface {
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the target group.
+// - `arn` (String) ARN of the target group.
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
@@ -2879,7 +2879,7 @@ type TargetGroupArgs struct {
 	//
 	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 	//
-	// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+	// If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 	//
 	// Network Load Balancers do not support the `lambda` target type.
 	//
@@ -3093,15 +3093,15 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(25),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
 //					&lb.TargetGroupTargetHealthStateArgs{
 //						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -3127,10 +3127,6 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
-//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("TCP"),
-//				VpcId:    pulumi.Any(main.Id),
 //				TargetGroupHealth: &lb.TargetGroupTargetGroupHealthArgs{
 //					DnsFailover: &lb.TargetGroupTargetGroupHealthDnsFailoverArgs{
 //						MinimumHealthyTargetsCount:      pulumi.String("1"),
@@ -3141,6 +3137,10 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //						MinimumHealthyTargetsPercentage: pulumi.String("off"),
 //					},
 //				},
+//				Name:     pulumi.String("tf-example-lb-nlb-tg"),
+//				Port:     pulumi.Int(80),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(main.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -3157,7 +3157,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //
 // #### Required
 //
-// - `arn` (String) Amazon Resource Name (ARN) of the target group.
+// - `arn` (String) ARN of the target group.
 //
 // Using `pulumi import`, import Target Groups using their ARN. For example:
 //
@@ -3312,7 +3312,7 @@ func (o TargetGroupOutput) TargetHealthStates() lb.TargetGroupTargetHealthStateA
 //
 // Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 //
-// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+// If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 //
 // Network Load Balancers do not support the `lambda` target type.
 //
@@ -3589,7 +3589,7 @@ func (o TargetGroupPtrOutput) TargetHealthStates() lb.TargetGroupTargetHealthSta
 //
 // Note that you can't specify targets for a target group using both instance IDs and IP addresses.
 //
-// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+// If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
 //
 // Network Load Balancers do not support the `lambda` target type.
 //

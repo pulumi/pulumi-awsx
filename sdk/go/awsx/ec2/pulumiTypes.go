@@ -549,9 +549,6 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(example.Id),
-//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
-//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
 //					&ec2.VpcEndpointSubnetConfigurationArgs{
 //						Ipv4:     pulumi.String("10.0.1.10"),
@@ -562,6 +559,9 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //						SubnetId: pulumi.Any(example2.Id),
 //					},
 //				},
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetIds: pulumi.StringArray{
 //					example1.Id,
 //					example2.Id,
@@ -959,9 +959,6 @@ type VpcEndpointSpecInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(example.Id),
-//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
-//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
 //					&ec2.VpcEndpointSubnetConfigurationArgs{
 //						Ipv4:     pulumi.String("10.0.1.10"),
@@ -972,6 +969,9 @@ type VpcEndpointSpecInput interface {
 //						SubnetId: pulumi.Any(example2.Id),
 //					},
 //				},
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetIds: pulumi.StringArray{
 //					example1.Id,
 //					example2.Id,
@@ -1395,9 +1395,6 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(example.Id),
-//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
-//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetConfigurations: ec2.VpcEndpointSubnetConfigurationArray{
 //					&ec2.VpcEndpointSubnetConfigurationArgs{
 //						Ipv4:     pulumi.String("10.0.1.10"),
@@ -1408,6 +1405,9 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //						SubnetId: pulumi.Any(example2.Id),
 //					},
 //				},
+//				VpcId:           pulumi.Any(example.Id),
+//				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
+//				VpcEndpointType: pulumi.String("Interface"),
 //				SubnetIds: pulumi.StringArray{
 //					example1.Id,
 //					example2.Id,

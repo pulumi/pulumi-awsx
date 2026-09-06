@@ -26,14 +26,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     public static final VpcArgs Empty = new VpcArgs();
 
     /**
-     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
+     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`.
      * 
      */
     @Import(name="assignGeneratedIpv6CidrBlock")
     private @Nullable Output<Boolean> assignGeneratedIpv6CidrBlock;
 
     /**
-     * @return Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
+     * @return Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`.
      * 
      */
     public Optional<Output<Boolean>> assignGeneratedIpv6CidrBlock() {
@@ -86,14 +86,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
+     * Whether to enable DNS hostnames in the VPC. Defaults to `false`.
      * 
      */
     @Import(name="enableDnsHostnames")
     private @Nullable Output<Boolean> enableDnsHostnames;
 
     /**
-     * @return A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
+     * @return Whether to enable DNS hostnames in the VPC. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableDnsHostnames() {
@@ -101,14 +101,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+     * Whether to enable DNS support in the VPC. Defaults to `true`.
      * 
      */
     @Import(name="enableDnsSupport")
     private @Nullable Output<Boolean> enableDnsSupport;
 
     /**
-     * @return A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+     * @return Whether to enable DNS support in the VPC. Defaults to `true`.
      * 
      */
     public Optional<Output<Boolean>> enableDnsSupport() {
@@ -116,14 +116,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+     * Whether to enable Network Address Usage metrics for your VPC. Defaults to `false`.
      * 
      */
     @Import(name="enableNetworkAddressUsageMetrics")
     private @Nullable Output<Boolean> enableNetworkAddressUsageMetrics;
 
     /**
-     * @return Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+     * @return Whether to enable Network Address Usage metrics for your VPC. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableNetworkAddressUsageMetrics() {
@@ -131,14 +131,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+     * Tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
      * 
      */
     @Import(name="instanceTenancy")
     private @Nullable Output<String> instanceTenancy;
 
     /**
-     * @return A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+     * @return Tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
      * 
      */
     public Optional<Output<String>> instanceTenancy() {
@@ -146,14 +146,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
+     * ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
      * 
      */
     @Import(name="ipv4IpamPoolId")
     private @Nullable Output<String> ipv4IpamPoolId;
 
     /**
-     * @return The ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
+     * @return ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
      * 
      */
     public Optional<Output<String>> ipv4IpamPoolId() {
@@ -161,14 +161,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
+     * Netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
      * 
      */
     @Import(name="ipv4NetmaskLength")
     private @Nullable Output<Integer> ipv4NetmaskLength;
 
     /**
-     * @return The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
+     * @return Netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
      * 
      */
     public Optional<Output<Integer>> ipv4NetmaskLength() {
@@ -326,14 +326,14 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * @return Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -417,7 +417,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param assignGeneratedIpv6CidrBlock Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
+         * @param assignGeneratedIpv6CidrBlock Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`.
          * 
          * @return builder
          * 
@@ -428,7 +428,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param assignGeneratedIpv6CidrBlock Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
+         * @param assignGeneratedIpv6CidrBlock Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`.
          * 
          * @return builder
          * 
@@ -481,7 +481,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsHostnames A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
+         * @param enableDnsHostnames Whether to enable DNS hostnames in the VPC. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -492,7 +492,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsHostnames A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
+         * @param enableDnsHostnames Whether to enable DNS hostnames in the VPC. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -502,7 +502,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+         * @param enableDnsSupport Whether to enable DNS support in the VPC. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -513,7 +513,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+         * @param enableDnsSupport Whether to enable DNS support in the VPC. Defaults to `true`.
          * 
          * @return builder
          * 
@@ -523,7 +523,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+         * @param enableNetworkAddressUsageMetrics Whether to enable Network Address Usage metrics for your VPC. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -534,7 +534,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+         * @param enableNetworkAddressUsageMetrics Whether to enable Network Address Usage metrics for your VPC. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -544,7 +544,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param instanceTenancy A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+         * @param instanceTenancy Tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
          * 
          * @return builder
          * 
@@ -555,7 +555,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param instanceTenancy A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+         * @param instanceTenancy Tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
          * 
          * @return builder
          * 
@@ -565,7 +565,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ipv4IpamPoolId The ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
+         * @param ipv4IpamPoolId ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
          * 
          * @return builder
          * 
@@ -576,7 +576,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ipv4IpamPoolId The ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
+         * @param ipv4IpamPoolId ID of an IPv4 IPAM pool you want to use for allocating this VPC&#39;s CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
          * 
          * @return builder
          * 
@@ -586,7 +586,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ipv4NetmaskLength The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
+         * @param ipv4NetmaskLength Netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
          * 
          * @return builder
          * 
@@ -597,7 +597,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ipv4NetmaskLength The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
+         * @param ipv4NetmaskLength Netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
          * 
          * @return builder
          * 
@@ -777,7 +777,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -788,7 +788,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param tags A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * @param tags Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 

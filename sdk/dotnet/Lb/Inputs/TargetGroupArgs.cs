@@ -123,10 +123,6 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// {
     ///     var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
     ///     {
-    ///         Name = "tf-example-lb-nlb-tg",
-    ///         Port = 25,
-    ///         Protocol = "TCP",
-    ///         VpcId = main.Id,
     ///         TargetHealthStates = new[]
     ///         {
     ///             new Aws.LB.Inputs.TargetGroupTargetHealthStateArgs
@@ -134,6 +130,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///                 EnableUnhealthyConnectionTermination = false,
     ///             },
     ///         },
+    ///         Name = "tf-example-lb-nlb-tg",
+    ///         Port = 25,
+    ///         Protocol = "TCP",
+    ///         VpcId = main.Id,
     ///     });
     /// 
     /// });
@@ -151,10 +151,6 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// {
     ///     var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
     ///     {
-    ///         Name = "tf-example-lb-nlb-tg",
-    ///         Port = 80,
-    ///         Protocol = "TCP",
-    ///         VpcId = main.Id,
     ///         TargetGroupHealth = new Aws.LB.Inputs.TargetGroupTargetGroupHealthArgs
     ///         {
     ///             DnsFailover = new Aws.LB.Inputs.TargetGroupTargetGroupHealthDnsFailoverArgs
@@ -168,6 +164,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///                 MinimumHealthyTargetsPercentage = "off",
     ///             },
     ///         },
+    ///         Name = "tf-example-lb-nlb-tg",
+    ///         Port = 80,
+    ///         Protocol = "TCP",
+    ///         VpcId = main.Id,
     ///     });
     /// 
     /// });
@@ -179,7 +179,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// #### Required
     /// 
-    /// - `Arn` (String) Amazon Resource Name (ARN) of the target group.
+    /// - `Arn` (String) ARN of the target group.
     /// 
     /// 
     /// Using `pulumi import`, import Target Groups using their ARN. For example:
@@ -356,7 +356,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         /// 
         /// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
         /// 
-        /// If the target type is `Ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+        /// If the target type is `Ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
         /// 
         /// Network Load Balancers do not support the `Lambda` target type.
         /// 

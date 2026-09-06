@@ -205,7 +205,7 @@ export class Vpc extends pulumi.ComponentResource {
  */
 export interface VpcArgs {
     /**
-     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`
+     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6IpamPoolId`.
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean | undefined>;
     /**
@@ -221,27 +221,27 @@ export interface VpcArgs {
      */
     cidrBlock?: string;
     /**
-     * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
+     * Whether to enable DNS hostnames in the VPC. Defaults to `false`.
      */
     enableDnsHostnames?: pulumi.Input<boolean | undefined>;
     /**
-     * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+     * Whether to enable DNS support in the VPC. Defaults to `true`.
      */
     enableDnsSupport?: pulumi.Input<boolean | undefined>;
     /**
-     * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+     * Whether to enable Network Address Usage metrics for your VPC. Defaults to `false`.
      */
     enableNetworkAddressUsageMetrics?: pulumi.Input<boolean | undefined>;
     /**
-     * A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
+     * Tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
      */
     instanceTenancy?: pulumi.Input<string | undefined>;
     /**
-     * The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
+     * ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
      */
     ipv4IpamPoolId?: pulumi.Input<string | undefined>;
     /**
-     * The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
+     * Netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4IpamPoolId`.
      */
     ipv4NetmaskLength?: pulumi.Input<number | undefined>;
     /**
@@ -285,7 +285,7 @@ export interface VpcArgs {
      */
     subnetStrategy?: enums.ec2.SubnetAllocationStrategy;
     /**
-     * A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
     /**
