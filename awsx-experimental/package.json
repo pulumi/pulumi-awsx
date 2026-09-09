@@ -10,24 +10,29 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint --deny-warnings .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "test:plugin": "node scripts/check-plugin.mjs"
   },
   "dependencies": {
-    "@pulumi/aws": "7.42.0",
-    "@pulumi/pulumi": "^3.200.0"
+    "@pulumi/aws": "7.43.0",
+    "@pulumi/pulumi": "3.261.0"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "babel-jest": "^30.5.1",
     "eslint-plugin-jsdoc": "^64.3.4",
-    "oxfmt": "^0.65.0",
-    "oxlint": "^1.80.0",
-    "typescript": "~5.9.3",
-    "vitest": "^4.1.11"
+    "jest": "^30.5.1",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.81.0",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
   },
   "engines": {
     "node": ">=22.12.0"
