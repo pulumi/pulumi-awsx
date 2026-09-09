@@ -19,7 +19,6 @@ import {
   PortMappingProtocol,
 } from '../../../src/ecs/fargate/containerDefinition';
 import { renderPortMappings } from '../../../src/ecs/fargate/taskDefinition';
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 
