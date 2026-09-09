@@ -22,6 +22,9 @@ npm test
 npm run test:plugin
 ```
 
+Type checking uses native TypeScript 7. TypeScript 6 remains available for compiler API consumers,
+including Pulumi schema inference. Tests use Jest 30 with Babel, as in `awsx/`.
+
 `test:plugin` asks the Pulumi CLI to load the TypeScript entry point and validates the inferred
 package schema. It requires `pulumi` on `PATH`.
 
