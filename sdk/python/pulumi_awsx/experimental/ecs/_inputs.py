@@ -1502,8 +1502,7 @@ class HealthCheckArgsDict(TypedDict):
     """
     timeout: NotRequired[_builtins.float]
     """
-    The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-    60.
+    The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 
     Default - 5 seconds.
     """
@@ -1533,8 +1532,7 @@ class HealthCheckArgs:
                limit. Valid values are from 0 through 300.
                
                Default - No startup grace period.
-        :param _builtins.float timeout: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-               60.
+        :param _builtins.float timeout: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
                
                Default - 5 seconds.
         """
@@ -1612,8 +1610,7 @@ class HealthCheckArgs:
     @pulumi.getter
     def timeout(self) -> Optional[_builtins.float]:
         """
-        The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-        60.
+        The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 
         Default - 5 seconds.
         """

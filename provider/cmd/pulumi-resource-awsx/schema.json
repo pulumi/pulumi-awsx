@@ -2210,7 +2210,7 @@
                 "timeout": {
                     "type": "number",
                     "plain": true,
-                    "description": "The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through\n60.\n\nDefault - 5 seconds."
+                    "description": "The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.\n\nDefault - 5 seconds."
                 }
             },
             "type": "object",

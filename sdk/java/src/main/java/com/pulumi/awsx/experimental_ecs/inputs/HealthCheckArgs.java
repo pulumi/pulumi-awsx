@@ -102,8 +102,7 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-     * 60.
+     * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
      * 
      * Default - 5 seconds.
      * 
@@ -112,8 +111,7 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
     private @Nullable Double timeout;
 
     /**
-     * @return The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-     * 60.
+     * @return The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
      * 
      * Default - 5 seconds.
      * 
@@ -221,8 +219,7 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param timeout The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-         * 60.
+         * @param timeout The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
          * 
          * Default - 5 seconds.
          * 

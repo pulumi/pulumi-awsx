@@ -17,4 +17,4 @@ PRE_GEN_SDK_NODEJS := rm -rf sdk/nodejs/experimental sdk/nodejs/types/enums/expe
 PRE_GEN_SDK_PYTHON := rm -rf sdk/python/pulumi_awsx/experimental sdk/python/bin/pulumi_awsx/experimental
 generate_sdks: schema
 .make/generate_nodejs .make/generate_python .make/generate_dotnet .make/generate_go .make/generate_java: .make/schema
-bin/$(PROVIDER): $(AWSX_EXPERIMENTAL_SCHEMA_SOURCES) awsx-experimental/tsconfig.provider.json awsx/scripts/build.sh
+bin/$(PROVIDER): $(AWSX_EXPERIMENTAL_SCHEMA_SOURCES) awsx/scripts/build.sh

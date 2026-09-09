@@ -1212,8 +1212,7 @@ type HealthCheck struct {
 	//
 	// Default - No startup grace period.
 	StartPeriod *float64 `pulumi:"startPeriod"`
-	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-	// 60.
+	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 	//
 	// Default - 5 seconds.
 	Timeout *float64 `pulumi:"timeout"`
@@ -1251,8 +1250,7 @@ type HealthCheckArgs struct {
 	//
 	// Default - No startup grace period.
 	StartPeriod *float64 `pulumi:"startPeriod"`
-	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-	// 60.
+	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 	//
 	// Default - 5 seconds.
 	Timeout *float64 `pulumi:"timeout"`
@@ -1367,8 +1365,7 @@ func (o HealthCheckOutput) StartPeriod() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v HealthCheck) *float64 { return v.StartPeriod }).(pulumi.Float64PtrOutput)
 }
 
-// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-// 60.
+// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 //
 // Default - 5 seconds.
 func (o HealthCheckOutput) Timeout() pulumi.Float64PtrOutput {
@@ -1451,8 +1448,7 @@ func (o HealthCheckPtrOutput) StartPeriod() pulumi.Float64PtrOutput {
 	}).(pulumi.Float64PtrOutput)
 }
 
-// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-// 60.
+// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 //
 // Default - 5 seconds.
 func (o HealthCheckPtrOutput) Timeout() pulumi.Float64PtrOutput {

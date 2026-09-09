@@ -49,7 +49,7 @@ npm run check-duplicate-deps
 npm run gen-types
 npm run tsc
 rm -rf bin/node_modules/@pulumi/awsx-experimental
-../awsx-experimental/node_modules/.bin/tsc --project ../awsx-experimental/tsconfig.provider.json
+npm --prefix ../awsx-experimental run tsc
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 cp node-runtime-policy.json bin/node-runtime-policy.json

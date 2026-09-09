@@ -55,8 +55,7 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         public double? StartPeriod { get; set; }
 
         /// <summary>
-        /// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through
-        /// 60.
+        /// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
         /// 
         /// Default - 5 seconds.
         /// </summary>

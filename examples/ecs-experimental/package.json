@@ -1,10 +1,11 @@
 {
-    "name": "ecsx-cluster-default-capacity-provider",
+    "name": "ecs-experimental",
     "devDependencies": {
-        "@types/node": "^10.0.0"
+        "@types/node": "^24"
     },
     "dependencies": {
-        "@pulumi/aws": "7.42.0",
-        "@pulumi/pulumi": "^3.0.0"
+        "@pulumi/aws": "7.43.0",
+        "@pulumi/awsx": "file:../../sdk/nodejs/bin",
+        "@pulumi/pulumi": "3.261.0"
     }
 }

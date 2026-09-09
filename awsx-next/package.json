@@ -6,12 +6,13 @@
   "type": "commonjs",
   "main": "index.ts",
   "scripts": {
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run typecheck:provider && npm test && npm run test:plugin",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run test:plugin",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint --deny-warnings .",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
-    "typecheck:provider": "tsc -p tsconfig.provider.json --noEmit",
+    "emit": "node ./node_modules/typescript/bin/tsc6 --noCheck",
+    "tsc": "npm run typecheck && npm run emit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -21,10 +22,10 @@
     "@pulumi/aws": "7.43.0"
   },
   "devDependencies": {
-    "@pulumi/pulumi": "3.261.0",
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@pulumi/pulumi": "3.261.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24",
     "@typescript/native": "npm:typescript@7.0.2",
