@@ -1,5 +1,4 @@
 import * as pulumi from '@pulumi/pulumi';
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { ContainerDefinition } from '../src/ecs/containerDefinition';
 
