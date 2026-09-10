@@ -12,7 +12,13 @@ import type {
  * The transport protocol used for a Fargate port mapping.
  */
 export enum PortMappingProtocol {
+  /**
+   * Use the Transmission Control Protocol.
+   */
   TCP = 'tcp',
+  /**
+   * Use the User Datagram Protocol.
+   */
   UDP = 'udp',
 }
 
@@ -20,8 +26,17 @@ export enum PortMappingProtocol {
  * The application protocol used by ECS Service Connect.
  */
 export enum PortMappingAppProtocol {
+  /**
+   * Use HTTP protocol handling and telemetry.
+   */
   HTTP = 'http',
+  /**
+   * Use HTTP/2 protocol handling and telemetry.
+   */
   HTTP2 = 'http2',
+  /**
+   * Use gRPC protocol handling and telemetry.
+   */
   GRPC = 'grpc',
 }
 
@@ -89,7 +104,7 @@ export interface FargatePortMapping {
   readonly appProtocol?: PortMappingAppProtocol;
 
   /**
-   * A range of container ports, in the form `start-end`.
+   * A range of container ports with inclusive `start` and `end` values.
    *
    * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
    * to the same container port range.
@@ -97,8 +112,21 @@ export interface FargatePortMapping {
   readonly containerPortRange?: ContainerPortRange;
 }
 
+/**
+ * An inclusive range of container ports.
+ *
+ * For more information, see [container port
+ * ranges](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+ */
 export interface ContainerPortRange {
+  /**
+   * The first port in the range. Must be from 1 through 65535 and less than `end`.
+   */
   start: number;
+
+  /**
+   * The last port in the range. Must be from 1 through 65535 and greater than `start`.
+   */
   end: number;
 }
 
@@ -135,7 +163,7 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    *
    * Default - No container-level hard memory limit.
    */
-  readonly memory?: number;
+  readonly memoryMiB?: number;
 
   /**
    * The soft memory limit reserved for the container, in MiB.
@@ -143,12 +171,12 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    * The container can use more memory when it is available, up to its hard memory limit. This
    * property is not supported for Windows containers.
    *
-   * If you set both container-level memory values, `memory` must be greater than
-   * `memoryReservation`.
+   * If you set both container-level memory values, `memoryMiB` must be greater than
+   * `memoryReservationMiB`.
    *
    * Default - No container-level soft memory reservation.
    */
-  readonly memoryReservation?: number;
+  readonly memoryReservationMiB?: number;
 
   /**
    * The time, in seconds, to wait for this container's startup dependencies to become ready.
@@ -157,7 +185,7 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    *
    * Default - No container-specific startup timeout.
    */
-  readonly startTimeout?: number;
+  readonly startTimeoutSeconds?: number;
 
   /**
    * The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
@@ -167,7 +195,7 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    *
    * Default - 30 seconds.
    */
-  readonly stopTimeout?: number;
+  readonly stopTimeoutSeconds?: number;
 
   /**
    * Resource limits to set for the container.
@@ -214,6 +242,12 @@ export interface FargateAwsLogsLogDriver extends AwsLogsLogDriverBase {
  * Log-driver configuration for a Fargate container.
  */
 export interface FargateLogDriver {
+  /**
+   * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+   *
+   * For more information, see [CloudWatch
+   * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+   */
   readonly cloudwatch: FargateAwsLogsLogDriver;
 }
 
@@ -222,5 +256,8 @@ export interface FargateLogDriver {
  */
 export interface FargateContainerDefinitionOptions
   extends ContainerDefinitionOptionsBase, FargateContainerDefinitionProperties {
+  /**
+   * The log driver and settings used to collect container logs.
+   */
   readonly logging?: FargateLogDriver;
 }
