@@ -1,7 +1,5 @@
-import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 import type { CredentialSpec } from '../credentialSpec';
-import { LogGroupReference } from '../../cloudwatch/logGroup';
 
 // NOTE:
 // ContainerDefinitionCommonProperties includes properties from the API level ContainerDefinitionArgs.
@@ -12,9 +10,21 @@ import { LogGroupReference } from '../../cloudwatch/logGroup';
  * The condition that a dependent container must satisfy before this container starts.
  */
 export enum ContainerDependencyCondition {
+  /**
+   * Wait until the other container starts.
+   */
   START = 'START',
+  /**
+   * Wait until the other container exits. The other container must not be essential.
+   */
   COMPLETE = 'COMPLETE',
+  /**
+   * Wait until the other container exits with a zero status. It must not be essential.
+   */
   SUCCESS = 'SUCCESS',
+  /**
+   * Wait until the other container passes its configured health check. Checked only at startup.
+   */
   HEALTHY = 'HEALTHY',
 }
 
@@ -51,7 +61,7 @@ export interface HealthCheck {
    *
    * Default - 30 seconds.
    */
-  readonly interval?: number;
+  readonly intervalSeconds?: number;
 
   /**
    * The number of consecutive failures required before the container becomes unhealthy. Valid
@@ -67,14 +77,14 @@ export interface HealthCheck {
    *
    * Default - No startup grace period.
    */
-  readonly startPeriod?: number;
+  readonly startPeriodSeconds?: number;
 
   /**
    * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
    *
    * Default - 5 seconds.
    */
-  readonly timeout?: number;
+  readonly timeoutSeconds?: number;
 }
 
 /**
@@ -96,20 +106,65 @@ export interface SystemControl {
  * An operating-system resource limit for a container.
  */
 export enum UlimitName {
+  /**
+   * Limit the size of core dump files.
+   */
   CORE = 'core',
+  /**
+   * Limit CPU time.
+   */
   CPU = 'cpu',
+  /**
+   * Limit the size of the process data segment.
+   */
   DATA = 'data',
+  /**
+   * Limit the size of files that the process can create.
+   */
   FSIZE = 'fsize',
+  /**
+   * Limit the number of file locks.
+   */
   LOCKS = 'locks',
+  /**
+   * Limit the amount of memory that can be locked.
+   */
   MEMLOCK = 'memlock',
+  /**
+   * Limit the number of bytes allocated for POSIX message queues.
+   */
   MSGQUEUE = 'msgqueue',
+  /**
+   * Limit the process nice priority.
+   */
   NICE = 'nice',
+  /**
+   * Limit the number of open file descriptors.
+   */
   NOFILE = 'nofile',
+  /**
+   * Limit the number of processes available to the user.
+   */
   NPROC = 'nproc',
+  /**
+   * Limit the resident set size.
+   */
   RSS = 'rss',
+  /**
+   * Limit the real-time priority.
+   */
   RTPRIO = 'rtprio',
+  /**
+   * Limit CPU time scheduled under a real-time policy.
+   */
   RTTIME = 'rttime',
+  /**
+   * Limit the number of pending signals.
+   */
   SIGPENDING = 'sigpending',
+  /**
+   * Limit the process stack size.
+   */
   STACK = 'stack',
 }
 
@@ -117,8 +172,17 @@ export enum UlimitName {
  * A soft and hard operating-system resource limit for a container.
  */
 export interface Ulimit {
+  /**
+   * The hard limit, in bytes, seconds, or a count, depending on `name`.
+   */
   readonly hardLimit: number;
+  /**
+   * The resource limit to configure.
+   */
   readonly name: UlimitName;
+  /**
+   * The soft limit, in bytes, seconds, or a count, depending on `name`.
+   */
   readonly softLimit: number;
 }
 
@@ -143,7 +207,13 @@ export interface VolumeFrom {
  * Controls whether ECS resolves an image tag to an image digest.
  */
 export enum ContainerDefinitionVersionConsistency {
+  /**
+   * Resolve the image tag to an image digest.
+   */
   ENABLED = 'enabled',
+  /**
+   * Keep the original image URI without resolving the tag to a digest.
+   */
   DISABLED = 'disabled',
 }
 
@@ -259,8 +329,21 @@ export interface ContainerDefinitionCommonProperties {
   readonly workingDirectory?: string;
 }
 
+/**
+ * The delivery mode for container log messages.
+ *
+ * For more information, see [log delivery
+ * options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+ */
 export enum AwsLogDriverMode {
+  /**
+   * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+   */
   BLOCKING = 'blocking',
+  /**
+   * Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+   * fills.
+   */
   NON_BLOCKING = 'non-blocking',
 }
 
@@ -269,11 +352,11 @@ export enum AwsLogDriverMode {
  */
 export interface AwsLogsLogDriverBase {
   /**
-   * The log group to log to.
+   * The ARN of the log group to log to.
    *
    * Default - A log group is created automatically.
    */
-  readonly logGroup?: LogGroupReference;
+  readonly logGroupArn?: pulumi.Input<string>;
 
   /**
    * A multiline start pattern in Python strftime format.
@@ -303,9 +386,9 @@ export interface AwsLogsLogDriverBase {
  */
 export interface EnvironmentFile {
   /**
-   * The bucket that contains the environment file.
+   * The ARN of the bucket that contains the environment file.
    */
-  readonly bucket: aws.s3.Bucket;
+  readonly bucketArn: pulumi.Input<string>;
 
   /**
    * The object key of the environment file.
@@ -315,11 +398,39 @@ export interface EnvironmentFile {
 
 /**
  * A Secrets Manager source for a container secret.
+ *
+ * For more information, see [Secrets Manager environment
+ * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
  */
 export interface SecretsManagerSecret {
-  readonly secret: aws.secretsmanager.Secret;
+  /**
+   * The ARN of the Secrets Manager secret whose value is passed to the container.
+   */
+  readonly secretArn: pulumi.Input<string>;
+
+  /**
+   * The JSON key whose value to extract. The secret must contain JSON when this is set.
+   *
+   * Default - The full secret contents.
+   */
   readonly jsonKey?: pulumi.Input<string>;
+
+  /**
+   * The staging label of the secret version to use, such as `AWSPREVIOUS`.
+   *
+   * Cannot be combined with `versionId`.
+   *
+   * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+   */
   readonly versionStage?: pulumi.Input<string>;
+
+  /**
+   * The unique ID of the secret version to use.
+   *
+   * Cannot be combined with `versionStage`.
+   *
+   * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+   */
   readonly versionId?: pulumi.Input<string>;
 }
 
@@ -327,8 +438,23 @@ export interface SecretsManagerSecret {
  * A secret environment-variable source.
  */
 export interface Secret {
+  /**
+   * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameter`, not
+   * both.
+   *
+   * For more information, see [Secrets Manager environment
+   * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+   */
   readonly secretsManager?: SecretsManagerSecret;
-  readonly ssmParameter?: aws.ssm.Parameter;
+
+  /**
+   * An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+   * `secretsManager`, not both.
+   *
+   * For more information, see [SSM Parameter Store environment
+   * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+   */
+  readonly ssmParameterArn?: pulumi.Input<string>;
 }
 
 /**

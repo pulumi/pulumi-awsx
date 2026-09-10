@@ -12,14 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
 /**
  * The Active Directory authentication mode for an ECS credential specification.
  */
 export enum CredentialSpecAuthenticationMode {
+  /**
+   * Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+   *
+   * For more information, see [gMSA
+   * prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
+   */
   DOMAIN_JOINED = 'DomainJoined',
+  /**
+   * Use credentials referenced by the credential specification without joining the container
+   * instance to the domain.
+   *
+   * For more information, see [domainless gMSA
+   * setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+   * and [gMSAs for Linux
+   * containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+   */
   DOMAINLESS = 'Domainless',
 }
 
@@ -28,9 +42,9 @@ export enum CredentialSpecAuthenticationMode {
  */
 export interface S3BucketCredentialSpec {
   /**
-   * The bucket that contains the credential specification file.
+   * The ARN of a bucket that contains the credential specification file.
    */
-  readonly bucket: aws.s3.Bucket;
+  readonly bucketArn: pulumi.Input<string>;
 
   /**
    * The key of the credential specification file.
@@ -41,7 +55,7 @@ export interface S3BucketCredentialSpec {
 /**
  * A credential specification source for Active Directory authentication.
  *
- * Exactly one of `s3Bucket` or `ssmParameter` must be specified. AWSX resolves the selected
+ * Exactly one of `s3Bucket` or `ssmParameterArn` must be specified. AWSX resolves the selected
  * resource to the ECS credential specification string.
  */
 export interface CredentialSpec {
@@ -56,7 +70,7 @@ export interface CredentialSpec {
   readonly s3Bucket?: S3BucketCredentialSpec;
 
   /**
-   * An SSM parameter that contains the credential specification file.
+   * The ARN of an SSM parameter that contains the credential specification file.
    */
-  readonly ssmParameter?: aws.ssm.Parameter;
+  readonly ssmParameterArn?: pulumi.Input<string>;
 }
