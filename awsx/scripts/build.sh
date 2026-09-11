@@ -12,7 +12,7 @@ set -euo pipefail
 NODEOS=""
 case "${OS}" in
     "linux")
-        NODEOS="linuxstatic"
+        NODEOS="linux"
         ;;
     "darwin")
         NODEOS="macos"
@@ -40,7 +40,7 @@ case "${ARCH}" in
         ;;
 esac
 
-TARGET="node16-${NODEOS}-${NODEARCH}"
+TARGET="node24.20.0-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
 yarn install --no-progress --frozen-lockfile
@@ -50,4 +50,8 @@ yarn tsc
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 yarn --cwd bin version --new-version "${VERSION}" --no-git-tag-version
-yarn run pkg . --no-bytecode --public-packages "*" --public --target "${TARGET}" --output "${OUT}"
+yarn run pkg . --sea --target "${TARGET}" --output "${OUT}"
+
+if [[ "${OS}" == "windows" ]]; then
+    node scripts/strip-pe-certificate.js "${OUT}"
+fi
