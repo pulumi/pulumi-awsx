@@ -29,7 +29,7 @@ export abstract class Trail<TData = any> extends (pulumi.ComponentResource)<TDat
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:cloudtrail:Trail", name, opts.urn ? { bucket: undefined, logGroup: undefined, trail: undefined } : { name, args, opts }, opts);
+        super("awsx:cloudtrail:Trail", name, opts.urn ? { bucket: undefined, logGroup: undefined, trail: undefined } : args, opts);
     }
 }
 export interface TrailArgs {
@@ -55,7 +55,7 @@ export abstract class DefaultVpc<TData = any> extends (pulumi.ComponentResource)
     public publicSubnetIds!: string[] | pulumi.Output<string[]>;
     public vpcId!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:DefaultVpc", name, opts.urn ? { privateSubnetIds: undefined, publicSubnetIds: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:DefaultVpc", name, opts.urn ? { privateSubnetIds: undefined, publicSubnetIds: undefined, vpcId: undefined } : args, opts);
     }
 }
 export interface DefaultVpcArgs {
@@ -79,7 +79,7 @@ export abstract class Vpc<TData = any> extends (pulumi.ComponentResource)<TData>
     public vpcEndpoints!: aws.ec2.VpcEndpoint[] | pulumi.Output<aws.ec2.VpcEndpoint[]>;
     public vpcId!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, isolatedSubnets: undefined, natGateways: undefined, privateSubnetIds: undefined, privateSubnets: undefined, publicSubnetIds: undefined, publicSubnets: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnetLayout: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, isolatedSubnets: undefined, natGateways: undefined, privateSubnetIds: undefined, privateSubnets: undefined, publicSubnetIds: undefined, publicSubnets: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnetLayout: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : args, opts);
     }
 }
 export interface VpcArgs {
@@ -110,7 +110,7 @@ export interface VpcArgs {
 export abstract class Image<TData = any> extends (pulumi.ComponentResource)<TData> {
     public imageUri!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:Image", name, opts.urn ? { imageUri: undefined } : { name, args, opts }, opts);
+        super("awsx:ecr:Image", name, opts.urn ? { imageUri: undefined } : args, opts);
     }
 }
 export interface ImageArgs {
@@ -129,7 +129,7 @@ export interface ImageArgs {
 export abstract class RegistryImage<TData = any> extends (pulumi.ComponentResource)<TData> {
     public image!: docker.RegistryImage | pulumi.Output<docker.RegistryImage>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:RegistryImage", name, opts.urn ? { image: undefined } : { name, args, opts }, opts);
+        super("awsx:ecr:RegistryImage", name, opts.urn ? { image: undefined } : args, opts);
     }
 }
 export interface RegistryImageArgs {
@@ -145,7 +145,7 @@ export abstract class Repository<TData = any> extends (pulumi.ComponentResource)
     public repository!: aws.ecr.Repository | pulumi.Output<aws.ecr.Repository>;
     public url!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:Repository", name, opts.urn ? { lifecyclePolicy: undefined, repository: undefined, url: undefined } : { name, args, opts }, opts);
+        super("awsx:ecr:Repository", name, opts.urn ? { lifecyclePolicy: undefined, repository: undefined, url: undefined } : args, opts);
     }
 }
 export interface RepositoryArgs {
@@ -163,7 +163,7 @@ export abstract class EC2Service<TData = any> extends (pulumi.ComponentResource)
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecs:EC2Service", name, opts.urn ? { service: undefined, taskDefinition: undefined } : { name, args, opts }, opts);
+        super("awsx:ecs:EC2Service", name, opts.urn ? { service: undefined, taskDefinition: undefined } : args, opts);
     }
 }
 export interface EC2ServiceArgs {
@@ -211,7 +211,7 @@ export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentRe
     public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecs:EC2TaskDefinition", name, opts.urn ? { executionRole: undefined, loadBalancers: undefined, logGroup: undefined, taskDefinition: undefined, taskRole: undefined } : { name, args, opts }, opts);
+        super("awsx:ecs:EC2TaskDefinition", name, opts.urn ? { executionRole: undefined, loadBalancers: undefined, logGroup: undefined, taskDefinition: undefined, taskRole: undefined } : args, opts);
     }
 }
 export interface EC2TaskDefinitionArgs {
@@ -241,7 +241,7 @@ export abstract class FargateService<TData = any> extends (pulumi.ComponentResou
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecs:FargateService", name, opts.urn ? { service: undefined, taskDefinition: undefined } : { name, args, opts }, opts);
+        super("awsx:ecs:FargateService", name, opts.urn ? { service: undefined, taskDefinition: undefined } : args, opts);
     }
 }
 export interface FargateServiceArgs {
@@ -289,7 +289,7 @@ export abstract class FargateTaskDefinition<TData = any> extends (pulumi.Compone
     public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecs:FargateTaskDefinition", name, opts.urn ? { executionRole: undefined, loadBalancers: undefined, logGroup: undefined, taskDefinition: undefined, taskRole: undefined } : { name, args, opts }, opts);
+        super("awsx:ecs:FargateTaskDefinition", name, opts.urn ? { executionRole: undefined, loadBalancers: undefined, logGroup: undefined, taskDefinition: undefined, taskRole: undefined } : args, opts);
     }
 }
 export interface FargateTaskDefinitionArgs {
@@ -321,7 +321,7 @@ export abstract class ApplicationLoadBalancer<TData = any> extends (pulumi.Compo
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     public vpcId?: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:lb:ApplicationLoadBalancer", name, opts.urn ? { defaultSecurityGroup: undefined, defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:lb:ApplicationLoadBalancer", name, opts.urn ? { defaultSecurityGroup: undefined, defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : args, opts);
     }
 }
 export interface ApplicationLoadBalancerArgs {
@@ -369,7 +369,7 @@ export abstract class NetworkLoadBalancer<TData = any> extends (pulumi.Component
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     public vpcId?: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:lb:NetworkLoadBalancer", name, opts.urn ? { defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:lb:NetworkLoadBalancer", name, opts.urn ? { defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : args, opts);
     }
 }
 export interface NetworkLoadBalancerArgs {
@@ -414,7 +414,7 @@ export abstract class TargetGroupAttachment<TData = any> extends (pulumi.Compone
     public lambdaPermission?: aws.lambda.Permission | pulumi.Output<aws.lambda.Permission>;
     public targetGroupAttachment!: aws.lb.TargetGroupAttachment | pulumi.Output<aws.lb.TargetGroupAttachment>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:lb:TargetGroupAttachment", name, opts.urn ? { lambdaPermission: undefined, targetGroupAttachment: undefined } : { name, args, opts }, opts);
+        super("awsx:lb:TargetGroupAttachment", name, opts.urn ? { lambdaPermission: undefined, targetGroupAttachment: undefined } : args, opts);
     }
 }
 export interface TargetGroupAttachmentArgs {
