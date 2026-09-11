@@ -43,8 +43,8 @@ export function computeImageFromAsset(
   const imageName = args.imageName
     ? args.imageName
     : imageTag
-    ? imageTag
-    : createUniqueImageName(dockerInputs);
+      ? imageTag
+      : createUniqueImageName(dockerInputs);
 
   // Note: the tag, if provided, is included in the image name.
   const canonicalImageName = `${repositoryUrl}:${imageName}`;
@@ -100,7 +100,6 @@ export function computeImageFromAsset(
   // Return the image reference without the tag. This is necessary for backwards compatibility with earlier versions of the awsx provider
   // that used pulumi-docker and in order to allow passing this output to Lambda functions (they expect an image URI without a tag).
   return pulumi.all([image.ref, image.digest]).apply(([ref, digest]) => {
-
     if (digest) {
       return `${repositoryUrl}@${digest}`;
     }

@@ -61,7 +61,7 @@ describe("max vcpu and memory", () => {
           memory: (maxMemGB * 1024) / 2,
         },
       ]);
-    }).not.toThrowError();
+    }).not.toThrow();
   });
   it("throws error if containers request more resources than fargate allows", async () => {
     expect(() => {
@@ -75,7 +75,7 @@ describe("max vcpu and memory", () => {
           memory: 123 * 1024,
         },
       ]);
-    }).toThrowError(
+    }).toThrow(
       `Requested resources exceed the maximum allowed for Fargate. Requested: 34 vCPU and 246GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
     );
   });
@@ -87,7 +87,7 @@ describe("max vcpu and memory", () => {
           memory: maxMemGB * 1024,
         },
       ]);
-    }).toThrowError(
+    }).toThrow(
       `Requested resources exceed the maximum allowed for Fargate. Requested: ${
         maxVCPU + 1
       } vCPU and ${maxMemGB}GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
@@ -101,7 +101,7 @@ describe("max vcpu and memory", () => {
           memory: (maxMemGB + 1) * 1024,
         },
       ]);
-    }).toThrowError(
+    }).toThrow(
       `Requested resources exceed the maximum allowed for Fargate. Requested: ${maxVCPU} vCPU and ${
         maxMemGB + 1
       }GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,

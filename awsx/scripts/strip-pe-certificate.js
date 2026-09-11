@@ -4,25 +4,25 @@ const fs = require("fs");
 
 const file = process.argv[2];
 if (!file) {
-    console.error("usage: strip-pe-certificate.js <windows-executable>");
-    process.exit(2);
+  console.error("usage: strip-pe-certificate.js <windows-executable>");
+  process.exit(2);
 }
 
 const executable = fs.readFileSync(file);
 const peHeaderOffset = executable.readUInt32LE(0x3c);
 if (executable.toString("ascii", peHeaderOffset, peHeaderOffset + 4) !== "PE\0\0") {
-    throw new Error(`${file} is not a PE executable`);
+  throw new Error(`${file} is not a PE executable`);
 }
 
 const optionalHeaderOffset = peHeaderOffset + 24;
 const optionalHeaderMagic = executable.readUInt16LE(optionalHeaderOffset);
 let dataDirectoriesOffset;
 if (optionalHeaderMagic === 0x10b) {
-    dataDirectoriesOffset = optionalHeaderOffset + 96;
+  dataDirectoriesOffset = optionalHeaderOffset + 96;
 } else if (optionalHeaderMagic === 0x20b) {
-    dataDirectoriesOffset = optionalHeaderOffset + 112;
+  dataDirectoriesOffset = optionalHeaderOffset + 112;
 } else {
-    throw new Error(`unsupported PE optional-header magic: 0x${optionalHeaderMagic.toString(16)}`);
+  throw new Error(`unsupported PE optional-header magic: 0x${optionalHeaderMagic.toString(16)}`);
 }
 
 // The certificate table is data-directory entry 4. Unlike other PE data

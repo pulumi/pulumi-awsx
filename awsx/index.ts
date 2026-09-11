@@ -19,7 +19,10 @@ import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
 class Provider implements pulumi.provider.Provider {
-  constructor(readonly version: string, readonly schema: string) {
+  constructor(
+    readonly version: string,
+    readonly schema: string,
+  ) {
     // Register any resources that can come back as resource references that need to be rehydrated.
     pulumi.runtime.registerResourceModule("awsx", "ecr", {
       version: this.version,
