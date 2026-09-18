@@ -104,12 +104,16 @@ jobs:
           if ($signature.Status -ne "Valid") {
             throw "Invalid Authenticode signature: $($signature.StatusMessage)"
           }
+      - name: Prepare isolated Mise configuration
+        shell: bash
+        run: mkdir -p "$RUNNER_TEMP/awsx-smoke-mise"
       - name: Set up Node for the smoke test
         uses: jdx/mise-action@8d3b0ba20a9cea7b883d922ea958553c941ab082
         with:
           version: 2026.3.7
           cache_save: false
           install_args: node
+          working_directory: ${{ runner.temp }}/awsx-smoke-mise
           tool_versions: |
             node 24
       - name: Start provider
