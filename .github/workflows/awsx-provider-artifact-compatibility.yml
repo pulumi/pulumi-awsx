@@ -111,7 +111,9 @@ jobs:
         uses: jdx/mise-action@8d3b0ba20a9cea7b883d922ea958553c941ab082
         with:
           version: 2026.3.7
+          add_shims_to_path: false
           cache_save: false
+          env: false
           install_args: node
           working_directory: ${{ runner.temp }}/awsx-smoke-mise
           tool_versions: |
@@ -124,7 +126,8 @@ jobs:
           if [ "${{ matrix.os }}" != windows ]; then
             chmod +x "$binary"
           fi
-          node scripts/smoke-provider.mjs "$binary"
+          mise -C "$RUNNER_TEMP/awsx-smoke-mise" exec -- \
+            node "$GITHUB_WORKSPACE/scripts/smoke-provider.mjs" "$binary"
       - name: Start Linux provider in containers
         if: matrix.os == 'linux'
         shell: bash
