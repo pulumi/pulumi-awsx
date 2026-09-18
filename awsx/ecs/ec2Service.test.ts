@@ -98,7 +98,7 @@ describe("EC2Service capacity provider configuration", () => {
           capacityProviderStrategies: [{ capacityProvider: "asg-capacity-provider", weight: 1 }],
           useClusterDefaultCapacityProviderStrategy: true,
         }),
-    ).toThrowError(
+    ).toThrow(
       "Only one of `capacityProviderStrategies` or `useClusterDefaultCapacityProviderStrategy` can be provided.",
     );
   });

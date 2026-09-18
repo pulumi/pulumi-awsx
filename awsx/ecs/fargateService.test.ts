@@ -103,7 +103,7 @@ describe("FargateService capacity provider configuration", () => {
           capacityProviderStrategies: [{ capacityProvider: "FARGATE_SPOT", weight: 1 }],
           useClusterDefaultCapacityProviderStrategy: true,
         }),
-    ).toThrowError(
+    ).toThrow(
       "Only one of `capacityProviderStrategies` or `useClusterDefaultCapacityProviderStrategy` can be provided.",
     );
   });
