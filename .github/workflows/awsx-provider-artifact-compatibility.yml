@@ -104,6 +104,14 @@ jobs:
           if ($signature.Status -ne "Valid") {
             throw "Invalid Authenticode signature: $($signature.StatusMessage)"
           }
+      - name: Set up Node for the smoke test
+        uses: jdx/mise-action@8d3b0ba20a9cea7b883d922ea958553c941ab082
+        with:
+          version: 2026.3.7
+          cache_save: false
+          install_args: node
+          tool_versions: |
+            node 24
       - name: Start provider
         shell: bash
         run: |
@@ -113,3 +121,26 @@ jobs:
             chmod +x "$binary"
           fi
           node scripts/smoke-provider.mjs "$binary"
+      - name: Start Linux provider in containers
+        if: matrix.os == 'linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          name=""
+          trap 'if [ -n "$name" ]; then docker rm --force "$name" >/dev/null 2>&1 || true; fi' EXIT
+          for image in alpine:3.22 ubuntu:20.04 busybox:1.37-musl; do
+            name="awsx-compatibility-${{ matrix.arch }}-${image%%:*}"
+            docker pull "$image"
+            docker run --detach --name "$name" \
+              --volume "$GITHUB_WORKSPACE/artifact/extracted:/provider:ro" \
+              "$image" /provider/pulumi-resource-awsx
+            for _ in {1..20}; do
+              if docker logs "$name" 2>&1 | grep -Eq '^[1-9][0-9]{0,4}$'; then
+                break
+              fi
+              sleep 1
+            done
+            docker logs "$name" 2>&1 | grep -Eq '^[1-9][0-9]{0,4}$'
+            docker rm --force "$name"
+            name=""
+          done
