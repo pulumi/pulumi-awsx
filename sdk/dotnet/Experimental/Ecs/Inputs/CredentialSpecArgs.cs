@@ -25,10 +25,10 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         public Inputs.S3BucketCredentialSpecArgs? S3Bucket { get; set; }
 
         /// <summary>
-        /// An SSM parameter that contains the credential specification file.
+        /// The ARN of an SSM parameter that contains the credential specification file.
         /// </summary>
-        [Input("ssmParameter")]
-        public Pulumi.Aws.Ssm.Parameter? SsmParameter { get; set; }
+        [Input("ssmParameterArn")]
+        public Input<string>? SsmParameterArn { get; set; }
 
         public CredentialSpecArgs()
         {

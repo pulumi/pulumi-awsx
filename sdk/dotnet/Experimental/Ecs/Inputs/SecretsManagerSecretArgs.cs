@@ -12,15 +12,37 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
 
     public sealed class SecretsManagerSecretArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The JSON key whose value to extract. The secret must contain JSON when this is set.
+        /// 
+        /// Default - The full secret contents.
+        /// </summary>
         [Input("jsonKey")]
         public Input<string>? JsonKey { get; set; }
 
-        [Input("secret", required: true)]
-        public Pulumi.Aws.SecretsManager.Secret Secret { get; set; } = null!;
+        /// <summary>
+        /// The ARN of the Secrets Manager secret whose value is passed to the container.
+        /// </summary>
+        [Input("secretArn", required: true)]
+        public Input<string> SecretArn { get; set; } = null!;
 
+        /// <summary>
+        /// The unique ID of the secret version to use.
+        /// 
+        /// Cannot be combined with `versionStage`.
+        /// 
+        /// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        /// </summary>
         [Input("versionId")]
         public Input<string>? VersionId { get; set; }
 
+        /// <summary>
+        /// The staging label of the secret version to use, such as `AWSPREVIOUS`.
+        /// 
+        /// Cannot be combined with `versionId`.
+        /// 
+        /// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        /// </summary>
         [Input("versionStage")]
         public Input<string>? VersionStage { get; set; }
 

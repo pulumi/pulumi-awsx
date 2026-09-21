@@ -13,10 +13,10 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
     public sealed class S3BucketCredentialSpecArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// The bucket that contains the credential specification file.
+        /// The ARN of a bucket that contains the credential specification file.
         /// </summary>
-        [Input("bucket", required: true)]
-        public Pulumi.Aws.S3.Bucket Bucket { get; set; } = null!;
+        [Input("bucketArn", required: true)]
+        public Input<string> BucketArn { get; set; } = null!;
 
         /// <summary>
         /// The key of the credential specification file.

@@ -76,14 +76,6 @@ _utilities.register(
  },
  {
   "pkg": "awsx",
-  "mod": "experimental/cloudwatch",
-  "fqn": "pulumi_awsx.experimental.cloudwatch",
-  "classes": {
-   "awsx:experimental/cloudwatch:LogGroup": "LogGroup"
-  }
- },
- {
-  "pkg": "awsx",
   "mod": "experimental/ecs",
   "fqn": "pulumi_awsx.experimental.ecs",
   "classes": {

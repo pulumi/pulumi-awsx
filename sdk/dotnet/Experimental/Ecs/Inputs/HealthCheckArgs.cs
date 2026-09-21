@@ -33,8 +33,8 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// 
         /// Default - 30 seconds.
         /// </summary>
-        [Input("interval")]
-        public double? Interval { get; set; }
+        [Input("intervalSeconds")]
+        public double? IntervalSeconds { get; set; }
 
         /// <summary>
         /// The number of consecutive failures required before the container becomes unhealthy. Valid
@@ -51,16 +51,16 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// 
         /// Default - No startup grace period.
         /// </summary>
-        [Input("startPeriod")]
-        public double? StartPeriod { get; set; }
+        [Input("startPeriodSeconds")]
+        public double? StartPeriodSeconds { get; set; }
 
         /// <summary>
         /// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
         /// 
         /// Default - 5 seconds.
         /// </summary>
-        [Input("timeout")]
-        public double? Timeout { get; set; }
+        [Input("timeoutSeconds")]
+        public double? TimeoutSeconds { get; set; }
 
         public HealthCheckArgs()
         {

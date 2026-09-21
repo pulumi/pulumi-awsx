@@ -3,11 +3,12 @@
 
 package com.pulumi.awsx.experimental_ecs.inputs;
 
-import com.pulumi.aws.ssm.Parameter;
 import com.pulumi.awsx.experimental_ecs.enums.CredentialSpecAuthenticationMode;
 import com.pulumi.awsx.experimental_ecs.inputs.S3BucketCredentialSpecArgs;
+import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -48,18 +49,18 @@ public final class CredentialSpecArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * An SSM parameter that contains the credential specification file.
+     * The ARN of an SSM parameter that contains the credential specification file.
      * 
      */
-    @Import(name="ssmParameter")
-    private @Nullable Parameter ssmParameter;
+    @Import(name="ssmParameterArn")
+    private @Nullable Output<String> ssmParameterArn;
 
     /**
-     * @return An SSM parameter that contains the credential specification file.
+     * @return The ARN of an SSM parameter that contains the credential specification file.
      * 
      */
-    public Optional<Parameter> ssmParameter() {
-        return Optional.ofNullable(this.ssmParameter);
+    public Optional<Output<String>> ssmParameterArn() {
+        return Optional.ofNullable(this.ssmParameterArn);
     }
 
     private CredentialSpecArgs() {}
@@ -67,7 +68,7 @@ public final class CredentialSpecArgs extends com.pulumi.resources.ResourceArgs 
     private CredentialSpecArgs(CredentialSpecArgs $) {
         this.authenticationMode = $.authenticationMode;
         this.s3Bucket = $.s3Bucket;
-        this.ssmParameter = $.ssmParameter;
+        this.ssmParameterArn = $.ssmParameterArn;
     }
 
     public static Builder builder() {
@@ -111,14 +112,24 @@ public final class CredentialSpecArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param ssmParameter An SSM parameter that contains the credential specification file.
+         * @param ssmParameterArn The ARN of an SSM parameter that contains the credential specification file.
          * 
          * @return builder
          * 
          */
-        public Builder ssmParameter(@Nullable Parameter ssmParameter) {
-            $.ssmParameter = ssmParameter;
+        public Builder ssmParameterArn(@Nullable Output<String> ssmParameterArn) {
+            $.ssmParameterArn = ssmParameterArn;
             return this;
+        }
+
+        /**
+         * @param ssmParameterArn The ARN of an SSM parameter that contains the credential specification file.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ssmParameterArn(String ssmParameterArn) {
+            return ssmParameterArn(Output.of(ssmParameterArn));
         }
 
         public CredentialSpecArgs build() {

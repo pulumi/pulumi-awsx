@@ -13,7 +13,6 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import NotRequired, TypedDict, TypeAlias
 from ... import _utilities
-from ... import experimental as _experimental
 from ._enums import *
 from ._inputs import *
 import pulumi_aws
@@ -26,11 +25,12 @@ class FargateTaskDefinitionV2Args:
                  containers: Mapping[str, 'FargateContainerDefinitionOptionsArgs'],
                  cpu: Optional[_builtins.float] = None,
                  ephemeral_storage: Optional[_builtins.float] = None,
-                 execution_role: Optional['pulumi_aws.iam.Role'] = None,
+                 execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  family: Optional[_builtins.str] = None,
                  memory: Optional[_builtins.float] = None,
                  region: Optional[_builtins.str] = None,
-                 task_role: Optional['pulumi_aws.iam.Role'] = None):
+                 runtime_platform: Optional['RuntimePlatformArgs'] = None,
+                 task_role_arn: pulumi.Input[Optional[_builtins.str]] = None):
         """
         The set of arguments for constructing a FargateTaskDefinitionV2 resource.
 
@@ -69,23 +69,27 @@ class FargateTaskDefinitionV2Args:
                For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
                select the task size.
                
-               Default - 256
+               Default - A CPU value will be automatically selected based on the container-level CPU and
+               memory requirements
         :param _builtins.float ephemeral_storage: The amount (in GiB) of ephemeral storage to be allocated to the task.
                
                Only supported in Fargate platform version 1.4.0 or later.
                
                Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
-        :param 'pulumi_aws.iam.Role' execution_role: The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-               on your behalf.
+        :param pulumi.Input[_builtins.str] execution_role_arn: The ARN of the IAM task execution role that will be used by the ECS Task.
                
-               The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+               The execution role grants access required by the configured containers, such as pulling images
+               from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+               etc.
                
-               Default - An execution role will be automatically created if you use ECR images in your task
-               definition.
+               The component will automatically attach IAM policies granting access based on the container
+               definitions.
+               
+               Default - An execution role will be automatically created for you
         :param _builtins.str family: The name of a family that this task definition is registered to. A family groups multiple
                versions of a task definition.
                
-               Default - Automatically generated name.
+               Default - The Pulumi resource name of this component
         :param _builtins.float memory: The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
                field is required and must be valid for the selected CPU value:
                
@@ -112,12 +116,16 @@ class FargateTaskDefinitionV2Args:
                For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
                to select the task size.
                
-               Default - 512
+               Default - A memory value will be automatically selected based on the container-level CPU and
+               memory requirements
         :param _builtins.str region: Region where this resource will be
                [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
                
                Default - Region set in the provider configuration.
-        :param 'pulumi_aws.iam.Role' task_role: The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+        :param 'RuntimePlatformArgs' runtime_platform: The operating system that your task definitions are running on.
+               
+               Default - AWS default of X86_64 Linux
+        :param pulumi.Input[_builtins.str] task_role_arn: The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
                behalf.
                
                Default - A task role is automatically created for you.
@@ -127,16 +135,18 @@ class FargateTaskDefinitionV2Args:
             pulumi.set(__self__, "cpu", cpu)
         if ephemeral_storage is not None:
             pulumi.set(__self__, "ephemeral_storage", ephemeral_storage)
-        if execution_role is not None:
-            pulumi.set(__self__, "execution_role", execution_role)
+        if execution_role_arn is not None:
+            pulumi.set(__self__, "execution_role_arn", execution_role_arn)
         if family is not None:
             pulumi.set(__self__, "family", family)
         if memory is not None:
             pulumi.set(__self__, "memory", memory)
         if region is not None:
             pulumi.set(__self__, "region", region)
-        if task_role is not None:
-            pulumi.set(__self__, "task_role", task_role)
+        if runtime_platform is not None:
+            pulumi.set(__self__, "runtime_platform", runtime_platform)
+        if task_role_arn is not None:
+            pulumi.set(__self__, "task_role_arn", task_role_arn)
 
     @_builtins.property
     @pulumi.getter
@@ -188,7 +198,8 @@ class FargateTaskDefinitionV2Args:
         For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
         select the task size.
 
-        Default - 256
+        Default - A CPU value will be automatically selected based on the container-level CPU and
+        memory requirements
         """
         return pulumi.get(self, "cpu")
 
@@ -213,22 +224,25 @@ class FargateTaskDefinitionV2Args:
         pulumi.set(self, "ephemeral_storage", value)
 
     @_builtins.property
-    @pulumi.getter(name="executionRole")
-    def execution_role(self) -> Optional['pulumi_aws.iam.Role']:
+    @pulumi.getter(name="executionRoleArn")
+    def execution_role_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-        on your behalf.
+        The ARN of the IAM task execution role that will be used by the ECS Task.
 
-        The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+        The execution role grants access required by the configured containers, such as pulling images
+        from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+        etc.
 
-        Default - An execution role will be automatically created if you use ECR images in your task
-        definition.
+        The component will automatically attach IAM policies granting access based on the container
+        definitions.
+
+        Default - An execution role will be automatically created for you
         """
-        return pulumi.get(self, "execution_role")
+        return pulumi.get(self, "execution_role_arn")
 
-    @execution_role.setter
-    def execution_role(self, value: Optional['pulumi_aws.iam.Role']):
-        pulumi.set(self, "execution_role", value)
+    @execution_role_arn.setter
+    def execution_role_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "execution_role_arn", value)
 
     @_builtins.property
     @pulumi.getter
@@ -237,7 +251,7 @@ class FargateTaskDefinitionV2Args:
         The name of a family that this task definition is registered to. A family groups multiple
         versions of a task definition.
 
-        Default - Automatically generated name.
+        Default - The Pulumi resource name of this component
         """
         return pulumi.get(self, "family")
 
@@ -275,7 +289,8 @@ class FargateTaskDefinitionV2Args:
         For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
         to select the task size.
 
-        Default - 512
+        Default - A memory value will be automatically selected based on the container-level CPU and
+        memory requirements
         """
         return pulumi.get(self, "memory")
 
@@ -299,19 +314,33 @@ class FargateTaskDefinitionV2Args:
         pulumi.set(self, "region", value)
 
     @_builtins.property
-    @pulumi.getter(name="taskRole")
-    def task_role(self) -> Optional['pulumi_aws.iam.Role']:
+    @pulumi.getter(name="runtimePlatform")
+    def runtime_platform(self) -> Optional['RuntimePlatformArgs']:
         """
-        The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+        The operating system that your task definitions are running on.
+
+        Default - AWS default of X86_64 Linux
+        """
+        return pulumi.get(self, "runtime_platform")
+
+    @runtime_platform.setter
+    def runtime_platform(self, value: Optional['RuntimePlatformArgs']):
+        pulumi.set(self, "runtime_platform", value)
+
+    @_builtins.property
+    @pulumi.getter(name="taskRoleArn")
+    def task_role_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
         behalf.
 
         Default - A task role is automatically created for you.
         """
-        return pulumi.get(self, "task_role")
+        return pulumi.get(self, "task_role_arn")
 
-    @task_role.setter
-    def task_role(self, value: Optional['pulumi_aws.iam.Role']):
-        pulumi.set(self, "task_role", value)
+    @task_role_arn.setter
+    def task_role_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "task_role_arn", value)
 
 
 @pulumi.type_token("awsx:experimental/ecs:FargateTaskDefinitionV2")
@@ -323,11 +352,12 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
                  containers: Optional[Mapping[str, Union['FargateContainerDefinitionOptionsArgs', 'FargateContainerDefinitionOptionsArgsDict']]] = None,
                  cpu: Optional[_builtins.float] = None,
                  ephemeral_storage: Optional[_builtins.float] = None,
-                 execution_role: Optional['pulumi_aws.iam.Role'] = None,
+                 execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  family: Optional[_builtins.str] = None,
                  memory: Optional[_builtins.float] = None,
                  region: Optional[_builtins.str] = None,
-                 task_role: Optional['pulumi_aws.iam.Role'] = None,
+                 runtime_platform: Optional[Union['RuntimePlatformArgs', 'RuntimePlatformArgsDict']] = None,
+                 task_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         """
         Create a FargateTaskDefinitionV2 resource with the given unique name, props, and options.
@@ -369,23 +399,27 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
                For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
                select the task size.
                
-               Default - 256
+               Default - A CPU value will be automatically selected based on the container-level CPU and
+               memory requirements
         :param _builtins.float ephemeral_storage: The amount (in GiB) of ephemeral storage to be allocated to the task.
                
                Only supported in Fargate platform version 1.4.0 or later.
                
                Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
-        :param 'pulumi_aws.iam.Role' execution_role: The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-               on your behalf.
+        :param pulumi.Input[_builtins.str] execution_role_arn: The ARN of the IAM task execution role that will be used by the ECS Task.
                
-               The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+               The execution role grants access required by the configured containers, such as pulling images
+               from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+               etc.
                
-               Default - An execution role will be automatically created if you use ECR images in your task
-               definition.
+               The component will automatically attach IAM policies granting access based on the container
+               definitions.
+               
+               Default - An execution role will be automatically created for you
         :param _builtins.str family: The name of a family that this task definition is registered to. A family groups multiple
                versions of a task definition.
                
-               Default - Automatically generated name.
+               Default - The Pulumi resource name of this component
         :param _builtins.float memory: The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
                field is required and must be valid for the selected CPU value:
                
@@ -412,12 +446,16 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
                For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
                to select the task size.
                
-               Default - 512
+               Default - A memory value will be automatically selected based on the container-level CPU and
+               memory requirements
         :param _builtins.str region: Region where this resource will be
                [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
                
                Default - Region set in the provider configuration.
-        :param 'pulumi_aws.iam.Role' task_role: The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+        :param Union['RuntimePlatformArgs', 'RuntimePlatformArgsDict'] runtime_platform: The operating system that your task definitions are running on.
+               
+               Default - AWS default of X86_64 Linux
+        :param pulumi.Input[_builtins.str] task_role_arn: The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
                behalf.
                
                Default - A task role is automatically created for you.
@@ -449,11 +487,12 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
                  containers: Optional[Mapping[str, Union['FargateContainerDefinitionOptionsArgs', 'FargateContainerDefinitionOptionsArgsDict']]] = None,
                  cpu: Optional[_builtins.float] = None,
                  ephemeral_storage: Optional[_builtins.float] = None,
-                 execution_role: Optional['pulumi_aws.iam.Role'] = None,
+                 execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  family: Optional[_builtins.str] = None,
                  memory: Optional[_builtins.float] = None,
                  region: Optional[_builtins.str] = None,
-                 task_role: Optional['pulumi_aws.iam.Role'] = None,
+                 runtime_platform: Optional[Union['RuntimePlatformArgs', 'RuntimePlatformArgsDict']] = None,
+                 task_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -470,14 +509,17 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
             __props__.__dict__["containers"] = containers
             __props__.__dict__["cpu"] = cpu
             __props__.__dict__["ephemeral_storage"] = ephemeral_storage
-            __props__.__dict__["execution_role"] = execution_role
+            __props__.__dict__["execution_role_arn"] = execution_role_arn
             __props__.__dict__["family"] = family
             __props__.__dict__["memory"] = memory
             __props__.__dict__["region"] = region
-            __props__.__dict__["task_role"] = task_role
-            __props__.__dict__["_log_group"] = None
+            __props__.__dict__["runtime_platform"] = runtime_platform
+            __props__.__dict__["task_role_arn"] = task_role_arn
+            __props__.__dict__["execution_role"] = None
+            __props__.__dict__["log_group"] = None
             __props__.__dict__["name"] = None
-            __props__.__dict__["task_definition_arn"] = None
+            __props__.__dict__["task_definition"] = None
+            __props__.__dict__["task_role"] = None
         super(FargateTaskDefinitionV2, __self__).__init__(
             'awsx:experimental/ecs:FargateTaskDefinitionV2',
             resource_name,
@@ -486,14 +528,22 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
             remote=True)
 
     @_builtins.property
-    @pulumi.getter(name="_logGroup")
-    def _log_group(self) -> pulumi.Output[Optional['_experimental.cloudwatch.outputs.LogGroupReference']]:
-        return pulumi.get(self, "_log_group")
-
-    @_builtins.property
     @pulumi.getter(name="executionRole")
     def execution_role(self) -> pulumi.Output['pulumi_aws.iam.Role']:
+        """
+        The Execution Role of the task
+        """
         return pulumi.get(self, "execution_role")
+
+    @_builtins.property
+    @pulumi.getter(name="logGroup")
+    def log_group(self) -> pulumi.Output[Optional['pulumi_aws.cloudwatch.LogGroup']]:
+        """
+        The shared CloudWatch Logs log group created by the component for containers that enable
+        CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+        component does not create a default log group
+        """
+        return pulumi.get(self, "log_group")
 
     @_builtins.property
     @pulumi.getter
@@ -506,12 +556,18 @@ class FargateTaskDefinitionV2(pulumi.ComponentResource):
         return pulumi.get(self, "region")
 
     @_builtins.property
-    @pulumi.getter(name="taskDefinitionArn")
-    def task_definition_arn(self) -> pulumi.Output[_builtins.str]:
-        return pulumi.get(self, "task_definition_arn")
+    @pulumi.getter(name="taskDefinition")
+    def task_definition(self) -> pulumi.Output['pulumi_aws.ecs.TaskDefinition']:
+        """
+        The task definition resource
+        """
+        return pulumi.get(self, "task_definition")
 
     @_builtins.property
     @pulumi.getter(name="taskRole")
     def task_role(self) -> pulumi.Output['pulumi_aws.iam.Role']:
+        """
+        The Task Role of the task
+        """
         return pulumi.get(self, "task_role")
 

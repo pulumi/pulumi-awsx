@@ -3,65 +3,184 @@
 
 
 export const AwsLogDriverMode = {
+    /**
+     * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+     */
     BLOCKING: "blocking",
+    /**
+     * Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+     * fills.
+     */
     NON_BLOCKING: "non-blocking",
 } as const;
 
 export type AwsLogDriverMode = (typeof AwsLogDriverMode)[keyof typeof AwsLogDriverMode];
 
 export const ContainerDefinitionVersionConsistency = {
+    /**
+     * Resolve the image tag to an image digest.
+     */
     ENABLED: "enabled",
+    /**
+     * Keep the original image URI without resolving the tag to a digest.
+     */
     DISABLED: "disabled",
 } as const;
 
 export type ContainerDefinitionVersionConsistency = (typeof ContainerDefinitionVersionConsistency)[keyof typeof ContainerDefinitionVersionConsistency];
 
 export const ContainerDependencyCondition = {
+    /**
+     * Wait until the other container starts.
+     */
     START: "START",
+    /**
+     * Wait until the other container exits. The other container must not be essential.
+     */
     COMPLETE: "COMPLETE",
+    /**
+     * Wait until the other container exits with a zero status. It must not be essential.
+     */
     SUCCESS: "SUCCESS",
+    /**
+     * Wait until the other container passes its configured health check. Checked only at startup.
+     */
     HEALTHY: "HEALTHY",
 } as const;
 
 export type ContainerDependencyCondition = (typeof ContainerDependencyCondition)[keyof typeof ContainerDependencyCondition];
 
+export const CpuArchitecture = {
+    X86_64: "X86_64",
+    ARM64: "ARM64",
+} as const;
+
+export type CpuArchitecture = (typeof CpuArchitecture)[keyof typeof CpuArchitecture];
+
 export const CredentialSpecAuthenticationMode = {
+    /**
+     * Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+     *
+     * For more information, see [gMSA
+     * prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
+     */
     DOMAIN_JOINED: "DomainJoined",
+    /**
+     * Use credentials referenced by the credential specification without joining the container
+     * instance to the domain.
+     *
+     * For more information, see [domainless gMSA
+     * setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+     * and [gMSAs for Linux
+     * containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+     */
     DOMAINLESS: "Domainless",
 } as const;
 
 export type CredentialSpecAuthenticationMode = (typeof CredentialSpecAuthenticationMode)[keyof typeof CredentialSpecAuthenticationMode];
 
+export const OperatingSystemFamily = {
+    LINUX: "LINUX",
+    WINDOWS_SERVER_2025_FULL: "WINDOWS_SERVER_2025_FULL",
+    WINDOWS_SERVER_2025_CORE: "WINDOWS_SERVER_2025_CORE",
+    WINDOWS_SERVER_2022_FULL: "WINDOWS_SERVER_2022_FULL",
+    WINDOWS_SERVER_2022_CORE: "WINDOWS_SERVER_2022_CORE",
+    WINDOWS_SERVER_2019_FULL: "WINDOWS_SERVER_2019_FULL",
+    WINDOWS_SERVER_2019_CORE: "WINDOWS_SERVER_2019_CORE",
+} as const;
+
+export type OperatingSystemFamily = (typeof OperatingSystemFamily)[keyof typeof OperatingSystemFamily];
+
 export const PortMappingAppProtocol = {
+    /**
+     * Use HTTP protocol handling and telemetry.
+     */
     HTTP: "http",
+    /**
+     * Use HTTP/2 protocol handling and telemetry.
+     */
     HTTP2: "http2",
+    /**
+     * Use gRPC protocol handling and telemetry.
+     */
     GRPC: "grpc",
 } as const;
 
 export type PortMappingAppProtocol = (typeof PortMappingAppProtocol)[keyof typeof PortMappingAppProtocol];
 
 export const PortMappingProtocol = {
+    /**
+     * Use the Transmission Control Protocol.
+     */
     TCP: "tcp",
+    /**
+     * Use the User Datagram Protocol.
+     */
     UDP: "udp",
 } as const;
 
 export type PortMappingProtocol = (typeof PortMappingProtocol)[keyof typeof PortMappingProtocol];
 
 export const UlimitName = {
+    /**
+     * Limit the size of core dump files.
+     */
     CORE: "core",
+    /**
+     * Limit CPU time.
+     */
     CPU: "cpu",
+    /**
+     * Limit the size of the process data segment.
+     */
     DATA: "data",
+    /**
+     * Limit the size of files that the process can create.
+     */
     FSIZE: "fsize",
+    /**
+     * Limit the number of file locks.
+     */
     LOCKS: "locks",
+    /**
+     * Limit the amount of memory that can be locked.
+     */
     MEMLOCK: "memlock",
+    /**
+     * Limit the number of bytes allocated for POSIX message queues.
+     */
     MSGQUEUE: "msgqueue",
+    /**
+     * Limit the process nice priority.
+     */
     NICE: "nice",
+    /**
+     * Limit the number of open file descriptors.
+     */
     NOFILE: "nofile",
+    /**
+     * Limit the number of processes available to the user.
+     */
     NPROC: "nproc",
+    /**
+     * Limit the resident set size.
+     */
     RSS: "rss",
+    /**
+     * Limit the real-time priority.
+     */
     RTPRIO: "rtprio",
+    /**
+     * Limit CPU time scheduled under a real-time policy.
+     */
     RTTIME: "rttime",
+    /**
+     * Limit the number of pending signals.
+     */
     SIGPENDING: "sigpending",
+    /**
+     * Limit the process stack size.
+     */
     STACK: "stack",
 } as const;
 

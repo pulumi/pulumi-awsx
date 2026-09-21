@@ -19,12 +19,12 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         public string? DatetimeFormat { get; set; }
 
         /// <summary>
-        /// The log group to log to.
+        /// The ARN of the log group to log to.
         /// 
         /// Default - A log group is created automatically.
         /// </summary>
-        [Input("logGroup")]
-        public Pulumi.Awsx.Experimental.Cloudwatch.Inputs.LogGroupReferenceArgs? LogGroup { get; set; }
+        [Input("logGroupArn")]
+        public Input<string>? LogGroupArn { get; set; }
 
         /// <summary>
         /// Size, in bytes, of the buffer used in non-blocking mode.

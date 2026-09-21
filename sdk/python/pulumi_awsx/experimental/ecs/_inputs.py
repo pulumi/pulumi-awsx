@@ -13,9 +13,7 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import NotRequired, TypedDict, TypeAlias
 from ... import _utilities
-from ... import experimental as _experimental
 from ._enums import *
-import pulumi_aws
 
 __all__ = [
     'ContainerDependencyArgs',
@@ -40,6 +38,8 @@ __all__ = [
     'FargatePortMappingArgsDict',
     'HealthCheckArgs',
     'HealthCheckArgsDict',
+    'RuntimePlatformArgs',
+    'RuntimePlatformArgsDict',
     'S3BucketCredentialSpecArgs',
     'S3BucketCredentialSpecArgsDict',
     'SecretArgs',
@@ -103,19 +103,32 @@ class ContainerDependencyArgs:
 
 class ContainerPortRangeArgsDict(TypedDict):
     end: _builtins.float
+    """
+    The last port in the range. Must be from 1 through 65535 and greater than `start`.
+    """
     start: _builtins.float
+    """
+    The first port in the range. Must be from 1 through 65535 and less than `end`.
+    """
 
 @pulumi.input_type
 class ContainerPortRangeArgs:
     def __init__(__self__, *,
                  end: _builtins.float,
                  start: _builtins.float):
+        """
+        :param _builtins.float end: The last port in the range. Must be from 1 through 65535 and greater than `start`.
+        :param _builtins.float start: The first port in the range. Must be from 1 through 65535 and less than `end`.
+        """
         pulumi.set(__self__, "end", end)
         pulumi.set(__self__, "start", start)
 
     @_builtins.property
     @pulumi.getter
     def end(self) -> _builtins.float:
+        """
+        The last port in the range. Must be from 1 through 65535 and greater than `start`.
+        """
         return pulumi.get(self, "end")
 
     @end.setter
@@ -125,6 +138,9 @@ class ContainerPortRangeArgs:
     @_builtins.property
     @pulumi.getter
     def start(self) -> _builtins.float:
+        """
+        The first port in the range. Must be from 1 through 65535 and less than `end`.
+        """
         return pulumi.get(self, "start")
 
     @start.setter
@@ -141,9 +157,9 @@ class CredentialSpecArgsDict(TypedDict):
     """
     An S3 object that contains the credential specification file.
     """
-    ssm_parameter: NotRequired['pulumi_aws.ssm.Parameter']
+    ssm_parameter_arn: NotRequired[pulumi.Input[Optional[_builtins.str]]]
     """
-    An SSM parameter that contains the credential specification file.
+    The ARN of an SSM parameter that contains the credential specification file.
     """
 
 @pulumi.input_type
@@ -151,17 +167,17 @@ class CredentialSpecArgs:
     def __init__(__self__, *,
                  authentication_mode: 'CredentialSpecAuthenticationMode',
                  s3_bucket: Optional['S3BucketCredentialSpecArgs'] = None,
-                 ssm_parameter: Optional['pulumi_aws.ssm.Parameter'] = None):
+                 ssm_parameter_arn: pulumi.Input[Optional[_builtins.str]] = None):
         """
         :param 'CredentialSpecAuthenticationMode' authentication_mode: The Active Directory authentication mode.
         :param 'S3BucketCredentialSpecArgs' s3_bucket: An S3 object that contains the credential specification file.
-        :param 'pulumi_aws.ssm.Parameter' ssm_parameter: An SSM parameter that contains the credential specification file.
+        :param pulumi.Input[_builtins.str] ssm_parameter_arn: The ARN of an SSM parameter that contains the credential specification file.
         """
         pulumi.set(__self__, "authentication_mode", authentication_mode)
         if s3_bucket is not None:
             pulumi.set(__self__, "s3_bucket", s3_bucket)
-        if ssm_parameter is not None:
-            pulumi.set(__self__, "ssm_parameter", ssm_parameter)
+        if ssm_parameter_arn is not None:
+            pulumi.set(__self__, "ssm_parameter_arn", ssm_parameter_arn)
 
     @_builtins.property
     @pulumi.getter(name="authenticationMode")
@@ -188,22 +204,22 @@ class CredentialSpecArgs:
         pulumi.set(self, "s3_bucket", value)
 
     @_builtins.property
-    @pulumi.getter(name="ssmParameter")
-    def ssm_parameter(self) -> Optional['pulumi_aws.ssm.Parameter']:
+    @pulumi.getter(name="ssmParameterArn")
+    def ssm_parameter_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        An SSM parameter that contains the credential specification file.
+        The ARN of an SSM parameter that contains the credential specification file.
         """
-        return pulumi.get(self, "ssm_parameter")
+        return pulumi.get(self, "ssm_parameter_arn")
 
-    @ssm_parameter.setter
-    def ssm_parameter(self, value: Optional['pulumi_aws.ssm.Parameter']):
-        pulumi.set(self, "ssm_parameter", value)
+    @ssm_parameter_arn.setter
+    def ssm_parameter_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "ssm_parameter_arn", value)
 
 
 class EnvironmentFileArgsDict(TypedDict):
-    bucket: 'pulumi_aws.s3.Bucket'
+    bucket_arn: pulumi.Input[_builtins.str]
     """
-    The bucket that contains the environment file.
+    The ARN of the bucket that contains the environment file.
     """
     key: pulumi.Input[_builtins.str]
     """
@@ -213,26 +229,26 @@ class EnvironmentFileArgsDict(TypedDict):
 @pulumi.input_type
 class EnvironmentFileArgs:
     def __init__(__self__, *,
-                 bucket: 'pulumi_aws.s3.Bucket',
+                 bucket_arn: pulumi.Input[_builtins.str],
                  key: pulumi.Input[_builtins.str]):
         """
-        :param 'pulumi_aws.s3.Bucket' bucket: The bucket that contains the environment file.
+        :param pulumi.Input[_builtins.str] bucket_arn: The ARN of the bucket that contains the environment file.
         :param pulumi.Input[_builtins.str] key: The object key of the environment file.
         """
-        pulumi.set(__self__, "bucket", bucket)
+        pulumi.set(__self__, "bucket_arn", bucket_arn)
         pulumi.set(__self__, "key", key)
 
     @_builtins.property
-    @pulumi.getter
-    def bucket(self) -> 'pulumi_aws.s3.Bucket':
+    @pulumi.getter(name="bucketArn")
+    def bucket_arn(self) -> pulumi.Input[_builtins.str]:
         """
-        The bucket that contains the environment file.
+        The ARN of the bucket that contains the environment file.
         """
-        return pulumi.get(self, "bucket")
+        return pulumi.get(self, "bucket_arn")
 
-    @bucket.setter
-    def bucket(self, value: 'pulumi_aws.s3.Bucket'):
-        pulumi.set(self, "bucket", value)
+    @bucket_arn.setter
+    def bucket_arn(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "bucket_arn", value)
 
     @_builtins.property
     @pulumi.getter
@@ -256,9 +272,9 @@ class FargateAwsLogsLogDriverArgsDict(TypedDict):
     """
     A multiline start pattern in Python strftime format.
     """
-    log_group: NotRequired['_experimental.cloudwatch.LogGroupReferenceArgsDict']
+    log_group_arn: NotRequired[pulumi.Input[Optional[_builtins.str]]]
     """
-    The log group to log to.
+    The ARN of the log group to log to.
 
     Default - A log group is created automatically.
     """
@@ -282,14 +298,14 @@ class FargateAwsLogsLogDriverArgs:
     def __init__(__self__, *,
                  stream_prefix: pulumi.Input[_builtins.str],
                  datetime_format: Optional[_builtins.str] = None,
-                 log_group: Optional['_experimental.cloudwatch.LogGroupReferenceArgs'] = None,
+                 log_group_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  max_buffer_size_bytes: Optional[_builtins.float] = None,
                  mode: Optional['AwsLogDriverMode'] = None,
                  multiline_pattern: Optional[_builtins.str] = None):
         """
         :param pulumi.Input[_builtins.str] stream_prefix: Prefix used for the container's log streams.
         :param _builtins.str datetime_format: A multiline start pattern in Python strftime format.
-        :param '_experimental.cloudwatch.LogGroupReferenceArgs' log_group: The log group to log to.
+        :param pulumi.Input[_builtins.str] log_group_arn: The ARN of the log group to log to.
                
                Default - A log group is created automatically.
         :param _builtins.float max_buffer_size_bytes: Size, in bytes, of the buffer used in non-blocking mode.
@@ -301,8 +317,8 @@ class FargateAwsLogsLogDriverArgs:
         pulumi.set(__self__, "stream_prefix", stream_prefix)
         if datetime_format is not None:
             pulumi.set(__self__, "datetime_format", datetime_format)
-        if log_group is not None:
-            pulumi.set(__self__, "log_group", log_group)
+        if log_group_arn is not None:
+            pulumi.set(__self__, "log_group_arn", log_group_arn)
         if max_buffer_size_bytes is not None:
             pulumi.set(__self__, "max_buffer_size_bytes", max_buffer_size_bytes)
         if mode is not None:
@@ -335,18 +351,18 @@ class FargateAwsLogsLogDriverArgs:
         pulumi.set(self, "datetime_format", value)
 
     @_builtins.property
-    @pulumi.getter(name="logGroup")
-    def log_group(self) -> Optional['_experimental.cloudwatch.LogGroupReferenceArgs']:
+    @pulumi.getter(name="logGroupArn")
+    def log_group_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
         """
-        The log group to log to.
+        The ARN of the log group to log to.
 
         Default - A log group is created automatically.
         """
-        return pulumi.get(self, "log_group")
+        return pulumi.get(self, "log_group_arn")
 
-    @log_group.setter
-    def log_group(self, value: Optional['_experimental.cloudwatch.LogGroupReferenceArgs']):
-        pulumi.set(self, "log_group", value)
+    @log_group_arn.setter
+    def log_group_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "log_group_arn", value)
 
     @_builtins.property
     @pulumi.getter(name="maxBufferSizeBytes")
@@ -475,7 +491,10 @@ class FargateContainerDefinitionOptionsArgsDict(TypedDict):
     This property is not supported for Windows containers.
     """
     logging: NotRequired['FargateLogDriverArgsDict']
-    memory: NotRequired[_builtins.float]
+    """
+    The log driver and settings used to collect container logs.
+    """
+    memory_mi_b: NotRequired[_builtins.float]
     """
     The hard memory limit for the container, in MiB.
 
@@ -487,15 +506,15 @@ class FargateContainerDefinitionOptionsArgsDict(TypedDict):
 
     Default - No container-level hard memory limit.
     """
-    memory_reservation: NotRequired[_builtins.float]
+    memory_reservation_mi_b: NotRequired[_builtins.float]
     """
     The soft memory limit reserved for the container, in MiB.
 
     The container can use more memory when it is available, up to its hard memory limit. This
     property is not supported for Windows containers.
 
-    If you set both container-level memory values, `memory` must be greater than
-    `memoryReservation`.
+    If you set both container-level memory values, `memoryMiB` must be greater than
+    `memoryReservationMiB`.
 
     Default - No container-level soft memory reservation.
     """
@@ -519,7 +538,7 @@ class FargateContainerDefinitionOptionsArgsDict(TypedDict):
     """
     Secret environment variables passed to the container.
     """
-    start_timeout: NotRequired[_builtins.float]
+    start_timeout_seconds: NotRequired[_builtins.float]
     """
     The time, in seconds, to wait for this container's startup dependencies to become ready.
 
@@ -527,7 +546,7 @@ class FargateContainerDefinitionOptionsArgsDict(TypedDict):
 
     Default - No container-specific startup timeout.
     """
-    stop_timeout: NotRequired[_builtins.float]
+    stop_timeout_seconds: NotRequired[_builtins.float]
     """
     The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
     normally.
@@ -605,14 +624,14 @@ class FargateContainerDefinitionOptionsArgs:
                  interactive: Optional[_builtins.bool] = None,
                  linux_parameters: Optional['FargateLinuxParametersArgs'] = None,
                  logging: Optional['FargateLogDriverArgs'] = None,
-                 memory: Optional[_builtins.float] = None,
-                 memory_reservation: Optional[_builtins.float] = None,
+                 memory_mi_b: Optional[_builtins.float] = None,
+                 memory_reservation_mi_b: Optional[_builtins.float] = None,
                  port_mappings: Optional[Sequence['FargatePortMappingArgs']] = None,
                  pseudo_terminal: Optional[_builtins.bool] = None,
                  readonly_root_filesystem: Optional[_builtins.bool] = None,
                  secrets: Optional[Mapping[str, 'SecretArgs']] = None,
-                 start_timeout: Optional[_builtins.float] = None,
-                 stop_timeout: Optional[_builtins.float] = None,
+                 start_timeout_seconds: Optional[_builtins.float] = None,
+                 stop_timeout_seconds: Optional[_builtins.float] = None,
                  system_controls: Optional[Sequence['SystemControlArgs']] = None,
                  ulimits: Optional[Sequence['UlimitArgs']] = None,
                  user: Optional[_builtins.str] = None,
@@ -667,7 +686,8 @@ class FargateContainerDefinitionOptionsArgs:
         :param 'FargateLinuxParametersArgs' linux_parameters: Linux-specific options applied to the container.
                
                This property is not supported for Windows containers.
-        :param _builtins.float memory: The hard memory limit for the container, in MiB.
+        :param 'FargateLogDriverArgs' logging: The log driver and settings used to collect container logs.
+        :param _builtins.float memory_mi_b: The hard memory limit for the container, in MiB.
                
                ECS stops the container if it uses more than this limit. Container-level memory is optional
                because Fargate requires a task-level memory value.
@@ -676,13 +696,13 @@ class FargateContainerDefinitionOptionsArgs:
                `memoryReservation`.
                
                Default - No container-level hard memory limit.
-        :param _builtins.float memory_reservation: The soft memory limit reserved for the container, in MiB.
+        :param _builtins.float memory_reservation_mi_b: The soft memory limit reserved for the container, in MiB.
                
                The container can use more memory when it is available, up to its hard memory limit. This
                property is not supported for Windows containers.
                
-               If you set both container-level memory values, `memory` must be greater than
-               `memoryReservation`.
+               If you set both container-level memory values, `memoryMiB` must be greater than
+               `memoryReservationMiB`.
                
                Default - No container-level soft memory reservation.
         :param Sequence['FargatePortMappingArgs'] port_mappings: Port mappings exposed by the container.
@@ -693,12 +713,12 @@ class FargateContainerDefinitionOptionsArgs:
                
                Default - `false`.
         :param Mapping[str, 'SecretArgs'] secrets: Secret environment variables passed to the container.
-        :param _builtins.float start_timeout: The time, in seconds, to wait for this container's startup dependencies to become ready.
+        :param _builtins.float start_timeout_seconds: The time, in seconds, to wait for this container's startup dependencies to become ready.
                
                Valid values are from 2 through 120 seconds.
                
                Default - No container-specific startup timeout.
-        :param _builtins.float stop_timeout: The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
+        :param _builtins.float stop_timeout_seconds: The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
                normally.
                
                Valid values are from 2 through 120 seconds.
@@ -765,10 +785,10 @@ class FargateContainerDefinitionOptionsArgs:
             pulumi.set(__self__, "linux_parameters", linux_parameters)
         if logging is not None:
             pulumi.set(__self__, "logging", logging)
-        if memory is not None:
-            pulumi.set(__self__, "memory", memory)
-        if memory_reservation is not None:
-            pulumi.set(__self__, "memory_reservation", memory_reservation)
+        if memory_mi_b is not None:
+            pulumi.set(__self__, "memory_mi_b", memory_mi_b)
+        if memory_reservation_mi_b is not None:
+            pulumi.set(__self__, "memory_reservation_mi_b", memory_reservation_mi_b)
         if port_mappings is not None:
             pulumi.set(__self__, "port_mappings", port_mappings)
         if pseudo_terminal is not None:
@@ -777,10 +797,10 @@ class FargateContainerDefinitionOptionsArgs:
             pulumi.set(__self__, "readonly_root_filesystem", readonly_root_filesystem)
         if secrets is not None:
             pulumi.set(__self__, "secrets", secrets)
-        if start_timeout is not None:
-            pulumi.set(__self__, "start_timeout", start_timeout)
-        if stop_timeout is not None:
-            pulumi.set(__self__, "stop_timeout", stop_timeout)
+        if start_timeout_seconds is not None:
+            pulumi.set(__self__, "start_timeout_seconds", start_timeout_seconds)
+        if stop_timeout_seconds is not None:
+            pulumi.set(__self__, "stop_timeout_seconds", stop_timeout_seconds)
         if system_controls is not None:
             pulumi.set(__self__, "system_controls", system_controls)
         if ulimits is not None:
@@ -987,6 +1007,9 @@ class FargateContainerDefinitionOptionsArgs:
     @_builtins.property
     @pulumi.getter
     def logging(self) -> Optional['FargateLogDriverArgs']:
+        """
+        The log driver and settings used to collect container logs.
+        """
         return pulumi.get(self, "logging")
 
     @logging.setter
@@ -994,8 +1017,8 @@ class FargateContainerDefinitionOptionsArgs:
         pulumi.set(self, "logging", value)
 
     @_builtins.property
-    @pulumi.getter
-    def memory(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="memoryMiB")
+    def memory_mi_b(self) -> Optional[_builtins.float]:
         """
         The hard memory limit for the container, in MiB.
 
@@ -1007,31 +1030,31 @@ class FargateContainerDefinitionOptionsArgs:
 
         Default - No container-level hard memory limit.
         """
-        return pulumi.get(self, "memory")
+        return pulumi.get(self, "memory_mi_b")
 
-    @memory.setter
-    def memory(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "memory", value)
+    @memory_mi_b.setter
+    def memory_mi_b(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "memory_mi_b", value)
 
     @_builtins.property
-    @pulumi.getter(name="memoryReservation")
-    def memory_reservation(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="memoryReservationMiB")
+    def memory_reservation_mi_b(self) -> Optional[_builtins.float]:
         """
         The soft memory limit reserved for the container, in MiB.
 
         The container can use more memory when it is available, up to its hard memory limit. This
         property is not supported for Windows containers.
 
-        If you set both container-level memory values, `memory` must be greater than
-        `memoryReservation`.
+        If you set both container-level memory values, `memoryMiB` must be greater than
+        `memoryReservationMiB`.
 
         Default - No container-level soft memory reservation.
         """
-        return pulumi.get(self, "memory_reservation")
+        return pulumi.get(self, "memory_reservation_mi_b")
 
-    @memory_reservation.setter
-    def memory_reservation(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "memory_reservation", value)
+    @memory_reservation_mi_b.setter
+    def memory_reservation_mi_b(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "memory_reservation_mi_b", value)
 
     @_builtins.property
     @pulumi.getter(name="portMappings")
@@ -1086,8 +1109,8 @@ class FargateContainerDefinitionOptionsArgs:
         pulumi.set(self, "secrets", value)
 
     @_builtins.property
-    @pulumi.getter(name="startTimeout")
-    def start_timeout(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="startTimeoutSeconds")
+    def start_timeout_seconds(self) -> Optional[_builtins.float]:
         """
         The time, in seconds, to wait for this container's startup dependencies to become ready.
 
@@ -1095,15 +1118,15 @@ class FargateContainerDefinitionOptionsArgs:
 
         Default - No container-specific startup timeout.
         """
-        return pulumi.get(self, "start_timeout")
+        return pulumi.get(self, "start_timeout_seconds")
 
-    @start_timeout.setter
-    def start_timeout(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "start_timeout", value)
+    @start_timeout_seconds.setter
+    def start_timeout_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "start_timeout_seconds", value)
 
     @_builtins.property
-    @pulumi.getter(name="stopTimeout")
-    def stop_timeout(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="stopTimeoutSeconds")
+    def stop_timeout_seconds(self) -> Optional[_builtins.float]:
         """
         The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
         normally.
@@ -1112,11 +1135,11 @@ class FargateContainerDefinitionOptionsArgs:
 
         Default - 30 seconds.
         """
-        return pulumi.get(self, "stop_timeout")
+        return pulumi.get(self, "stop_timeout_seconds")
 
-    @stop_timeout.setter
-    def stop_timeout(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "stop_timeout", value)
+    @stop_timeout_seconds.setter
+    def stop_timeout_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "stop_timeout_seconds", value)
 
     @_builtins.property
     @pulumi.getter(name="systemControls")
@@ -1324,16 +1347,34 @@ class FargateLinuxParametersArgs:
 
 class FargateLogDriverArgsDict(TypedDict):
     cloudwatch: 'FargateAwsLogsLogDriverArgsDict'
+    """
+    Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+
+    For more information, see [CloudWatch
+    logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+    """
 
 @pulumi.input_type
 class FargateLogDriverArgs:
     def __init__(__self__, *,
                  cloudwatch: 'FargateAwsLogsLogDriverArgs'):
+        """
+        :param 'FargateAwsLogsLogDriverArgs' cloudwatch: Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+               
+               For more information, see [CloudWatch
+               logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+        """
         pulumi.set(__self__, "cloudwatch", cloudwatch)
 
     @_builtins.property
     @pulumi.getter
     def cloudwatch(self) -> 'FargateAwsLogsLogDriverArgs':
+        """
+        Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+
+        For more information, see [CloudWatch
+        logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+        """
         return pulumi.get(self, "cloudwatch")
 
     @cloudwatch.setter
@@ -1354,7 +1395,7 @@ class FargatePortMappingArgsDict(TypedDict):
     """
     container_port_range: NotRequired['ContainerPortRangeArgsDict']
     """
-    A range of container ports, in the form `start-end`.
+    A range of container ports with inclusive `start` and `end` values.
 
     Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
     to the same container port range.
@@ -1383,7 +1424,7 @@ class FargatePortMappingArgs:
         :param _builtins.float container_port: The port number exposed by the container.
                
                Do not set this property when `containerPortRange` is set.
-        :param 'ContainerPortRangeArgs' container_port_range: A range of container ports, in the form `start-end`.
+        :param 'ContainerPortRangeArgs' container_port_range: A range of container ports with inclusive `start` and `end` values.
                
                Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
                to the same container port range.
@@ -1433,7 +1474,7 @@ class FargatePortMappingArgs:
     @pulumi.getter(name="containerPortRange")
     def container_port_range(self) -> Optional['ContainerPortRangeArgs']:
         """
-        A range of container ports, in the form `start-end`.
+        A range of container ports with inclusive `start` and `end` values.
 
         Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
         to the same container port range.
@@ -1480,7 +1521,7 @@ class HealthCheckArgsDict(TypedDict):
 
     Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
     """
-    interval: NotRequired[_builtins.float]
+    interval_seconds: NotRequired[_builtins.float]
     """
     The time, in seconds, between health checks. Valid values are from 5 through 300.
 
@@ -1493,14 +1534,14 @@ class HealthCheckArgsDict(TypedDict):
 
     Default - 3.
     """
-    start_period: NotRequired[_builtins.float]
+    start_period_seconds: NotRequired[_builtins.float]
     """
     The startup grace period, in seconds, during which failed checks do not count toward the retry
     limit. Valid values are from 0 through 300.
 
     Default - No startup grace period.
     """
-    timeout: NotRequired[_builtins.float]
+    timeout_seconds: NotRequired[_builtins.float]
     """
     The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 
@@ -1511,40 +1552,40 @@ class HealthCheckArgsDict(TypedDict):
 class HealthCheckArgs:
     def __init__(__self__, *,
                  command: Sequence[_builtins.str],
-                 interval: Optional[_builtins.float] = None,
+                 interval_seconds: Optional[_builtins.float] = None,
                  retries: Optional[_builtins.float] = None,
-                 start_period: Optional[_builtins.float] = None,
-                 timeout: Optional[_builtins.float] = None):
+                 start_period_seconds: Optional[_builtins.float] = None,
+                 timeout_seconds: Optional[_builtins.float] = None):
         """
         :param Sequence[_builtins.str] command: The command that the container runs to determine whether it is healthy.
                
                The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
                
                Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-        :param _builtins.float interval: The time, in seconds, between health checks. Valid values are from 5 through 300.
+        :param _builtins.float interval_seconds: The time, in seconds, between health checks. Valid values are from 5 through 300.
                
                Default - 30 seconds.
         :param _builtins.float retries: The number of consecutive failures required before the container becomes unhealthy. Valid
                values are from 1 through 10.
                
                Default - 3.
-        :param _builtins.float start_period: The startup grace period, in seconds, during which failed checks do not count toward the retry
+        :param _builtins.float start_period_seconds: The startup grace period, in seconds, during which failed checks do not count toward the retry
                limit. Valid values are from 0 through 300.
                
                Default - No startup grace period.
-        :param _builtins.float timeout: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+        :param _builtins.float timeout_seconds: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
                
                Default - 5 seconds.
         """
         pulumi.set(__self__, "command", command)
-        if interval is not None:
-            pulumi.set(__self__, "interval", interval)
+        if interval_seconds is not None:
+            pulumi.set(__self__, "interval_seconds", interval_seconds)
         if retries is not None:
             pulumi.set(__self__, "retries", retries)
-        if start_period is not None:
-            pulumi.set(__self__, "start_period", start_period)
-        if timeout is not None:
-            pulumi.set(__self__, "timeout", timeout)
+        if start_period_seconds is not None:
+            pulumi.set(__self__, "start_period_seconds", start_period_seconds)
+        if timeout_seconds is not None:
+            pulumi.set(__self__, "timeout_seconds", timeout_seconds)
 
     @_builtins.property
     @pulumi.getter
@@ -1563,18 +1604,18 @@ class HealthCheckArgs:
         pulumi.set(self, "command", value)
 
     @_builtins.property
-    @pulumi.getter
-    def interval(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="intervalSeconds")
+    def interval_seconds(self) -> Optional[_builtins.float]:
         """
         The time, in seconds, between health checks. Valid values are from 5 through 300.
 
         Default - 30 seconds.
         """
-        return pulumi.get(self, "interval")
+        return pulumi.get(self, "interval_seconds")
 
-    @interval.setter
-    def interval(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "interval", value)
+    @interval_seconds.setter
+    def interval_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "interval_seconds", value)
 
     @_builtins.property
     @pulumi.getter
@@ -1592,39 +1633,94 @@ class HealthCheckArgs:
         pulumi.set(self, "retries", value)
 
     @_builtins.property
-    @pulumi.getter(name="startPeriod")
-    def start_period(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="startPeriodSeconds")
+    def start_period_seconds(self) -> Optional[_builtins.float]:
         """
         The startup grace period, in seconds, during which failed checks do not count toward the retry
         limit. Valid values are from 0 through 300.
 
         Default - No startup grace period.
         """
-        return pulumi.get(self, "start_period")
+        return pulumi.get(self, "start_period_seconds")
 
-    @start_period.setter
-    def start_period(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "start_period", value)
+    @start_period_seconds.setter
+    def start_period_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "start_period_seconds", value)
 
     @_builtins.property
-    @pulumi.getter
-    def timeout(self) -> Optional[_builtins.float]:
+    @pulumi.getter(name="timeoutSeconds")
+    def timeout_seconds(self) -> Optional[_builtins.float]:
         """
         The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 
         Default - 5 seconds.
         """
-        return pulumi.get(self, "timeout")
+        return pulumi.get(self, "timeout_seconds")
 
-    @timeout.setter
-    def timeout(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "timeout", value)
+    @timeout_seconds.setter
+    def timeout_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "timeout_seconds", value)
+
+
+class RuntimePlatformArgsDict(TypedDict):
+    cpu_architecture: NotRequired['CpuArchitecture']
+    """
+    The CpuArchitecture for Fargate Runtime Platform.
+
+    Default - AWS default of X86_64.
+    """
+    operating_system_family: NotRequired['OperatingSystemFamily']
+    """
+    The operating system for Fargate Runtime Platform.
+    """
+
+@pulumi.input_type
+class RuntimePlatformArgs:
+    def __init__(__self__, *,
+                 cpu_architecture: Optional['CpuArchitecture'] = None,
+                 operating_system_family: Optional['OperatingSystemFamily'] = None):
+        """
+        :param 'CpuArchitecture' cpu_architecture: The CpuArchitecture for Fargate Runtime Platform.
+               
+               Default - AWS default of X86_64.
+        :param 'OperatingSystemFamily' operating_system_family: The operating system for Fargate Runtime Platform.
+        """
+        if cpu_architecture is not None:
+            pulumi.set(__self__, "cpu_architecture", cpu_architecture)
+        if operating_system_family is not None:
+            pulumi.set(__self__, "operating_system_family", operating_system_family)
+
+    @_builtins.property
+    @pulumi.getter(name="cpuArchitecture")
+    def cpu_architecture(self) -> Optional['CpuArchitecture']:
+        """
+        The CpuArchitecture for Fargate Runtime Platform.
+
+        Default - AWS default of X86_64.
+        """
+        return pulumi.get(self, "cpu_architecture")
+
+    @cpu_architecture.setter
+    def cpu_architecture(self, value: Optional['CpuArchitecture']):
+        pulumi.set(self, "cpu_architecture", value)
+
+    @_builtins.property
+    @pulumi.getter(name="operatingSystemFamily")
+    def operating_system_family(self) -> Optional['OperatingSystemFamily']:
+        """
+        The operating system for Fargate Runtime Platform.
+        """
+        return pulumi.get(self, "operating_system_family")
+
+    @operating_system_family.setter
+    def operating_system_family(self, value: Optional['OperatingSystemFamily']):
+        pulumi.set(self, "operating_system_family", value)
 
 
 class S3BucketCredentialSpecArgsDict(TypedDict):
-    bucket: 'pulumi_aws.s3.Bucket'
+    bucket_arn: pulumi.Input[_builtins.str]
     """
-    The bucket that contains the credential specification file.
+    The ARN of a bucket that contains the credential specification file.
     """
     key: pulumi.Input[_builtins.str]
     """
@@ -1634,26 +1730,26 @@ class S3BucketCredentialSpecArgsDict(TypedDict):
 @pulumi.input_type
 class S3BucketCredentialSpecArgs:
     def __init__(__self__, *,
-                 bucket: 'pulumi_aws.s3.Bucket',
+                 bucket_arn: pulumi.Input[_builtins.str],
                  key: pulumi.Input[_builtins.str]):
         """
-        :param 'pulumi_aws.s3.Bucket' bucket: The bucket that contains the credential specification file.
+        :param pulumi.Input[_builtins.str] bucket_arn: The ARN of a bucket that contains the credential specification file.
         :param pulumi.Input[_builtins.str] key: The key of the credential specification file.
         """
-        pulumi.set(__self__, "bucket", bucket)
+        pulumi.set(__self__, "bucket_arn", bucket_arn)
         pulumi.set(__self__, "key", key)
 
     @_builtins.property
-    @pulumi.getter
-    def bucket(self) -> 'pulumi_aws.s3.Bucket':
+    @pulumi.getter(name="bucketArn")
+    def bucket_arn(self) -> pulumi.Input[_builtins.str]:
         """
-        The bucket that contains the credential specification file.
+        The ARN of a bucket that contains the credential specification file.
         """
-        return pulumi.get(self, "bucket")
+        return pulumi.get(self, "bucket_arn")
 
-    @bucket.setter
-    def bucket(self, value: 'pulumi_aws.s3.Bucket'):
-        pulumi.set(self, "bucket", value)
+    @bucket_arn.setter
+    def bucket_arn(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "bucket_arn", value)
 
     @_builtins.property
     @pulumi.getter
@@ -1670,21 +1766,54 @@ class S3BucketCredentialSpecArgs:
 
 class SecretArgsDict(TypedDict):
     secrets_manager: NotRequired['SecretsManagerSecretArgsDict']
-    ssm_parameter: NotRequired['pulumi_aws.ssm.Parameter']
+    """
+    A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+    both.
+
+    For more information, see [Secrets Manager environment
+    variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+    """
+    ssm_parameter_arn: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+    `secretsManager`, not both.
+
+    For more information, see [SSM Parameter Store environment
+    variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+    """
 
 @pulumi.input_type
 class SecretArgs:
     def __init__(__self__, *,
                  secrets_manager: Optional['SecretsManagerSecretArgs'] = None,
-                 ssm_parameter: Optional['pulumi_aws.ssm.Parameter'] = None):
+                 ssm_parameter_arn: pulumi.Input[Optional[_builtins.str]] = None):
+        """
+        :param 'SecretsManagerSecretArgs' secrets_manager: A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+               both.
+               
+               For more information, see [Secrets Manager environment
+               variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+        :param pulumi.Input[_builtins.str] ssm_parameter_arn: An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+               `secretsManager`, not both.
+               
+               For more information, see [SSM Parameter Store environment
+               variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+        """
         if secrets_manager is not None:
             pulumi.set(__self__, "secrets_manager", secrets_manager)
-        if ssm_parameter is not None:
-            pulumi.set(__self__, "ssm_parameter", ssm_parameter)
+        if ssm_parameter_arn is not None:
+            pulumi.set(__self__, "ssm_parameter_arn", ssm_parameter_arn)
 
     @_builtins.property
     @pulumi.getter(name="secretsManager")
     def secrets_manager(self) -> Optional['SecretsManagerSecretArgs']:
+        """
+        A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+        both.
+
+        For more information, see [Secrets Manager environment
+        variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+        """
         return pulumi.get(self, "secrets_manager")
 
     @secrets_manager.setter
@@ -1692,29 +1821,74 @@ class SecretArgs:
         pulumi.set(self, "secrets_manager", value)
 
     @_builtins.property
-    @pulumi.getter(name="ssmParameter")
-    def ssm_parameter(self) -> Optional['pulumi_aws.ssm.Parameter']:
-        return pulumi.get(self, "ssm_parameter")
+    @pulumi.getter(name="ssmParameterArn")
+    def ssm_parameter_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+        `secretsManager`, not both.
 
-    @ssm_parameter.setter
-    def ssm_parameter(self, value: Optional['pulumi_aws.ssm.Parameter']):
-        pulumi.set(self, "ssm_parameter", value)
+        For more information, see [SSM Parameter Store environment
+        variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+        """
+        return pulumi.get(self, "ssm_parameter_arn")
+
+    @ssm_parameter_arn.setter
+    def ssm_parameter_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "ssm_parameter_arn", value)
 
 
 class SecretsManagerSecretArgsDict(TypedDict):
-    secret: 'pulumi_aws.secretsmanager.Secret'
+    secret_arn: pulumi.Input[_builtins.str]
+    """
+    The ARN of the Secrets Manager secret whose value is passed to the container.
+    """
     json_key: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The JSON key whose value to extract. The secret must contain JSON when this is set.
+
+    Default - The full secret contents.
+    """
     version_id: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The unique ID of the secret version to use.
+
+    Cannot be combined with `versionStage`.
+
+    Default - ECS uses `AWSCURRENT` when neither version selector is set.
+    """
     version_stage: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The staging label of the secret version to use, such as `AWSPREVIOUS`.
+
+    Cannot be combined with `versionId`.
+
+    Default - ECS uses `AWSCURRENT` when neither version selector is set.
+    """
 
 @pulumi.input_type
 class SecretsManagerSecretArgs:
     def __init__(__self__, *,
-                 secret: 'pulumi_aws.secretsmanager.Secret',
+                 secret_arn: pulumi.Input[_builtins.str],
                  json_key: pulumi.Input[Optional[_builtins.str]] = None,
                  version_id: pulumi.Input[Optional[_builtins.str]] = None,
                  version_stage: pulumi.Input[Optional[_builtins.str]] = None):
-        pulumi.set(__self__, "secret", secret)
+        """
+        :param pulumi.Input[_builtins.str] secret_arn: The ARN of the Secrets Manager secret whose value is passed to the container.
+        :param pulumi.Input[_builtins.str] json_key: The JSON key whose value to extract. The secret must contain JSON when this is set.
+               
+               Default - The full secret contents.
+        :param pulumi.Input[_builtins.str] version_id: The unique ID of the secret version to use.
+               
+               Cannot be combined with `versionStage`.
+               
+               Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        :param pulumi.Input[_builtins.str] version_stage: The staging label of the secret version to use, such as `AWSPREVIOUS`.
+               
+               Cannot be combined with `versionId`.
+               
+               Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        """
+        pulumi.set(__self__, "secret_arn", secret_arn)
         if json_key is not None:
             pulumi.set(__self__, "json_key", json_key)
         if version_id is not None:
@@ -1723,17 +1897,25 @@ class SecretsManagerSecretArgs:
             pulumi.set(__self__, "version_stage", version_stage)
 
     @_builtins.property
-    @pulumi.getter
-    def secret(self) -> 'pulumi_aws.secretsmanager.Secret':
-        return pulumi.get(self, "secret")
+    @pulumi.getter(name="secretArn")
+    def secret_arn(self) -> pulumi.Input[_builtins.str]:
+        """
+        The ARN of the Secrets Manager secret whose value is passed to the container.
+        """
+        return pulumi.get(self, "secret_arn")
 
-    @secret.setter
-    def secret(self, value: 'pulumi_aws.secretsmanager.Secret'):
-        pulumi.set(self, "secret", value)
+    @secret_arn.setter
+    def secret_arn(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "secret_arn", value)
 
     @_builtins.property
     @pulumi.getter(name="jsonKey")
     def json_key(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The JSON key whose value to extract. The secret must contain JSON when this is set.
+
+        Default - The full secret contents.
+        """
         return pulumi.get(self, "json_key")
 
     @json_key.setter
@@ -1743,6 +1925,13 @@ class SecretsManagerSecretArgs:
     @_builtins.property
     @pulumi.getter(name="versionId")
     def version_id(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The unique ID of the secret version to use.
+
+        Cannot be combined with `versionStage`.
+
+        Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        """
         return pulumi.get(self, "version_id")
 
     @version_id.setter
@@ -1752,6 +1941,13 @@ class SecretsManagerSecretArgs:
     @_builtins.property
     @pulumi.getter(name="versionStage")
     def version_stage(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The staging label of the secret version to use, such as `AWSPREVIOUS`.
+
+        Cannot be combined with `versionId`.
+
+        Default - ECS uses `AWSCURRENT` when neither version selector is set.
+        """
         return pulumi.get(self, "version_stage")
 
     @version_stage.setter
@@ -1810,8 +2006,17 @@ class SystemControlArgs:
 
 class UlimitArgsDict(TypedDict):
     hard_limit: _builtins.float
+    """
+    The hard limit, in bytes, seconds, or a count, depending on `name`.
+    """
     name: 'UlimitName'
+    """
+    The resource limit to configure.
+    """
     soft_limit: _builtins.float
+    """
+    The soft limit, in bytes, seconds, or a count, depending on `name`.
+    """
 
 @pulumi.input_type
 class UlimitArgs:
@@ -1819,6 +2024,11 @@ class UlimitArgs:
                  hard_limit: _builtins.float,
                  name: 'UlimitName',
                  soft_limit: _builtins.float):
+        """
+        :param _builtins.float hard_limit: The hard limit, in bytes, seconds, or a count, depending on `name`.
+        :param 'UlimitName' name: The resource limit to configure.
+        :param _builtins.float soft_limit: The soft limit, in bytes, seconds, or a count, depending on `name`.
+        """
         pulumi.set(__self__, "hard_limit", hard_limit)
         pulumi.set(__self__, "name", name)
         pulumi.set(__self__, "soft_limit", soft_limit)
@@ -1826,6 +2036,9 @@ class UlimitArgs:
     @_builtins.property
     @pulumi.getter(name="hardLimit")
     def hard_limit(self) -> _builtins.float:
+        """
+        The hard limit, in bytes, seconds, or a count, depending on `name`.
+        """
         return pulumi.get(self, "hard_limit")
 
     @hard_limit.setter
@@ -1835,6 +2048,9 @@ class UlimitArgs:
     @_builtins.property
     @pulumi.getter
     def name(self) -> 'UlimitName':
+        """
+        The resource limit to configure.
+        """
         return pulumi.get(self, "name")
 
     @name.setter
@@ -1844,6 +2060,9 @@ class UlimitArgs:
     @_builtins.property
     @pulumi.getter(name="softLimit")
     def soft_limit(self) -> _builtins.float:
+        """
+        The soft limit, in bytes, seconds, or a count, depending on `name`.
+        """
         return pulumi.get(self, "soft_limit")
 
     @soft_limit.setter

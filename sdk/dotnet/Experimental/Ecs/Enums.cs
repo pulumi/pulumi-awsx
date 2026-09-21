@@ -17,7 +17,14 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+        /// </summary>
         public static AwsLogDriverMode BLOCKING { get; } = new AwsLogDriverMode("blocking");
+        /// <summary>
+        /// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+        /// fills.
+        /// </summary>
         public static AwsLogDriverMode NON_BLOCKING { get; } = new AwsLogDriverMode("non-blocking");
 
         public static bool operator ==(AwsLogDriverMode left, AwsLogDriverMode right) => left.Equals(right);
@@ -45,7 +52,13 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Resolve the image tag to an image digest.
+        /// </summary>
         public static ContainerDefinitionVersionConsistency ENABLED { get; } = new ContainerDefinitionVersionConsistency("enabled");
+        /// <summary>
+        /// Keep the original image URI without resolving the tag to a digest.
+        /// </summary>
         public static ContainerDefinitionVersionConsistency DISABLED { get; } = new ContainerDefinitionVersionConsistency("disabled");
 
         public static bool operator ==(ContainerDefinitionVersionConsistency left, ContainerDefinitionVersionConsistency right) => left.Equals(right);
@@ -73,9 +86,21 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Wait until the other container starts.
+        /// </summary>
         public static ContainerDependencyCondition START { get; } = new ContainerDependencyCondition("START");
+        /// <summary>
+        /// Wait until the other container exits. The other container must not be essential.
+        /// </summary>
         public static ContainerDependencyCondition COMPLETE { get; } = new ContainerDependencyCondition("COMPLETE");
+        /// <summary>
+        /// Wait until the other container exits with a zero status. It must not be essential.
+        /// </summary>
         public static ContainerDependencyCondition SUCCESS { get; } = new ContainerDependencyCondition("SUCCESS");
+        /// <summary>
+        /// Wait until the other container passes its configured health check. Checked only at startup.
+        /// </summary>
         public static ContainerDependencyCondition HEALTHY { get; } = new ContainerDependencyCondition("HEALTHY");
 
         public static bool operator ==(ContainerDependencyCondition left, ContainerDependencyCondition right) => left.Equals(right);
@@ -94,6 +119,34 @@ namespace Pulumi.Awsx.Experimental.Ecs
     }
 
     [EnumType]
+    public readonly struct CpuArchitecture : IEquatable<CpuArchitecture>
+    {
+        private readonly string _value;
+
+        private CpuArchitecture(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static CpuArchitecture X86_64 { get; } = new CpuArchitecture("X86_64");
+        public static CpuArchitecture ARM64 { get; } = new CpuArchitecture("ARM64");
+
+        public static bool operator ==(CpuArchitecture left, CpuArchitecture right) => left.Equals(right);
+        public static bool operator !=(CpuArchitecture left, CpuArchitecture right) => !left.Equals(right);
+
+        public static explicit operator string(CpuArchitecture value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is CpuArchitecture other && Equals(other);
+        public bool Equals(CpuArchitecture other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
     public readonly struct CredentialSpecAuthenticationMode : IEquatable<CredentialSpecAuthenticationMode>
     {
         private readonly string _value;
@@ -103,7 +156,22 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+        /// 
+        /// For more information, see [gMSA
+        /// prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
+        /// </summary>
         public static CredentialSpecAuthenticationMode DOMAIN_JOINED { get; } = new CredentialSpecAuthenticationMode("DomainJoined");
+        /// <summary>
+        /// Use credentials referenced by the credential specification without joining the container
+        /// instance to the domain.
+        /// 
+        /// For more information, see [domainless gMSA
+        /// setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+        /// and [gMSAs for Linux
+        /// containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+        /// </summary>
         public static CredentialSpecAuthenticationMode DOMAINLESS { get; } = new CredentialSpecAuthenticationMode("Domainless");
 
         public static bool operator ==(CredentialSpecAuthenticationMode left, CredentialSpecAuthenticationMode right) => left.Equals(right);
@@ -122,6 +190,39 @@ namespace Pulumi.Awsx.Experimental.Ecs
     }
 
     [EnumType]
+    public readonly struct OperatingSystemFamily : IEquatable<OperatingSystemFamily>
+    {
+        private readonly string _value;
+
+        private OperatingSystemFamily(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static OperatingSystemFamily LINUX { get; } = new OperatingSystemFamily("LINUX");
+        public static OperatingSystemFamily WINDOWS_SERVER_2025_FULL { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2025_FULL");
+        public static OperatingSystemFamily WINDOWS_SERVER_2025_CORE { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2025_CORE");
+        public static OperatingSystemFamily WINDOWS_SERVER_2022_FULL { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2022_FULL");
+        public static OperatingSystemFamily WINDOWS_SERVER_2022_CORE { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2022_CORE");
+        public static OperatingSystemFamily WINDOWS_SERVER_2019_FULL { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2019_FULL");
+        public static OperatingSystemFamily WINDOWS_SERVER_2019_CORE { get; } = new OperatingSystemFamily("WINDOWS_SERVER_2019_CORE");
+
+        public static bool operator ==(OperatingSystemFamily left, OperatingSystemFamily right) => left.Equals(right);
+        public static bool operator !=(OperatingSystemFamily left, OperatingSystemFamily right) => !left.Equals(right);
+
+        public static explicit operator string(OperatingSystemFamily value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is OperatingSystemFamily other && Equals(other);
+        public bool Equals(OperatingSystemFamily other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
     public readonly struct PortMappingAppProtocol : IEquatable<PortMappingAppProtocol>
     {
         private readonly string _value;
@@ -131,8 +232,17 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Use HTTP protocol handling and telemetry.
+        /// </summary>
         public static PortMappingAppProtocol HTTP { get; } = new PortMappingAppProtocol("http");
+        /// <summary>
+        /// Use HTTP/2 protocol handling and telemetry.
+        /// </summary>
         public static PortMappingAppProtocol HTTP2 { get; } = new PortMappingAppProtocol("http2");
+        /// <summary>
+        /// Use gRPC protocol handling and telemetry.
+        /// </summary>
         public static PortMappingAppProtocol GRPC { get; } = new PortMappingAppProtocol("grpc");
 
         public static bool operator ==(PortMappingAppProtocol left, PortMappingAppProtocol right) => left.Equals(right);
@@ -160,7 +270,13 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Use the Transmission Control Protocol.
+        /// </summary>
         public static PortMappingProtocol TCP { get; } = new PortMappingProtocol("tcp");
+        /// <summary>
+        /// Use the User Datagram Protocol.
+        /// </summary>
         public static PortMappingProtocol UDP { get; } = new PortMappingProtocol("udp");
 
         public static bool operator ==(PortMappingProtocol left, PortMappingProtocol right) => left.Equals(right);
@@ -188,20 +304,65 @@ namespace Pulumi.Awsx.Experimental.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Limit the size of core dump files.
+        /// </summary>
         public static UlimitName CORE { get; } = new UlimitName("core");
+        /// <summary>
+        /// Limit CPU time.
+        /// </summary>
         public static UlimitName CPU { get; } = new UlimitName("cpu");
+        /// <summary>
+        /// Limit the size of the process data segment.
+        /// </summary>
         public static UlimitName DATA { get; } = new UlimitName("data");
+        /// <summary>
+        /// Limit the size of files that the process can create.
+        /// </summary>
         public static UlimitName FSIZE { get; } = new UlimitName("fsize");
+        /// <summary>
+        /// Limit the number of file locks.
+        /// </summary>
         public static UlimitName LOCKS { get; } = new UlimitName("locks");
+        /// <summary>
+        /// Limit the amount of memory that can be locked.
+        /// </summary>
         public static UlimitName MEMLOCK { get; } = new UlimitName("memlock");
+        /// <summary>
+        /// Limit the number of bytes allocated for POSIX message queues.
+        /// </summary>
         public static UlimitName MSGQUEUE { get; } = new UlimitName("msgqueue");
+        /// <summary>
+        /// Limit the process nice priority.
+        /// </summary>
         public static UlimitName NICE { get; } = new UlimitName("nice");
+        /// <summary>
+        /// Limit the number of open file descriptors.
+        /// </summary>
         public static UlimitName NOFILE { get; } = new UlimitName("nofile");
+        /// <summary>
+        /// Limit the number of processes available to the user.
+        /// </summary>
         public static UlimitName NPROC { get; } = new UlimitName("nproc");
+        /// <summary>
+        /// Limit the resident set size.
+        /// </summary>
         public static UlimitName RSS { get; } = new UlimitName("rss");
+        /// <summary>
+        /// Limit the real-time priority.
+        /// </summary>
         public static UlimitName RTPRIO { get; } = new UlimitName("rtprio");
+        /// <summary>
+        /// Limit CPU time scheduled under a real-time policy.
+        /// </summary>
         public static UlimitName RTTIME { get; } = new UlimitName("rttime");
+        /// <summary>
+        /// Limit the number of pending signals.
+        /// </summary>
         public static UlimitName SIGPENDING { get; } = new UlimitName("sigpending");
+        /// <summary>
+        /// Limit the process stack size.
+        /// </summary>
         public static UlimitName STACK { get; } = new UlimitName("stack");
 
         public static bool operator ==(UlimitName left, UlimitName right) => left.Equals(right);

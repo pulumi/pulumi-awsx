@@ -3,8 +3,9 @@
 
 package com.pulumi.awsx.experimental_ecs;
 
-import com.pulumi.aws.iam.Role;
 import com.pulumi.awsx.experimental_ecs.inputs.FargateContainerDefinitionOptionsArgs;
+import com.pulumi.awsx.experimental_ecs.inputs.RuntimePlatformArgs;
+import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.lang.Double;
@@ -71,7 +72,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
      * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
      * select the task size.
      * 
-     * Default - 256
+     * Default - A CPU value will be automatically selected based on the container-level CPU and
+     * memory requirements
      * 
      */
     @Import(name="cpu")
@@ -110,7 +112,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
      * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
      * select the task size.
      * 
-     * Default - 256
+     * Default - A CPU value will be automatically selected based on the container-level CPU and
+     * memory requirements
      * 
      */
     public Optional<Double> cpu() {
@@ -141,37 +144,43 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
     }
 
     /**
-     * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-     * on your behalf.
+     * The ARN of the IAM task execution role that will be used by the ECS Task.
      * 
-     * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+     * The execution role grants access required by the configured containers, such as pulling images
+     * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+     * etc.
      * 
-     * Default - An execution role will be automatically created if you use ECR images in your task
-     * definition.
+     * The component will automatically attach IAM policies granting access based on the container
+     * definitions.
+     * 
+     * Default - An execution role will be automatically created for you
      * 
      */
-    @Import(name="executionRole")
-    private @Nullable Role executionRole;
+    @Import(name="executionRoleArn")
+    private @Nullable Output<String> executionRoleArn;
 
     /**
-     * @return The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-     * on your behalf.
+     * @return The ARN of the IAM task execution role that will be used by the ECS Task.
      * 
-     * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+     * The execution role grants access required by the configured containers, such as pulling images
+     * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+     * etc.
      * 
-     * Default - An execution role will be automatically created if you use ECR images in your task
-     * definition.
+     * The component will automatically attach IAM policies granting access based on the container
+     * definitions.
+     * 
+     * Default - An execution role will be automatically created for you
      * 
      */
-    public Optional<Role> executionRole() {
-        return Optional.ofNullable(this.executionRole);
+    public Optional<Output<String>> executionRoleArn() {
+        return Optional.ofNullable(this.executionRoleArn);
     }
 
     /**
      * The name of a family that this task definition is registered to. A family groups multiple
      * versions of a task definition.
      * 
-     * Default - Automatically generated name.
+     * Default - The Pulumi resource name of this component
      * 
      */
     @Import(name="family")
@@ -181,7 +190,7 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
      * @return The name of a family that this task definition is registered to. A family groups multiple
      * versions of a task definition.
      * 
-     * Default - Automatically generated name.
+     * Default - The Pulumi resource name of this component
      * 
      */
     public Optional<String> family() {
@@ -215,7 +224,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
      * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
      * to select the task size.
      * 
-     * Default - 512
+     * Default - A memory value will be automatically selected based on the container-level CPU and
+     * memory requirements
      * 
      */
     @Import(name="memory")
@@ -248,7 +258,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
      * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
      * to select the task size.
      * 
-     * Default - 512
+     * Default - A memory value will be automatically selected based on the container-level CPU and
+     * memory requirements
      * 
      */
     public Optional<Double> memory() {
@@ -277,24 +288,43 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
     }
 
     /**
-     * The name of the IAM role that grants containers in the task permission to call AWS APIs on your
-     * behalf.
+     * The operating system that your task definitions are running on.
      * 
-     * Default - A task role is automatically created for you.
+     * Default - AWS default of X86_64 Linux
      * 
      */
-    @Import(name="taskRole")
-    private @Nullable Role taskRole;
+    @Import(name="runtimePlatform")
+    private @Nullable RuntimePlatformArgs runtimePlatform;
 
     /**
-     * @return The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+     * @return The operating system that your task definitions are running on.
+     * 
+     * Default - AWS default of X86_64 Linux
+     * 
+     */
+    public Optional<RuntimePlatformArgs> runtimePlatform() {
+        return Optional.ofNullable(this.runtimePlatform);
+    }
+
+    /**
+     * The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
      * behalf.
      * 
      * Default - A task role is automatically created for you.
      * 
      */
-    public Optional<Role> taskRole() {
-        return Optional.ofNullable(this.taskRole);
+    @Import(name="taskRoleArn")
+    private @Nullable Output<String> taskRoleArn;
+
+    /**
+     * @return The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
+     * behalf.
+     * 
+     * Default - A task role is automatically created for you.
+     * 
+     */
+    public Optional<Output<String>> taskRoleArn() {
+        return Optional.ofNullable(this.taskRoleArn);
     }
 
     private FargateTaskDefinitionV2Args() {}
@@ -303,11 +333,12 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
         this.containers = $.containers;
         this.cpu = $.cpu;
         this.ephemeralStorage = $.ephemeralStorage;
-        this.executionRole = $.executionRole;
+        this.executionRoleArn = $.executionRoleArn;
         this.family = $.family;
         this.memory = $.memory;
         this.region = $.region;
-        this.taskRole = $.taskRole;
+        this.runtimePlatform = $.runtimePlatform;
+        this.taskRoleArn = $.taskRoleArn;
     }
 
     public static Builder builder() {
@@ -374,7 +405,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
          * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
          * select the task size.
          * 
-         * Default - 256
+         * Default - A CPU value will be automatically selected based on the container-level CPU and
+         * memory requirements
          * 
          * @return builder
          * 
@@ -400,27 +432,49 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param executionRole The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-         * on your behalf.
+         * @param executionRoleArn The ARN of the IAM task execution role that will be used by the ECS Task.
          * 
-         * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+         * The execution role grants access required by the configured containers, such as pulling images
+         * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+         * etc.
          * 
-         * Default - An execution role will be automatically created if you use ECR images in your task
-         * definition.
+         * The component will automatically attach IAM policies granting access based on the container
+         * definitions.
+         * 
+         * Default - An execution role will be automatically created for you
          * 
          * @return builder
          * 
          */
-        public Builder executionRole(@Nullable Role executionRole) {
-            $.executionRole = executionRole;
+        public Builder executionRoleArn(@Nullable Output<String> executionRoleArn) {
+            $.executionRoleArn = executionRoleArn;
             return this;
+        }
+
+        /**
+         * @param executionRoleArn The ARN of the IAM task execution role that will be used by the ECS Task.
+         * 
+         * The execution role grants access required by the configured containers, such as pulling images
+         * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+         * etc.
+         * 
+         * The component will automatically attach IAM policies granting access based on the container
+         * definitions.
+         * 
+         * Default - An execution role will be automatically created for you
+         * 
+         * @return builder
+         * 
+         */
+        public Builder executionRoleArn(String executionRoleArn) {
+            return executionRoleArn(Output.of(executionRoleArn));
         }
 
         /**
          * @param family The name of a family that this task definition is registered to. A family groups multiple
          * versions of a task definition.
          * 
-         * Default - Automatically generated name.
+         * Default - The Pulumi resource name of this component
          * 
          * @return builder
          * 
@@ -457,7 +511,8 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
          * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
          * to select the task size.
          * 
-         * Default - 512
+         * Default - A memory value will be automatically selected based on the container-level CPU and
+         * memory requirements
          * 
          * @return builder
          * 
@@ -482,7 +537,20 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param taskRole The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+         * @param runtimePlatform The operating system that your task definitions are running on.
+         * 
+         * Default - AWS default of X86_64 Linux
+         * 
+         * @return builder
+         * 
+         */
+        public Builder runtimePlatform(@Nullable RuntimePlatformArgs runtimePlatform) {
+            $.runtimePlatform = runtimePlatform;
+            return this;
+        }
+
+        /**
+         * @param taskRoleArn The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
          * behalf.
          * 
          * Default - A task role is automatically created for you.
@@ -490,9 +558,22 @@ public final class FargateTaskDefinitionV2Args extends com.pulumi.resources.Reso
          * @return builder
          * 
          */
-        public Builder taskRole(@Nullable Role taskRole) {
-            $.taskRole = taskRole;
+        public Builder taskRoleArn(@Nullable Output<String> taskRoleArn) {
+            $.taskRoleArn = taskRoleArn;
             return this;
+        }
+
+        /**
+         * @param taskRoleArn The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
+         * behalf.
+         * 
+         * Default - A task role is automatically created for you.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder taskRoleArn(String taskRoleArn) {
+            return taskRoleArn(Output.of(taskRoleArn));
         }
 
         public FargateTaskDefinitionV2Args build() {

@@ -46,8 +46,8 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - 30 seconds.
      * 
      */
-    @Import(name="interval")
-    private @Nullable Double interval;
+    @Import(name="intervalSeconds")
+    private @Nullable Double intervalSeconds;
 
     /**
      * @return The time, in seconds, between health checks. Valid values are from 5 through 300.
@@ -55,8 +55,8 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - 30 seconds.
      * 
      */
-    public Optional<Double> interval() {
-        return Optional.ofNullable(this.interval);
+    public Optional<Double> intervalSeconds() {
+        return Optional.ofNullable(this.intervalSeconds);
     }
 
     /**
@@ -87,8 +87,8 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - No startup grace period.
      * 
      */
-    @Import(name="startPeriod")
-    private @Nullable Double startPeriod;
+    @Import(name="startPeriodSeconds")
+    private @Nullable Double startPeriodSeconds;
 
     /**
      * @return The startup grace period, in seconds, during which failed checks do not count toward the retry
@@ -97,8 +97,8 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - No startup grace period.
      * 
      */
-    public Optional<Double> startPeriod() {
-        return Optional.ofNullable(this.startPeriod);
+    public Optional<Double> startPeriodSeconds() {
+        return Optional.ofNullable(this.startPeriodSeconds);
     }
 
     /**
@@ -107,8 +107,8 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - 5 seconds.
      * 
      */
-    @Import(name="timeout")
-    private @Nullable Double timeout;
+    @Import(name="timeoutSeconds")
+    private @Nullable Double timeoutSeconds;
 
     /**
      * @return The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
@@ -116,18 +116,18 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
      * Default - 5 seconds.
      * 
      */
-    public Optional<Double> timeout() {
-        return Optional.ofNullable(this.timeout);
+    public Optional<Double> timeoutSeconds() {
+        return Optional.ofNullable(this.timeoutSeconds);
     }
 
     private HealthCheckArgs() {}
 
     private HealthCheckArgs(HealthCheckArgs $) {
         this.command = $.command;
-        this.interval = $.interval;
+        this.intervalSeconds = $.intervalSeconds;
         this.retries = $.retries;
-        this.startPeriod = $.startPeriod;
-        this.timeout = $.timeout;
+        this.startPeriodSeconds = $.startPeriodSeconds;
+        this.timeoutSeconds = $.timeoutSeconds;
     }
 
     public static Builder builder() {
@@ -178,15 +178,15 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param interval The time, in seconds, between health checks. Valid values are from 5 through 300.
+         * @param intervalSeconds The time, in seconds, between health checks. Valid values are from 5 through 300.
          * 
          * Default - 30 seconds.
          * 
          * @return builder
          * 
          */
-        public Builder interval(@Nullable Double interval) {
-            $.interval = interval;
+        public Builder intervalSeconds(@Nullable Double intervalSeconds) {
+            $.intervalSeconds = intervalSeconds;
             return this;
         }
 
@@ -205,7 +205,7 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param startPeriod The startup grace period, in seconds, during which failed checks do not count toward the retry
+         * @param startPeriodSeconds The startup grace period, in seconds, during which failed checks do not count toward the retry
          * limit. Valid values are from 0 through 300.
          * 
          * Default - No startup grace period.
@@ -213,21 +213,21 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder startPeriod(@Nullable Double startPeriod) {
-            $.startPeriod = startPeriod;
+        public Builder startPeriodSeconds(@Nullable Double startPeriodSeconds) {
+            $.startPeriodSeconds = startPeriodSeconds;
             return this;
         }
 
         /**
-         * @param timeout The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+         * @param timeoutSeconds The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
          * 
          * Default - 5 seconds.
          * 
          * @return builder
          * 
          */
-        public Builder timeout(@Nullable Double timeout) {
-            $.timeout = timeout;
+        public Builder timeoutSeconds(@Nullable Double timeoutSeconds) {
+            $.timeoutSeconds = timeoutSeconds;
             return this;
         }
 

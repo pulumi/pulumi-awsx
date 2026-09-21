@@ -13,16 +13,32 @@ public final class ContainerPortRangeArgs extends com.pulumi.resources.ResourceA
 
     public static final ContainerPortRangeArgs Empty = new ContainerPortRangeArgs();
 
+    /**
+     * The last port in the range. Must be from 1 through 65535 and greater than `start`.
+     * 
+     */
     @Import(name="end", required=true)
     private Double end;
 
+    /**
+     * @return The last port in the range. Must be from 1 through 65535 and greater than `start`.
+     * 
+     */
     public Double end() {
         return this.end;
     }
 
+    /**
+     * The first port in the range. Must be from 1 through 65535 and less than `end`.
+     * 
+     */
     @Import(name="start", required=true)
     private Double start;
 
+    /**
+     * @return The first port in the range. Must be from 1 through 65535 and less than `end`.
+     * 
+     */
     public Double start() {
         return this.start;
     }
@@ -52,11 +68,23 @@ public final class ContainerPortRangeArgs extends com.pulumi.resources.ResourceA
             $ = new ContainerPortRangeArgs(Objects.requireNonNull(defaults));
         }
 
+        /**
+         * @param end The last port in the range. Must be from 1 through 65535 and greater than `start`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder end(Double end) {
             $.end = end;
             return this;
         }
 
+        /**
+         * @param start The first port in the range. Must be from 1 through 65535 and less than `end`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder start(Double start) {
             $.start = start;
             return this;

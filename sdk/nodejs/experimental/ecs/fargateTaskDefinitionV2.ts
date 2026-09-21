@@ -24,12 +24,26 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         return obj['__pulumiType'] === FargateTaskDefinitionV2.__pulumiType;
     }
 
-    declare public /*out*/ readonly _logGroup: pulumi.Output<outputs.experimental.cloudwatch.LogGroupReference | undefined>;
-    declare public readonly executionRole: pulumi.Output<pulumiAws.iam.Role>;
+    /**
+     * The Execution Role of the task
+     */
+    declare public /*out*/ readonly executionRole: pulumi.Output<pulumiAws.iam.Role>;
+    /**
+     * The shared CloudWatch Logs log group created by the component for containers that enable
+     * CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+     * component does not create a default log group
+     */
+    declare public /*out*/ readonly logGroup: pulumi.Output<pulumiAws.cloudwatch.LogGroup | undefined>;
     declare public /*out*/ readonly name: pulumi.Output<string>;
     declare public readonly region: pulumi.Output<string | undefined>;
-    declare public /*out*/ readonly taskDefinitionArn: pulumi.Output<string>;
-    declare public readonly taskRole: pulumi.Output<pulumiAws.iam.Role>;
+    /**
+     * The task definition resource
+     */
+    declare public /*out*/ readonly taskDefinition: pulumi.Output<pulumiAws.ecs.TaskDefinition>;
+    /**
+     * The Task Role of the task
+     */
+    declare public /*out*/ readonly taskRole: pulumi.Output<pulumiAws.iam.Role>;
 
     /**
      * Create a FargateTaskDefinitionV2 resource with the given unique name, arguments, and options.
@@ -48,20 +62,23 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
             resourceInputs["containers"] = args?.containers;
             resourceInputs["cpu"] = args?.cpu;
             resourceInputs["ephemeralStorage"] = args?.ephemeralStorage;
-            resourceInputs["executionRole"] = args?.executionRole;
+            resourceInputs["executionRoleArn"] = args?.executionRoleArn;
             resourceInputs["family"] = args?.family;
             resourceInputs["memory"] = args?.memory;
             resourceInputs["region"] = args?.region;
-            resourceInputs["taskRole"] = args?.taskRole;
-            resourceInputs["_logGroup"] = undefined /*out*/;
-            resourceInputs["name"] = undefined /*out*/;
-            resourceInputs["taskDefinitionArn"] = undefined /*out*/;
-        } else {
-            resourceInputs["_logGroup"] = undefined /*out*/;
+            resourceInputs["runtimePlatform"] = args?.runtimePlatform;
+            resourceInputs["taskRoleArn"] = args?.taskRoleArn;
             resourceInputs["executionRole"] = undefined /*out*/;
+            resourceInputs["logGroup"] = undefined /*out*/;
+            resourceInputs["name"] = undefined /*out*/;
+            resourceInputs["taskDefinition"] = undefined /*out*/;
+            resourceInputs["taskRole"] = undefined /*out*/;
+        } else {
+            resourceInputs["executionRole"] = undefined /*out*/;
+            resourceInputs["logGroup"] = undefined /*out*/;
             resourceInputs["name"] = undefined /*out*/;
             resourceInputs["region"] = undefined /*out*/;
-            resourceInputs["taskDefinitionArn"] = undefined /*out*/;
+            resourceInputs["taskDefinition"] = undefined /*out*/;
             resourceInputs["taskRole"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -112,7 +129,8 @@ export interface FargateTaskDefinitionV2Args {
      * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
      * select the task size.
      *
-     * Default - 256
+     * Default - A CPU value will be automatically selected based on the container-level CPU and
+     * memory requirements
      */
     cpu?: number;
     /**
@@ -124,20 +142,23 @@ export interface FargateTaskDefinitionV2Args {
      */
     ephemeralStorage?: number;
     /**
-     * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-     * on your behalf.
+     * The ARN of the IAM task execution role that will be used by the ECS Task.
      *
-     * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+     * The execution role grants access required by the configured containers, such as pulling images
+     * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+     * etc.
      *
-     * Default - An execution role will be automatically created if you use ECR images in your task
-     * definition.
+     * The component will automatically attach IAM policies granting access based on the container
+     * definitions.
+     *
+     * Default - An execution role will be automatically created for you
      */
-    executionRole?: pulumiAws.iam.Role;
+    executionRoleArn?: pulumi.Input<string | undefined>;
     /**
      * The name of a family that this task definition is registered to. A family groups multiple
      * versions of a task definition.
      *
-     * Default - Automatically generated name.
+     * Default - The Pulumi resource name of this component
      */
     family?: string;
     /**
@@ -167,7 +188,8 @@ export interface FargateTaskDefinitionV2Args {
      * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
      * to select the task size.
      *
-     * Default - 512
+     * Default - A memory value will be automatically selected based on the container-level CPU and
+     * memory requirements
      */
     memory?: number;
     /**
@@ -178,10 +200,16 @@ export interface FargateTaskDefinitionV2Args {
      */
     region?: string;
     /**
-     * The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+     * The operating system that your task definitions are running on.
+     *
+     * Default - AWS default of X86_64 Linux
+     */
+    runtimePlatform?: inputs.experimental.ecs.RuntimePlatformArgs;
+    /**
+     * The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
      * behalf.
      *
      * Default - A task role is automatically created for you.
      */
-    taskRole?: pulumiAws.iam.Role;
+    taskRoleArn?: pulumi.Input<string | undefined>;
 }

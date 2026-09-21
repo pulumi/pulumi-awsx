@@ -10,7 +10,9 @@ __all__ = [
     'AwsLogDriverMode',
     'ContainerDefinitionVersionConsistency',
     'ContainerDependencyCondition',
+    'CpuArchitecture',
     'CredentialSpecAuthenticationMode',
+    'OperatingSystemFamily',
     'PortMappingAppProtocol',
     'PortMappingProtocol',
     'UlimitName',
@@ -20,56 +22,173 @@ __all__ = [
 @pulumi.type_token("awsx:experimental/ecs:AwsLogDriverMode")
 class AwsLogDriverMode(_builtins.str, Enum):
     BLOCKING = "blocking"
+    """
+    Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+    """
     NO_N_BLOCKING = "non-blocking"
+    """
+    Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+    fills.
+    """
 
 
 @pulumi.type_token("awsx:experimental/ecs:ContainerDefinitionVersionConsistency")
 class ContainerDefinitionVersionConsistency(_builtins.str, Enum):
     ENABLED = "enabled"
+    """
+    Resolve the image tag to an image digest.
+    """
     DISABLED = "disabled"
+    """
+    Keep the original image URI without resolving the tag to a digest.
+    """
 
 
 @pulumi.type_token("awsx:experimental/ecs:ContainerDependencyCondition")
 class ContainerDependencyCondition(_builtins.str, Enum):
     START = "START"
+    """
+    Wait until the other container starts.
+    """
     COMPLETE = "COMPLETE"
+    """
+    Wait until the other container exits. The other container must not be essential.
+    """
     SUCCESS = "SUCCESS"
+    """
+    Wait until the other container exits with a zero status. It must not be essential.
+    """
     HEALTHY = "HEALTHY"
+    """
+    Wait until the other container passes its configured health check. Checked only at startup.
+    """
+
+
+@pulumi.type_token("awsx:experimental/ecs:CpuArchitecture")
+class CpuArchitecture(_builtins.str, Enum):
+    X86_64 = "X86_64"
+    ARM64 = "ARM64"
 
 
 @pulumi.type_token("awsx:experimental/ecs:CredentialSpecAuthenticationMode")
 class CredentialSpecAuthenticationMode(_builtins.str, Enum):
     DOMAI_N_JOINED = "DomainJoined"
+    """
+    Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+
+    For more information, see [gMSA
+    prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
+    """
     DOMAINLESS = "Domainless"
+    """
+    Use credentials referenced by the credential specification without joining the container
+    instance to the domain.
+
+    For more information, see [domainless gMSA
+    setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+    and [gMSAs for Linux
+    containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+    """
+
+
+@pulumi.type_token("awsx:experimental/ecs:OperatingSystemFamily")
+class OperatingSystemFamily(_builtins.str, Enum):
+    LINUX = "LINUX"
+    WINDOW_S_SERVE_R_2025_FULL = "WINDOWS_SERVER_2025_FULL"
+    WINDOW_S_SERVE_R_2025_CORE = "WINDOWS_SERVER_2025_CORE"
+    WINDOW_S_SERVE_R_2022_FULL = "WINDOWS_SERVER_2022_FULL"
+    WINDOW_S_SERVE_R_2022_CORE = "WINDOWS_SERVER_2022_CORE"
+    WINDOW_S_SERVE_R_2019_FULL = "WINDOWS_SERVER_2019_FULL"
+    WINDOW_S_SERVE_R_2019_CORE = "WINDOWS_SERVER_2019_CORE"
 
 
 @pulumi.type_token("awsx:experimental/ecs:PortMappingAppProtocol")
 class PortMappingAppProtocol(_builtins.str, Enum):
     HTTP = "http"
+    """
+    Use HTTP protocol handling and telemetry.
+    """
     HTTP2 = "http2"
+    """
+    Use HTTP/2 protocol handling and telemetry.
+    """
     GRPC = "grpc"
+    """
+    Use gRPC protocol handling and telemetry.
+    """
 
 
 @pulumi.type_token("awsx:experimental/ecs:PortMappingProtocol")
 class PortMappingProtocol(_builtins.str, Enum):
     TCP = "tcp"
+    """
+    Use the Transmission Control Protocol.
+    """
     UDP = "udp"
+    """
+    Use the User Datagram Protocol.
+    """
 
 
 @pulumi.type_token("awsx:experimental/ecs:UlimitName")
 class UlimitName(_builtins.str, Enum):
     CORE = "core"
+    """
+    Limit the size of core dump files.
+    """
     CPU = "cpu"
+    """
+    Limit CPU time.
+    """
     DATA = "data"
+    """
+    Limit the size of the process data segment.
+    """
     FSIZE = "fsize"
+    """
+    Limit the size of files that the process can create.
+    """
     LOCKS = "locks"
+    """
+    Limit the number of file locks.
+    """
     MEMLOCK = "memlock"
+    """
+    Limit the amount of memory that can be locked.
+    """
     MSGQUEUE = "msgqueue"
+    """
+    Limit the number of bytes allocated for POSIX message queues.
+    """
     NICE = "nice"
+    """
+    Limit the process nice priority.
+    """
     NOFILE = "nofile"
+    """
+    Limit the number of open file descriptors.
+    """
     NPROC = "nproc"
+    """
+    Limit the number of processes available to the user.
+    """
     RSS = "rss"
+    """
+    Limit the resident set size.
+    """
     RTPRIO = "rtprio"
+    """
+    Limit the real-time priority.
+    """
     RTTIME = "rttime"
+    """
+    Limit CPU time scheduled under a real-time policy.
+    """
     SIGPENDING = "sigpending"
+    """
+    Limit the number of pending signals.
+    """
     STACK = "stack"
+    """
+    Limit the process stack size.
+    """

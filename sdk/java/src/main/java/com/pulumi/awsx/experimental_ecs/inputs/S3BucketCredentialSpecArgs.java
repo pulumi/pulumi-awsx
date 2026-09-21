@@ -3,7 +3,6 @@
 
 package com.pulumi.awsx.experimental_ecs.inputs;
 
-import com.pulumi.aws.s3.Bucket;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
@@ -16,18 +15,18 @@ public final class S3BucketCredentialSpecArgs extends com.pulumi.resources.Resou
     public static final S3BucketCredentialSpecArgs Empty = new S3BucketCredentialSpecArgs();
 
     /**
-     * The bucket that contains the credential specification file.
+     * The ARN of a bucket that contains the credential specification file.
      * 
      */
-    @Import(name="bucket", required=true)
-    private Bucket bucket;
+    @Import(name="bucketArn", required=true)
+    private Output<String> bucketArn;
 
     /**
-     * @return The bucket that contains the credential specification file.
+     * @return The ARN of a bucket that contains the credential specification file.
      * 
      */
-    public Bucket bucket() {
-        return this.bucket;
+    public Output<String> bucketArn() {
+        return this.bucketArn;
     }
 
     /**
@@ -48,7 +47,7 @@ public final class S3BucketCredentialSpecArgs extends com.pulumi.resources.Resou
     private S3BucketCredentialSpecArgs() {}
 
     private S3BucketCredentialSpecArgs(S3BucketCredentialSpecArgs $) {
-        this.bucket = $.bucket;
+        this.bucketArn = $.bucketArn;
         this.key = $.key;
     }
 
@@ -71,14 +70,24 @@ public final class S3BucketCredentialSpecArgs extends com.pulumi.resources.Resou
         }
 
         /**
-         * @param bucket The bucket that contains the credential specification file.
+         * @param bucketArn The ARN of a bucket that contains the credential specification file.
          * 
          * @return builder
          * 
          */
-        public Builder bucket(Bucket bucket) {
-            $.bucket = bucket;
+        public Builder bucketArn(Output<String> bucketArn) {
+            $.bucketArn = bucketArn;
             return this;
+        }
+
+        /**
+         * @param bucketArn The ARN of a bucket that contains the credential specification file.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder bucketArn(String bucketArn) {
+            return bucketArn(Output.of(bucketArn));
         }
 
         /**
@@ -103,8 +112,8 @@ public final class S3BucketCredentialSpecArgs extends com.pulumi.resources.Resou
         }
 
         public S3BucketCredentialSpecArgs build() {
-            if ($.bucket == null) {
-                throw new MissingRequiredPropertyException("S3BucketCredentialSpecArgs", "bucket");
+            if ($.bucketArn == null) {
+                throw new MissingRequiredPropertyException("S3BucketCredentialSpecArgs", "bucketArn");
             }
             if ($.key == null) {
                 throw new MissingRequiredPropertyException("S3BucketCredentialSpecArgs", "key");

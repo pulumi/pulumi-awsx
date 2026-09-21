@@ -13,10 +13,10 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
     public sealed class EnvironmentFileArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// The bucket that contains the environment file.
+        /// The ARN of the bucket that contains the environment file.
         /// </summary>
-        [Input("bucket", required: true)]
-        public Pulumi.Aws.S3.Bucket Bucket { get; set; } = null!;
+        [Input("bucketArn", required: true)]
+        public Input<string> BucketArn { get; set; } = null!;
 
         /// <summary>
         /// The object key of the environment file.

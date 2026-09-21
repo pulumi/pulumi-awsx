@@ -10,7 +10,15 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum PortMappingProtocol {
+        /**
+         * Use the Transmission Control Protocol.
+         * 
+         */
         TCP("tcp"),
+        /**
+         * Use the User Datagram Protocol.
+         * 
+         */
         UDP("udp");
 
         private final String value;

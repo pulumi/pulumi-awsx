@@ -12,11 +12,25 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
 
     public sealed class SecretArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+        /// both.
+        /// 
+        /// For more information, see [Secrets Manager environment
+        /// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+        /// </summary>
         [Input("secretsManager")]
         public Inputs.SecretsManagerSecretArgs? SecretsManager { get; set; }
 
-        [Input("ssmParameter")]
-        public Pulumi.Aws.Ssm.Parameter? SsmParameter { get; set; }
+        /// <summary>
+        /// An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+        /// `secretsManager`, not both.
+        /// 
+        /// For more information, see [SSM Parameter Store environment
+        /// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+        /// </summary>
+        [Input("ssmParameterArn")]
+        public Input<string>? SsmParameterArn { get; set; }
 
         public SecretArgs()
         {

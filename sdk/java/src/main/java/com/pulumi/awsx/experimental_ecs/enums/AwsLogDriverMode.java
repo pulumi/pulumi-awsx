@@ -10,7 +10,16 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum AwsLogDriverMode {
+        /**
+         * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+         * 
+         */
         BLOCKING("blocking"),
+        /**
+         * Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+         * fills.
+         * 
+         */
         NON_BLOCKING("non-blocking");
 
         private final String value;

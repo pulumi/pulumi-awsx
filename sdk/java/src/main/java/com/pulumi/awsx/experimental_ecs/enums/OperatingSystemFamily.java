@@ -9,26 +9,18 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
     @EnumType
-    public enum PortMappingAppProtocol {
-        /**
-         * Use HTTP protocol handling and telemetry.
-         * 
-         */
-        HTTP("http"),
-        /**
-         * Use HTTP/2 protocol handling and telemetry.
-         * 
-         */
-        HTTP2("http2"),
-        /**
-         * Use gRPC protocol handling and telemetry.
-         * 
-         */
-        GRPC("grpc");
+    public enum OperatingSystemFamily {
+        LINUX("LINUX"),
+        WINDOWS_SERVER_2025_FULL("WINDOWS_SERVER_2025_FULL"),
+        WINDOWS_SERVER_2025_CORE("WINDOWS_SERVER_2025_CORE"),
+        WINDOWS_SERVER_2022_FULL("WINDOWS_SERVER_2022_FULL"),
+        WINDOWS_SERVER_2022_CORE("WINDOWS_SERVER_2022_CORE"),
+        WINDOWS_SERVER_2019_FULL("WINDOWS_SERVER_2019_FULL"),
+        WINDOWS_SERVER_2019_CORE("WINDOWS_SERVER_2019_CORE");
 
         private final String value;
 
-        PortMappingAppProtocol(String value) {
+        OperatingSystemFamily(String value) {
             this.value = Objects.requireNonNull(value);
         }
 
@@ -39,7 +31,7 @@ import java.util.StringJoiner;
 
         @Override
         public java.lang.String toString() {
-            return new StringJoiner(", ", "PortMappingAppProtocol[", "]")
+            return new StringJoiner(", ", "OperatingSystemFamily[", "]")
                 .add("value='" + this.value + "'")
                 .toString();
         }

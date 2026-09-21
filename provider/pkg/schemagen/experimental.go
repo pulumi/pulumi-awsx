@@ -52,6 +52,9 @@ var experimentalTokenMappings = map[string]string{
 	"awsx-experimental:index:Ulimit":                                "awsx:experimental/ecs:Ulimit",
 	"awsx-experimental:index:UlimitName":                            "awsx:experimental/ecs:UlimitName",
 	"awsx-experimental:index:VolumeFrom":                            "awsx:experimental/ecs:VolumeFrom",
+	"awsx-experimental:index:RuntimePlatform":                       "awsx:experimental/ecs:RuntimePlatform",
+	"awsx-experimental:index:OperatingSystemFamily":                 "awsx:experimental/ecs:OperatingSystemFamily",
+	"awsx-experimental:index:CpuArchitecture":                       "awsx:experimental/ecs:CpuArchitecture",
 }
 
 func generateExperimental(packageDir string) schema.PackageSpec {

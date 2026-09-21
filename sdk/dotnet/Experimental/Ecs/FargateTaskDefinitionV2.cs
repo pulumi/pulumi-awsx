@@ -12,11 +12,19 @@ namespace Pulumi.Awsx.Experimental.Ecs
     [AwsxResourceType("awsx:experimental/ecs:FargateTaskDefinitionV2")]
     public partial class FargateTaskDefinitionV2 : global::Pulumi.ComponentResource
     {
-        [Output("_logGroup")]
-        public Output<Pulumi.Awsx.Experimental.Cloudwatch.Outputs.LogGroupReference?> _logGroup { get; private set; } = null!;
-
+        /// <summary>
+        /// The Execution Role of the task
+        /// </summary>
         [Output("executionRole")]
         public Output<Pulumi.Aws.Iam.Role> ExecutionRole { get; private set; } = null!;
+
+        /// <summary>
+        /// The shared CloudWatch Logs log group created by the component for containers that enable
+        /// CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+        /// component does not create a default log group
+        /// </summary>
+        [Output("logGroup")]
+        public Output<Pulumi.Aws.CloudWatch.LogGroup?> LogGroup { get; private set; } = null!;
 
         [Output("name")]
         public Output<string> Name { get; private set; } = null!;
@@ -24,9 +32,15 @@ namespace Pulumi.Awsx.Experimental.Ecs
         [Output("region")]
         public Output<string?> Region { get; private set; } = null!;
 
-        [Output("taskDefinitionArn")]
-        public Output<string> TaskDefinitionArn { get; private set; } = null!;
+        /// <summary>
+        /// The task definition resource
+        /// </summary>
+        [Output("taskDefinition")]
+        public Output<Pulumi.Aws.Ecs.TaskDefinition> TaskDefinition { get; private set; } = null!;
 
+        /// <summary>
+        /// The Task Role of the task
+        /// </summary>
         [Output("taskRole")]
         public Output<Pulumi.Aws.Iam.Role> TaskRole { get; private set; } = null!;
 
@@ -105,7 +119,8 @@ namespace Pulumi.Awsx.Experimental.Ecs
         /// For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
         /// select the task size.
         /// 
-        /// Default - 256
+        /// Default - A CPU value will be automatically selected based on the container-level CPU and
+        /// memory requirements
         /// </summary>
         [Input("cpu")]
         public double? Cpu { get; set; }
@@ -121,22 +136,25 @@ namespace Pulumi.Awsx.Experimental.Ecs
         public double? EphemeralStorage { get; set; }
 
         /// <summary>
-        /// The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-        /// on your behalf.
+        /// The ARN of the IAM task execution role that will be used by the ECS Task.
         /// 
-        /// The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+        /// The execution role grants access required by the configured containers, such as pulling images
+        /// from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+        /// etc.
         /// 
-        /// Default - An execution role will be automatically created if you use ECR images in your task
-        /// definition.
+        /// The component will automatically attach IAM policies granting access based on the container
+        /// definitions.
+        /// 
+        /// Default - An execution role will be automatically created for you
         /// </summary>
-        [Input("executionRole")]
-        public Pulumi.Aws.Iam.Role? ExecutionRole { get; set; }
+        [Input("executionRoleArn")]
+        public Input<string>? ExecutionRoleArn { get; set; }
 
         /// <summary>
         /// The name of a family that this task definition is registered to. A family groups multiple
         /// versions of a task definition.
         /// 
-        /// Default - Automatically generated name.
+        /// Default - The Pulumi resource name of this component
         /// </summary>
         [Input("family")]
         public string? Family { get; set; }
@@ -168,7 +186,8 @@ namespace Pulumi.Awsx.Experimental.Ecs
         /// For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
         /// to select the task size.
         /// 
-        /// Default - 512
+        /// Default - A memory value will be automatically selected based on the container-level CPU and
+        /// memory requirements
         /// </summary>
         [Input("memory")]
         public double? Memory { get; set; }
@@ -183,13 +202,21 @@ namespace Pulumi.Awsx.Experimental.Ecs
         public string? Region { get; set; }
 
         /// <summary>
-        /// The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+        /// The operating system that your task definitions are running on.
+        /// 
+        /// Default - AWS default of X86_64 Linux
+        /// </summary>
+        [Input("runtimePlatform")]
+        public Inputs.RuntimePlatformArgs? RuntimePlatform { get; set; }
+
+        /// <summary>
+        /// The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
         /// behalf.
         /// 
         /// Default - A task role is automatically created for you.
         /// </summary>
-        [Input("taskRole")]
-        public Pulumi.Aws.Iam.Role? TaskRole { get; set; }
+        [Input("taskRoleArn")]
+        public Input<string>? TaskRoleArn { get; set; }
 
         public FargateTaskDefinitionV2Args()
         {

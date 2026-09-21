@@ -12,12 +12,21 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
 
     public sealed class UlimitArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The hard limit, in bytes, seconds, or a count, depending on `name`.
+        /// </summary>
         [Input("hardLimit", required: true)]
         public double HardLimit { get; set; }
 
+        /// <summary>
+        /// The resource limit to configure.
+        /// </summary>
         [Input("name", required: true)]
         public Pulumi.Awsx.Experimental.Ecs.UlimitName Name { get; set; }
 
+        /// <summary>
+        /// The soft limit, in bytes, seconds, or a count, depending on `name`.
+        /// </summary>
         [Input("softLimit", required: true)]
         public double SoftLimit { get; set; }
 

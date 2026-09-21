@@ -10,7 +10,15 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum ContainerDefinitionVersionConsistency {
+        /**
+         * Resolve the image tag to an image digest.
+         * 
+         */
         ENABLED("enabled"),
+        /**
+         * Keep the original image URI without resolving the tag to a digest.
+         * 
+         */
         DISABLED("disabled");
 
         private final String value;

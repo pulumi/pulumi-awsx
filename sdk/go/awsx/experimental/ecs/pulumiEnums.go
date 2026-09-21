@@ -13,7 +13,10 @@ import (
 type AwsLogDriverMode string
 
 const (
-	AwsLogDriverModeBLOCKING      = AwsLogDriverMode("blocking")
+	// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+	AwsLogDriverModeBLOCKING = AwsLogDriverMode("blocking")
+	// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+	// fills.
 	AwsLogDriverMode_NON_BLOCKING = AwsLogDriverMode("non-blocking")
 )
 
@@ -178,7 +181,9 @@ func (in *awsLogDriverModePtr) ToAwsLogDriverModePtrOutputWithContext(ctx contex
 type ContainerDefinitionVersionConsistency string
 
 const (
-	ContainerDefinitionVersionConsistencyENABLED  = ContainerDefinitionVersionConsistency("enabled")
+	// Resolve the image tag to an image digest.
+	ContainerDefinitionVersionConsistencyENABLED = ContainerDefinitionVersionConsistency("enabled")
+	// Keep the original image URI without resolving the tag to a digest.
 	ContainerDefinitionVersionConsistencyDISABLED = ContainerDefinitionVersionConsistency("disabled")
 )
 
@@ -343,25 +348,383 @@ func (in *containerDefinitionVersionConsistencyPtr) ToContainerDefinitionVersion
 type ContainerDependencyCondition string
 
 const (
-	ContainerDependencyConditionSTART    = ContainerDependencyCondition("START")
+	// Wait until the other container starts.
+	ContainerDependencyConditionSTART = ContainerDependencyCondition("START")
+	// Wait until the other container exits. The other container must not be essential.
 	ContainerDependencyConditionCOMPLETE = ContainerDependencyCondition("COMPLETE")
-	ContainerDependencyConditionSUCCESS  = ContainerDependencyCondition("SUCCESS")
-	ContainerDependencyConditionHEALTHY  = ContainerDependencyCondition("HEALTHY")
+	// Wait until the other container exits with a zero status. It must not be essential.
+	ContainerDependencyConditionSUCCESS = ContainerDependencyCondition("SUCCESS")
+	// Wait until the other container passes its configured health check. Checked only at startup.
+	ContainerDependencyConditionHEALTHY = ContainerDependencyCondition("HEALTHY")
 )
+
+type CpuArchitecture string
+
+const (
+	CpuArchitecture_X86_64 = CpuArchitecture("X86_64")
+	CpuArchitectureARM64   = CpuArchitecture("ARM64")
+)
+
+func (CpuArchitecture) ElementType() reflect.Type {
+	return reflect.TypeOf((*CpuArchitecture)(nil)).Elem()
+}
+
+func (e CpuArchitecture) ToCpuArchitectureOutput() CpuArchitectureOutput {
+	return pulumi.ToOutput(e).(CpuArchitectureOutput)
+}
+
+func (e CpuArchitecture) ToCpuArchitectureOutputWithContext(ctx context.Context) CpuArchitectureOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(CpuArchitectureOutput)
+}
+
+func (e CpuArchitecture) ToCpuArchitecturePtrOutput() CpuArchitecturePtrOutput {
+	return e.ToCpuArchitecturePtrOutputWithContext(context.Background())
+}
+
+func (e CpuArchitecture) ToCpuArchitecturePtrOutputWithContext(ctx context.Context) CpuArchitecturePtrOutput {
+	return CpuArchitecture(e).ToCpuArchitectureOutputWithContext(ctx).ToCpuArchitecturePtrOutputWithContext(ctx)
+}
+
+func (e CpuArchitecture) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CpuArchitecture) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e CpuArchitecture) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e CpuArchitecture) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type CpuArchitectureOutput struct{ *pulumi.OutputState }
+
+func (CpuArchitectureOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CpuArchitecture)(nil)).Elem()
+}
+
+func (o CpuArchitectureOutput) ToCpuArchitectureOutput() CpuArchitectureOutput {
+	return o
+}
+
+func (o CpuArchitectureOutput) ToCpuArchitectureOutputWithContext(ctx context.Context) CpuArchitectureOutput {
+	return o
+}
+
+func (o CpuArchitectureOutput) ToCpuArchitecturePtrOutput() CpuArchitecturePtrOutput {
+	return o.ToCpuArchitecturePtrOutputWithContext(context.Background())
+}
+
+func (o CpuArchitectureOutput) ToCpuArchitecturePtrOutputWithContext(ctx context.Context) CpuArchitecturePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CpuArchitecture) *CpuArchitecture {
+		return &v
+	}).(CpuArchitecturePtrOutput)
+}
+
+func (o CpuArchitectureOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o CpuArchitectureOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CpuArchitecture) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o CpuArchitectureOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CpuArchitectureOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e CpuArchitecture) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type CpuArchitecturePtrOutput struct{ *pulumi.OutputState }
+
+func (CpuArchitecturePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CpuArchitecture)(nil)).Elem()
+}
+
+func (o CpuArchitecturePtrOutput) ToCpuArchitecturePtrOutput() CpuArchitecturePtrOutput {
+	return o
+}
+
+func (o CpuArchitecturePtrOutput) ToCpuArchitecturePtrOutputWithContext(ctx context.Context) CpuArchitecturePtrOutput {
+	return o
+}
+
+func (o CpuArchitecturePtrOutput) Elem() CpuArchitectureOutput {
+	return o.ApplyT(func(v *CpuArchitecture) CpuArchitecture {
+		if v != nil {
+			return *v
+		}
+		var ret CpuArchitecture
+		return ret
+	}).(CpuArchitectureOutput)
+}
+
+func (o CpuArchitecturePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o CpuArchitecturePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *CpuArchitecture) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// CpuArchitectureInput is an input type that accepts values of the CpuArchitecture enum
+// A concrete instance of `CpuArchitectureInput` can be one of the following:
+//
+//	CpuArchitecture_X86_64
+//	CpuArchitectureARM64
+type CpuArchitectureInput interface {
+	pulumi.Input
+
+	ToCpuArchitectureOutput() CpuArchitectureOutput
+	ToCpuArchitectureOutputWithContext(context.Context) CpuArchitectureOutput
+}
+
+var cpuArchitecturePtrType = reflect.TypeOf((**CpuArchitecture)(nil)).Elem()
+
+type CpuArchitecturePtrInput interface {
+	pulumi.Input
+
+	ToCpuArchitecturePtrOutput() CpuArchitecturePtrOutput
+	ToCpuArchitecturePtrOutputWithContext(context.Context) CpuArchitecturePtrOutput
+}
+
+type cpuArchitecturePtr string
+
+func CpuArchitecturePtr(v string) CpuArchitecturePtrInput {
+	return (*cpuArchitecturePtr)(&v)
+}
+
+func (*cpuArchitecturePtr) ElementType() reflect.Type {
+	return cpuArchitecturePtrType
+}
+
+func (in *cpuArchitecturePtr) ToCpuArchitecturePtrOutput() CpuArchitecturePtrOutput {
+	return pulumi.ToOutput(in).(CpuArchitecturePtrOutput)
+}
+
+func (in *cpuArchitecturePtr) ToCpuArchitecturePtrOutputWithContext(ctx context.Context) CpuArchitecturePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(CpuArchitecturePtrOutput)
+}
 
 type CredentialSpecAuthenticationMode string
 
 const (
+	// Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+	//
+	// For more information, see [gMSA
+	// prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
 	CredentialSpecAuthenticationMode_DOMAIN_JOINED = CredentialSpecAuthenticationMode("DomainJoined")
-	CredentialSpecAuthenticationModeDOMAINLESS     = CredentialSpecAuthenticationMode("Domainless")
+	// Use credentials referenced by the credential specification without joining the container
+	// instance to the domain.
+	//
+	// For more information, see [domainless gMSA
+	// setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+	// and [gMSAs for Linux
+	// containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+	CredentialSpecAuthenticationModeDOMAINLESS = CredentialSpecAuthenticationMode("Domainless")
 )
+
+type OperatingSystemFamily string
+
+const (
+	OperatingSystemFamilyLINUX                     = OperatingSystemFamily("LINUX")
+	OperatingSystemFamily_WINDOWS_SERVER_2025_FULL = OperatingSystemFamily("WINDOWS_SERVER_2025_FULL")
+	OperatingSystemFamily_WINDOWS_SERVER_2025_CORE = OperatingSystemFamily("WINDOWS_SERVER_2025_CORE")
+	OperatingSystemFamily_WINDOWS_SERVER_2022_FULL = OperatingSystemFamily("WINDOWS_SERVER_2022_FULL")
+	OperatingSystemFamily_WINDOWS_SERVER_2022_CORE = OperatingSystemFamily("WINDOWS_SERVER_2022_CORE")
+	OperatingSystemFamily_WINDOWS_SERVER_2019_FULL = OperatingSystemFamily("WINDOWS_SERVER_2019_FULL")
+	OperatingSystemFamily_WINDOWS_SERVER_2019_CORE = OperatingSystemFamily("WINDOWS_SERVER_2019_CORE")
+)
+
+func (OperatingSystemFamily) ElementType() reflect.Type {
+	return reflect.TypeOf((*OperatingSystemFamily)(nil)).Elem()
+}
+
+func (e OperatingSystemFamily) ToOperatingSystemFamilyOutput() OperatingSystemFamilyOutput {
+	return pulumi.ToOutput(e).(OperatingSystemFamilyOutput)
+}
+
+func (e OperatingSystemFamily) ToOperatingSystemFamilyOutputWithContext(ctx context.Context) OperatingSystemFamilyOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(OperatingSystemFamilyOutput)
+}
+
+func (e OperatingSystemFamily) ToOperatingSystemFamilyPtrOutput() OperatingSystemFamilyPtrOutput {
+	return e.ToOperatingSystemFamilyPtrOutputWithContext(context.Background())
+}
+
+func (e OperatingSystemFamily) ToOperatingSystemFamilyPtrOutputWithContext(ctx context.Context) OperatingSystemFamilyPtrOutput {
+	return OperatingSystemFamily(e).ToOperatingSystemFamilyOutputWithContext(ctx).ToOperatingSystemFamilyPtrOutputWithContext(ctx)
+}
+
+func (e OperatingSystemFamily) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e OperatingSystemFamily) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e OperatingSystemFamily) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e OperatingSystemFamily) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type OperatingSystemFamilyOutput struct{ *pulumi.OutputState }
+
+func (OperatingSystemFamilyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*OperatingSystemFamily)(nil)).Elem()
+}
+
+func (o OperatingSystemFamilyOutput) ToOperatingSystemFamilyOutput() OperatingSystemFamilyOutput {
+	return o
+}
+
+func (o OperatingSystemFamilyOutput) ToOperatingSystemFamilyOutputWithContext(ctx context.Context) OperatingSystemFamilyOutput {
+	return o
+}
+
+func (o OperatingSystemFamilyOutput) ToOperatingSystemFamilyPtrOutput() OperatingSystemFamilyPtrOutput {
+	return o.ToOperatingSystemFamilyPtrOutputWithContext(context.Background())
+}
+
+func (o OperatingSystemFamilyOutput) ToOperatingSystemFamilyPtrOutputWithContext(ctx context.Context) OperatingSystemFamilyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v OperatingSystemFamily) *OperatingSystemFamily {
+		return &v
+	}).(OperatingSystemFamilyPtrOutput)
+}
+
+func (o OperatingSystemFamilyOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o OperatingSystemFamilyOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e OperatingSystemFamily) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o OperatingSystemFamilyOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o OperatingSystemFamilyOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e OperatingSystemFamily) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type OperatingSystemFamilyPtrOutput struct{ *pulumi.OutputState }
+
+func (OperatingSystemFamilyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**OperatingSystemFamily)(nil)).Elem()
+}
+
+func (o OperatingSystemFamilyPtrOutput) ToOperatingSystemFamilyPtrOutput() OperatingSystemFamilyPtrOutput {
+	return o
+}
+
+func (o OperatingSystemFamilyPtrOutput) ToOperatingSystemFamilyPtrOutputWithContext(ctx context.Context) OperatingSystemFamilyPtrOutput {
+	return o
+}
+
+func (o OperatingSystemFamilyPtrOutput) Elem() OperatingSystemFamilyOutput {
+	return o.ApplyT(func(v *OperatingSystemFamily) OperatingSystemFamily {
+		if v != nil {
+			return *v
+		}
+		var ret OperatingSystemFamily
+		return ret
+	}).(OperatingSystemFamilyOutput)
+}
+
+func (o OperatingSystemFamilyPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o OperatingSystemFamilyPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *OperatingSystemFamily) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// OperatingSystemFamilyInput is an input type that accepts values of the OperatingSystemFamily enum
+// A concrete instance of `OperatingSystemFamilyInput` can be one of the following:
+//
+//	OperatingSystemFamilyLINUX
+//	OperatingSystemFamily_WINDOWS_SERVER_2025_FULL
+//	OperatingSystemFamily_WINDOWS_SERVER_2025_CORE
+//	OperatingSystemFamily_WINDOWS_SERVER_2022_FULL
+//	OperatingSystemFamily_WINDOWS_SERVER_2022_CORE
+//	OperatingSystemFamily_WINDOWS_SERVER_2019_FULL
+//	OperatingSystemFamily_WINDOWS_SERVER_2019_CORE
+type OperatingSystemFamilyInput interface {
+	pulumi.Input
+
+	ToOperatingSystemFamilyOutput() OperatingSystemFamilyOutput
+	ToOperatingSystemFamilyOutputWithContext(context.Context) OperatingSystemFamilyOutput
+}
+
+var operatingSystemFamilyPtrType = reflect.TypeOf((**OperatingSystemFamily)(nil)).Elem()
+
+type OperatingSystemFamilyPtrInput interface {
+	pulumi.Input
+
+	ToOperatingSystemFamilyPtrOutput() OperatingSystemFamilyPtrOutput
+	ToOperatingSystemFamilyPtrOutputWithContext(context.Context) OperatingSystemFamilyPtrOutput
+}
+
+type operatingSystemFamilyPtr string
+
+func OperatingSystemFamilyPtr(v string) OperatingSystemFamilyPtrInput {
+	return (*operatingSystemFamilyPtr)(&v)
+}
+
+func (*operatingSystemFamilyPtr) ElementType() reflect.Type {
+	return operatingSystemFamilyPtrType
+}
+
+func (in *operatingSystemFamilyPtr) ToOperatingSystemFamilyPtrOutput() OperatingSystemFamilyPtrOutput {
+	return pulumi.ToOutput(in).(OperatingSystemFamilyPtrOutput)
+}
+
+func (in *operatingSystemFamilyPtr) ToOperatingSystemFamilyPtrOutputWithContext(ctx context.Context) OperatingSystemFamilyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(OperatingSystemFamilyPtrOutput)
+}
 
 type PortMappingAppProtocol string
 
 const (
-	PortMappingAppProtocolHTTP  = PortMappingAppProtocol("http")
+	// Use HTTP protocol handling and telemetry.
+	PortMappingAppProtocolHTTP = PortMappingAppProtocol("http")
+	// Use HTTP/2 protocol handling and telemetry.
 	PortMappingAppProtocolHTTP2 = PortMappingAppProtocol("http2")
-	PortMappingAppProtocolGRPC  = PortMappingAppProtocol("grpc")
+	// Use gRPC protocol handling and telemetry.
+	PortMappingAppProtocolGRPC = PortMappingAppProtocol("grpc")
 )
 
 func (PortMappingAppProtocol) ElementType() reflect.Type {
@@ -526,7 +889,9 @@ func (in *portMappingAppProtocolPtr) ToPortMappingAppProtocolPtrOutputWithContex
 type PortMappingProtocol string
 
 const (
+	// Use the Transmission Control Protocol.
 	PortMappingProtocolTCP = PortMappingProtocol("tcp")
+	// Use the User Datagram Protocol.
 	PortMappingProtocolUDP = PortMappingProtocol("udp")
 )
 
@@ -691,21 +1056,36 @@ func (in *portMappingProtocolPtr) ToPortMappingProtocolPtrOutputWithContext(ctx 
 type UlimitName string
 
 const (
-	UlimitNameCORE       = UlimitName("core")
-	UlimitNameCPU        = UlimitName("cpu")
-	UlimitNameDATA       = UlimitName("data")
-	UlimitNameFSIZE      = UlimitName("fsize")
-	UlimitNameLOCKS      = UlimitName("locks")
-	UlimitNameMEMLOCK    = UlimitName("memlock")
-	UlimitNameMSGQUEUE   = UlimitName("msgqueue")
-	UlimitNameNICE       = UlimitName("nice")
-	UlimitNameNOFILE     = UlimitName("nofile")
-	UlimitNameNPROC      = UlimitName("nproc")
-	UlimitNameRSS        = UlimitName("rss")
-	UlimitNameRTPRIO     = UlimitName("rtprio")
-	UlimitNameRTTIME     = UlimitName("rttime")
+	// Limit the size of core dump files.
+	UlimitNameCORE = UlimitName("core")
+	// Limit CPU time.
+	UlimitNameCPU = UlimitName("cpu")
+	// Limit the size of the process data segment.
+	UlimitNameDATA = UlimitName("data")
+	// Limit the size of files that the process can create.
+	UlimitNameFSIZE = UlimitName("fsize")
+	// Limit the number of file locks.
+	UlimitNameLOCKS = UlimitName("locks")
+	// Limit the amount of memory that can be locked.
+	UlimitNameMEMLOCK = UlimitName("memlock")
+	// Limit the number of bytes allocated for POSIX message queues.
+	UlimitNameMSGQUEUE = UlimitName("msgqueue")
+	// Limit the process nice priority.
+	UlimitNameNICE = UlimitName("nice")
+	// Limit the number of open file descriptors.
+	UlimitNameNOFILE = UlimitName("nofile")
+	// Limit the number of processes available to the user.
+	UlimitNameNPROC = UlimitName("nproc")
+	// Limit the resident set size.
+	UlimitNameRSS = UlimitName("rss")
+	// Limit the real-time priority.
+	UlimitNameRTPRIO = UlimitName("rtprio")
+	// Limit CPU time scheduled under a real-time policy.
+	UlimitNameRTTIME = UlimitName("rttime")
+	// Limit the number of pending signals.
 	UlimitNameSIGPENDING = UlimitName("sigpending")
-	UlimitNameSTACK      = UlimitName("stack")
+	// Limit the process stack size.
+	UlimitNameSTACK = UlimitName("stack")
 )
 
 func (UlimitName) ElementType() reflect.Type {
@@ -884,6 +1264,10 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogDriverModePtrInput)(nil)).Elem(), AwsLogDriverMode("blocking"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVersionConsistencyInput)(nil)).Elem(), ContainerDefinitionVersionConsistency("enabled"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVersionConsistencyPtrInput)(nil)).Elem(), ContainerDefinitionVersionConsistency("enabled"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CpuArchitectureInput)(nil)).Elem(), CpuArchitecture("X86_64"))
+	pulumi.RegisterInputType(reflect.TypeOf((*CpuArchitecturePtrInput)(nil)).Elem(), CpuArchitecture("X86_64"))
+	pulumi.RegisterInputType(reflect.TypeOf((*OperatingSystemFamilyInput)(nil)).Elem(), OperatingSystemFamily("LINUX"))
+	pulumi.RegisterInputType(reflect.TypeOf((*OperatingSystemFamilyPtrInput)(nil)).Elem(), OperatingSystemFamily("LINUX"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingAppProtocolInput)(nil)).Elem(), PortMappingAppProtocol("http"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingAppProtocolPtrInput)(nil)).Elem(), PortMappingAppProtocol("http"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingProtocolInput)(nil)).Elem(), PortMappingProtocol("tcp"))
@@ -894,6 +1278,10 @@ func init() {
 	pulumi.RegisterOutputType(AwsLogDriverModePtrOutput{})
 	pulumi.RegisterOutputType(ContainerDefinitionVersionConsistencyOutput{})
 	pulumi.RegisterOutputType(ContainerDefinitionVersionConsistencyPtrOutput{})
+	pulumi.RegisterOutputType(CpuArchitectureOutput{})
+	pulumi.RegisterOutputType(CpuArchitecturePtrOutput{})
+	pulumi.RegisterOutputType(OperatingSystemFamilyOutput{})
+	pulumi.RegisterOutputType(OperatingSystemFamilyPtrOutput{})
 	pulumi.RegisterOutputType(PortMappingAppProtocolOutput{})
 	pulumi.RegisterOutputType(PortMappingAppProtocolPtrOutput{})
 	pulumi.RegisterOutputType(PortMappingProtocolOutput{})

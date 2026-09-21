@@ -53,7 +53,7 @@ public final class FargatePortMappingArgs extends com.pulumi.resources.ResourceA
     }
 
     /**
-     * A range of container ports, in the form `start-end`.
+     * A range of container ports with inclusive `start` and `end` values.
      * 
      * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
      * to the same container port range.
@@ -63,7 +63,7 @@ public final class FargatePortMappingArgs extends com.pulumi.resources.ResourceA
     private @Nullable ContainerPortRangeArgs containerPortRange;
 
     /**
-     * @return A range of container ports, in the form `start-end`.
+     * @return A range of container ports with inclusive `start` and `end` values.
      * 
      * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
      * to the same container port range.
@@ -160,7 +160,7 @@ public final class FargatePortMappingArgs extends com.pulumi.resources.ResourceA
         }
 
         /**
-         * @param containerPortRange A range of container ports, in the form `start-end`.
+         * @param containerPortRange A range of container ports with inclusive `start` and `end` values.
          * 
          * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
          * to the same container port range.

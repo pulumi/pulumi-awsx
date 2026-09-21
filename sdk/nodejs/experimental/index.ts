@@ -4,10 +4,8 @@
 import * as utilities from "../utilities";
 
 // Export sub-modules:
-import * as cloudwatch from "./cloudwatch";
 import * as ecs from "./ecs";
 
 export {
-    cloudwatch,
     ecs,
 };

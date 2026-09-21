@@ -8,11 +8,8 @@ import typing
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
-    import pulumi_awsx.experimental.cloudwatch as __cloudwatch
-    cloudwatch = __cloudwatch
     import pulumi_awsx.experimental.ecs as __ecs
     ecs = __ecs
 else:
-    cloudwatch = _utilities.lazy_import('pulumi_awsx.experimental.cloudwatch')
     ecs = _utilities.lazy_import('pulumi_awsx.experimental.ecs')
 

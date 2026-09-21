@@ -295,9 +295,17 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
         return Optional.ofNullable(this.linuxParameters);
     }
 
+    /**
+     * The log driver and settings used to collect container logs.
+     * 
+     */
     @Import(name="logging")
     private @Nullable FargateLogDriverArgs logging;
 
+    /**
+     * @return The log driver and settings used to collect container logs.
+     * 
+     */
     public Optional<FargateLogDriverArgs> logging() {
         return Optional.ofNullable(this.logging);
     }
@@ -314,8 +322,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - No container-level hard memory limit.
      * 
      */
-    @Import(name="memory")
-    private @Nullable Double memory;
+    @Import(name="memoryMiB")
+    private @Nullable Double memoryMiB;
 
     /**
      * @return The hard memory limit for the container, in MiB.
@@ -329,8 +337,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - No container-level hard memory limit.
      * 
      */
-    public Optional<Double> memory() {
-        return Optional.ofNullable(this.memory);
+    public Optional<Double> memoryMiB() {
+        return Optional.ofNullable(this.memoryMiB);
     }
 
     /**
@@ -339,14 +347,14 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * The container can use more memory when it is available, up to its hard memory limit. This
      * property is not supported for Windows containers.
      * 
-     * If you set both container-level memory values, `memory` must be greater than
-     * `memoryReservation`.
+     * If you set both container-level memory values, `memoryMiB` must be greater than
+     * `memoryReservationMiB`.
      * 
      * Default - No container-level soft memory reservation.
      * 
      */
-    @Import(name="memoryReservation")
-    private @Nullable Double memoryReservation;
+    @Import(name="memoryReservationMiB")
+    private @Nullable Double memoryReservationMiB;
 
     /**
      * @return The soft memory limit reserved for the container, in MiB.
@@ -354,14 +362,14 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * The container can use more memory when it is available, up to its hard memory limit. This
      * property is not supported for Windows containers.
      * 
-     * If you set both container-level memory values, `memory` must be greater than
-     * `memoryReservation`.
+     * If you set both container-level memory values, `memoryMiB` must be greater than
+     * `memoryReservationMiB`.
      * 
      * Default - No container-level soft memory reservation.
      * 
      */
-    public Optional<Double> memoryReservation() {
-        return Optional.ofNullable(this.memoryReservation);
+    public Optional<Double> memoryReservationMiB() {
+        return Optional.ofNullable(this.memoryReservationMiB);
     }
 
     /**
@@ -440,8 +448,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - No container-specific startup timeout.
      * 
      */
-    @Import(name="startTimeout")
-    private @Nullable Double startTimeout;
+    @Import(name="startTimeoutSeconds")
+    private @Nullable Double startTimeoutSeconds;
 
     /**
      * @return The time, in seconds, to wait for this container&#39;s startup dependencies to become ready.
@@ -451,8 +459,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - No container-specific startup timeout.
      * 
      */
-    public Optional<Double> startTimeout() {
-        return Optional.ofNullable(this.startTimeout);
+    public Optional<Double> startTimeoutSeconds() {
+        return Optional.ofNullable(this.startTimeoutSeconds);
     }
 
     /**
@@ -464,8 +472,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - 30 seconds.
      * 
      */
-    @Import(name="stopTimeout")
-    private @Nullable Double stopTimeout;
+    @Import(name="stopTimeoutSeconds")
+    private @Nullable Double stopTimeoutSeconds;
 
     /**
      * @return The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
@@ -476,8 +484,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
      * Default - 30 seconds.
      * 
      */
-    public Optional<Double> stopTimeout() {
-        return Optional.ofNullable(this.stopTimeout);
+    public Optional<Double> stopTimeoutSeconds() {
+        return Optional.ofNullable(this.stopTimeoutSeconds);
     }
 
     /**
@@ -641,14 +649,14 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
         this.interactive = $.interactive;
         this.linuxParameters = $.linuxParameters;
         this.logging = $.logging;
-        this.memory = $.memory;
-        this.memoryReservation = $.memoryReservation;
+        this.memoryMiB = $.memoryMiB;
+        this.memoryReservationMiB = $.memoryReservationMiB;
         this.portMappings = $.portMappings;
         this.pseudoTerminal = $.pseudoTerminal;
         this.readonlyRootFilesystem = $.readonlyRootFilesystem;
         this.secrets = $.secrets;
-        this.startTimeout = $.startTimeout;
-        this.stopTimeout = $.stopTimeout;
+        this.startTimeoutSeconds = $.startTimeoutSeconds;
+        this.stopTimeoutSeconds = $.stopTimeoutSeconds;
         this.systemControls = $.systemControls;
         this.ulimits = $.ulimits;
         this.user = $.user;
@@ -923,13 +931,19 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
             return this;
         }
 
+        /**
+         * @param logging The log driver and settings used to collect container logs.
+         * 
+         * @return builder
+         * 
+         */
         public Builder logging(@Nullable FargateLogDriverArgs logging) {
             $.logging = logging;
             return this;
         }
 
         /**
-         * @param memory The hard memory limit for the container, in MiB.
+         * @param memoryMiB The hard memory limit for the container, in MiB.
          * 
          * ECS stops the container if it uses more than this limit. Container-level memory is optional
          * because Fargate requires a task-level memory value.
@@ -942,27 +956,27 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
          * @return builder
          * 
          */
-        public Builder memory(@Nullable Double memory) {
-            $.memory = memory;
+        public Builder memoryMiB(@Nullable Double memoryMiB) {
+            $.memoryMiB = memoryMiB;
             return this;
         }
 
         /**
-         * @param memoryReservation The soft memory limit reserved for the container, in MiB.
+         * @param memoryReservationMiB The soft memory limit reserved for the container, in MiB.
          * 
          * The container can use more memory when it is available, up to its hard memory limit. This
          * property is not supported for Windows containers.
          * 
-         * If you set both container-level memory values, `memory` must be greater than
-         * `memoryReservation`.
+         * If you set both container-level memory values, `memoryMiB` must be greater than
+         * `memoryReservationMiB`.
          * 
          * Default - No container-level soft memory reservation.
          * 
          * @return builder
          * 
          */
-        public Builder memoryReservation(@Nullable Double memoryReservation) {
-            $.memoryReservation = memoryReservation;
+        public Builder memoryReservationMiB(@Nullable Double memoryReservationMiB) {
+            $.memoryReservationMiB = memoryReservationMiB;
             return this;
         }
 
@@ -1025,7 +1039,7 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
         }
 
         /**
-         * @param startTimeout The time, in seconds, to wait for this container&#39;s startup dependencies to become ready.
+         * @param startTimeoutSeconds The time, in seconds, to wait for this container&#39;s startup dependencies to become ready.
          * 
          * Valid values are from 2 through 120 seconds.
          * 
@@ -1034,13 +1048,13 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
          * @return builder
          * 
          */
-        public Builder startTimeout(@Nullable Double startTimeout) {
-            $.startTimeout = startTimeout;
+        public Builder startTimeoutSeconds(@Nullable Double startTimeoutSeconds) {
+            $.startTimeoutSeconds = startTimeoutSeconds;
             return this;
         }
 
         /**
-         * @param stopTimeout The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
+         * @param stopTimeoutSeconds The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
          * normally.
          * 
          * Valid values are from 2 through 120 seconds.
@@ -1050,8 +1064,8 @@ public final class FargateContainerDefinitionOptionsArgs extends com.pulumi.reso
          * @return builder
          * 
          */
-        public Builder stopTimeout(@Nullable Double stopTimeout) {
-            $.stopTimeout = stopTimeout;
+        public Builder stopTimeoutSeconds(@Nullable Double stopTimeoutSeconds) {
+            $.stopTimeoutSeconds = stopTimeoutSeconds;
             return this;
         }
 

@@ -166,6 +166,9 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         [Input("linuxParameters")]
         public Inputs.FargateLinuxParametersArgs? LinuxParameters { get; set; }
 
+        /// <summary>
+        /// The log driver and settings used to collect container logs.
+        /// </summary>
         [Input("logging")]
         public Inputs.FargateLogDriverArgs? Logging { get; set; }
 
@@ -180,8 +183,8 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// 
         /// Default - No container-level hard memory limit.
         /// </summary>
-        [Input("memory")]
-        public double? Memory { get; set; }
+        [Input("memoryMiB")]
+        public double? MemoryMiB { get; set; }
 
         /// <summary>
         /// The soft memory limit reserved for the container, in MiB.
@@ -189,13 +192,13 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// The container can use more memory when it is available, up to its hard memory limit. This
         /// property is not supported for Windows containers.
         /// 
-        /// If you set both container-level memory values, `memory` must be greater than
-        /// `memoryReservation`.
+        /// If you set both container-level memory values, `memoryMiB` must be greater than
+        /// `memoryReservationMiB`.
         /// 
         /// Default - No container-level soft memory reservation.
         /// </summary>
-        [Input("memoryReservation")]
-        public double? MemoryReservation { get; set; }
+        [Input("memoryReservationMiB")]
+        public double? MemoryReservationMiB { get; set; }
 
         [Input("portMappings")]
         private List<Inputs.FargatePortMappingArgs>? _portMappings;
@@ -244,8 +247,8 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// 
         /// Default - No container-specific startup timeout.
         /// </summary>
-        [Input("startTimeout")]
-        public double? StartTimeout { get; set; }
+        [Input("startTimeoutSeconds")]
+        public double? StartTimeoutSeconds { get; set; }
 
         /// <summary>
         /// The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
@@ -255,8 +258,8 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         /// 
         /// Default - 30 seconds.
         /// </summary>
-        [Input("stopTimeout")]
-        public double? StopTimeout { get; set; }
+        [Input("stopTimeoutSeconds")]
+        public double? StopTimeoutSeconds { get; set; }
 
         [Input("systemControls")]
         private List<Inputs.SystemControlArgs>? _systemControls;

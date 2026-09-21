@@ -10,7 +10,24 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum CredentialSpecAuthenticationMode {
+        /**
+         * Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+         * 
+         * For more information, see [gMSA
+         * prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
+         * 
+         */
         DOMAIN_JOINED("DomainJoined"),
+        /**
+         * Use credentials referenced by the credential specification without joining the container
+         * instance to the domain.
+         * 
+         * For more information, see [domainless gMSA
+         * setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
+         * and [gMSAs for Linux
+         * containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
+         * 
+         */
         DOMAINLESS("Domainless");
 
         private final String value;

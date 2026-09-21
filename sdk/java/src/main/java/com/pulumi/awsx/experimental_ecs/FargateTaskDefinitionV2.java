@@ -3,9 +3,10 @@
 
 package com.pulumi.awsx.experimental_ecs;
 
+import com.pulumi.aws.cloudwatch.LogGroup;
+import com.pulumi.aws.ecs.TaskDefinition;
 import com.pulumi.aws.iam.Role;
 import com.pulumi.awsx.Utilities;
-import com.pulumi.awsx.experimental_cloudwatch.outputs.LogGroupReference;
 import com.pulumi.awsx.experimental_ecs.FargateTaskDefinitionV2Args;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Export;
@@ -17,17 +18,37 @@ import javax.annotation.Nullable;
 
 @ResourceType(type="awsx:experimental/ecs:FargateTaskDefinitionV2")
 public class FargateTaskDefinitionV2 extends com.pulumi.resources.ComponentResource {
-    @Export(name="_logGroup", refs={LogGroupReference.class}, tree="[0]")
-    private Output</* @Nullable */ LogGroupReference> _logGroup;
-
-    public Output<Optional<LogGroupReference>> _logGroup() {
-        return Codegen.optional(this._logGroup);
-    }
+    /**
+     * The Execution Role of the task
+     * 
+     */
     @Export(name="executionRole", refs={Role.class}, tree="[0]")
     private Output<Role> executionRole;
 
+    /**
+     * @return The Execution Role of the task
+     * 
+     */
     public Output<Role> executionRole() {
         return this.executionRole;
+    }
+    /**
+     * The shared CloudWatch Logs log group created by the component for containers that enable
+     * CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+     * component does not create a default log group
+     * 
+     */
+    @Export(name="logGroup", refs={LogGroup.class}, tree="[0]")
+    private Output</* @Nullable */ LogGroup> logGroup;
+
+    /**
+     * @return The shared CloudWatch Logs log group created by the component for containers that enable
+     * CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+     * component does not create a default log group
+     * 
+     */
+    public Output<Optional<LogGroup>> logGroup() {
+        return Codegen.optional(this.logGroup);
     }
     @Export(name="name", refs={String.class}, tree="[0]")
     private Output<String> name;
@@ -41,15 +62,31 @@ public class FargateTaskDefinitionV2 extends com.pulumi.resources.ComponentResou
     public Output<Optional<String>> region() {
         return Codegen.optional(this.region);
     }
-    @Export(name="taskDefinitionArn", refs={String.class}, tree="[0]")
-    private Output<String> taskDefinitionArn;
+    /**
+     * The task definition resource
+     * 
+     */
+    @Export(name="taskDefinition", refs={TaskDefinition.class}, tree="[0]")
+    private Output<TaskDefinition> taskDefinition;
 
-    public Output<String> taskDefinitionArn() {
-        return this.taskDefinitionArn;
+    /**
+     * @return The task definition resource
+     * 
+     */
+    public Output<TaskDefinition> taskDefinition() {
+        return this.taskDefinition;
     }
+    /**
+     * The Task Role of the task
+     * 
+     */
     @Export(name="taskRole", refs={Role.class}, tree="[0]")
     private Output<Role> taskRole;
 
+    /**
+     * @return The Task Role of the task
+     * 
+     */
     public Output<Role> taskRole() {
         return this.taskRole;
     }

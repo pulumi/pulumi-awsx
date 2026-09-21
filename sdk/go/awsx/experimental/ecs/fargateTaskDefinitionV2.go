@@ -8,8 +8,9 @@ import (
 	"reflect"
 
 	"errors"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudwatch"
+	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecs"
 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/iam"
-	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/cloudwatch"
 	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -17,12 +18,18 @@ import (
 type FargateTaskDefinitionV2 struct {
 	pulumi.ResourceState
 
-	_logGroup         cloudwatch.LogGroupReferencePtrOutput `pulumi:"_logGroup"`
-	ExecutionRole     iam.RoleOutput                        `pulumi:"executionRole"`
-	Name              pulumi.StringOutput                   `pulumi:"name"`
-	Region            pulumi.StringPtrOutput                `pulumi:"region"`
-	TaskDefinitionArn pulumi.StringOutput                   `pulumi:"taskDefinitionArn"`
-	TaskRole          iam.RoleOutput                        `pulumi:"taskRole"`
+	// The Execution Role of the task
+	ExecutionRole iam.RoleOutput `pulumi:"executionRole"`
+	// The shared CloudWatch Logs log group created by the component for containers that enable
+	// CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+	// component does not create a default log group
+	LogGroup cloudwatch.LogGroupOutput `pulumi:"logGroup"`
+	Name     pulumi.StringOutput       `pulumi:"name"`
+	Region   pulumi.StringPtrOutput    `pulumi:"region"`
+	// The task definition resource
+	TaskDefinition ecs.TaskDefinitionOutput `pulumi:"taskDefinition"`
+	// The Task Role of the task
+	TaskRole iam.RoleOutput `pulumi:"taskRole"`
 }
 
 // NewFargateTaskDefinitionV2 registers a new resource with the given unique name, arguments, and options.
@@ -81,7 +88,8 @@ type fargateTaskDefinitionV2Args struct {
 	// For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
 	// select the task size.
 	//
-	// Default - 256
+	// Default - A CPU value will be automatically selected based on the container-level CPU and
+	// memory requirements
 	Cpu *float64 `pulumi:"cpu"`
 	// The amount (in GiB) of ephemeral storage to be allocated to the task.
 	//
@@ -89,18 +97,21 @@ type fargateTaskDefinitionV2Args struct {
 	//
 	// Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
 	EphemeralStorage *float64 `pulumi:"ephemeralStorage"`
-	// The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-	// on your behalf.
+	// The ARN of the IAM task execution role that will be used by the ECS Task.
 	//
-	// The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+	// The execution role grants access required by the configured containers, such as pulling images
+	// from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+	// etc.
 	//
-	// Default - An execution role will be automatically created if you use ECR images in your task
-	// definition.
-	ExecutionRole *iam.Role `pulumi:"executionRole"`
+	// The component will automatically attach IAM policies granting access based on the container
+	// definitions.
+	//
+	// Default - An execution role will be automatically created for you
+	ExecutionRoleArn *string `pulumi:"executionRoleArn"`
 	// The name of a family that this task definition is registered to. A family groups multiple
 	// versions of a task definition.
 	//
-	// Default - Automatically generated name.
+	// Default - The Pulumi resource name of this component
 	Family *string `pulumi:"family"`
 	// The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
 	// field is required and must be valid for the selected CPU value:
@@ -128,18 +139,23 @@ type fargateTaskDefinitionV2Args struct {
 	// For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
 	// to select the task size.
 	//
-	// Default - 512
+	// Default - A memory value will be automatically selected based on the container-level CPU and
+	// memory requirements
 	Memory *float64 `pulumi:"memory"`
 	// Region where this resource will be
 	// [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
 	//
 	// Default - Region set in the provider configuration.
 	Region *string `pulumi:"region"`
-	// The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+	// The operating system that your task definitions are running on.
+	//
+	// Default - AWS default of X86_64 Linux
+	RuntimePlatform *RuntimePlatform `pulumi:"runtimePlatform"`
+	// The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
 	// behalf.
 	//
 	// Default - A task role is automatically created for you.
-	TaskRole *iam.Role `pulumi:"taskRole"`
+	TaskRoleArn *string `pulumi:"taskRoleArn"`
 }
 
 // The set of arguments for constructing a FargateTaskDefinitionV2 resource.
@@ -180,7 +196,8 @@ type FargateTaskDefinitionV2Args struct {
 	// For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
 	// select the task size.
 	//
-	// Default - 256
+	// Default - A CPU value will be automatically selected based on the container-level CPU and
+	// memory requirements
 	Cpu *float64
 	// The amount (in GiB) of ephemeral storage to be allocated to the task.
 	//
@@ -188,18 +205,21 @@ type FargateTaskDefinitionV2Args struct {
 	//
 	// Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
 	EphemeralStorage *float64
-	// The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-	// on your behalf.
+	// The ARN of the IAM task execution role that will be used by the ECS Task.
 	//
-	// The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+	// The execution role grants access required by the configured containers, such as pulling images
+	// from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+	// etc.
 	//
-	// Default - An execution role will be automatically created if you use ECR images in your task
-	// definition.
-	ExecutionRole *iam.Role
+	// The component will automatically attach IAM policies granting access based on the container
+	// definitions.
+	//
+	// Default - An execution role will be automatically created for you
+	ExecutionRoleArn pulumi.StringPtrInput
 	// The name of a family that this task definition is registered to. A family groups multiple
 	// versions of a task definition.
 	//
-	// Default - Automatically generated name.
+	// Default - The Pulumi resource name of this component
 	Family *string
 	// The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
 	// field is required and must be valid for the selected CPU value:
@@ -227,18 +247,23 @@ type FargateTaskDefinitionV2Args struct {
 	// For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
 	// to select the task size.
 	//
-	// Default - 512
+	// Default - A memory value will be automatically selected based on the container-level CPU and
+	// memory requirements
 	Memory *float64
 	// Region where this resource will be
 	// [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
 	//
 	// Default - Region set in the provider configuration.
 	Region *string
-	// The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+	// The operating system that your task definitions are running on.
+	//
+	// Default - AWS default of X86_64 Linux
+	RuntimePlatform *RuntimePlatformArgs
+	// The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
 	// behalf.
 	//
 	// Default - A task role is automatically created for you.
-	TaskRole *iam.Role
+	TaskRoleArn pulumi.StringPtrInput
 }
 
 func (FargateTaskDefinitionV2Args) ElementType() reflect.Type {
@@ -328,12 +353,16 @@ func (o FargateTaskDefinitionV2Output) ToFargateTaskDefinitionV2OutputWithContex
 	return o
 }
 
-func (o FargateTaskDefinitionV2Output) _logGroup() cloudwatch.LogGroupReferencePtrOutput {
-	return o.ApplyT(func(v *FargateTaskDefinitionV2) cloudwatch.LogGroupReferencePtrOutput { return v._logGroup }).(cloudwatch.LogGroupReferencePtrOutput)
-}
-
+// The Execution Role of the task
 func (o FargateTaskDefinitionV2Output) ExecutionRole() iam.RoleOutput {
 	return o.ApplyT(func(v *FargateTaskDefinitionV2) iam.RoleOutput { return v.ExecutionRole }).(iam.RoleOutput)
+}
+
+// The shared CloudWatch Logs log group created by the component for containers that enable
+// CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+// component does not create a default log group
+func (o FargateTaskDefinitionV2Output) LogGroup() cloudwatch.LogGroupOutput {
+	return o.ApplyT(func(v *FargateTaskDefinitionV2) cloudwatch.LogGroupOutput { return v.LogGroup }).(cloudwatch.LogGroupOutput)
 }
 
 func (o FargateTaskDefinitionV2Output) Name() pulumi.StringOutput {
@@ -344,10 +373,12 @@ func (o FargateTaskDefinitionV2Output) Region() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *FargateTaskDefinitionV2) pulumi.StringPtrOutput { return v.Region }).(pulumi.StringPtrOutput)
 }
 
-func (o FargateTaskDefinitionV2Output) TaskDefinitionArn() pulumi.StringOutput {
-	return o.ApplyT(func(v *FargateTaskDefinitionV2) pulumi.StringOutput { return v.TaskDefinitionArn }).(pulumi.StringOutput)
+// The task definition resource
+func (o FargateTaskDefinitionV2Output) TaskDefinition() ecs.TaskDefinitionOutput {
+	return o.ApplyT(func(v *FargateTaskDefinitionV2) ecs.TaskDefinitionOutput { return v.TaskDefinition }).(ecs.TaskDefinitionOutput)
 }
 
+// The Task Role of the task
 func (o FargateTaskDefinitionV2Output) TaskRole() iam.RoleOutput {
 	return o.ApplyT(func(v *FargateTaskDefinitionV2) iam.RoleOutput { return v.TaskRole }).(iam.RoleOutput)
 }

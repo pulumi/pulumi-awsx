@@ -7,10 +7,6 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/s3"
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/secretsmanager"
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ssm"
-	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/cloudwatch"
 	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -25,7 +21,9 @@ type ContainerDependency struct {
 }
 
 type ContainerPortRange struct {
-	End   float64 `pulumi:"end"`
+	// The last port in the range. Must be from 1 through 65535 and greater than `start`.
+	End float64 `pulumi:"end"`
+	// The first port in the range. Must be from 1 through 65535 and less than `end`.
 	Start float64 `pulumi:"start"`
 }
 
@@ -41,7 +39,9 @@ type ContainerPortRangeInput interface {
 }
 
 type ContainerPortRangeArgs struct {
-	End   float64 `pulumi:"end"`
+	// The last port in the range. Must be from 1 through 65535 and greater than `start`.
+	End float64 `pulumi:"end"`
+	// The first port in the range. Must be from 1 through 65535 and less than `end`.
 	Start float64 `pulumi:"start"`
 }
 
@@ -122,10 +122,12 @@ func (o ContainerPortRangeOutput) ToContainerPortRangePtrOutputWithContext(ctx c
 	}).(ContainerPortRangePtrOutput)
 }
 
+// The last port in the range. Must be from 1 through 65535 and greater than `start`.
 func (o ContainerPortRangeOutput) End() pulumi.Float64Output {
 	return o.ApplyT(func(v ContainerPortRange) float64 { return v.End }).(pulumi.Float64Output)
 }
 
+// The first port in the range. Must be from 1 through 65535 and less than `end`.
 func (o ContainerPortRangeOutput) Start() pulumi.Float64Output {
 	return o.ApplyT(func(v ContainerPortRange) float64 { return v.Start }).(pulumi.Float64Output)
 }
@@ -154,6 +156,7 @@ func (o ContainerPortRangePtrOutput) Elem() ContainerPortRangeOutput {
 	}).(ContainerPortRangeOutput)
 }
 
+// The last port in the range. Must be from 1 through 65535 and greater than `start`.
 func (o ContainerPortRangePtrOutput) End() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v *ContainerPortRange) *float64 {
 		if v == nil {
@@ -163,6 +166,7 @@ func (o ContainerPortRangePtrOutput) End() pulumi.Float64PtrOutput {
 	}).(pulumi.Float64PtrOutput)
 }
 
+// The first port in the range. Must be from 1 through 65535 and less than `end`.
 func (o ContainerPortRangePtrOutput) Start() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v *ContainerPortRange) *float64 {
 		if v == nil {
@@ -177,13 +181,13 @@ type CredentialSpec struct {
 	AuthenticationMode CredentialSpecAuthenticationMode `pulumi:"authenticationMode"`
 	// An S3 object that contains the credential specification file.
 	S3Bucket *S3BucketCredentialSpec `pulumi:"s3Bucket"`
-	// An SSM parameter that contains the credential specification file.
-	SsmParameter *ssm.Parameter `pulumi:"ssmParameter"`
+	// The ARN of an SSM parameter that contains the credential specification file.
+	SsmParameterArn *string `pulumi:"ssmParameterArn"`
 }
 
 type EnvironmentFile struct {
-	// The bucket that contains the environment file.
-	Bucket *s3.Bucket `pulumi:"bucket"`
+	// The ARN of the bucket that contains the environment file.
+	BucketArn string `pulumi:"bucketArn"`
 	// The object key of the environment file.
 	Key string `pulumi:"key"`
 }
@@ -191,10 +195,10 @@ type EnvironmentFile struct {
 type FargateAwsLogsLogDriver struct {
 	// A multiline start pattern in Python strftime format.
 	DatetimeFormat *string `pulumi:"datetimeFormat"`
-	// The log group to log to.
+	// The ARN of the log group to log to.
 	//
 	// Default - A log group is created automatically.
-	LogGroup *cloudwatch.LogGroupReference `pulumi:"logGroup"`
+	LogGroupArn *string `pulumi:"logGroupArn"`
 	// Size, in bytes, of the buffer used in non-blocking mode.
 	//
 	// Default - The AWS default of 10 MiB when mode is non-blocking.
@@ -221,10 +225,10 @@ type FargateAwsLogsLogDriverInput interface {
 type FargateAwsLogsLogDriverArgs struct {
 	// A multiline start pattern in Python strftime format.
 	DatetimeFormat *string `pulumi:"datetimeFormat"`
-	// The log group to log to.
+	// The ARN of the log group to log to.
 	//
 	// Default - A log group is created automatically.
-	LogGroup *cloudwatch.LogGroupReferenceArgs `pulumi:"logGroup"`
+	LogGroupArn pulumi.StringPtrInput `pulumi:"logGroupArn"`
 	// Size, in bytes, of the buffer used in non-blocking mode.
 	//
 	// Default - The AWS default of 10 MiB when mode is non-blocking.
@@ -319,11 +323,11 @@ func (o FargateAwsLogsLogDriverOutput) DatetimeFormat() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v FargateAwsLogsLogDriver) *string { return v.DatetimeFormat }).(pulumi.StringPtrOutput)
 }
 
-// The log group to log to.
+// The ARN of the log group to log to.
 //
 // Default - A log group is created automatically.
-func (o FargateAwsLogsLogDriverOutput) LogGroup() cloudwatch.LogGroupReferencePtrOutput {
-	return o.ApplyT(func(v FargateAwsLogsLogDriver) *cloudwatch.LogGroupReference { return v.LogGroup }).(cloudwatch.LogGroupReferencePtrOutput)
+func (o FargateAwsLogsLogDriverOutput) LogGroupArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v FargateAwsLogsLogDriver) *string { return v.LogGroupArn }).(pulumi.StringPtrOutput)
 }
 
 // Size, in bytes, of the buffer used in non-blocking mode.
@@ -382,16 +386,16 @@ func (o FargateAwsLogsLogDriverPtrOutput) DatetimeFormat() pulumi.StringPtrOutpu
 	}).(pulumi.StringPtrOutput)
 }
 
-// The log group to log to.
+// The ARN of the log group to log to.
 //
 // Default - A log group is created automatically.
-func (o FargateAwsLogsLogDriverPtrOutput) LogGroup() cloudwatch.LogGroupReferencePtrOutput {
-	return o.ApplyT(func(v *FargateAwsLogsLogDriver) *cloudwatch.LogGroupReference {
+func (o FargateAwsLogsLogDriverPtrOutput) LogGroupArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *FargateAwsLogsLogDriver) *string {
 		if v == nil {
 			return nil
 		}
-		return v.LogGroup
-	}).(cloudwatch.LogGroupReferencePtrOutput)
+		return v.LogGroupArn
+	}).(pulumi.StringPtrOutput)
 }
 
 // Size, in bytes, of the buffer used in non-blocking mode.
@@ -497,7 +501,8 @@ type FargateContainerDefinitionOptions struct {
 	//
 	// This property is not supported for Windows containers.
 	LinuxParameters *FargateLinuxParameters `pulumi:"linuxParameters"`
-	Logging         *FargateLogDriver       `pulumi:"logging"`
+	// The log driver and settings used to collect container logs.
+	Logging *FargateLogDriver `pulumi:"logging"`
 	// The hard memory limit for the container, in MiB.
 	//
 	// ECS stops the container if it uses more than this limit. Container-level memory is optional
@@ -507,17 +512,17 @@ type FargateContainerDefinitionOptions struct {
 	// `memoryReservation`.
 	//
 	// Default - No container-level hard memory limit.
-	Memory *float64 `pulumi:"memory"`
+	MemoryMiB *float64 `pulumi:"memoryMiB"`
 	// The soft memory limit reserved for the container, in MiB.
 	//
 	// The container can use more memory when it is available, up to its hard memory limit. This
 	// property is not supported for Windows containers.
 	//
-	// If you set both container-level memory values, `memory` must be greater than
-	// `memoryReservation`.
+	// If you set both container-level memory values, `memoryMiB` must be greater than
+	// `memoryReservationMiB`.
 	//
 	// Default - No container-level soft memory reservation.
-	MemoryReservation *float64 `pulumi:"memoryReservation"`
+	MemoryReservationMiB *float64 `pulumi:"memoryReservationMiB"`
 	// Port mappings exposed by the container.
 	PortMappings []FargatePortMapping `pulumi:"portMappings"`
 	// Whether to allocate a TTY for the container.
@@ -535,14 +540,14 @@ type FargateContainerDefinitionOptions struct {
 	// Valid values are from 2 through 120 seconds.
 	//
 	// Default - No container-specific startup timeout.
-	StartTimeout *float64 `pulumi:"startTimeout"`
+	StartTimeoutSeconds *float64 `pulumi:"startTimeoutSeconds"`
 	// The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
 	// normally.
 	//
 	// Valid values are from 2 through 120 seconds.
 	//
 	// Default - 30 seconds.
-	StopTimeout *float64 `pulumi:"stopTimeout"`
+	StopTimeoutSeconds *float64 `pulumi:"stopTimeoutSeconds"`
 	// Namespaced kernel parameters to set in the container.
 	//
 	// Default - No system controls.
@@ -905,6 +910,10 @@ func (o FargateLinuxParametersPtrOutput) InitProcessEnabled() pulumi.BoolPtrOutp
 }
 
 type FargateLogDriver struct {
+	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+	//
+	// For more information, see [CloudWatch
+	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
 	Cloudwatch FargateAwsLogsLogDriver `pulumi:"cloudwatch"`
 }
 
@@ -920,6 +929,10 @@ type FargateLogDriverInput interface {
 }
 
 type FargateLogDriverArgs struct {
+	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+	//
+	// For more information, see [CloudWatch
+	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
 	Cloudwatch FargateAwsLogsLogDriverArgs `pulumi:"cloudwatch"`
 }
 
@@ -1000,6 +1013,10 @@ func (o FargateLogDriverOutput) ToFargateLogDriverPtrOutputWithContext(ctx conte
 	}).(FargateLogDriverPtrOutput)
 }
 
+// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+//
+// For more information, see [CloudWatch
+// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
 func (o FargateLogDriverOutput) Cloudwatch() FargateAwsLogsLogDriverOutput {
 	return o.ApplyT(func(v FargateLogDriver) FargateAwsLogsLogDriver { return v.Cloudwatch }).(FargateAwsLogsLogDriverOutput)
 }
@@ -1028,6 +1045,10 @@ func (o FargateLogDriverPtrOutput) Elem() FargateLogDriverOutput {
 	}).(FargateLogDriverOutput)
 }
 
+// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+//
+// For more information, see [CloudWatch
+// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
 func (o FargateLogDriverPtrOutput) Cloudwatch() FargateAwsLogsLogDriverPtrOutput {
 	return o.ApplyT(func(v *FargateLogDriver) *FargateAwsLogsLogDriver {
 		if v == nil {
@@ -1044,7 +1065,7 @@ type FargatePortMapping struct {
 	//
 	// Do not set this property when `containerPortRange` is set.
 	ContainerPort *float64 `pulumi:"containerPort"`
-	// A range of container ports, in the form `start-end`.
+	// A range of container ports with inclusive `start` and `end` values.
 	//
 	// Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
 	// to the same container port range.
@@ -1075,7 +1096,7 @@ type FargatePortMappingArgs struct {
 	//
 	// Do not set this property when `containerPortRange` is set.
 	ContainerPort *float64 `pulumi:"containerPort"`
-	// A range of container ports, in the form `start-end`.
+	// A range of container ports with inclusive `start` and `end` values.
 	//
 	// Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
 	// to the same container port range.
@@ -1151,7 +1172,7 @@ func (o FargatePortMappingOutput) ContainerPort() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v FargatePortMapping) *float64 { return v.ContainerPort }).(pulumi.Float64PtrOutput)
 }
 
-// A range of container ports, in the form `start-end`.
+// A range of container ports with inclusive `start` and `end` values.
 //
 // Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
 // to the same container port range.
@@ -1201,7 +1222,7 @@ type HealthCheck struct {
 	// The time, in seconds, between health checks. Valid values are from 5 through 300.
 	//
 	// Default - 30 seconds.
-	Interval *float64 `pulumi:"interval"`
+	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
 	// The number of consecutive failures required before the container becomes unhealthy. Valid
 	// values are from 1 through 10.
 	//
@@ -1211,11 +1232,11 @@ type HealthCheck struct {
 	// limit. Valid values are from 0 through 300.
 	//
 	// Default - No startup grace period.
-	StartPeriod *float64 `pulumi:"startPeriod"`
+	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
 	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 	//
 	// Default - 5 seconds.
-	Timeout *float64 `pulumi:"timeout"`
+	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
 }
 
 // HealthCheckInput is an input type that accepts HealthCheckArgs and HealthCheckOutput values.
@@ -1239,7 +1260,7 @@ type HealthCheckArgs struct {
 	// The time, in seconds, between health checks. Valid values are from 5 through 300.
 	//
 	// Default - 30 seconds.
-	Interval *float64 `pulumi:"interval"`
+	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
 	// The number of consecutive failures required before the container becomes unhealthy. Valid
 	// values are from 1 through 10.
 	//
@@ -1249,11 +1270,11 @@ type HealthCheckArgs struct {
 	// limit. Valid values are from 0 through 300.
 	//
 	// Default - No startup grace period.
-	StartPeriod *float64 `pulumi:"startPeriod"`
+	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
 	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 	//
 	// Default - 5 seconds.
-	Timeout *float64 `pulumi:"timeout"`
+	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
 }
 
 func (HealthCheckArgs) ElementType() reflect.Type {
@@ -1345,8 +1366,8 @@ func (o HealthCheckOutput) Command() pulumi.StringArrayOutput {
 // The time, in seconds, between health checks. Valid values are from 5 through 300.
 //
 // Default - 30 seconds.
-func (o HealthCheckOutput) Interval() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.Interval }).(pulumi.Float64PtrOutput)
+func (o HealthCheckOutput) IntervalSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v HealthCheck) *float64 { return v.IntervalSeconds }).(pulumi.Float64PtrOutput)
 }
 
 // The number of consecutive failures required before the container becomes unhealthy. Valid
@@ -1361,15 +1382,15 @@ func (o HealthCheckOutput) Retries() pulumi.Float64PtrOutput {
 // limit. Valid values are from 0 through 300.
 //
 // Default - No startup grace period.
-func (o HealthCheckOutput) StartPeriod() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.StartPeriod }).(pulumi.Float64PtrOutput)
+func (o HealthCheckOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v HealthCheck) *float64 { return v.StartPeriodSeconds }).(pulumi.Float64PtrOutput)
 }
 
 // The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 //
 // Default - 5 seconds.
-func (o HealthCheckOutput) Timeout() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.Timeout }).(pulumi.Float64PtrOutput)
+func (o HealthCheckOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v HealthCheck) *float64 { return v.TimeoutSeconds }).(pulumi.Float64PtrOutput)
 }
 
 type HealthCheckPtrOutput struct{ *pulumi.OutputState }
@@ -1413,12 +1434,12 @@ func (o HealthCheckPtrOutput) Command() pulumi.StringArrayOutput {
 // The time, in seconds, between health checks. Valid values are from 5 through 300.
 //
 // Default - 30 seconds.
-func (o HealthCheckPtrOutput) Interval() pulumi.Float64PtrOutput {
+func (o HealthCheckPtrOutput) IntervalSeconds() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v *HealthCheck) *float64 {
 		if v == nil {
 			return nil
 		}
-		return v.Interval
+		return v.IntervalSeconds
 	}).(pulumi.Float64PtrOutput)
 }
 
@@ -1439,30 +1460,194 @@ func (o HealthCheckPtrOutput) Retries() pulumi.Float64PtrOutput {
 // limit. Valid values are from 0 through 300.
 //
 // Default - No startup grace period.
-func (o HealthCheckPtrOutput) StartPeriod() pulumi.Float64PtrOutput {
+func (o HealthCheckPtrOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v *HealthCheck) *float64 {
 		if v == nil {
 			return nil
 		}
-		return v.StartPeriod
+		return v.StartPeriodSeconds
 	}).(pulumi.Float64PtrOutput)
 }
 
 // The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
 //
 // Default - 5 seconds.
-func (o HealthCheckPtrOutput) Timeout() pulumi.Float64PtrOutput {
+func (o HealthCheckPtrOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
 	return o.ApplyT(func(v *HealthCheck) *float64 {
 		if v == nil {
 			return nil
 		}
-		return v.Timeout
+		return v.TimeoutSeconds
 	}).(pulumi.Float64PtrOutput)
 }
 
+type RuntimePlatform struct {
+	// The CpuArchitecture for Fargate Runtime Platform.
+	//
+	// Default - AWS default of X86_64.
+	CpuArchitecture *CpuArchitecture `pulumi:"cpuArchitecture"`
+	// The operating system for Fargate Runtime Platform.
+	OperatingSystemFamily *OperatingSystemFamily `pulumi:"operatingSystemFamily"`
+}
+
+// RuntimePlatformInput is an input type that accepts RuntimePlatformArgs and RuntimePlatformOutput values.
+// You can construct a concrete instance of `RuntimePlatformInput` via:
+//
+//	RuntimePlatformArgs{...}
+type RuntimePlatformInput interface {
+	pulumi.Input
+
+	ToRuntimePlatformOutput() RuntimePlatformOutput
+	ToRuntimePlatformOutputWithContext(context.Context) RuntimePlatformOutput
+}
+
+type RuntimePlatformArgs struct {
+	// The CpuArchitecture for Fargate Runtime Platform.
+	//
+	// Default - AWS default of X86_64.
+	CpuArchitecture *CpuArchitecture `pulumi:"cpuArchitecture"`
+	// The operating system for Fargate Runtime Platform.
+	OperatingSystemFamily *OperatingSystemFamily `pulumi:"operatingSystemFamily"`
+}
+
+func (RuntimePlatformArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RuntimePlatform)(nil)).Elem()
+}
+
+func (i RuntimePlatformArgs) ToRuntimePlatformOutput() RuntimePlatformOutput {
+	return i.ToRuntimePlatformOutputWithContext(context.Background())
+}
+
+func (i RuntimePlatformArgs) ToRuntimePlatformOutputWithContext(ctx context.Context) RuntimePlatformOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RuntimePlatformOutput)
+}
+
+func (i RuntimePlatformArgs) ToRuntimePlatformPtrOutput() RuntimePlatformPtrOutput {
+	return i.ToRuntimePlatformPtrOutputWithContext(context.Background())
+}
+
+func (i RuntimePlatformArgs) ToRuntimePlatformPtrOutputWithContext(ctx context.Context) RuntimePlatformPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RuntimePlatformOutput).ToRuntimePlatformPtrOutputWithContext(ctx)
+}
+
+// RuntimePlatformPtrInput is an input type that accepts RuntimePlatformArgs, RuntimePlatformPtr and RuntimePlatformPtrOutput values.
+// You can construct a concrete instance of `RuntimePlatformPtrInput` via:
+//
+//	        RuntimePlatformArgs{...}
+//
+//	or:
+//
+//	        nil
+type RuntimePlatformPtrInput interface {
+	pulumi.Input
+
+	ToRuntimePlatformPtrOutput() RuntimePlatformPtrOutput
+	ToRuntimePlatformPtrOutputWithContext(context.Context) RuntimePlatformPtrOutput
+}
+
+type runtimePlatformPtrType RuntimePlatformArgs
+
+func RuntimePlatformPtr(v *RuntimePlatformArgs) RuntimePlatformPtrInput {
+	return (*runtimePlatformPtrType)(v)
+}
+
+func (*runtimePlatformPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**RuntimePlatform)(nil)).Elem()
+}
+
+func (i *runtimePlatformPtrType) ToRuntimePlatformPtrOutput() RuntimePlatformPtrOutput {
+	return i.ToRuntimePlatformPtrOutputWithContext(context.Background())
+}
+
+func (i *runtimePlatformPtrType) ToRuntimePlatformPtrOutputWithContext(ctx context.Context) RuntimePlatformPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RuntimePlatformPtrOutput)
+}
+
+type RuntimePlatformOutput struct{ *pulumi.OutputState }
+
+func (RuntimePlatformOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RuntimePlatform)(nil)).Elem()
+}
+
+func (o RuntimePlatformOutput) ToRuntimePlatformOutput() RuntimePlatformOutput {
+	return o
+}
+
+func (o RuntimePlatformOutput) ToRuntimePlatformOutputWithContext(ctx context.Context) RuntimePlatformOutput {
+	return o
+}
+
+func (o RuntimePlatformOutput) ToRuntimePlatformPtrOutput() RuntimePlatformPtrOutput {
+	return o.ToRuntimePlatformPtrOutputWithContext(context.Background())
+}
+
+func (o RuntimePlatformOutput) ToRuntimePlatformPtrOutputWithContext(ctx context.Context) RuntimePlatformPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v RuntimePlatform) *RuntimePlatform {
+		return &v
+	}).(RuntimePlatformPtrOutput)
+}
+
+// The CpuArchitecture for Fargate Runtime Platform.
+//
+// Default - AWS default of X86_64.
+func (o RuntimePlatformOutput) CpuArchitecture() CpuArchitecturePtrOutput {
+	return o.ApplyT(func(v RuntimePlatform) *CpuArchitecture { return v.CpuArchitecture }).(CpuArchitecturePtrOutput)
+}
+
+// The operating system for Fargate Runtime Platform.
+func (o RuntimePlatformOutput) OperatingSystemFamily() OperatingSystemFamilyPtrOutput {
+	return o.ApplyT(func(v RuntimePlatform) *OperatingSystemFamily { return v.OperatingSystemFamily }).(OperatingSystemFamilyPtrOutput)
+}
+
+type RuntimePlatformPtrOutput struct{ *pulumi.OutputState }
+
+func (RuntimePlatformPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**RuntimePlatform)(nil)).Elem()
+}
+
+func (o RuntimePlatformPtrOutput) ToRuntimePlatformPtrOutput() RuntimePlatformPtrOutput {
+	return o
+}
+
+func (o RuntimePlatformPtrOutput) ToRuntimePlatformPtrOutputWithContext(ctx context.Context) RuntimePlatformPtrOutput {
+	return o
+}
+
+func (o RuntimePlatformPtrOutput) Elem() RuntimePlatformOutput {
+	return o.ApplyT(func(v *RuntimePlatform) RuntimePlatform {
+		if v != nil {
+			return *v
+		}
+		var ret RuntimePlatform
+		return ret
+	}).(RuntimePlatformOutput)
+}
+
+// The CpuArchitecture for Fargate Runtime Platform.
+//
+// Default - AWS default of X86_64.
+func (o RuntimePlatformPtrOutput) CpuArchitecture() CpuArchitecturePtrOutput {
+	return o.ApplyT(func(v *RuntimePlatform) *CpuArchitecture {
+		if v == nil {
+			return nil
+		}
+		return v.CpuArchitecture
+	}).(CpuArchitecturePtrOutput)
+}
+
+// The operating system for Fargate Runtime Platform.
+func (o RuntimePlatformPtrOutput) OperatingSystemFamily() OperatingSystemFamilyPtrOutput {
+	return o.ApplyT(func(v *RuntimePlatform) *OperatingSystemFamily {
+		if v == nil {
+			return nil
+		}
+		return v.OperatingSystemFamily
+	}).(OperatingSystemFamilyPtrOutput)
+}
+
 type S3BucketCredentialSpec struct {
-	// The bucket that contains the credential specification file.
-	Bucket *s3.Bucket `pulumi:"bucket"`
+	// The ARN of a bucket that contains the credential specification file.
+	BucketArn string `pulumi:"bucketArn"`
 	// The key of the credential specification file.
 	Key string `pulumi:"key"`
 }
@@ -1479,8 +1664,8 @@ type S3BucketCredentialSpecInput interface {
 }
 
 type S3BucketCredentialSpecArgs struct {
-	// The bucket that contains the credential specification file.
-	Bucket *s3.Bucket `pulumi:"bucket"`
+	// The ARN of a bucket that contains the credential specification file.
+	BucketArn pulumi.StringInput `pulumi:"bucketArn"`
 	// The key of the credential specification file.
 	Key pulumi.StringInput `pulumi:"key"`
 }
@@ -1562,9 +1747,9 @@ func (o S3BucketCredentialSpecOutput) ToS3BucketCredentialSpecPtrOutputWithConte
 	}).(S3BucketCredentialSpecPtrOutput)
 }
 
-// The bucket that contains the credential specification file.
-func (o S3BucketCredentialSpecOutput) Bucket() s3.BucketOutput {
-	return o.ApplyT(func(v S3BucketCredentialSpec) *s3.Bucket { return v.Bucket }).(s3.BucketOutput)
+// The ARN of a bucket that contains the credential specification file.
+func (o S3BucketCredentialSpecOutput) BucketArn() pulumi.StringOutput {
+	return o.ApplyT(func(v S3BucketCredentialSpec) string { return v.BucketArn }).(pulumi.StringOutput)
 }
 
 // The key of the credential specification file.
@@ -1596,14 +1781,14 @@ func (o S3BucketCredentialSpecPtrOutput) Elem() S3BucketCredentialSpecOutput {
 	}).(S3BucketCredentialSpecOutput)
 }
 
-// The bucket that contains the credential specification file.
-func (o S3BucketCredentialSpecPtrOutput) Bucket() s3.BucketOutput {
-	return o.ApplyT(func(v *S3BucketCredentialSpec) *s3.Bucket {
+// The ARN of a bucket that contains the credential specification file.
+func (o S3BucketCredentialSpecPtrOutput) BucketArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *S3BucketCredentialSpec) *string {
 		if v == nil {
 			return nil
 		}
-		return v.Bucket
-	}).(s3.BucketOutput)
+		return &v.BucketArn
+	}).(pulumi.StringPtrOutput)
 }
 
 // The key of the credential specification file.
@@ -1617,8 +1802,18 @@ func (o S3BucketCredentialSpecPtrOutput) Key() pulumi.StringPtrOutput {
 }
 
 type Secret struct {
+	// A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+	// both.
+	//
+	// For more information, see [Secrets Manager environment
+	// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
 	SecretsManager *SecretsManagerSecret `pulumi:"secretsManager"`
-	SsmParameter   *ssm.Parameter        `pulumi:"ssmParameter"`
+	// An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+	// `secretsManager`, not both.
+	//
+	// For more information, see [SSM Parameter Store environment
+	// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+	SsmParameterArn *string `pulumi:"ssmParameterArn"`
 }
 
 // SecretInput is an input type that accepts SecretArgs and SecretOutput values.
@@ -1633,8 +1828,18 @@ type SecretInput interface {
 }
 
 type SecretArgs struct {
+	// A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+	// both.
+	//
+	// For more information, see [Secrets Manager environment
+	// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
 	SecretsManager *SecretsManagerSecretArgs `pulumi:"secretsManager"`
-	SsmParameter   *ssm.Parameter            `pulumi:"ssmParameter"`
+	// An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+	// `secretsManager`, not both.
+	//
+	// For more information, see [SSM Parameter Store environment
+	// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+	SsmParameterArn pulumi.StringPtrInput `pulumi:"ssmParameterArn"`
 }
 
 func (SecretArgs) ElementType() reflect.Type {
@@ -1688,12 +1893,22 @@ func (o SecretOutput) ToSecretOutputWithContext(ctx context.Context) SecretOutpu
 	return o
 }
 
+// A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+// both.
+//
+// For more information, see [Secrets Manager environment
+// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
 func (o SecretOutput) SecretsManager() SecretsManagerSecretPtrOutput {
 	return o.ApplyT(func(v Secret) *SecretsManagerSecret { return v.SecretsManager }).(SecretsManagerSecretPtrOutput)
 }
 
-func (o SecretOutput) SsmParameter() ssm.ParameterOutput {
-	return o.ApplyT(func(v Secret) *ssm.Parameter { return v.SsmParameter }).(ssm.ParameterOutput)
+// An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+// `secretsManager`, not both.
+//
+// For more information, see [SSM Parameter Store environment
+// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+func (o SecretOutput) SsmParameterArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Secret) *string { return v.SsmParameterArn }).(pulumi.StringPtrOutput)
 }
 
 type SecretMapOutput struct{ *pulumi.OutputState }
@@ -1717,10 +1932,24 @@ func (o SecretMapOutput) MapIndex(k pulumi.StringInput) SecretOutput {
 }
 
 type SecretsManagerSecret struct {
-	JsonKey      *string                `pulumi:"jsonKey"`
-	Secret       *secretsmanager.Secret `pulumi:"secret"`
-	VersionId    *string                `pulumi:"versionId"`
-	VersionStage *string                `pulumi:"versionStage"`
+	// The JSON key whose value to extract. The secret must contain JSON when this is set.
+	//
+	// Default - The full secret contents.
+	JsonKey *string `pulumi:"jsonKey"`
+	// The ARN of the Secrets Manager secret whose value is passed to the container.
+	SecretArn string `pulumi:"secretArn"`
+	// The unique ID of the secret version to use.
+	//
+	// Cannot be combined with `versionStage`.
+	//
+	// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+	VersionId *string `pulumi:"versionId"`
+	// The staging label of the secret version to use, such as `AWSPREVIOUS`.
+	//
+	// Cannot be combined with `versionId`.
+	//
+	// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+	VersionStage *string `pulumi:"versionStage"`
 }
 
 // SecretsManagerSecretInput is an input type that accepts SecretsManagerSecretArgs and SecretsManagerSecretOutput values.
@@ -1735,10 +1964,24 @@ type SecretsManagerSecretInput interface {
 }
 
 type SecretsManagerSecretArgs struct {
-	JsonKey      pulumi.StringPtrInput  `pulumi:"jsonKey"`
-	Secret       *secretsmanager.Secret `pulumi:"secret"`
-	VersionId    pulumi.StringPtrInput  `pulumi:"versionId"`
-	VersionStage pulumi.StringPtrInput  `pulumi:"versionStage"`
+	// The JSON key whose value to extract. The secret must contain JSON when this is set.
+	//
+	// Default - The full secret contents.
+	JsonKey pulumi.StringPtrInput `pulumi:"jsonKey"`
+	// The ARN of the Secrets Manager secret whose value is passed to the container.
+	SecretArn pulumi.StringInput `pulumi:"secretArn"`
+	// The unique ID of the secret version to use.
+	//
+	// Cannot be combined with `versionStage`.
+	//
+	// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+	VersionId pulumi.StringPtrInput `pulumi:"versionId"`
+	// The staging label of the secret version to use, such as `AWSPREVIOUS`.
+	//
+	// Cannot be combined with `versionId`.
+	//
+	// Default - ECS uses `AWSCURRENT` when neither version selector is set.
+	VersionStage pulumi.StringPtrInput `pulumi:"versionStage"`
 }
 
 func (SecretsManagerSecretArgs) ElementType() reflect.Type {
@@ -1818,18 +2061,32 @@ func (o SecretsManagerSecretOutput) ToSecretsManagerSecretPtrOutputWithContext(c
 	}).(SecretsManagerSecretPtrOutput)
 }
 
+// The JSON key whose value to extract. The secret must contain JSON when this is set.
+//
+// Default - The full secret contents.
 func (o SecretsManagerSecretOutput) JsonKey() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecretsManagerSecret) *string { return v.JsonKey }).(pulumi.StringPtrOutput)
 }
 
-func (o SecretsManagerSecretOutput) Secret() secretsmanager.SecretOutput {
-	return o.ApplyT(func(v SecretsManagerSecret) *secretsmanager.Secret { return v.Secret }).(secretsmanager.SecretOutput)
+// The ARN of the Secrets Manager secret whose value is passed to the container.
+func (o SecretsManagerSecretOutput) SecretArn() pulumi.StringOutput {
+	return o.ApplyT(func(v SecretsManagerSecret) string { return v.SecretArn }).(pulumi.StringOutput)
 }
 
+// The unique ID of the secret version to use.
+//
+// Cannot be combined with `versionStage`.
+//
+// Default - ECS uses `AWSCURRENT` when neither version selector is set.
 func (o SecretsManagerSecretOutput) VersionId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecretsManagerSecret) *string { return v.VersionId }).(pulumi.StringPtrOutput)
 }
 
+// The staging label of the secret version to use, such as `AWSPREVIOUS`.
+//
+// Cannot be combined with `versionId`.
+//
+// Default - ECS uses `AWSCURRENT` when neither version selector is set.
 func (o SecretsManagerSecretOutput) VersionStage() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecretsManagerSecret) *string { return v.VersionStage }).(pulumi.StringPtrOutput)
 }
@@ -1858,6 +2115,9 @@ func (o SecretsManagerSecretPtrOutput) Elem() SecretsManagerSecretOutput {
 	}).(SecretsManagerSecretOutput)
 }
 
+// The JSON key whose value to extract. The secret must contain JSON when this is set.
+//
+// Default - The full secret contents.
 func (o SecretsManagerSecretPtrOutput) JsonKey() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SecretsManagerSecret) *string {
 		if v == nil {
@@ -1867,15 +2127,21 @@ func (o SecretsManagerSecretPtrOutput) JsonKey() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-func (o SecretsManagerSecretPtrOutput) Secret() secretsmanager.SecretOutput {
-	return o.ApplyT(func(v *SecretsManagerSecret) *secretsmanager.Secret {
+// The ARN of the Secrets Manager secret whose value is passed to the container.
+func (o SecretsManagerSecretPtrOutput) SecretArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SecretsManagerSecret) *string {
 		if v == nil {
 			return nil
 		}
-		return v.Secret
-	}).(secretsmanager.SecretOutput)
+		return &v.SecretArn
+	}).(pulumi.StringPtrOutput)
 }
 
+// The unique ID of the secret version to use.
+//
+// Cannot be combined with `versionStage`.
+//
+// Default - ECS uses `AWSCURRENT` when neither version selector is set.
 func (o SecretsManagerSecretPtrOutput) VersionId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SecretsManagerSecret) *string {
 		if v == nil {
@@ -1885,6 +2151,11 @@ func (o SecretsManagerSecretPtrOutput) VersionId() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
+// The staging label of the secret version to use, such as `AWSPREVIOUS`.
+//
+// Cannot be combined with `versionId`.
+//
+// Default - ECS uses `AWSCURRENT` when neither version selector is set.
 func (o SecretsManagerSecretPtrOutput) VersionStage() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SecretsManagerSecret) *string {
 		if v == nil {
@@ -2001,9 +2272,12 @@ func (o SystemControlArrayOutput) Index(i pulumi.IntInput) SystemControlOutput {
 }
 
 type Ulimit struct {
-	HardLimit float64    `pulumi:"hardLimit"`
-	Name      UlimitName `pulumi:"name"`
-	SoftLimit float64    `pulumi:"softLimit"`
+	// The hard limit, in bytes, seconds, or a count, depending on `name`.
+	HardLimit float64 `pulumi:"hardLimit"`
+	// The resource limit to configure.
+	Name UlimitName `pulumi:"name"`
+	// The soft limit, in bytes, seconds, or a count, depending on `name`.
+	SoftLimit float64 `pulumi:"softLimit"`
 }
 
 // UlimitInput is an input type that accepts UlimitArgs and UlimitOutput values.
@@ -2018,9 +2292,12 @@ type UlimitInput interface {
 }
 
 type UlimitArgs struct {
-	HardLimit float64    `pulumi:"hardLimit"`
-	Name      UlimitName `pulumi:"name"`
-	SoftLimit float64    `pulumi:"softLimit"`
+	// The hard limit, in bytes, seconds, or a count, depending on `name`.
+	HardLimit float64 `pulumi:"hardLimit"`
+	// The resource limit to configure.
+	Name UlimitName `pulumi:"name"`
+	// The soft limit, in bytes, seconds, or a count, depending on `name`.
+	SoftLimit float64 `pulumi:"softLimit"`
 }
 
 func (UlimitArgs) ElementType() reflect.Type {
@@ -2074,14 +2351,17 @@ func (o UlimitOutput) ToUlimitOutputWithContext(ctx context.Context) UlimitOutpu
 	return o
 }
 
+// The hard limit, in bytes, seconds, or a count, depending on `name`.
 func (o UlimitOutput) HardLimit() pulumi.Float64Output {
 	return o.ApplyT(func(v Ulimit) float64 { return v.HardLimit }).(pulumi.Float64Output)
 }
 
+// The resource limit to configure.
 func (o UlimitOutput) Name() UlimitNameOutput {
 	return o.ApplyT(func(v Ulimit) UlimitName { return v.Name }).(UlimitNameOutput)
 }
 
+// The soft limit, in bytes, seconds, or a count, depending on `name`.
 func (o UlimitOutput) SoftLimit() pulumi.Float64Output {
 	return o.ApplyT(func(v Ulimit) float64 { return v.SoftLimit }).(pulumi.Float64Output)
 }
@@ -2233,6 +2513,8 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*FargatePortMappingArrayInput)(nil)).Elem(), FargatePortMappingArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckInput)(nil)).Elem(), HealthCheckArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckPtrInput)(nil)).Elem(), HealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RuntimePlatformInput)(nil)).Elem(), RuntimePlatformArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RuntimePlatformPtrInput)(nil)).Elem(), RuntimePlatformArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*S3BucketCredentialSpecInput)(nil)).Elem(), S3BucketCredentialSpecArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*S3BucketCredentialSpecPtrInput)(nil)).Elem(), S3BucketCredentialSpecArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SecretInput)(nil)).Elem(), SecretArgs{})
@@ -2259,6 +2541,8 @@ func init() {
 	pulumi.RegisterOutputType(FargatePortMappingArrayOutput{})
 	pulumi.RegisterOutputType(HealthCheckOutput{})
 	pulumi.RegisterOutputType(HealthCheckPtrOutput{})
+	pulumi.RegisterOutputType(RuntimePlatformOutput{})
+	pulumi.RegisterOutputType(RuntimePlatformPtrOutput{})
 	pulumi.RegisterOutputType(S3BucketCredentialSpecOutput{})
 	pulumi.RegisterOutputType(S3BucketCredentialSpecPtrOutput{})
 	pulumi.RegisterOutputType(SecretOutput{})

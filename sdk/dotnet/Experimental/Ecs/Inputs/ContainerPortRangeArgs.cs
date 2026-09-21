@@ -12,9 +12,15 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
 
     public sealed class ContainerPortRangeArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The last port in the range. Must be from 1 through 65535 and greater than `start`.
+        /// </summary>
         [Input("end", required: true)]
         public double End { get; set; }
 
+        /// <summary>
+        /// The first port in the range. Must be from 1 through 65535 and less than `end`.
+        /// </summary>
         [Input("start", required: true)]
         public double Start { get; set; }
 

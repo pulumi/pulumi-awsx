@@ -40,7 +40,7 @@ export class ContainerDefinition extends pulumi.ComponentResource<ContainerDefin
    * The typed container definition. This can be combined with other container definitions and used
    * to construct the containerDefinition string value used in a TaskDefinition.
    */
-  public readonly definition!: pulumi.Output<ContainerDefinitionArgs>;
+  declare public readonly definition: pulumi.Output<ContainerDefinitionArgs>;
   constructor(
     name: string,
     args: ContainerDefinitionArgs,

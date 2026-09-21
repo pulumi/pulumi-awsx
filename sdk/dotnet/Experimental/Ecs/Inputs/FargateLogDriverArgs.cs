@@ -12,6 +12,12 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
 
     public sealed class FargateLogDriverArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+        /// 
+        /// For more information, see [CloudWatch
+        /// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+        /// </summary>
         [Input("cloudwatch", required: true)]
         public Inputs.FargateAwsLogsLogDriverArgs Cloudwatch { get; set; } = null!;
 

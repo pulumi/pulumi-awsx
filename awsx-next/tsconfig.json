@@ -5,7 +5,7 @@
     "module": "commonjs",
     "moduleResolution": "bundler",
     "rootDir": ".",
-    "outDir": "../awsx/bin/node_modules/@pulumi/awsx-experimental"
+    "outDir": "../awsx/bin/node_modules/@pulumi/awsx-experimental",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",

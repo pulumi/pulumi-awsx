@@ -10,20 +10,80 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum UlimitName {
+        /**
+         * Limit the size of core dump files.
+         * 
+         */
         CORE("core"),
+        /**
+         * Limit CPU time.
+         * 
+         */
         CPU("cpu"),
+        /**
+         * Limit the size of the process data segment.
+         * 
+         */
         DATA("data"),
+        /**
+         * Limit the size of files that the process can create.
+         * 
+         */
         FSIZE("fsize"),
+        /**
+         * Limit the number of file locks.
+         * 
+         */
         LOCKS("locks"),
+        /**
+         * Limit the amount of memory that can be locked.
+         * 
+         */
         MEMLOCK("memlock"),
+        /**
+         * Limit the number of bytes allocated for POSIX message queues.
+         * 
+         */
         MSGQUEUE("msgqueue"),
+        /**
+         * Limit the process nice priority.
+         * 
+         */
         NICE("nice"),
+        /**
+         * Limit the number of open file descriptors.
+         * 
+         */
         NOFILE("nofile"),
+        /**
+         * Limit the number of processes available to the user.
+         * 
+         */
         NPROC("nproc"),
+        /**
+         * Limit the resident set size.
+         * 
+         */
         RSS("rss"),
+        /**
+         * Limit the real-time priority.
+         * 
+         */
         RTPRIO("rtprio"),
+        /**
+         * Limit CPU time scheduled under a real-time policy.
+         * 
+         */
         RTTIME("rttime"),
+        /**
+         * Limit the number of pending signals.
+         * 
+         */
         SIGPENDING("sigpending"),
+        /**
+         * Limit the process stack size.
+         * 
+         */
         STACK("stack");
 
         private final String value;

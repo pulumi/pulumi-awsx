@@ -9,26 +9,13 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
     @EnumType
-    public enum PortMappingAppProtocol {
-        /**
-         * Use HTTP protocol handling and telemetry.
-         * 
-         */
-        HTTP("http"),
-        /**
-         * Use HTTP/2 protocol handling and telemetry.
-         * 
-         */
-        HTTP2("http2"),
-        /**
-         * Use gRPC protocol handling and telemetry.
-         * 
-         */
-        GRPC("grpc");
+    public enum CpuArchitecture {
+        X86_64("X86_64"),
+        ARM64("ARM64");
 
         private final String value;
 
-        PortMappingAppProtocol(String value) {
+        CpuArchitecture(String value) {
             this.value = Objects.requireNonNull(value);
         }
 
@@ -39,7 +26,7 @@ import java.util.StringJoiner;
 
         @Override
         public java.lang.String toString() {
-            return new StringJoiner(", ", "PortMappingAppProtocol[", "]")
+            return new StringJoiner(", ", "CpuArchitecture[", "]")
                 .add("value='" + this.value + "'")
                 .toString();
         }

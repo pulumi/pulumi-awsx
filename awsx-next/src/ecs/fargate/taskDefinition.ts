@@ -236,7 +236,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   public readonly name!: string;
 
   public readonly region?: string;
+
   private providerRegion?: pulumi.Output<string>;
+  private readonly containerIdentity: ComponentIdentity;
 
   constructor(
     name: string,
@@ -246,6 +248,10 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
      * @internal
      */
     identity: ComponentIdentity = fargateTaskDefinitionStandaloneIdentity,
+    /**
+     * @internal
+     */
+    containerIdentity: ComponentIdentity = containerDefinitionStandaloneIdentity,
   ) {
     // When Pulumi reconstructs a component from a resource reference, it supplies a URN but
     // not the original constructor args. Declare the output fields for hydration and skip
@@ -268,6 +274,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         aliases: identity.aliases,
       }),
     );
+    this.containerIdentity = containerIdentity;
     if (opts.urn) {
       return;
     }
@@ -999,7 +1006,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           : undefined,
       },
       { parent: this },
-      containerDefinitionStandaloneIdentity,
+      this.containerIdentity,
       true,
     );
   }

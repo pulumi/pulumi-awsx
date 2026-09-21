@@ -13,9 +13,23 @@ public final class FargateLogDriverArgs extends com.pulumi.resources.ResourceArg
 
     public static final FargateLogDriverArgs Empty = new FargateLogDriverArgs();
 
+    /**
+     * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+     * 
+     * For more information, see [CloudWatch
+     * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+     * 
+     */
     @Import(name="cloudwatch", required=true)
     private FargateAwsLogsLogDriverArgs cloudwatch;
 
+    /**
+     * @return Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+     * 
+     * For more information, see [CloudWatch
+     * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+     * 
+     */
     public FargateAwsLogsLogDriverArgs cloudwatch() {
         return this.cloudwatch;
     }
@@ -44,6 +58,15 @@ public final class FargateLogDriverArgs extends com.pulumi.resources.ResourceArg
             $ = new FargateLogDriverArgs(Objects.requireNonNull(defaults));
         }
 
+        /**
+         * @param cloudwatch Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+         * 
+         * For more information, see [CloudWatch
+         * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+         * 
+         * @return builder
+         * 
+         */
         public Builder cloudwatch(FargateAwsLogsLogDriverArgs cloudwatch) {
             $.cloudwatch = cloudwatch;
             return this;

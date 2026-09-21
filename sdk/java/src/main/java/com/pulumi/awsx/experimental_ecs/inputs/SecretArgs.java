@@ -3,9 +3,10 @@
 
 package com.pulumi.awsx.experimental_ecs.inputs;
 
-import com.pulumi.aws.ssm.Parameter;
 import com.pulumi.awsx.experimental_ecs.inputs.SecretsManagerSecretArgs;
+import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import java.lang.String;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -15,25 +16,57 @@ public final class SecretArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final SecretArgs Empty = new SecretArgs();
 
+    /**
+     * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+     * both.
+     * 
+     * For more information, see [Secrets Manager environment
+     * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+     * 
+     */
     @Import(name="secretsManager")
     private @Nullable SecretsManagerSecretArgs secretsManager;
 
+    /**
+     * @return A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+     * both.
+     * 
+     * For more information, see [Secrets Manager environment
+     * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+     * 
+     */
     public Optional<SecretsManagerSecretArgs> secretsManager() {
         return Optional.ofNullable(this.secretsManager);
     }
 
-    @Import(name="ssmParameter")
-    private @Nullable Parameter ssmParameter;
+    /**
+     * An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+     * `secretsManager`, not both.
+     * 
+     * For more information, see [SSM Parameter Store environment
+     * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+     * 
+     */
+    @Import(name="ssmParameterArn")
+    private @Nullable Output<String> ssmParameterArn;
 
-    public Optional<Parameter> ssmParameter() {
-        return Optional.ofNullable(this.ssmParameter);
+    /**
+     * @return An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+     * `secretsManager`, not both.
+     * 
+     * For more information, see [SSM Parameter Store environment
+     * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+     * 
+     */
+    public Optional<Output<String>> ssmParameterArn() {
+        return Optional.ofNullable(this.ssmParameterArn);
     }
 
     private SecretArgs() {}
 
     private SecretArgs(SecretArgs $) {
         this.secretsManager = $.secretsManager;
-        this.ssmParameter = $.ssmParameter;
+        this.ssmParameterArn = $.ssmParameterArn;
     }
 
     public static Builder builder() {
@@ -54,14 +87,48 @@ public final class SecretArgs extends com.pulumi.resources.ResourceArgs {
             $ = new SecretArgs(Objects.requireNonNull(defaults));
         }
 
+        /**
+         * @param secretsManager A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+         * both.
+         * 
+         * For more information, see [Secrets Manager environment
+         * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+         * 
+         * @return builder
+         * 
+         */
         public Builder secretsManager(@Nullable SecretsManagerSecretArgs secretsManager) {
             $.secretsManager = secretsManager;
             return this;
         }
 
-        public Builder ssmParameter(@Nullable Parameter ssmParameter) {
-            $.ssmParameter = ssmParameter;
+        /**
+         * @param ssmParameterArn An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+         * `secretsManager`, not both.
+         * 
+         * For more information, see [SSM Parameter Store environment
+         * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ssmParameterArn(@Nullable Output<String> ssmParameterArn) {
+            $.ssmParameterArn = ssmParameterArn;
             return this;
+        }
+
+        /**
+         * @param ssmParameterArn An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+         * `secretsManager`, not both.
+         * 
+         * For more information, see [SSM Parameter Store environment
+         * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ssmParameterArn(String ssmParameterArn) {
+            return ssmParameterArn(Output.of(ssmParameterArn));
         }
 
         public SecretArgs build() {

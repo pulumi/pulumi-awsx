@@ -10,9 +10,25 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum ContainerDependencyCondition {
+        /**
+         * Wait until the other container starts.
+         * 
+         */
         START("START"),
+        /**
+         * Wait until the other container exits. The other container must not be essential.
+         * 
+         */
         COMPLETE("COMPLETE"),
+        /**
+         * Wait until the other container exits with a zero status. It must not be essential.
+         * 
+         */
         SUCCESS("SUCCESS"),
+        /**
+         * Wait until the other container passes its configured health check. Checked only at startup.
+         * 
+         */
         HEALTHY("HEALTHY");
 
         private final String value;

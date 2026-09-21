@@ -1154,14 +1154,6 @@ export namespace ecs {
 }
 
 export namespace experimental {
-    export namespace cloudwatch {
-        export interface LogGroupReferenceArgs {
-            arn: pulumi.Input<string>;
-            name: pulumi.Input<string>;
-            region: pulumi.Input<string>;
-        }
-    }
-
     export namespace ecs {
         export interface ContainerDependencyArgs {
             /**
@@ -1175,7 +1167,13 @@ export namespace experimental {
         }
 
         export interface ContainerPortRangeArgs {
+            /**
+             * The last port in the range. Must be from 1 through 65535 and greater than `start`.
+             */
             end: number;
+            /**
+             * The first port in the range. Must be from 1 through 65535 and less than `end`.
+             */
             start: number;
         }
 
@@ -1189,16 +1187,16 @@ export namespace experimental {
              */
             s3Bucket?: inputs.experimental.ecs.S3BucketCredentialSpecArgs;
             /**
-             * An SSM parameter that contains the credential specification file.
+             * The ARN of an SSM parameter that contains the credential specification file.
              */
-            ssmParameter?: pulumiAws.ssm.Parameter;
+            ssmParameterArn?: pulumi.Input<string | undefined>;
         }
 
         export interface EnvironmentFileArgs {
             /**
-             * The bucket that contains the environment file.
+             * The ARN of the bucket that contains the environment file.
              */
-            bucket: pulumiAws.s3.Bucket;
+            bucketArn: pulumi.Input<string>;
             /**
              * The object key of the environment file.
              */
@@ -1211,11 +1209,11 @@ export namespace experimental {
              */
             datetimeFormat?: string;
             /**
-             * The log group to log to.
+             * The ARN of the log group to log to.
              *
              * Default - A log group is created automatically.
              */
-            logGroup?: inputs.experimental.cloudwatch.LogGroupReferenceArgs;
+            logGroupArn?: pulumi.Input<string | undefined>;
             /**
              * Size, in bytes, of the buffer used in non-blocking mode.
              *
@@ -1323,6 +1321,9 @@ export namespace experimental {
              * This property is not supported for Windows containers.
              */
             linuxParameters?: inputs.experimental.ecs.FargateLinuxParametersArgs;
+            /**
+             * The log driver and settings used to collect container logs.
+             */
             logging?: inputs.experimental.ecs.FargateLogDriverArgs;
             /**
              * The hard memory limit for the container, in MiB.
@@ -1335,19 +1336,19 @@ export namespace experimental {
              *
              * Default - No container-level hard memory limit.
              */
-            memory?: number;
+            memoryMiB?: number;
             /**
              * The soft memory limit reserved for the container, in MiB.
              *
              * The container can use more memory when it is available, up to its hard memory limit. This
              * property is not supported for Windows containers.
              *
-             * If you set both container-level memory values, `memory` must be greater than
-             * `memoryReservation`.
+             * If you set both container-level memory values, `memoryMiB` must be greater than
+             * `memoryReservationMiB`.
              *
              * Default - No container-level soft memory reservation.
              */
-            memoryReservation?: number;
+            memoryReservationMiB?: number;
             /**
              * Port mappings exposed by the container.
              */
@@ -1375,7 +1376,7 @@ export namespace experimental {
              *
              * Default - No container-specific startup timeout.
              */
-            startTimeout?: number;
+            startTimeoutSeconds?: number;
             /**
              * The time, in seconds, to wait before ECS forcefully stops the container after it does not exit
              * normally.
@@ -1384,7 +1385,7 @@ export namespace experimental {
              *
              * Default - 30 seconds.
              */
-            stopTimeout?: number;
+            stopTimeoutSeconds?: number;
             /**
              * Namespaced kernel parameters to set in the container.
              *
@@ -1463,6 +1464,12 @@ export namespace experimental {
         }
 
         export interface FargateLogDriverArgs {
+            /**
+             * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+             *
+             * For more information, see [CloudWatch
+             * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+             */
             cloudwatch: inputs.experimental.ecs.FargateAwsLogsLogDriverArgs;
         }
 
@@ -1478,7 +1485,7 @@ export namespace experimental {
              */
             containerPort?: number;
             /**
-             * A range of container ports, in the form `start-end`.
+             * A range of container ports with inclusive `start` and `end` values.
              *
              * Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
              * to the same container port range.
@@ -1510,7 +1517,7 @@ export namespace experimental {
              *
              * Default - 30 seconds.
              */
-            interval?: number;
+            intervalSeconds?: number;
             /**
              * The number of consecutive failures required before the container becomes unhealthy. Valid
              * values are from 1 through 10.
@@ -1524,20 +1531,33 @@ export namespace experimental {
              *
              * Default - No startup grace period.
              */
-            startPeriod?: number;
+            startPeriodSeconds?: number;
             /**
              * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
              *
              * Default - 5 seconds.
              */
-            timeout?: number;
+            timeoutSeconds?: number;
+        }
+
+        export interface RuntimePlatformArgs {
+            /**
+             * The CpuArchitecture for Fargate Runtime Platform.
+             *
+             * Default - AWS default of X86_64.
+             */
+            cpuArchitecture?: enums.experimental.ecs.CpuArchitecture;
+            /**
+             * The operating system for Fargate Runtime Platform.
+             */
+            operatingSystemFamily?: enums.experimental.ecs.OperatingSystemFamily;
         }
 
         export interface S3BucketCredentialSpecArgs {
             /**
-             * The bucket that contains the credential specification file.
+             * The ARN of a bucket that contains the credential specification file.
              */
-            bucket: pulumiAws.s3.Bucket;
+            bucketArn: pulumi.Input<string>;
             /**
              * The key of the credential specification file.
              */
@@ -1545,14 +1565,50 @@ export namespace experimental {
         }
 
         export interface SecretArgs {
+            /**
+             * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
+             * both.
+             *
+             * For more information, see [Secrets Manager environment
+             * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+             */
             secretsManager?: inputs.experimental.ecs.SecretsManagerSecretArgs;
-            ssmParameter?: pulumiAws.ssm.Parameter;
+            /**
+             * An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
+             * `secretsManager`, not both.
+             *
+             * For more information, see [SSM Parameter Store environment
+             * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+             */
+            ssmParameterArn?: pulumi.Input<string | undefined>;
         }
 
         export interface SecretsManagerSecretArgs {
+            /**
+             * The JSON key whose value to extract. The secret must contain JSON when this is set.
+             *
+             * Default - The full secret contents.
+             */
             jsonKey?: pulumi.Input<string | undefined>;
-            secret: pulumiAws.secretsmanager.Secret;
+            /**
+             * The ARN of the Secrets Manager secret whose value is passed to the container.
+             */
+            secretArn: pulumi.Input<string>;
+            /**
+             * The unique ID of the secret version to use.
+             *
+             * Cannot be combined with `versionStage`.
+             *
+             * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+             */
             versionId?: pulumi.Input<string | undefined>;
+            /**
+             * The staging label of the secret version to use, such as `AWSPREVIOUS`.
+             *
+             * Cannot be combined with `versionId`.
+             *
+             * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+             */
             versionStage?: pulumi.Input<string | undefined>;
         }
 
@@ -1568,8 +1624,17 @@ export namespace experimental {
         }
 
         export interface UlimitArgs {
+            /**
+             * The hard limit, in bytes, seconds, or a count, depending on `name`.
+             */
             hardLimit: number;
+            /**
+             * The resource limit to configure.
+             */
             name: enums.experimental.ecs.UlimitName;
+            /**
+             * The soft limit, in bytes, seconds, or a count, depending on `name`.
+             */
             softLimit: number;
         }
 

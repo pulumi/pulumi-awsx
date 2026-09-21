@@ -3,7 +3,6 @@
 
 package com.pulumi.awsx.experimental_ecs.inputs;
 
-import com.pulumi.awsx.experimental_cloudwatch.inputs.LogGroupReferenceArgs;
 import com.pulumi.awsx.experimental_ecs.enums.AwsLogDriverMode;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
@@ -35,22 +34,22 @@ public final class FargateAwsLogsLogDriverArgs extends com.pulumi.resources.Reso
     }
 
     /**
-     * The log group to log to.
+     * The ARN of the log group to log to.
      * 
      * Default - A log group is created automatically.
      * 
      */
-    @Import(name="logGroup")
-    private @Nullable LogGroupReferenceArgs logGroup;
+    @Import(name="logGroupArn")
+    private @Nullable Output<String> logGroupArn;
 
     /**
-     * @return The log group to log to.
+     * @return The ARN of the log group to log to.
      * 
      * Default - A log group is created automatically.
      * 
      */
-    public Optional<LogGroupReferenceArgs> logGroup() {
-        return Optional.ofNullable(this.logGroup);
+    public Optional<Output<String>> logGroupArn() {
+        return Optional.ofNullable(this.logGroupArn);
     }
 
     /**
@@ -121,7 +120,7 @@ public final class FargateAwsLogsLogDriverArgs extends com.pulumi.resources.Reso
 
     private FargateAwsLogsLogDriverArgs(FargateAwsLogsLogDriverArgs $) {
         this.datetimeFormat = $.datetimeFormat;
-        this.logGroup = $.logGroup;
+        this.logGroupArn = $.logGroupArn;
         this.maxBufferSizeBytes = $.maxBufferSizeBytes;
         this.mode = $.mode;
         this.multilinePattern = $.multilinePattern;
@@ -158,16 +157,28 @@ public final class FargateAwsLogsLogDriverArgs extends com.pulumi.resources.Reso
         }
 
         /**
-         * @param logGroup The log group to log to.
+         * @param logGroupArn The ARN of the log group to log to.
          * 
          * Default - A log group is created automatically.
          * 
          * @return builder
          * 
          */
-        public Builder logGroup(@Nullable LogGroupReferenceArgs logGroup) {
-            $.logGroup = logGroup;
+        public Builder logGroupArn(@Nullable Output<String> logGroupArn) {
+            $.logGroupArn = logGroupArn;
             return this;
+        }
+
+        /**
+         * @param logGroupArn The ARN of the log group to log to.
+         * 
+         * Default - A log group is created automatically.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder logGroupArn(String logGroupArn) {
+            return logGroupArn(Output.of(logGroupArn));
         }
 
         /**

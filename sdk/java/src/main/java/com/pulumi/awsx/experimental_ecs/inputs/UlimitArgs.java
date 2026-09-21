@@ -14,23 +14,47 @@ public final class UlimitArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final UlimitArgs Empty = new UlimitArgs();
 
+    /**
+     * The hard limit, in bytes, seconds, or a count, depending on `name`.
+     * 
+     */
     @Import(name="hardLimit", required=true)
     private Double hardLimit;
 
+    /**
+     * @return The hard limit, in bytes, seconds, or a count, depending on `name`.
+     * 
+     */
     public Double hardLimit() {
         return this.hardLimit;
     }
 
+    /**
+     * The resource limit to configure.
+     * 
+     */
     @Import(name="name", required=true)
     private UlimitName name;
 
+    /**
+     * @return The resource limit to configure.
+     * 
+     */
     public UlimitName name() {
         return this.name;
     }
 
+    /**
+     * The soft limit, in bytes, seconds, or a count, depending on `name`.
+     * 
+     */
     @Import(name="softLimit", required=true)
     private Double softLimit;
 
+    /**
+     * @return The soft limit, in bytes, seconds, or a count, depending on `name`.
+     * 
+     */
     public Double softLimit() {
         return this.softLimit;
     }
@@ -61,16 +85,34 @@ public final class UlimitArgs extends com.pulumi.resources.ResourceArgs {
             $ = new UlimitArgs(Objects.requireNonNull(defaults));
         }
 
+        /**
+         * @param hardLimit The hard limit, in bytes, seconds, or a count, depending on `name`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder hardLimit(Double hardLimit) {
             $.hardLimit = hardLimit;
             return this;
         }
 
+        /**
+         * @param name The resource limit to configure.
+         * 
+         * @return builder
+         * 
+         */
         public Builder name(UlimitName name) {
             $.name = name;
             return this;
         }
 
+        /**
+         * @param softLimit The soft limit, in bytes, seconds, or a count, depending on `name`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder softLimit(Double softLimit) {
             $.softLimit = softLimit;
             return this;

@@ -27,7 +27,7 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         public double? ContainerPort { get; set; }
 
         /// <summary>
-        /// A range of container ports, in the form `start-end`.
+        /// A range of container ports with inclusive `start` and `end` values.
         /// 
         /// Do not set this property when `containerPort` is set. For Fargate, ECS maps the host port range
         /// to the same container port range.

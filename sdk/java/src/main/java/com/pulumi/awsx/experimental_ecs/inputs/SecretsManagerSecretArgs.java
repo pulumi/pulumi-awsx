@@ -3,7 +3,6 @@
 
 package com.pulumi.awsx.experimental_ecs.inputs;
 
-import com.pulumi.aws.secretsmanager.Secret;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
@@ -17,30 +16,82 @@ public final class SecretsManagerSecretArgs extends com.pulumi.resources.Resourc
 
     public static final SecretsManagerSecretArgs Empty = new SecretsManagerSecretArgs();
 
+    /**
+     * The JSON key whose value to extract. The secret must contain JSON when this is set.
+     * 
+     * Default - The full secret contents.
+     * 
+     */
     @Import(name="jsonKey")
     private @Nullable Output<String> jsonKey;
 
+    /**
+     * @return The JSON key whose value to extract. The secret must contain JSON when this is set.
+     * 
+     * Default - The full secret contents.
+     * 
+     */
     public Optional<Output<String>> jsonKey() {
         return Optional.ofNullable(this.jsonKey);
     }
 
-    @Import(name="secret", required=true)
-    private Secret secret;
+    /**
+     * The ARN of the Secrets Manager secret whose value is passed to the container.
+     * 
+     */
+    @Import(name="secretArn", required=true)
+    private Output<String> secretArn;
 
-    public Secret secret() {
-        return this.secret;
+    /**
+     * @return The ARN of the Secrets Manager secret whose value is passed to the container.
+     * 
+     */
+    public Output<String> secretArn() {
+        return this.secretArn;
     }
 
+    /**
+     * The unique ID of the secret version to use.
+     * 
+     * Cannot be combined with `versionStage`.
+     * 
+     * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+     * 
+     */
     @Import(name="versionId")
     private @Nullable Output<String> versionId;
 
+    /**
+     * @return The unique ID of the secret version to use.
+     * 
+     * Cannot be combined with `versionStage`.
+     * 
+     * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+     * 
+     */
     public Optional<Output<String>> versionId() {
         return Optional.ofNullable(this.versionId);
     }
 
+    /**
+     * The staging label of the secret version to use, such as `AWSPREVIOUS`.
+     * 
+     * Cannot be combined with `versionId`.
+     * 
+     * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+     * 
+     */
     @Import(name="versionStage")
     private @Nullable Output<String> versionStage;
 
+    /**
+     * @return The staging label of the secret version to use, such as `AWSPREVIOUS`.
+     * 
+     * Cannot be combined with `versionId`.
+     * 
+     * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+     * 
+     */
     public Optional<Output<String>> versionStage() {
         return Optional.ofNullable(this.versionStage);
     }
@@ -49,7 +100,7 @@ public final class SecretsManagerSecretArgs extends com.pulumi.resources.Resourc
 
     private SecretsManagerSecretArgs(SecretsManagerSecretArgs $) {
         this.jsonKey = $.jsonKey;
-        this.secret = $.secret;
+        this.secretArn = $.secretArn;
         this.versionId = $.versionId;
         this.versionStage = $.versionStage;
     }
@@ -72,41 +123,113 @@ public final class SecretsManagerSecretArgs extends com.pulumi.resources.Resourc
             $ = new SecretsManagerSecretArgs(Objects.requireNonNull(defaults));
         }
 
+        /**
+         * @param jsonKey The JSON key whose value to extract. The secret must contain JSON when this is set.
+         * 
+         * Default - The full secret contents.
+         * 
+         * @return builder
+         * 
+         */
         public Builder jsonKey(@Nullable Output<String> jsonKey) {
             $.jsonKey = jsonKey;
             return this;
         }
 
+        /**
+         * @param jsonKey The JSON key whose value to extract. The secret must contain JSON when this is set.
+         * 
+         * Default - The full secret contents.
+         * 
+         * @return builder
+         * 
+         */
         public Builder jsonKey(String jsonKey) {
             return jsonKey(Output.of(jsonKey));
         }
 
-        public Builder secret(Secret secret) {
-            $.secret = secret;
+        /**
+         * @param secretArn The ARN of the Secrets Manager secret whose value is passed to the container.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder secretArn(Output<String> secretArn) {
+            $.secretArn = secretArn;
             return this;
         }
 
+        /**
+         * @param secretArn The ARN of the Secrets Manager secret whose value is passed to the container.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder secretArn(String secretArn) {
+            return secretArn(Output.of(secretArn));
+        }
+
+        /**
+         * @param versionId The unique ID of the secret version to use.
+         * 
+         * Cannot be combined with `versionStage`.
+         * 
+         * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+         * 
+         * @return builder
+         * 
+         */
         public Builder versionId(@Nullable Output<String> versionId) {
             $.versionId = versionId;
             return this;
         }
 
+        /**
+         * @param versionId The unique ID of the secret version to use.
+         * 
+         * Cannot be combined with `versionStage`.
+         * 
+         * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+         * 
+         * @return builder
+         * 
+         */
         public Builder versionId(String versionId) {
             return versionId(Output.of(versionId));
         }
 
+        /**
+         * @param versionStage The staging label of the secret version to use, such as `AWSPREVIOUS`.
+         * 
+         * Cannot be combined with `versionId`.
+         * 
+         * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+         * 
+         * @return builder
+         * 
+         */
         public Builder versionStage(@Nullable Output<String> versionStage) {
             $.versionStage = versionStage;
             return this;
         }
 
+        /**
+         * @param versionStage The staging label of the secret version to use, such as `AWSPREVIOUS`.
+         * 
+         * Cannot be combined with `versionId`.
+         * 
+         * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+         * 
+         * @return builder
+         * 
+         */
         public Builder versionStage(String versionStage) {
             return versionStage(Output.of(versionStage));
         }
 
         public SecretsManagerSecretArgs build() {
-            if ($.secret == null) {
-                throw new MissingRequiredPropertyException("SecretsManagerSecretArgs", "secret");
+            if ($.secretArn == null) {
+                throw new MissingRequiredPropertyException("SecretsManagerSecretArgs", "secretArn");
             }
             return $;
         }
