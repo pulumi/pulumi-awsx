@@ -13,12 +13,12 @@
 // limitations under the License.
 import * as pulumi from '@pulumi/pulumi';
 import { InputPropertyErrorDetails } from '@pulumi/pulumi';
+import { FargateContainerDefinitionProperties } from './containerDefinition';
 
-export type FargateContainerMemoryAndCpu = {
-  cpu?: number;
-  memory?: number;
-  memoryReservation?: number;
-};
+export type FargateContainerMemoryAndCpu = Pick<
+  FargateContainerDefinitionProperties,
+  'cpu' | 'memoryMiB' | 'memoryReservationMiB'
+>;
 
 export interface FargateTaskMemoryAndCpu {
   /**
@@ -115,7 +115,7 @@ function getRequiredFargateTaskResources(
   let memory = 0;
 
   for (const container of containers) {
-    memory += container.memoryReservation ?? container.memory ?? 0;
+    memory += container.memoryReservationMiB ?? container.memoryMiB ?? 0;
     cpu += container.cpu ?? 0;
   }
 
