@@ -95,17 +95,17 @@ describe('FargateTaskDefinitionV2', () => {
         app: {
           image: 'nginx',
           cpu: 300,
-          memory: 700,
+          memoryMiB: 700,
         },
         sidecar: {
           image: 'busybox',
           cpu: 100,
-          memoryReservation: 100,
+          memoryReservationMiB: 100,
         },
       },
     });
 
-    await unwrap(task.taskDefinitionArn);
+    await unwrap(task.taskDefinition.arn);
 
     const resource = taskDefinitionResource('derived-taskdef');
     expect(resource).toBeDefined();
@@ -139,7 +139,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: { app: { image: 'nginx' } },
     });
 
-    await unwrap(task.taskDefinitionArn);
+    await unwrap(task.taskDefinition.arn);
     expect(
       taskDefinitionResource(`storage-${ephemeralStorage}-taskdef`)!.inputs.ephemeralStorage,
     ).toEqual({
@@ -155,12 +155,12 @@ describe('FargateTaskDefinitionV2', () => {
         app: {
           image: 'nginx',
           cpu: 256,
-          memory: 512,
+          memoryMiB: 512,
         },
       },
     });
 
-    await unwrap(task.taskDefinitionArn);
+    await unwrap(task.taskDefinition.arn);
 
     const resource = taskDefinitionResource('explicit-taskdef');
     expect(resource).toBeDefined();

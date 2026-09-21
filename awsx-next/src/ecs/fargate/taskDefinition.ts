@@ -21,7 +21,7 @@ import { CredentialSpec } from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
 import { ContainerDefinition } from '../containerDefinition';
-import { LogGroup, LogGroupReference } from '../../cloudwatch/logGroup';
+import { Arn, ArnFormat } from '../arn';
 
 export interface CommonTaskdefinitionOptions {
   /**
@@ -35,35 +35,68 @@ export interface CommonTaskdefinitionOptions {
    * The name of a family that this task definition is registered to. A family groups multiple
    * versions of a task definition.
    *
-   * Default - Automatically generated name.
+   * Default - The Pulumi resource name of this component
    */
   readonly family?: string;
 
   /**
-   * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs
-   * on your behalf.
+   * The ARN of the IAM task execution role that will be used by the ECS Task.
    *
-   * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
+   * The execution role grants access required by the configured containers, such as pulling images
+   * from Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,
+   * etc.
    *
-   * Default - An execution role will be automatically created if you use ECR images in your task
-   * definition.
+   * The component will automatically attach IAM policies granting access based on the container
+   * definitions.
+   *
+   * Default - An execution role will be automatically created for you
    */
-  readonly executionRole?: aws.iam.Role;
+  readonly executionRoleArn?: pulumi.Input<string>;
 
   /**
-   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your
+   * The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your
    * behalf.
    *
    * Default - A task role is automatically created for you.
    */
-  readonly taskRole?: aws.iam.Role;
+  readonly taskRoleArn?: pulumi.Input<string>;
 }
 
-interface FargateTaskDefinitionV2Data {
-  taskDefinitionArn: pulumi.Output<string>;
-  executionRole: aws.iam.Role;
-  taskRole: aws.iam.Role;
-  logGroup?: aws.cloudwatch.LogGroup;
+/**
+ * The CPU architecture of the task. This must match the platform your docker image is built for
+ */
+export enum CpuArchitecture {
+  X86_64 = 'X86_64',
+  ARM64 = 'ARM64',
+}
+
+/**
+ * The operating system family for the task
+ */
+export enum OperatingSystemFamily {
+  LINUX = 'LINUX',
+  WINDOWS_SERVER_2025_FULL = 'WINDOWS_SERVER_2025_FULL',
+  WINDOWS_SERVER_2025_CORE = 'WINDOWS_SERVER_2025_CORE',
+  WINDOWS_SERVER_2022_FULL = 'WINDOWS_SERVER_2022_FULL',
+  WINDOWS_SERVER_2022_CORE = 'WINDOWS_SERVER_2022_CORE',
+  WINDOWS_SERVER_2019_FULL = 'WINDOWS_SERVER_2019_FULL',
+  WINDOWS_SERVER_2019_CORE = 'WINDOWS_SERVER_2019_CORE',
+}
+
+export interface RuntimePlatform {
+  /**
+   * The CpuArchitecture for Fargate Runtime Platform.
+   *
+   * Default - AWS default of X86_64.
+   */
+  readonly cpuArchitecture?: CpuArchitecture;
+
+  /**
+   * The operating system for Fargate Runtime Platform.
+   *
+   * @default - AWS default of LINUX.
+   */
+  readonly operatingSystemFamily?: OperatingSystemFamily;
 }
 
 export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions {
@@ -100,7 +133,8 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
    * select the task size.
    *
-   * Default - 256
+   * Default - A CPU value will be automatically selected based on the container-level CPU and
+   * memory requirements
    */
   readonly cpu?: number;
   /**
@@ -130,7 +164,8 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
    * to select the task size.
    *
-   * Default - 512
+   * Default - A memory value will be automatically selected based on the container-level CPU and
+   * memory requirements
    */
   readonly memory?: number;
 
@@ -149,6 +184,13 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    * AWSX uses each map key as the corresponding ECS container name.
    */
   containers: Record<string, FargateContainerDefinitionOptions>;
+
+  /**
+   * The operating system that your task definitions are running on.
+   *
+   * Default - AWS default of X86_64 Linux
+   */
+  runtimePlatform?: RuntimePlatform;
 }
 
 type ResolvedPolicyStatement = pulumi.Unwrap<input.iam.PolicyStatement>;
@@ -168,13 +210,32 @@ export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
   aliases: [{ type: 'awsx-experimental:index:FargateTaskDefinitionV2' }],
 };
 
-export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTaskDefinitionV2Data> {
+export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
+  /**
+   * The Task Role of the task
+   */
   public readonly taskRole!: aws.iam.Role;
+
+  /**
+   * The Execution Role of the task
+   */
   public readonly executionRole!: aws.iam.Role;
-  public readonly taskDefinitionArn!: pulumi.Output<string>;
-  private readonly name!: string;
-  private readonly region?: string;
-  private _logGroup?: LogGroupReference;
+
+  /**
+   * The task definition resource
+   */
+  public readonly taskDefinition!: aws.ecs.TaskDefinition;
+
+  /**
+   * The shared CloudWatch Logs log group created by the component for containers that enable
+   * CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
+   * component does not create a default log group
+   */
+  public logGroup?: aws.cloudwatch.LogGroup;
+
+  public readonly name!: string;
+
+  public readonly region?: string;
   constructor(
     name: string,
     args: FargateTaskDefinitionV2Args,
@@ -191,7 +252,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
           taskDefinitionArn: undefined,
           logGroup: undefined,
         }
-      : { name, args, opts };
+      : args;
     super(
       identity.type,
       name,
@@ -233,12 +294,18 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
     );
 
     const family = args.family ?? name;
-
-    // see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam-roles.html
-    this.executionRole =
-      args.executionRole ??
-      new aws.iam.Role(
-        `${name}-exec-role`,
+    if (args.executionRoleArn) {
+      this.executionRole = aws.iam.Role.get(
+        `${this.name}-execRole`,
+        roleNameFromArn(args.executionRoleArn, this),
+        undefined,
+        {
+          parent: this,
+        },
+      );
+    } else {
+      this.executionRole = new aws.iam.Role(
+        `${name}-execRole`,
         {
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
@@ -246,11 +313,20 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         },
         { parent: this },
       );
+    }
 
-    this.taskRole =
-      args.taskRole ??
-      new aws.iam.Role(
-        `${name}-task-role`,
+    if (args.taskRoleArn) {
+      this.taskRole = aws.iam.Role.get(
+        `${this.name}-taskRole`,
+        roleNameFromArn(args.taskRoleArn, this),
+        undefined,
+        {
+          parent: this,
+        },
+      );
+    } else {
+      this.taskRole = new aws.iam.Role(
+        `${name}-taskRole`,
         {
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
@@ -258,24 +334,22 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         },
         { parent: this },
       );
+    }
 
     const executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[] = [];
-    const containerDefinitionsApi: ContainerDefinitionArgs[] = containerEntries.map(
+    const ecrRepositories: pulumi.Output<string | undefined>[] = [];
+    const containerDefinitionsApi: pulumi.Output<ContainerDefinitionArgs>[] = containerEntries.map(
       ([containerName, container]) => {
+        const ecrRepo = this.renderEcrPullStatementResource(container.image);
+        ecrRepositories.push(ecrRepo);
         const credentialSpecs = container.credentialSpecs?.map((spec, i) =>
-          this.renderCredentialSpec(spec, `containers.${containerName}.credentialSpecs[${i}]`),
+          this.renderCredentialSpec(spec, containerName, i),
         );
         const environmentFiles = container.environmentFiles?.map((file, i) =>
           this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
         );
-        const secrets = this.renderSecrets(
-          `containers.${containerName}.secrets`,
-          container.secrets,
-        );
-        const logs = this.renderCloudWatchLogDriver(
-          `containers.${containerName}.logging.cloudwatch`,
-          container.logging?.cloudwatch,
-        );
+        const secrets = this.renderSecrets(containerName, container.secrets);
+        const logs = this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch);
 
         executionRoleStatements.push(
           ...(credentialSpecs?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
@@ -292,23 +366,20 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
           secrets?.map((rendered) => rendered.value),
           logs?.value,
         );
-        return c.definition;
+        return pulumi.output(c.definition);
       },
     );
 
-    const rolePolicy =
-      executionRoleStatements.length > 0
-        ? new aws.iam.RolePolicy(
-            `${name}-execRole-container-policy`,
-            {
-              role: this.executionRole.name,
-              policy: this.renderContainerExecRolePolicy(executionRoleStatements),
-            },
-            { parent: this },
-          )
-        : undefined;
+    const rolePolicy = new aws.iam.RolePolicy(
+      `${name}-execRole-container-policy`,
+      {
+        role: this.executionRole.name,
+        policy: this.renderContainerExecRolePolicy(executionRoleStatements, ecrRepositories),
+      },
+      { parent: this },
+    );
 
-    const taskDef = new aws.ecs.TaskDefinition(
+    this.taskDefinition = new aws.ecs.TaskDefinition(
       `${name}-taskdef`,
       {
         containerDefinitions: pulumi.jsonStringify(containerDefinitionsApi),
@@ -320,6 +391,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         executionRoleArn: this.executionRole.arn,
         taskRoleArn: this.taskRole.arn,
         networkMode: 'awsvpc',
+        runtimePlatform: args.runtimePlatform,
         ephemeralStorage:
           args.ephemeralStorage !== undefined
             ? {
@@ -332,23 +404,13 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         dependsOn: rolePolicy ? [rolePolicy] : [],
       },
     );
-    this.taskDefinitionArn = taskDef.arn;
 
     this.registerOutputs({
       executionRole: this.executionRole,
       taskRole: this.taskRole,
-      taskDefinitionArn: this.taskDefinitionArn,
-      logGroup: this._logGroup,
+      taskDefinition: this.taskDefinition,
+      logGroup: this.logGroup,
     });
-  }
-
-  /**
-   * Gets the log group created for the default CloudWatch Logs driver.
-   *
-   * @returns The log group, if the task uses the default log driver.
-   */
-  public get logGroup(): LogGroupReference | undefined {
-    return this._logGroup;
   }
 
   /**
@@ -356,36 +418,107 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
    *
    * @returns The default log group.
    */
-  private obtainDefaultLogGroup(): LogGroupReference {
-    if (!this._logGroup) {
-      this._logGroup = new LogGroup(
+  private obtainDefaultLogGroup(): aws.cloudwatch.LogGroup {
+    if (!this.logGroup) {
+      this.logGroup = new aws.cloudwatch.LogGroup(
         `${this.name}-logGroup`,
         {
-          // region: this.region,
+          region: this.region,
         },
         { parent: this },
       );
     }
 
-    return this._logGroup;
+    return this.logGroup;
+  }
+
+  /**
+   * Checks if the image URI matches a ECR repository format and if so returns a policy fragment
+   * adding permissions to pull the image.
+   *
+   * @param imageUri The image URI for the container. Can be an Output
+   * @returns The Repository ARN
+   */
+  private renderEcrPullStatementResource(
+    imageUri: pulumi.Input<string>,
+  ): pulumi.Output<string | undefined> {
+    return pulumi.output(imageUri).apply((image) => {
+      const match =
+        /^(?<account>\d{12})\.dkr\.ecr\.(?<region>[a-z0-9-]+)\.(?<domain>amazonaws\.com(?:\.cn)?)\/(?<repo>[a-zA-Z0-9_\-/]+)(?::(?<tag>[a-zA-Z0-9_.-]+)|@(?<digest>sha256:[a-fA-F0-9]{64}))?$/.exec(
+          image,
+        );
+
+      if (!match?.groups) {
+        return;
+      }
+
+      const { account, region, _domain, repo, _tagOrDigest } = match.groups;
+
+      let partition: string;
+      if (region?.startsWith('cn-')) {
+        partition = 'aws-cn';
+      } else if (region?.startsWith('us-gov-')) {
+        partition = 'aws-us-gov';
+      } else {
+        partition = 'aws';
+      }
+      return `arn:${partition}:ecr:${region}:${account}:repository/${repo}`;
+    });
   }
 
   /**
    * Renders execution-role statements as an IAM policy document.
    *
    * @param statements The statements to include in the policy.
+   * @param ecrRepositories A list of ECR repositories the task needs pull access to
    * @returns The JSON policy document.
    */
   private renderContainerExecRolePolicy(
     statements: pulumi.Output<ResolvedPolicyStatement | undefined>[],
+    ecrRepositories: pulumi.Output<string | undefined>[],
   ): pulumi.Output<string> {
-    const document = pulumi.all(statements).apply((resolvedStatements) => ({
-      Version: '2012-10-17',
-      Statement: resolvedStatements.filter(
-        (statement): statement is ResolvedPolicyStatement => statement !== undefined,
-      ),
-    }));
-    return pulumi.jsonStringify(document);
+    return pulumi
+      .all([statements, ecrRepositories])
+      .apply(([resolvedStatements, resolvedRepos]) => {
+        const uniqueStatements = new Map<string, ResolvedPolicyStatement>();
+        const uniqueRepos = new Set<string>();
+        for (const repo of resolvedRepos) {
+          if (repo && !uniqueRepos.has(repo)) {
+            uniqueRepos.add(repo);
+          }
+        }
+        if (Array.from(uniqueRepos.keys()).length > 0) {
+          uniqueStatements.set('ecrPolicy', {
+            Action: [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage',
+            ],
+            Effect: 'Allow',
+            Resource: Array.from(uniqueRepos.values()),
+          });
+        }
+        for (const statement of resolvedStatements) {
+          if (!statement) {
+            continue;
+          }
+          const key = JSON.stringify(statement);
+          uniqueStatements.set(key, statement);
+        }
+        return JSON.stringify({
+          Version: '2012-10-17',
+          // We have to have at least one statement otherwise we create a role policy with and empty statements which is not allowed
+          // All execution roles will get this policy even if they don't need to pull from ECR
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'ecr:GetAuthorizationToken',
+              Resource: '*',
+            },
+            ...uniqueStatements.values(),
+          ],
+        });
+      });
   }
 
   /**
@@ -404,18 +537,24 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
    * Converts a credential specification input to the value expected by ECS.
    *
    * @param spec The credential specification to render.
-   * @param propertyPath The input property path used in validation errors.
+   * @param containerName The name of the container this spec is associated with
+   * @param idx The array index of this specific spec (each container can have multiple)
    * @returns The rendered value and its execution-role statements.
    */
-  private renderCredentialSpec(spec: CredentialSpec, propertyPath: string): Rendered<string> {
-    if (spec.s3Bucket && spec.ssmParameter) {
+  private renderCredentialSpec(
+    spec: CredentialSpec,
+    containerName: string,
+    idx: number,
+  ): Rendered<string> {
+    const propertyPath = `containers.${containerName}.credentialSpecs[${idx}]`;
+    if (spec.s3Bucket && spec.ssmParameterArn) {
       throw new pulumi.InputPropertyError({
         propertyPath,
         reason: 'Only one of s3Bucket or ssmParameter can be defined',
       });
     }
 
-    if (!spec.s3Bucket && !spec.ssmParameter) {
+    if (!spec.s3Bucket && !spec.ssmParameterArn) {
       throw new pulumi.InputPropertyError({
         propertyPath,
         reason: 'One of s3Bucket or ssmParameter must be provided',
@@ -438,31 +577,36 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
     }
 
     if (spec.s3Bucket) {
-      const objectArn = pulumi.interpolate`${spec.s3Bucket.bucket.arn}/${spec.s3Bucket.key}`;
+      const objectArn = pulumi.interpolate`${spec.s3Bucket.bucketArn}/${spec.s3Bucket.key}`;
       return {
         value: pulumi.interpolate`${prefix}:${objectArn}`,
         executionRoleStatements: [
           this.executionRoleStatement({
             Effect: 'Allow',
-            Action: 's3:GetBucketLocation',
-            Resource: spec.s3Bucket.bucket.arn,
+            Action: ['s3:GetBucketLocation', 's3:ListBucket'],
+            Resource: spec.s3Bucket.bucketArn,
           }),
           this.executionRoleStatement({
             Effect: 'Allow',
-            Action: 's3:GetObject',
+            Action: ['s3:GetObject', 's3:GetObjectVersion'],
             Resource: objectArn,
           }),
         ],
       };
     }
 
-    const parameter = spec.ssmParameter!;
+    const parameter = aws.ssm.Parameter.get(
+      `${this.name}-${containerName}-${idx}-param`,
+      parameterNameFromArn(spec.ssmParameterArn!, this),
+      undefined,
+      { parent: this },
+    );
     return {
       value: pulumi.interpolate`${prefix}:${parameter.arn}`,
       executionRoleStatements: [
         this.executionRoleStatement({
           Effect: 'Allow',
-          Action: 'ssm:GetParameter',
+          Action: ['ssm:GetParameter', 'ssm:GetParameters'],
           Resource: parameter.arn,
         }),
         this.renderKmsDecryptStatement(parameter.keyId, parameter.region),
@@ -473,27 +617,28 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
   /**
    * Renders the secrets configured for a container.
    *
-   * @param propertyPath The input property path used in validation errors.
+   * @param containerName The name of the container the secrets are associated with
    * @param secrets The secrets to render.
    * @returns The rendered secrets, or undefined when none are configured.
    */
   private renderSecrets(
-    propertyPath: string,
+    containerName: string,
     secrets?: Record<string, Secret>,
   ): Rendered<ContainerDefinitionSecret>[] | undefined {
     if (!secrets) {
       return;
     }
+    const propertyPath = `containers.${containerName}.secrets`;
     const renderedSecrets: Rendered<ContainerDefinitionSecret>[] = [];
     for (const [name, secret] of Object.entries(secrets)) {
-      if (secret.secretsManager && secret.ssmParameter) {
+      if (secret.secretsManager && secret.ssmParameterArn) {
         throw new pulumi.InputPropertyError({
           propertyPath: `${propertyPath}.${name}`,
           reason: 'Only one secret source can be set',
         });
       }
 
-      if (!secret.secretsManager && !secret.ssmParameter) {
+      if (!secret.secretsManager && !secret.ssmParameterArn) {
         throw new pulumi.InputPropertyError({
           propertyPath: `${propertyPath}.${name}`,
           reason: 'A secret source is required',
@@ -507,10 +652,12 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         });
       }
       if (secret.secretsManager) {
-        renderedSecrets.push(this.renderSecretsManagerSecret(name, secret.secretsManager));
+        renderedSecrets.push(
+          this.renderSecretsManagerSecret(containerName, name, secret.secretsManager),
+        );
       }
-      if (secret.ssmParameter) {
-        renderedSecrets.push(this.renderSsmSecret(name, secret.ssmParameter));
+      if (secret.ssmParameterArn) {
+        renderedSecrets.push(this.renderSsmSecret(containerName, name, secret.ssmParameterArn));
       }
     }
     return renderedSecrets;
@@ -519,16 +666,24 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
   /**
    * Renders an AWS Secrets Manager secret reference.
    *
+   * @param containerName The name of the container this is associated with
    * @param name The environment variable name.
    * @param source The Secrets Manager source configuration.
    * @returns The rendered secret and its execution-role statements.
    */
   private renderSecretsManagerSecret(
+    containerName: string,
     name: string,
     source: SecretsManagerSecret,
   ): Rendered<ContainerDefinitionSecret> {
+    const secret = aws.secretsmanager.Secret.get(
+      `${this.name}-${containerName}-${name}-secret`,
+      source.secretArn,
+      undefined,
+      { parent: this },
+    );
     const value = pulumi
-      .all([source.secret.arn, source.jsonKey, source.versionStage, source.versionId])
+      .all([secret.arn, source.jsonKey, source.versionStage, source.versionId])
       .apply(([arn, jsonKey, versionStage, versionId]) => {
         const usesSuffix =
           jsonKey !== undefined || versionStage !== undefined || versionId !== undefined;
@@ -546,9 +701,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         this.executionRoleStatement({
           Effect: 'Allow',
           Action: 'secretsmanager:GetSecretValue',
-          Resource: source.secret.arn,
+          Resource: secret.arn,
         }),
-        this.renderKmsDecryptStatement(source.secret.kmsKeyId, source.secret.region),
+        this.renderKmsDecryptStatement(secret.kmsKeyId, secret.region),
       ],
     };
   }
@@ -556,20 +711,28 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
   /**
    * Renders an AWS Systems Manager Parameter Store secret reference.
    *
+   * @param containerName The name of the container this is associated with
    * @param name The environment variable name.
-   * @param parameter The Parameter Store parameter.
+   * @param parameterArn The ARN of the Parameter Store parameter.
    * @returns The rendered secret and its execution-role statements.
    */
   private renderSsmSecret(
+    containerName: string,
     name: string,
-    parameter: aws.ssm.Parameter,
+    parameterArn: pulumi.Input<string>,
   ): Rendered<ContainerDefinitionSecret> {
+    const parameter = aws.ssm.Parameter.get(
+      `${this.name}-${containerName}-${name}-param`,
+      parameterNameFromArn(parameterArn, this),
+      undefined,
+      { parent: this },
+    );
     return {
       value: parameter.arn.apply((arn) => ({ name, valueFrom: arn })),
       executionRoleStatements: [
         this.executionRoleStatement({
           Effect: 'Allow',
-          Action: 'ssm:GetParameters',
+          Action: ['ssm:GetParameters', 'ssm:GetParameter'],
           Resource: parameter.arn,
         }),
         this.renderKmsDecryptStatement(parameter.keyId, parameter.region),
@@ -634,7 +797,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
       }
       return resolvedKey;
     });
-    const objectArn = pulumi.interpolate`${file.bucket.arn}/${key}`;
+    const objectArn = pulumi.interpolate`${file.bucketArn}/${key}`;
     return {
       value: objectArn.apply((value): ContainerDefinitionEnvironmentFile => ({
         value,
@@ -644,7 +807,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         this.executionRoleStatement({
           Effect: 'Allow',
           Action: 's3:GetBucketLocation',
-          Resource: file.bucket.arn,
+          Resource: file.bucketArn,
         }),
         this.executionRoleStatement({
           Effect: 'Allow',
@@ -658,24 +821,36 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
   /**
    * Renders a CloudWatch Logs driver configuration.
    *
-   * @param propertyPath The input property path used in validation errors.
+   * @param containerName The name of the container this is associated with
    * @param driver The log driver options.
    * @returns The log configuration, or undefined when logging is not configured.
    */
   private renderCloudWatchLogDriver(
-    propertyPath: string,
+    containerName: string,
     driver?: FargateAwsLogsLogDriver,
   ): Rendered<LogConfiguration> | undefined {
     if (!driver) {
       return;
     }
+    const propertyPath = `containers.${containerName}.logging.cloudwatch`;
     if (driver.datetimeFormat && driver.multilinePattern) {
       throw new pulumi.InputPropertyError({
         propertyPath,
         reason: 'Only one of datetimeFormat and multilinePattern can be provided',
       });
     }
-    const logGroup = driver.logGroup ?? this.obtainDefaultLogGroup();
+    let logGroup: aws.cloudwatch.LogGroup | undefined = undefined;
+    if (driver.logGroupArn) {
+      logGroup = aws.cloudwatch.LogGroup.get(
+        `${this.name}-${containerName}-logGroup`,
+        logGroupNameFromArn(driver.logGroupArn, this),
+        undefined,
+        {
+          parent: this,
+        },
+      );
+    }
+    logGroup = logGroup ?? this.obtainDefaultLogGroup();
     const value = pulumi
       .all([
         logGroup.name,
@@ -744,7 +919,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
     logConfiguration?: pulumi.Output<LogConfiguration>,
   ): ContainerDefinition {
     return new ContainerDefinition(
-      containerName,
+      `${this.name}-${containerName}`,
       {
         credentialSpecs,
         logConfiguration,
@@ -752,8 +927,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         environmentFiles,
         command: options.command,
         cpu: options.cpu,
-        memory: options.memory,
-        memoryReservation: options.memoryReservation,
+        memory: options.memoryMiB,
+        memoryReservation: options.memoryReservationMiB,
         portMappings: renderPortMappings(options.portMappings),
         essential: options.essential ?? true,
         // TODO: this requires more design
@@ -763,8 +938,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         // mountPoints: options.mountPoints,
         volumesFrom: options.volumesFrom,
         linuxParameters: options.linuxParameters,
-        startTimeout: options.startTimeout,
-        stopTimeout: options.stopTimeout,
+        startTimeout: options.startTimeoutSeconds,
+        stopTimeout: options.stopTimeoutSeconds,
         versionConsistency: options.versionConsistency,
         user: options.user,
         workingDirectory: options.workingDirectory,
@@ -773,12 +948,21 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource<FargateTas
         pseudoTerminal: options.pseudoTerminal,
         dockerLabels: options.dockerLabels,
         ulimits: options.ulimits,
-        healthCheck: options.healthCheck,
+        healthCheck: options.healthCheck
+          ? {
+              command: options.healthCheck.command,
+              interval: options.healthCheck.intervalSeconds,
+              retries: options.healthCheck.retries,
+              startPeriod: options.healthCheck.startPeriodSeconds,
+              timeout: options.healthCheck.timeoutSeconds,
+            }
+          : undefined,
         systemControls: options.systemControls,
         // TODO: this requires more design
         // firelensConfiguration: options.firelensConfiguration,
         image: options.image,
         name: containerName,
+        dependsOn: options.dependsOn,
         environment: options.environment
           ? Object.entries(options.environment).map(([name, value]) => ({ name, value }))
           : undefined,
@@ -833,4 +1017,81 @@ export function removeEmpty<T>(x: { [key: string]: T | undefined | string }): {
     }
   }
   return x as any;
+}
+
+/**
+ * Get an SSM Parameter Import ID from an ARN
+ *
+ * @param arn The SSM Parameter ARN
+ * @param parent The parent component
+ * @returns The name of the parameter which can be used as the import id
+ */
+function parameterNameFromArn(
+  arn: pulumi.Input<string>,
+  parent: pulumi.ComponentResource,
+): pulumi.Output<string> {
+  const currentRegion = aws.getRegionOutput(undefined, { parent }).region;
+  const arnParts = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent);
+  return pulumi.all([arnParts, currentRegion]).apply(([parts, region]) => {
+    if (!parts.resourceName) {
+      throw new Error('Could not extract parameter name from arn');
+    }
+    // Hierarchical SSM parameter import IDs use a leading slash
+    const name = parts.resourceName.includes('/') ? `/${parts.resourceName}` : parts.resourceName;
+    if (parts.region && parts.region !== region) {
+      return `${name}@${parts.region}`;
+    }
+    return name;
+  });
+}
+
+/**
+ * Get an IAM Role Import ID from an ARN
+ *
+ * @param arn The IAM Role ARN
+ * @param parent The parent component
+ * @returns The name of the role which can be used as the import id
+ */
+function roleNameFromArn(
+  arn: pulumi.Input<string>,
+  parent: pulumi.ComponentResource,
+): pulumi.Output<string> {
+  return Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent).apply((parts) => {
+    if (!parts.resourceName) {
+      throw new Error('Could not extract role name from arn');
+    }
+    // The role resourceName part of the arn will also include the path, e.g. `service-role/my-role`
+    // but the import expects just the final `name` part.
+    return parts.resourceName.split('/').at(-1)!;
+  });
+}
+
+/**
+ * Get a CloudWatch Logs LogGroup Import ID from an ARN
+ *
+ * @param arn The LogGroup ARN
+ * @param parent The parent component
+ * @returns The name of the log group which can be used as the import id
+ */
+function logGroupNameFromArn(
+  arn: pulumi.Input<string>,
+  parent: pulumi.ComponentResource,
+): pulumi.Output<string> {
+  const currentRegion = aws.getRegionOutput(undefined, { parent }).region;
+  const arnParts = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent);
+  return pulumi.all([arnParts, currentRegion]).apply(([parts, region]) => {
+    if (!parts.resourceName) {
+      throw new Error(`Could not extract role name from arn ${arn}`);
+    }
+    const name = parts.resourceName.endsWith(':*')
+      ? parts.resourceName.slice(0, -2)
+      : parts.resourceName;
+    if (!name || name.includes(':')) {
+      throw new Error('Expected the ARN to contain a valid log-group name');
+    }
+    if (parts.region && parts.region !== region) {
+      return `${name}@${parts.region}`;
+    }
+    return name;
+  });
 }
