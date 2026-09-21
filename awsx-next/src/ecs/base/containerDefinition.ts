@@ -439,7 +439,7 @@ export interface SecretsManagerSecret {
  */
 export interface Secret {
   /**
-   * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameter`, not
+   * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
    * both.
    *
    * For more information, see [Secrets Manager environment
