@@ -4,7 +4,7 @@
   "reviewedAt": "2026-09-18",
   "source": "https://github.com/nodejs/node/blob/7a3437d9986c4a591084520537720adeb493e6f9/BUILDING.md",
   "provisional": false,
-  "feedbackUrl": "https://github.com/pulumi/pulumi-awsx/issues/new?title=AWSX%20Node.js%20runtime%20compatibility%20feedback",
+  "feedbackUrl": "https://github.com/pulumi/pulumi-awsx/issues/2150",
   "minimumMacOS": "13.5",
   "minimumWindows": "10.0",
   "minimumLinuxKernel": "4.18",
