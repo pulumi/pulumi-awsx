@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -373,6 +374,9 @@ func writePulumiSchema(pkgSpec schema.PackageSpec, outdir string) error {
 }
 
 func main() {
+	// Terraform dependencies replace the standard logger during initialization.
+	// Keep generator errors visible even when Terraform logging is disabled.
+	log.SetOutput(os.Stderr)
 	if err := rootCmd().Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
