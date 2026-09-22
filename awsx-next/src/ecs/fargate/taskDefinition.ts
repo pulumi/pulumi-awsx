@@ -20,10 +20,7 @@ import {
 import { CredentialSpec } from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
-import {
-  ContainerDefinition,
-  containerDefinitionStandaloneIdentity,
-} from '../containerDefinition';
+import { ContainerDefinition, containerDefinitionStandaloneIdentity } from '../containerDefinition';
 import { Arn, ArnFormat } from '../arn';
 
 export interface CommonTaskdefinitionOptions {
@@ -204,13 +201,13 @@ interface Rendered<T> {
 }
 
 export const fargateTaskDefinitionStandaloneIdentity: ComponentIdentity = {
-  type: 'awsx-experimental:index:FargateTaskDefinitionV2',
-  aliases: [{ type: 'awsx:experimental/ecs:FargateTaskDefinitionV2' }],
+  type: 'awsx-next:index:FargateTaskDefinitionV2',
+  aliases: [],
 };
 
 export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
   type: 'awsx:experimental/ecs:FargateTaskDefinitionV2',
-  aliases: [{ type: 'awsx-experimental:index:FargateTaskDefinitionV2' }],
+  aliases: [],
 };
 
 export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
