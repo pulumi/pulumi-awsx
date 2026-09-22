@@ -474,7 +474,7 @@ export interface ContainerDefinitionOptionsBase {
   /**
    * Environment variables passed to the container.
    */
-  readonly environment?: Record<string, string>;
+  readonly environment?: Record<string, pulumi.Input<string>>;
 
   /**
    * Environment files passed to the container.
