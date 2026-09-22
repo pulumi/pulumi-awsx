@@ -1,7 +1,10 @@
-# AWSX Experimental
+# AWSX Next
 
-Experimental Pulumi components for AWS, distributed as a TypeScript
+Internal source workspace for the next AWSX component architecture, distributed as a TypeScript
 [source-based plugin package](https://www.pulumi.com/docs/iac/guides/building-extending/packages/source-based-plugin/).
+Components from this workspace are selectively published through the `awsx.experimental` namespace.
+See the [experimental component lifecycle](../docs/experimental-components.md) for stability and
+graduation rules.
 
 ## Development
 
@@ -33,7 +36,7 @@ package schema. It requires `pulumi` on `PATH`.
 From a Pulumi project, add this package by its local path:
 
 ```shell
-pulumi package add ../path/to/pulumi-awsx/awsx-experimental
+pulumi package add ../path/to/pulumi-awsx/awsx-next
 ```
 
 Pulumi loads `index.ts`, discovers its exported `ComponentResource` classes, and generates an SDK

@@ -46,7 +46,7 @@ describe('ExampleComponent', () => {
       resources.map(({ type, name, custom, inputs }) => ({ type, name, custom, inputs })),
     ).toEqual([
       {
-        type: 'awsx-experimental:index:ExampleComponent',
+        type: 'awsx-next:index:ExampleComponent',
         name: 'example',
         custom: false,
         inputs: { message: 'hello' },
