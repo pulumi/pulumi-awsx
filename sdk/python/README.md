@@ -77,6 +77,18 @@ dotnet add package Pulumi.Awsx
 
 The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
 
+### Node.js compatibility warnings
+
+AWSX includes its own Node.js runtime. AWSX warns when the provider host might not support the runtime planned for a future major version.
+
+To suppress this warning for a stack:
+
+```bash
+pulumi config set awsx:suppressNodeCompatibilityWarning true
+```
+
+The setting applies to all SDK languages. Remove it or set it to `false` to restore warnings.
+
 ### Custom AWS Provider Versions
 
 Pulumi dependency resolution may result in `awsx.*` resources using a different version of the AWS Classic Provider than

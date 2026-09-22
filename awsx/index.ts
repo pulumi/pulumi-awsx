@@ -15,6 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
 import { Repository } from "./ecr";
+import { warnNodeCompatibility } from "./nodeCompatibility";
 import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
@@ -40,6 +41,7 @@ class Provider implements pulumi.provider.Provider {
     inputs: pulumi.Inputs,
     options: pulumi.ComponentResourceOptions,
   ) {
+    await warnNodeCompatibility();
     const resource = construct(name, type, inputs, options);
     if (resource === undefined) {
       throw new Error(`unknown resource type ${type}`);
@@ -48,6 +50,7 @@ class Provider implements pulumi.provider.Provider {
   }
 
   async call(token: string, inputs: pulumi.Inputs): Promise<pulumi.provider.InvokeResult> {
+    await warnNodeCompatibility();
     const untypedFunctions: Record<string, (inputs: any) => Promise<any>> = functions;
     const handler = untypedFunctions[token];
     if (!handler) {
