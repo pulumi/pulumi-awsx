@@ -106,9 +106,12 @@ beforeAll(async () => {
         case 'aws:ecs/taskDefinition:TaskDefinition':
           state.arn = `arn:aws:ecs:${args.inputs.region ?? providerRegion}:${accountId}:task-definition/${args.name}`;
           break;
-        case 'awsx-experimental:index:ContainerDefinition': {
-          const { definition: _definition, definitionJSON: _definitionJSON, ...container } =
-            args.inputs;
+        case 'awsx-next:index:ContainerDefinition': {
+          const {
+            definition: _definition,
+            definitionJSON: _definitionJSON,
+            ...container
+          } = args.inputs;
           state.definition = container;
           state.definitionJSON = JSON.stringify(container);
           break;
