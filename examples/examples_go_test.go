@@ -23,6 +23,12 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
+func TestAccEcsExperimentalStandaloneGo(t *testing.T) {
+	t.Skip("pulumi package add currently generates a missing FargateContainerDefinitionOptionsArgs Go type")
+	pt := newExperimentalPackageTest(t, "go")
+	pt.Preview(t)
+}
+
 func TestAccTrail(t *testing.T) {
 	test := getGoBaseOptions(t).
 		With(integration.ProgramTestOptions{

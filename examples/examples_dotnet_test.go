@@ -26,6 +26,11 @@ import (
 	"testing"
 )
 
+func TestAccEcsExperimentalStandaloneDotnet(t *testing.T) {
+	pt := newExperimentalPackageTest(t, "dotnet")
+	pt.Preview(t)
+}
+
 func TestAccTrailDotnet(t *testing.T) {
 	test := getDotnetBaseOptions(t).
 		With(integration.ProgramTestOptions{

@@ -87,6 +87,23 @@ func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccEcsExperimentalStandalone(t *testing.T) {
+	pt := newExperimentalPackageTest(t, "nodejs")
+	result := pt.Up(t)
+
+	require.Equal(t, "task", result.Outputs["componentName"].Value)
+	require.NotEmptyf(t, result.Outputs["taskDefinitionArn"].Value, "taskDefinitionArn empty")
+	require.NotEmptyf(t, result.Outputs["executionRoleArn"].Value, "executionRoleArn empty")
+	require.NotEmptyf(t, result.Outputs["logGroupName"].Value, "logGroupName")
+
+	containerDefinitions, ok := result.Outputs["containerDefinitions"].Value.(string)
+	require.True(t, ok)
+	var definitions []map[string]any
+	require.NoError(t, json.Unmarshal([]byte(containerDefinitions), &definitions))
+	require.Len(t, definitions, 1)
+	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, definitions[0]["environment"])
+}
+
 func TestAccEcsService(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{

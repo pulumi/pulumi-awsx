@@ -22,6 +22,11 @@ import (
 	"testing"
 )
 
+func TestAccEcsExperimentalStandalonePython(t *testing.T) {
+	pt := newExperimentalPackageTest(t, "python")
+	pt.Preview(t)
+}
+
 func TestAccTrailPython(t *testing.T) {
 	test := getPythonBaseOptions(t).
 		With(integration.ProgramTestOptions{
