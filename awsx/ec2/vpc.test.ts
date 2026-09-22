@@ -52,27 +52,27 @@ function unwrap<T>(x: pulumi.Output<T> | T): Promise<T> {
 
 describe("validateEips", () => {
   it("should not throw an exception if NAT Gateway strategy is Single and no EIPs are supplied", () => {
-    expect(() => validateEips("Single", [])).not.toThrowError();
+    expect(() => validateEips("Single", [])).not.toThrow();
   });
 
   it("should throw an exception if NAT Gateway strategy is None and EIPs are supplied", () => {
-    expect(() => validateEips("None", ["abc123"])).toThrowError("cannot be specified");
+    expect(() => validateEips("None", ["abc123"])).toThrow("cannot be specified");
   });
 
   it("should throw an exception if NAT Gateway strategy is Single and more than 1 EIP is supplied", () => {
-    expect(() => validateEips("Single", ["abc123", "def456"])).toThrowError("Exactly one");
+    expect(() => validateEips("Single", ["abc123", "def456"])).toThrow("Exactly one");
   });
 
   it("should throw an exception if NAT Gateway strategy is OnePerAz and too few EIPs are supplied", () => {
     expect(() =>
       validateEips("OnePerAz", ["abc123", "def456"], ["us-east-1a", "us-east-1b", "us-east-1c"]),
-    ).toThrowError("must match the number");
+    ).toThrow("must match the number");
   });
 
   it("should throw an exception if NAT Gateway strategy is OnePerAz and too many EIPs are supplied", () => {
     expect(() =>
       validateEips("OnePerAz", ["abc123", "def456", "ghi789"], ["us-east-1a", "us-east-1b"]),
-    ).toThrowError("must match the number");
+    ).toThrow("must match the number");
   });
 });
 
@@ -94,9 +94,9 @@ describe("validateNatGatewayStrategy", () => {
     });
 
     if (expectException) {
-      expect(() => validateNatGatewayStrategy(strategy, specs)).toThrowError(expectedMessage);
+      expect(() => validateNatGatewayStrategy(strategy, specs)).toThrow(expectedMessage);
     } else {
-      expect(() => validateNatGatewayStrategy(strategy, specs)).not.toThrowError();
+      expect(() => validateNatGatewayStrategy(strategy, specs)).not.toThrow();
     }
   };
 
@@ -417,7 +417,7 @@ describe("validating vpc args", () => {
     Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool", ipv4NetmaskLength: 24 });
   });
   it("rejects ipv4IpamPoolId without mask or cidrBlock", () => {
-    expect(() => Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool" })).toThrowError();
+    expect(() => Vpc.validateVpcArgs({ ipv4IpamPoolId: "pool" })).toThrow();
   });
   it("rejects ipv4IpamPoolId with both mask and cidrBlock", () => {
     expect(() =>
@@ -426,7 +426,7 @@ describe("validating vpc args", () => {
         cidrBlock: "10.0.0.0/24",
         ipv4NetmaskLength: 24,
       }),
-    ).toThrowError();
+    ).toThrow();
   });
 });
 
@@ -1267,7 +1267,7 @@ describe("child resource api", () => {
   it("requires a plain string region for default AZ discovery", () => {
     expect(() =>
       (Vpc as any).resolvePromptRegionForAzLookup(pulumi.output(pulumiAws.Region.EUCentral1)),
-    ).toThrowError(
+    ).toThrow(
       "Vpc.region must be a plain string when availabilityZoneNames is not set. If region is dynamic, specify availabilityZoneNames explicitly.",
     );
   });

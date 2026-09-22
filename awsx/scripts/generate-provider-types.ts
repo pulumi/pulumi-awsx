@@ -168,7 +168,6 @@ function genClassProperties(
       getType(typeDefinition, "Output", false),
     ]);
     return ts.factory.createPropertyDeclaration(
-      undefined,
       [ts.factory.createModifier(ts.SyntaxKind.PublicKeyword)],
       propKey,
       requiredLookup.has(propKey)
@@ -190,7 +189,6 @@ const genResourceArgs = (
     "Input",
   );
   const inputs = ts.factory.createInterfaceDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     typeName + "Args",
     undefined,
@@ -218,10 +216,8 @@ const genResourceAbstractType = (
   ]);
   const constructor = ts.factory.createConstructorDeclaration(
     undefined,
-    undefined,
     [
       ts.factory.createParameterDeclaration(
-        undefined,
         undefined,
         undefined,
         "name",
@@ -231,13 +227,11 @@ const genResourceAbstractType = (
       ts.factory.createParameterDeclaration(
         undefined,
         undefined,
-        undefined,
         "args",
         undefined,
         ts.factory.createTypeReferenceNode("pulumi.Inputs"),
       ),
       ts.factory.createParameterDeclaration(
-        undefined,
         undefined,
         undefined,
         "opts",
@@ -294,7 +288,6 @@ const genResourceAbstractType = (
     ),
   );
   const resourceType = ts.factory.createClassDeclaration(
-    undefined,
     [
       ts.factory.createModifier(ts.SyntaxKind.ExportKeyword),
       ts.factory.createModifier(ts.SyntaxKind.AbstractKeyword),
@@ -302,6 +295,7 @@ const genResourceAbstractType = (
     typeName,
     [
       ts.factory.createTypeParameterDeclaration(
+        undefined,
         ts.factory.createIdentifier("TData"),
         undefined,
         ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
@@ -325,7 +319,6 @@ const genTypeInterfaces = (
 
     const genEnumType = (suffix: string) =>
       ts.factory.createTypeAliasDeclaration(
-        undefined,
         [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
         ts.factory.createIdentifier(typeName + suffix),
         undefined,
@@ -341,7 +334,6 @@ const genTypeInterfaces = (
     "Input",
   );
   const inputs = ts.factory.createInterfaceDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     typeName + "Inputs",
     undefined,
@@ -355,7 +347,6 @@ const genTypeInterfaces = (
     "Output",
   );
   const outputs = ts.factory.createInterfaceDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     typeName + "Outputs",
     undefined,
@@ -372,7 +363,6 @@ function genFunctionInputs(
 ) {
   const inputProperties = genTypeProperties(objectDef?.properties, objectDef?.required, "Input");
   return ts.factory.createInterfaceDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     functionName + "Inputs",
     undefined,
@@ -387,7 +377,6 @@ function genFunctionOutputs(
 ) {
   const outputProperties = genTypeProperties(objectDef?.properties, objectDef?.required, "Output");
   return ts.factory.createInterfaceDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     functionName + "Outputs",
     undefined,
@@ -434,7 +423,6 @@ function genFunctions(functions: pulumiSchema.PulumiPackageMetaschema["functions
 
 function genFunctionCallsType(functions: pulumiSchema.PulumiPackageMetaschema["functions"]) {
   return ts.factory.createTypeAliasDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     "Functions",
     undefined,
@@ -449,7 +437,6 @@ function genFunctionCallsType(functions: pulumiSchema.PulumiPackageMetaschema["f
             undefined,
             [
               ts.factory.createParameterDeclaration(
-                undefined,
                 undefined,
                 undefined,
                 "inputs",
@@ -469,7 +456,6 @@ function genFunctionCallsType(functions: pulumiSchema.PulumiPackageMetaschema["f
 
 function genResourceConstructors(resources: pulumiSchema.PulumiPackageMetaschema["resources"]) {
   return ts.factory.createTypeAliasDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     ts.factory.createIdentifier("ResourceConstructor"),
     undefined,
@@ -500,16 +486,21 @@ function resourceConstructorType() {
     ts.factory.createParameterDeclaration(
       undefined,
       undefined,
-      undefined,
       ts.factory.createIdentifier(name),
       undefined,
       type,
     );
   return ts.factory.createTypeAliasDeclaration(
-    undefined,
     [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
     ts.factory.createIdentifier("ConstructComponent"),
-    [ts.factory.createTypeParameterDeclaration(tType, componentResourceRef, componentResourceRef)],
+    [
+      ts.factory.createTypeParameterDeclaration(
+        undefined,
+        tType,
+        componentResourceRef,
+        componentResourceRef,
+      ),
+    ],
     ts.factory.createFunctionTypeNode(
       undefined,
       [
@@ -540,7 +531,6 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
     ts.factory.createJSDocComment(headerWarning),
     ts.factory.createImportDeclaration(
       undefined,
-      undefined,
       ts.factory.createImportClause(false, ts.factory.createIdentifier("* as pulumi"), undefined),
       ts.factory.createStringLiteral("@pulumi/pulumi"),
     ),
@@ -549,7 +539,6 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
     genFunctionCallsType(schema.functions),
     ...Object.values(externalRefs).map((externalRef) =>
       ts.factory.createImportDeclaration(
-        undefined,
         undefined,
         ts.factory.createImportClause(
           false,
@@ -575,7 +564,7 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
   const result = printer.printList(ts.ListFormat.MultiLine, nodes, sourceFile);
 
   const outPath = path.resolve(args.out);
-  fs.writeFileSync(outPath, "/* tslint:disable */\n" + result);
+  fs.writeFileSync(outPath, result);
 }
 
 generateProviderTypes({
