@@ -96,14 +96,14 @@ namespace Pulumi.Awsx.Experimental.Ecs.Inputs
         }
 
         [Input("environment")]
-        private Dictionary<string, string>? _environment;
+        private Dictionary<string, Input<string>>? _environment;
 
         /// <summary>
         /// Environment variables passed to the container.
         /// </summary>
-        public Dictionary<string, string> Environment
+        public Dictionary<string, Input<string>> Environment
         {
-            get => _environment ?? (_environment = new Dictionary<string, string>());
+            get => _environment ?? (_environment = new Dictionary<string, Input<string>>());
             set => _environment = value;
         }
 

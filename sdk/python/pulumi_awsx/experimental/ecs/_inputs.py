@@ -449,7 +449,7 @@ class FargateContainerDefinitionOptionsArgsDict(TypedDict):
     For more information, see [Dockerfile
     ENTRYPOINT](https://docs.docker.com/reference/dockerfile/#entrypoint).
     """
-    environment: NotRequired[Mapping[str, _builtins.str]]
+    environment: NotRequired[Mapping[str, pulumi.Input[_builtins.str]]]
     """
     Environment variables passed to the container.
     """
@@ -617,7 +617,7 @@ class FargateContainerDefinitionOptionsArgs:
                  depends_on: Optional[Sequence[pulumi.Input['ContainerDependencyArgs']]] = None,
                  docker_labels: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  entry_point: Optional[Sequence[_builtins.str]] = None,
-                 environment: Optional[Mapping[str, _builtins.str]] = None,
+                 environment: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  environment_files: Optional[Sequence['EnvironmentFileArgs']] = None,
                  essential: Optional[_builtins.bool] = None,
                  health_check: Optional['HealthCheckArgs'] = None,
@@ -663,7 +663,7 @@ class FargateContainerDefinitionOptionsArgs:
                
                For more information, see [Dockerfile
                ENTRYPOINT](https://docs.docker.com/reference/dockerfile/#entrypoint).
-        :param Mapping[str, _builtins.str] environment: Environment variables passed to the container.
+        :param Mapping[str, pulumi.Input[_builtins.str]] environment: Environment variables passed to the container.
         :param Sequence['EnvironmentFileArgs'] environment_files: Environment files passed to the container.
         :param _builtins.bool essential: Whether the container is essential to the task.
                
@@ -917,14 +917,14 @@ class FargateContainerDefinitionOptionsArgs:
 
     @_builtins.property
     @pulumi.getter
-    def environment(self) -> Optional[Mapping[str, _builtins.str]]:
+    def environment(self) -> Optional[Mapping[str, pulumi.Input[_builtins.str]]]:
         """
         Environment variables passed to the container.
         """
         return pulumi.get(self, "environment")
 
     @environment.setter
-    def environment(self, value: Optional[Mapping[str, _builtins.str]]):
+    def environment(self, value: Optional[Mapping[str, pulumi.Input[_builtins.str]]]):
         pulumi.set(self, "environment", value)
 
     @_builtins.property

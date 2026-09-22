@@ -210,6 +210,9 @@ export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
   aliases: [],
 };
 
+const containerIdentities = new WeakMap<pulumi.ComponentResource, ComponentIdentity>();
+const providerRegions = new WeakMap<pulumi.ComponentResource, pulumi.Output<string>>();
+
 export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   /**
    * The Task Role of the task
@@ -236,9 +239,6 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   public readonly name!: string;
 
   public readonly region?: string;
-
-  private providerRegion?: pulumi.Output<string>;
-  private readonly containerIdentity: ComponentIdentity;
 
   constructor(
     name: string,
@@ -274,7 +274,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         aliases: identity.aliases,
       }),
     );
-    this.containerIdentity = containerIdentity;
+    containerIdentities.set(this, containerIdentity);
     if (opts.urn) {
       return;
     }
@@ -436,7 +436,12 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
    * @returns The inherited provider region.
    */
   private getProviderRegion(): pulumi.Output<string> {
-    return (this.providerRegion ??= aws.getRegionOutput(undefined, { parent: this }).region);
+    let region = providerRegions.get(this);
+    if (!region) {
+      region = aws.getRegionOutput(undefined, { parent: this }).region;
+      providerRegions.set(this, region);
+    }
+    return region;
   }
 
   /**
@@ -1006,7 +1011,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           : undefined,
       },
       { parent: this },
-      this.containerIdentity,
+      containerIdentities.get(this) ?? containerDefinitionStandaloneIdentity,
       true,
     );
   }

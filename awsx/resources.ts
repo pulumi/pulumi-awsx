@@ -23,8 +23,8 @@ import {
   containerDefinitionAwsxIdentity,
   fargateTaskDefinitionAwsxIdentity,
   FargateTaskDefinitionV2,
-} from "@pulumi/awsx-experimental/src/ecs";
-import { ContainerDefinition } from "@pulumi/awsx-experimental/src/ecs/containerDefinition";
+} from "@pulumi/awsx-next/src/ecs";
+import { ContainerDefinition } from "@pulumi/awsx-next/src/ecs/containerDefinition";
 
 type ExperimentalResourceConstructors = {
   "awsx:experimental/ecs:FargateTaskDefinitionV2": schemaTypes.ConstructComponent<FargateTaskDefinitionV2>;

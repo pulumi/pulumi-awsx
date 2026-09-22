@@ -28,30 +28,30 @@ func TestNormalizeExperimental(t *testing.T) {
 
 	inferred := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx-experimental:index:FargateTaskDefinitionV2": {
+			"awsx-next:index:FargateTaskDefinitionV2": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Properties: map[string]schema.PropertySpec{
 						"definition": {
-							TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-experimental:index:FargateContainerDefinitionOptions"},
+							TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-next:index:FargateContainerDefinitionOptions"},
 						},
 					},
 				},
 				InputProperties: map[string]schema.PropertySpec{
 					"logGroup": {
-						TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-experimental:index:LogGroupReference"},
+						TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-next:index:LogGroupReference"},
 					},
 				},
 			},
-			"awsx-experimental:index:LogGroup": {},
+			"awsx-next:index:LogGroup": {},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx-experimental:index:ContainerPortRange": {
+			"awsx-next:index:ContainerPortRange": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{Type: "object"},
 			},
-			"awsx-experimental:index:FargateContainerDefinitionOptions": {
+			"awsx-next:index:FargateContainerDefinitionOptions": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{Type: "object"},
 			},
-			"awsx-experimental:index:LogGroupReference": {
+			"awsx-next:index:LogGroupReference": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{Type: "object"},
 			},
 		},

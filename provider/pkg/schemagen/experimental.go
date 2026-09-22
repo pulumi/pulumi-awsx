@@ -25,59 +25,59 @@ import (
 )
 
 var experimentalTokenMappings = map[string]string{
-	"awsx-experimental:index:FargateTaskDefinitionV2":               "awsx:experimental/ecs:FargateTaskDefinitionV2",
-	"awsx-experimental:index:LogGroup":                              "awsx:experimental/cloudwatch:LogGroup",
-	"awsx-experimental:index:AwsLogDriverMode":                      "awsx:experimental/ecs:AwsLogDriverMode",
-	"awsx-experimental:index:ContainerDefinitionVersionConsistency": "awsx:experimental/ecs:ContainerDefinitionVersionConsistency", //nolint:lll
-	"awsx-experimental:index:ContainerDependency":                   "awsx:experimental/ecs:ContainerDependency",
-	"awsx-experimental:index:ContainerDependencyCondition":          "awsx:experimental/ecs:ContainerDependencyCondition",
-	"awsx-experimental:index:ContainerPortRange":                    "awsx:experimental/ecs:ContainerPortRange",
-	"awsx-experimental:index:CredentialSpec":                        "awsx:experimental/ecs:CredentialSpec",
-	"awsx-experimental:index:CredentialSpecAuthenticationMode":      "awsx:experimental/ecs:CredentialSpecAuthenticationMode", //nolint:lll
-	"awsx-experimental:index:EnvironmentFile":                       "awsx:experimental/ecs:EnvironmentFile",
-	"awsx-experimental:index:FargateAwsLogsLogDriver":               "awsx:experimental/ecs:FargateAwsLogsLogDriver",
-	"awsx-experimental:index:FargateContainerDefinitionOptions":     "awsx:experimental/ecs:FargateContainerDefinitionOptions", //nolint:lll
-	"awsx-experimental:index:FargateKernelCapabilities":             "awsx:experimental/ecs:FargateKernelCapabilities",
-	"awsx-experimental:index:FargateLinuxParameters":                "awsx:experimental/ecs:FargateLinuxParameters",
-	"awsx-experimental:index:FargateLogDriver":                      "awsx:experimental/ecs:FargateLogDriver",
-	"awsx-experimental:index:FargatePortMapping":                    "awsx:experimental/ecs:FargatePortMapping",
-	"awsx-experimental:index:HealthCheck":                           "awsx:experimental/ecs:HealthCheck",
-	"awsx-experimental:index:LogGroupReference":                     "awsx:experimental/cloudwatch:LogGroupReference",
-	"awsx-experimental:index:PortMappingAppProtocol":                "awsx:experimental/ecs:PortMappingAppProtocol",
-	"awsx-experimental:index:PortMappingProtocol":                   "awsx:experimental/ecs:PortMappingProtocol",
-	"awsx-experimental:index:S3BucketCredentialSpec":                "awsx:experimental/ecs:S3BucketCredentialSpec",
-	"awsx-experimental:index:Secret":                                "awsx:experimental/ecs:Secret",
-	"awsx-experimental:index:SecretsManagerSecret":                  "awsx:experimental/ecs:SecretsManagerSecret",
-	"awsx-experimental:index:SystemControl":                         "awsx:experimental/ecs:SystemControl",
-	"awsx-experimental:index:Ulimit":                                "awsx:experimental/ecs:Ulimit",
-	"awsx-experimental:index:UlimitName":                            "awsx:experimental/ecs:UlimitName",
-	"awsx-experimental:index:VolumeFrom":                            "awsx:experimental/ecs:VolumeFrom",
-	"awsx-experimental:index:RuntimePlatform":                       "awsx:experimental/ecs:RuntimePlatform",
-	"awsx-experimental:index:OperatingSystemFamily":                 "awsx:experimental/ecs:OperatingSystemFamily",
-	"awsx-experimental:index:CpuArchitecture":                       "awsx:experimental/ecs:CpuArchitecture",
+	"awsx-next:index:FargateTaskDefinitionV2":               "awsx:experimental/ecs:FargateTaskDefinitionV2",
+	"awsx-next:index:LogGroup":                              "awsx:experimental/cloudwatch:LogGroup",
+	"awsx-next:index:AwsLogDriverMode":                      "awsx:experimental/ecs:AwsLogDriverMode",
+	"awsx-next:index:ContainerDefinitionVersionConsistency": "awsx:experimental/ecs:ContainerDefinitionVersionConsistency", //nolint:lll
+	"awsx-next:index:ContainerDependency":                   "awsx:experimental/ecs:ContainerDependency",
+	"awsx-next:index:ContainerDependencyCondition":          "awsx:experimental/ecs:ContainerDependencyCondition",
+	"awsx-next:index:ContainerPortRange":                    "awsx:experimental/ecs:ContainerPortRange",
+	"awsx-next:index:CredentialSpec":                        "awsx:experimental/ecs:CredentialSpec",
+	"awsx-next:index:CredentialSpecAuthenticationMode":      "awsx:experimental/ecs:CredentialSpecAuthenticationMode", //nolint:lll
+	"awsx-next:index:EnvironmentFile":                       "awsx:experimental/ecs:EnvironmentFile",
+	"awsx-next:index:FargateAwsLogsLogDriver":               "awsx:experimental/ecs:FargateAwsLogsLogDriver",
+	"awsx-next:index:FargateContainerDefinitionOptions":     "awsx:experimental/ecs:FargateContainerDefinitionOptions", //nolint:lll
+	"awsx-next:index:FargateKernelCapabilities":             "awsx:experimental/ecs:FargateKernelCapabilities",
+	"awsx-next:index:FargateLinuxParameters":                "awsx:experimental/ecs:FargateLinuxParameters",
+	"awsx-next:index:FargateLogDriver":                      "awsx:experimental/ecs:FargateLogDriver",
+	"awsx-next:index:FargatePortMapping":                    "awsx:experimental/ecs:FargatePortMapping",
+	"awsx-next:index:HealthCheck":                           "awsx:experimental/ecs:HealthCheck",
+	"awsx-next:index:LogGroupReference":                     "awsx:experimental/cloudwatch:LogGroupReference",
+	"awsx-next:index:PortMappingAppProtocol":                "awsx:experimental/ecs:PortMappingAppProtocol",
+	"awsx-next:index:PortMappingProtocol":                   "awsx:experimental/ecs:PortMappingProtocol",
+	"awsx-next:index:S3BucketCredentialSpec":                "awsx:experimental/ecs:S3BucketCredentialSpec",
+	"awsx-next:index:Secret":                                "awsx:experimental/ecs:Secret",
+	"awsx-next:index:SecretsManagerSecret":                  "awsx:experimental/ecs:SecretsManagerSecret",
+	"awsx-next:index:SystemControl":                         "awsx:experimental/ecs:SystemControl",
+	"awsx-next:index:Ulimit":                                "awsx:experimental/ecs:Ulimit",
+	"awsx-next:index:UlimitName":                            "awsx:experimental/ecs:UlimitName",
+	"awsx-next:index:VolumeFrom":                            "awsx:experimental/ecs:VolumeFrom",
+	"awsx-next:index:RuntimePlatform":                       "awsx:experimental/ecs:RuntimePlatform",
+	"awsx-next:index:OperatingSystemFamily":                 "awsx:experimental/ecs:OperatingSystemFamily",
+	"awsx-next:index:CpuArchitecture":                       "awsx:experimental/ecs:CpuArchitecture",
 }
 
-func generateExperimental(packageDir string) schema.PackageSpec {
+func generateNextComponents(packageDir string) schema.PackageSpec {
 	absolutePackageDir, err := filepath.Abs(packageDir)
 	if err != nil {
 		log.Fatalf("resolving AWSX package directory: %v", err)
 	}
 
 	repositoryRoot := filepath.Dir(absolutePackageDir)
-	experimentalDir := filepath.Join(repositoryRoot, "awsx-experimental")
-	cmd := exec.Command("pulumi", "package", "get-schema", experimentalDir)
+	nextComponentsDir := filepath.Join(repositoryRoot, "awsx-next")
+	cmd := exec.Command("pulumi", "package", "get-schema", nextComponentsDir)
 	cmd.Dir = repositoryRoot
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
 	output, err := cmd.Output()
 	if err != nil {
-		log.Fatalf("generating AWSX experimental schema: %v\n%s", err, stderr.String())
+		log.Fatalf("generating AWSX next component schema: %v\n%s", err, stderr.String())
 	}
 
 	var inferred schema.PackageSpec
 	if err := json.Unmarshal(output, &inferred); err != nil {
-		log.Fatalf("parsing AWSX experimental schema: %v", err)
+		log.Fatalf("parsing AWSX next component schema: %v", err)
 	}
 
 	return normalizeExperimental(inferred)

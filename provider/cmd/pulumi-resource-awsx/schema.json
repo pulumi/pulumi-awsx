@@ -1965,8 +1965,7 @@
                 "environment": {
                     "type": "object",
                     "additionalProperties": {
-                        "type": "string",
-                        "plain": true
+                        "type": "string"
                     },
                     "plain": true,
                     "description": "Environment variables passed to the container."

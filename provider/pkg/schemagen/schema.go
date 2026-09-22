@@ -118,7 +118,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 	return extendSchemas(packageSpec,
 		generateCloudtrail(awsSpec),
 		generateEcs(awsSpec, awsNativeSpec),
-		generateExperimental(packageDir),
+		generateNextComponents(packageDir),
 		generateLb(awsSpec),
 		generateCloudwatch(awsSpec),
 		generateIam(awsSpec),

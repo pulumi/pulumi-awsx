@@ -1279,7 +1279,7 @@ export namespace experimental {
             /**
              * Environment variables passed to the container.
              */
-            environment?: {[key: string]: string};
+            environment?: {[key: string]: pulumi.Input<string>};
             /**
              * Environment files passed to the container.
              */
