@@ -20,7 +20,10 @@ import {
 import { CredentialSpec } from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
-import { ContainerDefinition } from '../containerDefinition';
+import {
+  ContainerDefinition,
+  containerDefinitionStandaloneIdentity,
+} from '../containerDefinition';
 import { Arn, ArnFormat } from '../arn';
 
 export interface CommonTaskdefinitionOptions {
@@ -243,7 +246,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     /**
      * @internal
      */
-    identity: ComponentIdentity = fargateTaskDefinitionAwsxIdentity,
+    identity: ComponentIdentity = fargateTaskDefinitionStandaloneIdentity,
   ) {
     const inputs = opts.urn
       ? {
@@ -366,7 +369,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           secrets?.map((rendered) => rendered.value),
           logs?.value,
         );
-        return pulumi.output(c.definition);
+        return c.definition;
       },
     );
 
@@ -982,6 +985,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           : undefined,
       },
       { parent: this },
+      containerDefinitionStandaloneIdentity,
+      true,
     );
   }
 }
@@ -1076,7 +1081,8 @@ function roleNameFromArn(
     }
     // The role resourceName part of the arn will also include the path, e.g. `service-role/my-role`
     // but the import expects just the final `name` part.
-    return parts.resourceName.split('/').at(-1)!;
+    const roleNameParts = parts.resourceName.split('/');
+    return roleNameParts[roleNameParts.length - 1]!;
   });
 }
 
