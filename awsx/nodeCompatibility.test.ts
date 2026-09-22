@@ -28,7 +28,10 @@ import {
 } from "./nodeCompatibility";
 
 jest.mock("child_process", () => ({ __esModule: true, ...jest.requireActual("child_process") }));
-jest.mock("fs", () => ({ __esModule: true, ...jest.requireActual("fs") }));
+jest.mock("fs", () => {
+  const actual = jest.requireActual("fs");
+  return { __esModule: true, ...actual, default: actual };
+});
 jest.mock("os", () => ({ __esModule: true, ...jest.requireActual("os") }));
 
 const linux: PlatformFacts = {
