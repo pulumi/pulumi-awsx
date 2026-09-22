@@ -410,6 +410,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       taskRole: this.taskRole,
       taskDefinition: this.taskDefinition,
       logGroup: this.logGroup,
+      name: this.name,
+      region: this.region,
     });
   }
 
@@ -596,7 +598,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     }
 
     const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-${idx}-param`,
+      `${this.name}-${containerName}-credentialSpec-${idx}-param`,
       parameterNameFromArn(spec.ssmParameterArn!, this),
       undefined,
       { parent: this },
@@ -676,10 +678,22 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     name: string,
     source: SecretsManagerSecret,
   ): Rendered<ContainerDefinitionSecret> {
+    const propertyPath = `containers.${containerName}.secrets.${name}.secretsManager.secretArn`;
+    const secretRegion = Arn.split(source.secretArn, ArnFormat.COLON_RESOURCE_NAME, this).apply(
+      (parts) => {
+        if (!parts.region) {
+          throw new pulumi.InputPropertyError({
+            propertyPath,
+            reason: 'The Secrets Manager ARN must contain a region',
+          });
+        }
+        return parts.region;
+      },
+    );
     const secret = aws.secretsmanager.Secret.get(
       `${this.name}-${containerName}-${name}-secret`,
       source.secretArn,
-      undefined,
+      { region: secretRegion },
       { parent: this },
     );
     const value = pulumi
@@ -722,7 +736,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     parameterArn: pulumi.Input<string>,
   ): Rendered<ContainerDefinitionSecret> {
     const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-${name}-param`,
+      `${this.name}-${containerName}-secret-${name}-param`,
       parameterNameFromArn(parameterArn, this),
       undefined,
       { parent: this },
