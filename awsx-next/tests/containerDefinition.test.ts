@@ -45,7 +45,7 @@ describe('ContainerDefinition', () => {
 
     expect(resources.map(({ type, name, custom }) => ({ type, name, custom }))).toEqual([
       {
-        type: 'awsx-experimental:index:ContainerDefinition',
+        type: 'awsx-next:index:ContainerDefinition',
         name: 'container',
         custom: false,
       },

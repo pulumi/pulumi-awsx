@@ -16,13 +16,13 @@ import { ContainerDefinitionArgs, PortMapping } from './containerDefinitionArgs'
 import { ComponentIdentity } from '../componentIdentity';
 
 export const containerDefinitionStandaloneIdentity = {
-  type: 'awsx-experimental:index:ContainerDefinition',
-  aliases: [{ type: 'awsx:experimental/ecs:ContainerDefinition' }],
+  type: 'awsx-next:index:ContainerDefinition',
+  aliases: [],
 };
 
 export const containerDefinitionAwsxIdentity = {
   type: 'awsx:experimental/ecs:ContainerDefinition',
-  aliases: [{ type: 'awsx-experimental:index:ContainerDefinition' }],
+  aliases: [],
 };
 
 interface ContainerDefinitionData {
