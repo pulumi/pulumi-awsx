@@ -24,7 +24,7 @@ export class ExampleComponent extends pulumi.ComponentResource {
     args: ExampleComponentArgs,
     opts?: pulumi.ComponentResourceOptions,
   ) {
-    super('awsx-experimental:index:ExampleComponent', name, args, opts);
+    super('awsx-next:index:ExampleComponent', name, args, opts);
 
     this.message = pulumi.output(args.message);
 

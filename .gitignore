@@ -4,7 +4,7 @@ obj
 node_modules
 nuget
 awsx/coverage
-awsx-experimental/coverage
+awsx-next/coverage
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
@@ -26,7 +26,7 @@ ci-scripts/
 !.codex/config.toml
 
 !/awsx/package-lock.json
-!/awsx-experimental/package-lock.json
+!/awsx-next/package-lock.json
 
 sdk/java/build
 sdk/java/.gradle

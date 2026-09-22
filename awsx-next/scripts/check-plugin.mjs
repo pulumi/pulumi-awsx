@@ -17,10 +17,10 @@ if (result.status !== 0) {
 }
 
 const schema = JSON.parse(result.stdout);
-const token = 'awsx-experimental:index:ExampleComponent';
+const token = 'awsx-next:index:ExampleComponent';
 const component = schema.resources?.[token];
 
-assert.equal(schema.name, 'awsx-experimental');
+assert.equal(schema.name, 'awsx-next');
 assert.ok(component, `schema does not contain ${token}`);
 assert.deepEqual(component.requiredInputs, ['message']);
 assert.deepEqual(component.required, ['message']);
