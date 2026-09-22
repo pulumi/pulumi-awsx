@@ -44,12 +44,12 @@ NODE_VERSION=$(node -p 'require("./node-runtime-policy.json").packagedNodeVersio
 TARGET="node${NODE_VERSION}-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
-yarn install --no-progress --frozen-lockfile
-yarn check-duplicate-deps
-yarn gen-types
-yarn tsc
+npm ci
+npm run check-duplicate-deps
+npm run gen-types
+npm run tsc
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 cp node-runtime-policy.json bin/node-runtime-policy.json
-yarn --cwd bin version --new-version "${VERSION}" --no-git-tag-version
-yarn run pkg . --no-bytecode --public-packages "*" --public --target "${TARGET}" --output "${OUT}"
+npm --prefix bin version "${VERSION}" --no-git-tag-version
+npm exec -- pkg . --no-bytecode --public-packages "*" --public --target "${TARGET}" --output "${OUT}"
