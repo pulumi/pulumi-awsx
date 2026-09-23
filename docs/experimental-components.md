@@ -1,8 +1,6 @@
 # Experimental component lifecycle
 
-AWSX develops new component implementations in the internal `awsx-next` workspace. The workspace
-name identifies the implementation under development. It is not a public stability level or a
-separate AWSX product.
+AWSX develops new component implementations in the internal `awsx-next` workspace.
 
 Components become public through the `awsx.experimental` namespace. Components can graduate
 independently after their APIs and behavior have been validated.
@@ -12,7 +10,7 @@ independently after their APIs and behavior have been validated.
 ### Internal development
 
 The component is available only from the repository source. It has no compatibility promise and is
-not part of the generated AWSX SDKs.
+not part of the generated AWSX SDKs. It can be used via `pulumi package add`.
 
 ### Experimental
 
@@ -30,16 +28,3 @@ Breaking changes require an explicit maintainer decision and a documented migrat
 The component moves to `awsx.<service>`. Normal AWSX compatibility requirements apply. If an
 existing stable component already has the preferred name, the new component keeps a version suffix
 when it graduates.
-
-## Graduation criteria
-
-Before a component becomes stable:
-
-- its target use cases are implemented and documented;
-- its public API and security behavior have been reviewed;
-- schema generation and all generated SDKs have been validated;
-- unit tests cover component construction, inputs, outputs, and validation behavior;
-- upgrade behavior and resource identity have an explicit compatibility assessment;
-- examples show the supported user workflow;
-- it has completed a documented feedback period; and
-- no unresolved high severity defects block release.
