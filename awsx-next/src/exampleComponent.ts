@@ -11,7 +11,9 @@ export interface ExampleComponentArgs {
 }
 
 /**
- * A minimal component that verifies source-based plugin discovery and schema inference.
+ * A temporary component that verifies source-based plugin discovery and schema inference.
+ *
+ * The next PR replaces this component with the first AWSX component implementation.
  */
 export class ExampleComponent extends pulumi.ComponentResource {
   /**
