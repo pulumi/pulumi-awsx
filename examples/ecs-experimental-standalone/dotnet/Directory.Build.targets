@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Update="Pulumi" Version="3.*" />
+  </ItemGroup>
+</Project>

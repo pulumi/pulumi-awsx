@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using Pulumi;
-using Pulumi.AwsxExperimental;
-using Pulumi.AwsxExperimental.Inputs;
+using Pulumi.AwsxNext;
+using Pulumi.AwsxNext.Inputs;
 
 return await Deployment.RunAsync(() =>
 {
