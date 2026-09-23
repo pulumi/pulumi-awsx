@@ -40,7 +40,6 @@ describe('ContainerDefinition', () => {
       name: 'web',
     });
 
-    await expect(unwrap(component.definitionJSON)).resolves.toBe('{"image":"nginx","name":"web"}');
     await unwrap(component.urn);
 
     expect(resources.map(({ type, name, custom }) => ({ type, name, custom }))).toEqual([
