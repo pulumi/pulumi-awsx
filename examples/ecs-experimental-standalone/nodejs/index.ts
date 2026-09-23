@@ -1,8 +1,8 @@
 import "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import * as awsxExperimental from "@pulumi/awsx-experimental";
+import * as awsxNext from "@pulumi/awsx-next";
 
-const task = new awsxExperimental.FargateTaskDefinitionV2("task", {
+const task = new awsxNext.FargateTaskDefinitionV2("task", {
   cpu: 256,
   memory: 512,
   containers: {
@@ -17,7 +17,7 @@ const task = new awsxExperimental.FargateTaskDefinitionV2("task", {
   },
 }, {
   transforms: [async (args) => {
-    if (args.type === "awsx-experimental:index:ContainerDefinition") {
+    if (args.type === "awsx-next:index:ContainerDefinition") {
       return {
         props: { ...args.props, environment: [{ name: "TRANSFORMED", value: "true" }] },
         opts: args.opts,

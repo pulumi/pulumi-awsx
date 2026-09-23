@@ -1,16 +1,16 @@
 package main
 
 import (
-	awsxexperimental "github.com/pulumi/pulumi-awsx-experimental/sdk/go/awsxexperimental"
+	awsxnext "github.com/pulumi/pulumi-awsx-next/sdk/go/awsxnext"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		task, err := awsxexperimental.NewFargateTaskDefinitionV2(ctx, "task", &awsxexperimental.FargateTaskDefinitionV2Args{
+		task, err := awsxnext.NewFargateTaskDefinitionV2(ctx, "task", &awsxnext.FargateTaskDefinitionV2Args{
 			Cpu:    pulumi.Float64Ref(256),
 			Memory: pulumi.Float64Ref(512),
-			Containers: map[string]awsxexperimental.FargateContainerDefinitionOptionsArgs{
+			Containers: map[string]awsxnext.FargateContainerDefinitionOptionsArgs{
 				"app": {Image: pulumi.String("public.ecr.aws/nginx/nginx:latest")},
 			},
 		})
