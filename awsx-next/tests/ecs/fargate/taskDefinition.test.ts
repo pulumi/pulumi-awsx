@@ -215,7 +215,7 @@ async function resolveContainers(
  */
 function executionRolePolicy(name: string): Record<string, any> {
   const policies = resourcesOfType('aws:iam/rolePolicy:RolePolicy');
-  const policy = policies.find((resource) => resource.name === `${name}-execRole-container-policy`);
+  const policy = policies.find((resource) => resource.name === `${name}-execution-role-policy`);
   expect(policy).toBeDefined();
   return JSON.parse(policy!.inputs.policy);
 }
@@ -285,8 +285,8 @@ describe('FargateTaskDefinitionV2', () => {
       },
     });
 
-    const containers = await resolveContainers(task, 'derived-taskdef');
-    const resource = taskDefinitionResource('derived-taskdef')!;
+    const containers = await resolveContainers(task, 'derived');
+    const resource = taskDefinitionResource('derived')!;
     expect(resource.inputs.cpu).toBe('512');
     expect(resource.inputs.memory).toBe('1024');
     expect(containers.map((container) => container.name)).toEqual(['app', 'sidecar']);
@@ -306,7 +306,7 @@ describe('FargateTaskDefinitionV2', () => {
       },
     });
 
-    const containers = await resolveContainers(task, 'environment-taskdef');
+    const containers = await resolveContainers(task, 'environment');
     expect(containers[0]!.environment).toEqual([
       { name: 'API_URL', value: 'https://api.example.com' },
       { name: 'MODE', value: 'production' },
@@ -330,9 +330,9 @@ describe('FargateTaskDefinitionV2', () => {
     });
 
     await unwrap(task.taskDefinition.arn);
-    expect(
-      taskDefinitionResource(`storage-${ephemeralStorage}-taskdef`)!.inputs.ephemeralStorage,
-    ).toEqual({ sizeInGib: ephemeralStorage });
+    expect(taskDefinitionResource(`storage-${ephemeralStorage}`)!.inputs.ephemeralStorage).toEqual({
+      sizeInGib: ephemeralStorage,
+    });
   });
 
   test('preserves an explicit valid task configuration and runtime platform', async () => {
@@ -353,7 +353,7 @@ describe('FargateTaskDefinitionV2', () => {
     });
 
     await unwrap(task.taskDefinition.arn);
-    const resource = taskDefinitionResource('explicit-taskdef')!;
+    const resource = taskDefinitionResource('explicit')!;
     expect(resource.inputs.cpu).toBe('2048');
     expect(resource.inputs.memory).toBe('8192');
     expect(resource.inputs.runtimePlatform).toEqual({
@@ -370,12 +370,12 @@ describe('FargateTaskDefinitionV2', () => {
 
     const roles = resourcesOfType('aws:iam/role:Role');
     expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'roles-execRole', id: '' },
-      { name: 'roles-taskRole', id: '' },
+      { name: 'roles-execution-role', id: '' },
+      { name: 'roles-task-role', id: '' },
     ]);
-    expect(taskDefinitionResource('roles-taskdef')!.inputs).toMatchObject({
-      executionRoleArn: `arn:aws:iam::${accountId}:role/roles-execRole`,
-      taskRoleArn: `arn:aws:iam::${accountId}:role/roles-taskRole`,
+    expect(taskDefinitionResource('roles')!.inputs).toMatchObject({
+      executionRoleArn: `arn:aws:iam::${accountId}:role/roles-execution-role`,
+      taskRoleArn: `arn:aws:iam::${accountId}:role/roles-task-role`,
     });
   });
 
@@ -389,8 +389,8 @@ describe('FargateTaskDefinitionV2', () => {
 
     const roles = resourcesOfType('aws:iam/role:Role');
     expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'imported-roles-execRole', id: 'execution' },
-      { name: 'imported-roles-taskRole', id: 'task' },
+      { name: 'imported-roles-execution-role', id: 'execution' },
+      { name: 'imported-roles-task-role', id: 'task' },
     ]);
   });
 
@@ -418,7 +418,7 @@ describe('FargateTaskDefinitionV2', () => {
     const parameters = resourcesOfType('aws:ssm/parameter:Parameter');
     expect(parameters.map(({ name, id }) => ({ name, id }))).toEqual([
       {
-        name: 'identity-app-credentialSpec-0-param',
+        name: 'identity-app-credential-spec-0-param',
         id: 'credentials',
       },
       {
@@ -465,7 +465,7 @@ describe('FargateTaskDefinitionV2', () => {
       },
     });
 
-    const containers = await resolveContainers(task, `secret-${suffix}-taskdef`);
+    const containers = await resolveContainers(task, `secret-${suffix}`);
     expect(containers[0]!.secrets).toEqual([{ name: 'DATABASE_PASSWORD', valueFrom: expected }]);
   });
 
@@ -544,6 +544,33 @@ describe('FargateTaskDefinitionV2', () => {
     );
   });
 
+  test('uses the inherited provider region for imports when the task selects another region', async () => {
+    const task = new FargateTaskDefinitionV2('selected-region-imports', {
+      region: 'us-east-2',
+      containers: {
+        app: {
+          image: 'nginx',
+          secrets: {
+            CONFIG: {
+              ssmParameterArn: `arn:aws:ssm:us-east-2:${accountId}:parameter/team/config`,
+            },
+          },
+          logging: {
+            cloudwatch: {
+              logGroupArn: `arn:aws:logs:us-east-2:${accountId}:log-group:/team/logs:*`,
+              streamPrefix: 'app',
+            },
+          },
+        },
+      },
+    });
+    await unwrap(task.taskDefinition.arn);
+
+    expect(resourcesOfType('aws:ssm/parameter:Parameter')[0]!.id).toBe('/team/config@us-east-2');
+    expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!.id).toBe('/team/logs@us-east-2');
+    expect(calls.filter(({ token }) => token === 'aws:index/getRegion:getRegion')).toHaveLength(1);
+  });
+
   test('uses plain same-region import IDs', async () => {
     const task = new FargateTaskDefinitionV2('same-region-imports', {
       containers: {
@@ -590,16 +617,16 @@ describe('FargateTaskDefinitionV2', () => {
       },
     });
 
-    const containers = await resolveContainers(task, 'logging-taskdef');
+    const containers = await resolveContainers(task, 'logging');
     const logGroups = resourcesOfType('aws:cloudwatch/logGroup:LogGroup');
     expect(logGroups.map(({ name, id, inputs }) => ({ name, id, region: inputs.region }))).toEqual([
-      { name: 'logging-logGroup', id: '', region: 'us-east-2' },
+      { name: 'logging-log-group', id: '', region: 'us-east-2' },
     ]);
     expect(containers.map((container) => container.logConfiguration)).toEqual([
       {
         logDriver: 'awslogs',
         options: {
-          'awslogs-group': 'logging-logGroup',
+          'awslogs-group': 'logging-log-group',
           'awslogs-region': 'us-east-2',
           'awslogs-stream-prefix': 'application',
           mode: 'non-blocking',
@@ -609,7 +636,7 @@ describe('FargateTaskDefinitionV2', () => {
       {
         logDriver: 'awslogs',
         options: {
-          'awslogs-group': 'logging-logGroup',
+          'awslogs-group': 'logging-log-group',
           'awslogs-region': 'us-east-2',
           'awslogs-stream-prefix': 'sidecar',
         },
@@ -635,7 +662,7 @@ describe('FargateTaskDefinitionV2', () => {
 
     expect(
       resourcesOfType('aws:cloudwatch/logGroup:LogGroup').map(({ name, id }) => ({ name, id })),
-    ).toEqual([{ name: 'existing-log-group-app-logGroup', id: '/service/existing' }]);
+    ).toEqual([{ name: 'existing-log-group-app-log-group', id: '/service/existing' }]);
     expect(task.logGroup).toBeUndefined();
   });
 
@@ -743,7 +770,7 @@ describe('FargateTaskDefinitionV2', () => {
       {
         Effect: 'Allow',
         Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:service-policy-logGroup:*`,
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:service-policy-log-group:*`,
       },
     ]);
   });
@@ -812,7 +839,7 @@ describe('FargateTaskDefinitionV2', () => {
     );
     await unwrap(task.taskDefinition.arn);
 
-    const taskDefinition = taskDefinitionResource('provider-flow-taskdef')!;
+    const taskDefinition = taskDefinitionResource('provider-flow')!;
     const logGroup = resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!;
     const parameter = resourcesOfType('aws:ssm/parameter:Parameter')[0]!;
     expect(taskDefinition.inputs.region).toBe('us-east-2');
@@ -847,7 +874,7 @@ describe('FargateTaskDefinitionV2', () => {
     );
     await unwrap(task.taskDefinition.arn);
 
-    const taskDefinition = taskDefinitionResource('provider-default-taskdef')!;
+    const taskDefinition = taskDefinitionResource('provider-default')!;
     const logGroup = resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!;
     expect(taskDefinition.inputs.region).toBeUndefined();
     expect(logGroup.inputs.region).toBeUndefined();

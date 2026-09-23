@@ -236,6 +236,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   public readonly name!: string;
 
   public readonly region?: string;
+  private providerRegion?: pulumi.Output<string>;
+
   constructor(
     name: string,
     args: FargateTaskDefinitionV2Args,
@@ -245,12 +247,17 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
      */
     identity: ComponentIdentity = fargateTaskDefinitionStandaloneIdentity,
   ) {
+    // When Pulumi reconstructs a component from a resource reference, it supplies a URN but
+    // not the original constructor args. Declare the output fields for hydration and skip
+    // creating children; their values are populated from the serialized resource reference.
     const inputs = opts.urn
       ? {
           taskRole: undefined,
           executionRole: undefined,
-          taskDefinitionArn: undefined,
+          taskDefinition: undefined,
           logGroup: undefined,
+          region: undefined,
+          name: undefined,
         }
       : args;
     super(
@@ -296,7 +303,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     const family = args.family ?? name;
     if (args.executionRoleArn) {
       this.executionRole = aws.iam.Role.get(
-        `${this.name}-execRole`,
+        `${this.name}-execution-role`,
         roleNameFromArn(args.executionRoleArn, this),
         undefined,
         {
@@ -305,7 +312,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       );
     } else {
       this.executionRole = new aws.iam.Role(
-        `${name}-execRole`,
+        `${name}-execution-role`,
         {
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
@@ -317,7 +324,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
     if (args.taskRoleArn) {
       this.taskRole = aws.iam.Role.get(
-        `${this.name}-taskRole`,
+        `${this.name}-task-role`,
         roleNameFromArn(args.taskRoleArn, this),
         undefined,
         {
@@ -326,7 +333,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       );
     } else {
       this.taskRole = new aws.iam.Role(
-        `${name}-taskRole`,
+        `${name}-task-role`,
         {
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
@@ -371,7 +378,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     );
 
     const rolePolicy = new aws.iam.RolePolicy(
-      `${name}-execRole-container-policy`,
+      `${name}-execution-role-policy`,
       {
         role: this.executionRole.name,
         policy: this.renderContainerExecRolePolicy(executionRoleStatements, ecrRepositories),
@@ -380,7 +387,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     );
 
     this.taskDefinition = new aws.ecs.TaskDefinition(
-      `${name}-taskdef`,
+      name,
       {
         containerDefinitions: pulumi.jsonStringify(containerDefinitionsApi),
         family,
@@ -416,6 +423,16 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   }
 
   /**
+   * Resolve the inherited provider's region only when an ARN import needs it. Enhanced import IDs
+   * are relative to that provider region, which can differ from the task's args.region.
+   *
+   * @returns The inherited provider region.
+   */
+  private getProviderRegion(): pulumi.Output<string> {
+    return (this.providerRegion ??= aws.getRegionOutput(undefined, { parent: this }).region);
+  }
+
+  /**
    * Gets or creates the default CloudWatch log group.
    *
    * @returns The default log group.
@@ -423,7 +440,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   private obtainDefaultLogGroup(): aws.cloudwatch.LogGroup {
     if (!this.logGroup) {
       this.logGroup = new aws.cloudwatch.LogGroup(
-        `${this.name}-logGroup`,
+        `${this.name}-log-group`,
         {
           region: this.region,
         },
@@ -598,8 +615,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     }
 
     const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-credentialSpec-${idx}-param`,
-      parameterNameFromArn(spec.ssmParameterArn!, this),
+      `${this.name}-${containerName}-credential-spec-${idx}-param`,
+      parameterNameFromArn(spec.ssmParameterArn!, this.getProviderRegion(), this),
       undefined,
       { parent: this },
     );
@@ -737,7 +754,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   ): Rendered<ContainerDefinitionSecret> {
     const parameter = aws.ssm.Parameter.get(
       `${this.name}-${containerName}-secret-${name}-param`,
-      parameterNameFromArn(parameterArn, this),
+      parameterNameFromArn(parameterArn, this.getProviderRegion(), this),
       undefined,
       { parent: this },
     );
@@ -856,8 +873,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     let logGroup: aws.cloudwatch.LogGroup | undefined = undefined;
     if (driver.logGroupArn) {
       logGroup = aws.cloudwatch.LogGroup.get(
-        `${this.name}-${containerName}-logGroup`,
-        logGroupNameFromArn(driver.logGroupArn, this),
+        `${this.name}-${containerName}-log-group`,
+        logGroupNameFromArn(driver.logGroupArn, this.getProviderRegion(), this),
         undefined,
         {
           parent: this,
@@ -1039,14 +1056,15 @@ export function removeEmpty<T>(x: { [key: string]: T | undefined | string }): {
  * Get an SSM Parameter Import ID from an ARN
  *
  * @param arn The SSM Parameter ARN
+ * @param currentRegion The inherited provider region used for import IDs
  * @param parent The parent component
  * @returns The name of the parameter which can be used as the import id
  */
 function parameterNameFromArn(
   arn: pulumi.Input<string>,
+  currentRegion: pulumi.Output<string>,
   parent: pulumi.ComponentResource,
 ): pulumi.Output<string> {
-  const currentRegion = aws.getRegionOutput(undefined, { parent }).region;
   const arnParts = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent);
   return pulumi.all([arnParts, currentRegion]).apply(([parts, region]) => {
     if (!parts.resourceName) {
@@ -1087,14 +1105,15 @@ function roleNameFromArn(
  * Get a CloudWatch Logs LogGroup Import ID from an ARN
  *
  * @param arn The LogGroup ARN
+ * @param currentRegion The inherited provider region used for import IDs
  * @param parent The parent component
  * @returns The name of the log group which can be used as the import id
  */
 function logGroupNameFromArn(
   arn: pulumi.Input<string>,
+  currentRegion: pulumi.Output<string>,
   parent: pulumi.ComponentResource,
 ): pulumi.Output<string> {
-  const currentRegion = aws.getRegionOutput(undefined, { parent }).region;
   const arnParts = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent);
   return pulumi.all([arnParts, currentRegion]).apply(([parts, region]) => {
     if (!parts.resourceName) {
