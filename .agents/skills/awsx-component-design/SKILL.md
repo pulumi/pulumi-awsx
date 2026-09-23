@@ -32,9 +32,6 @@ facts, use `$awsx-aws-service-validation`.
   aliases, top-level `region`, and regional child resources.
 - `rules/defaults-owned-by-awsx.md`: sensible defaults, override paths,
   provider/service defaults, and default-created supporting resources.
-- `rules/nested-remote-components.md`: nested remote component proxies,
-  provider-side implementations, engine transforms, component identities, and
-  recursive `Construct` prevention.
 
 ## How To Use
 
