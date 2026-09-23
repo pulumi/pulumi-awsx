@@ -16,6 +16,18 @@ The AWS Infrastructure package is intended to provide [component](https://www.pu
 
 The AWS Infrastructure package undergoes constant improvements and additions.  While we will strive to maintain backward compatibility here, we will occasionally make breaks here as appropriate if it helps improve the overall quality of this package.
 
+### Experimental components
+
+AWSX publishes new components under the `experimental` namespace so users can evaluate them and provide feedback.
+
+Experimental components do not have the same compatibility guarantees as stable AWSX components. Their APIs, resource types, defaults, and child resource behavior can change before stabilization. Breaking changes will be identified in release notes.
+
+Components in developer preview remain under the `experimental` namespace, but their APIs are expected to remain stable. Breaking changes during developer preview require an explicit maintainer decision and a documented migration path.
+
+Components can graduate independently to their standard service namespace, such as `awsx.ecs`. If an existing stable component already has the preferred name, the new component keeps its version suffix.
+
+See [Experimental component lifecycle](./docs/experimental-components.md) for the development and graduation process.
+
 The AWS Infrastructure package exposes many high level abstractions.  Including:
 
 * [`ec2`](https://github.com/pulumi/pulumi-awsx/blob/master/awsx/ec2).  A module that makes it easier to work with your AWS network, subnets, and security groups.  By default, the resources in the package follow the [AWS Best Practices](
