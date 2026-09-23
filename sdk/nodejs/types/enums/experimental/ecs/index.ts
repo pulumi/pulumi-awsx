@@ -79,6 +79,73 @@ export const CredentialSpecAuthenticationMode = {
 
 export type CredentialSpecAuthenticationMode = (typeof CredentialSpecAuthenticationMode)[keyof typeof CredentialSpecAuthenticationMode];
 
+export const DevicePermissions = {
+    /**
+     * Allow the container to read from the device.
+     */
+    READ: "read",
+    /**
+     * Allow the container to write to the device.
+     */
+    WRITE: "write",
+    /**
+     * Allow the container to create device special files for the device.
+     */
+    MKNOD: "mknod",
+} as const;
+
+export type DevicePermissions = (typeof DevicePermissions)[keyof typeof DevicePermissions];
+
+export const FirelensConfigurationType = {
+    /**
+     * Use Fluentd as the log router.
+     */
+    FLUENTD: "fluentd",
+    /**
+     * Use Fluent Bit as the log router.
+     */
+    FLUENTBIT: "fluentbit",
+} as const;
+
+export type FirelensConfigurationType = (typeof FirelensConfigurationType)[keyof typeof FirelensConfigurationType];
+
+export const LogConfigurationLogDriver = {
+    /**
+     * Write logs as JSON files on the container host.
+     */
+    JSON_FILE: "json-file",
+    /**
+     * Send logs to the host syslog service.
+     */
+    SYSLOG: "syslog",
+    /**
+     * Send logs to the host systemd journal.
+     */
+    JOURNALD: "journald",
+    /**
+     * Send logs using the Graylog Extended Log Format.
+     */
+    GELF: "gelf",
+    /**
+     * Send logs to a Fluentd collector.
+     */
+    FLUENTD: "fluentd",
+    /**
+     * Send logs to Amazon CloudWatch Logs.
+     */
+    AWSLOGS: "awslogs",
+    /**
+     * Send logs to Splunk.
+     */
+    SPLUNK: "splunk",
+    /**
+     * Route logs through FireLens.
+     */
+    AWSFIRELENS: "awsfirelens",
+} as const;
+
+export type LogConfigurationLogDriver = (typeof LogConfigurationLogDriver)[keyof typeof LogConfigurationLogDriver];
+
 export const OperatingSystemFamily = {
     LINUX: "LINUX",
     WINDOWS_SERVER_2025_FULL: "WINDOWS_SERVER_2025_FULL",
@@ -120,6 +187,23 @@ export const PortMappingProtocol = {
 } as const;
 
 export type PortMappingProtocol = (typeof PortMappingProtocol)[keyof typeof PortMappingProtocol];
+
+export const ResourceRequirementType = {
+    /**
+     * Assign physical GPUs to the container.
+     */
+    GPU: "GPU",
+    /**
+     * Assign an Elastic Inference accelerator to the container.
+     */
+    INFERENCE_ACCELERATOR: "InferenceAccelerator",
+    /**
+     * Assign AWS Neuron devices to the container.
+     */
+    NEURON_DEVICE: "NeuronDevice",
+} as const;
+
+export type ResourceRequirementType = (typeof ResourceRequirementType)[keyof typeof ResourceRequirementType];
 
 export const UlimitName = {
     /**

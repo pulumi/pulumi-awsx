@@ -190,6 +190,136 @@ namespace Pulumi.Awsx.Experimental.Ecs
     }
 
     [EnumType]
+    public readonly struct DevicePermissions : IEquatable<DevicePermissions>
+    {
+        private readonly string _value;
+
+        private DevicePermissions(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Allow the container to read from the device.
+        /// </summary>
+        public static DevicePermissions READ { get; } = new DevicePermissions("read");
+        /// <summary>
+        /// Allow the container to write to the device.
+        /// </summary>
+        public static DevicePermissions WRITE { get; } = new DevicePermissions("write");
+        /// <summary>
+        /// Allow the container to create device special files for the device.
+        /// </summary>
+        public static DevicePermissions MKNOD { get; } = new DevicePermissions("mknod");
+
+        public static bool operator ==(DevicePermissions left, DevicePermissions right) => left.Equals(right);
+        public static bool operator !=(DevicePermissions left, DevicePermissions right) => !left.Equals(right);
+
+        public static explicit operator string(DevicePermissions value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is DevicePermissions other && Equals(other);
+        public bool Equals(DevicePermissions other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct FirelensConfigurationType : IEquatable<FirelensConfigurationType>
+    {
+        private readonly string _value;
+
+        private FirelensConfigurationType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Use Fluentd as the log router.
+        /// </summary>
+        public static FirelensConfigurationType FLUENTD { get; } = new FirelensConfigurationType("fluentd");
+        /// <summary>
+        /// Use Fluent Bit as the log router.
+        /// </summary>
+        public static FirelensConfigurationType FLUENTBIT { get; } = new FirelensConfigurationType("fluentbit");
+
+        public static bool operator ==(FirelensConfigurationType left, FirelensConfigurationType right) => left.Equals(right);
+        public static bool operator !=(FirelensConfigurationType left, FirelensConfigurationType right) => !left.Equals(right);
+
+        public static explicit operator string(FirelensConfigurationType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is FirelensConfigurationType other && Equals(other);
+        public bool Equals(FirelensConfigurationType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct LogConfigurationLogDriver : IEquatable<LogConfigurationLogDriver>
+    {
+        private readonly string _value;
+
+        private LogConfigurationLogDriver(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Write logs as JSON files on the container host.
+        /// </summary>
+        public static LogConfigurationLogDriver JSON_FILE { get; } = new LogConfigurationLogDriver("json-file");
+        /// <summary>
+        /// Send logs to the host syslog service.
+        /// </summary>
+        public static LogConfigurationLogDriver SYSLOG { get; } = new LogConfigurationLogDriver("syslog");
+        /// <summary>
+        /// Send logs to the host systemd journal.
+        /// </summary>
+        public static LogConfigurationLogDriver JOURNALD { get; } = new LogConfigurationLogDriver("journald");
+        /// <summary>
+        /// Send logs using the Graylog Extended Log Format.
+        /// </summary>
+        public static LogConfigurationLogDriver GELF { get; } = new LogConfigurationLogDriver("gelf");
+        /// <summary>
+        /// Send logs to a Fluentd collector.
+        /// </summary>
+        public static LogConfigurationLogDriver FLUENTD { get; } = new LogConfigurationLogDriver("fluentd");
+        /// <summary>
+        /// Send logs to Amazon CloudWatch Logs.
+        /// </summary>
+        public static LogConfigurationLogDriver AWSLOGS { get; } = new LogConfigurationLogDriver("awslogs");
+        /// <summary>
+        /// Send logs to Splunk.
+        /// </summary>
+        public static LogConfigurationLogDriver SPLUNK { get; } = new LogConfigurationLogDriver("splunk");
+        /// <summary>
+        /// Route logs through FireLens.
+        /// </summary>
+        public static LogConfigurationLogDriver AWSFIRELENS { get; } = new LogConfigurationLogDriver("awsfirelens");
+
+        public static bool operator ==(LogConfigurationLogDriver left, LogConfigurationLogDriver right) => left.Equals(right);
+        public static bool operator !=(LogConfigurationLogDriver left, LogConfigurationLogDriver right) => !left.Equals(right);
+
+        public static explicit operator string(LogConfigurationLogDriver value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is LogConfigurationLogDriver other && Equals(other);
+        public bool Equals(LogConfigurationLogDriver other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
     public readonly struct OperatingSystemFamily : IEquatable<OperatingSystemFamily>
     {
         private readonly string _value;
@@ -287,6 +417,44 @@ namespace Pulumi.Awsx.Experimental.Ecs
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => obj is PortMappingProtocol other && Equals(other);
         public bool Equals(PortMappingProtocol other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct ResourceRequirementType : IEquatable<ResourceRequirementType>
+    {
+        private readonly string _value;
+
+        private ResourceRequirementType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Assign physical GPUs to the container.
+        /// </summary>
+        public static ResourceRequirementType GPU { get; } = new ResourceRequirementType("GPU");
+        /// <summary>
+        /// Assign an Elastic Inference accelerator to the container.
+        /// </summary>
+        public static ResourceRequirementType INFERENCE_ACCELERATOR { get; } = new ResourceRequirementType("InferenceAccelerator");
+        /// <summary>
+        /// Assign AWS Neuron devices to the container.
+        /// </summary>
+        public static ResourceRequirementType NEURON_DEVICE { get; } = new ResourceRequirementType("NeuronDevice");
+
+        public static bool operator ==(ResourceRequirementType left, ResourceRequirementType right) => left.Equals(right);
+        public static bool operator !=(ResourceRequirementType left, ResourceRequirementType right) => !left.Equals(right);
+
+        public static explicit operator string(ResourceRequirementType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is ResourceRequirementType other && Equals(other);
+        public bool Equals(ResourceRequirementType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;

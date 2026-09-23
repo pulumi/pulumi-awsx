@@ -79,6 +79,7 @@ _utilities.register(
   "mod": "experimental/ecs",
   "fqn": "pulumi_awsx.experimental.ecs",
   "classes": {
+   "awsx:experimental/ecs:ContainerDefinition": "ContainerDefinition",
    "awsx:experimental/ecs:FargateTaskDefinitionV2": "FargateTaskDefinitionV2"
   }
  },

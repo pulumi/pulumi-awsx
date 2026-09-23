@@ -16,12 +16,28 @@ from ... import _utilities
 from ._enums import *
 
 __all__ = [
+    'ContainerDefinitionDependencyArgs',
+    'ContainerDefinitionDependencyArgsDict',
+    'ContainerDefinitionEnvironmentFileArgs',
+    'ContainerDefinitionEnvironmentFileArgsDict',
+    'ContainerDefinitionHealthCheckArgs',
+    'ContainerDefinitionHealthCheckArgsDict',
+    'ContainerDefinitionSecretArgs',
+    'ContainerDefinitionSecretArgsDict',
+    'ContainerDefinitionSystemControlArgs',
+    'ContainerDefinitionSystemControlArgsDict',
+    'ContainerDefinitionVolumeFromArgs',
+    'ContainerDefinitionVolumeFromArgsDict',
     'ContainerDependencyArgs',
     'ContainerDependencyArgsDict',
     'ContainerPortRangeArgs',
     'ContainerPortRangeArgsDict',
+    'ContainerRestartPolicyArgs',
+    'ContainerRestartPolicyArgsDict',
     'CredentialSpecArgs',
     'CredentialSpecArgsDict',
+    'DeviceArgs',
+    'DeviceArgsDict',
     'EnvironmentFileArgs',
     'EnvironmentFileArgsDict',
     'FargateAwsLogsLogDriverArgs',
@@ -36,8 +52,28 @@ __all__ = [
     'FargateLogDriverArgsDict',
     'FargatePortMappingArgs',
     'FargatePortMappingArgsDict',
+    'FirelensConfigurationArgs',
+    'FirelensConfigurationArgsDict',
     'HealthCheckArgs',
     'HealthCheckArgsDict',
+    'HostEntryArgs',
+    'HostEntryArgsDict',
+    'KernelCapabilitiesArgs',
+    'KernelCapabilitiesArgsDict',
+    'KeyValuePairArgs',
+    'KeyValuePairArgsDict',
+    'LinuxParametersArgs',
+    'LinuxParametersArgsDict',
+    'LogConfigurationArgs',
+    'LogConfigurationArgsDict',
+    'MountPointArgs',
+    'MountPointArgsDict',
+    'PortMappingArgs',
+    'PortMappingArgsDict',
+    'RepositoryCredentialsArgs',
+    'RepositoryCredentialsArgsDict',
+    'ResourceRequirementArgs',
+    'ResourceRequirementArgsDict',
     'RuntimePlatformArgs',
     'RuntimePlatformArgsDict',
     'S3BucketCredentialSpecArgs',
@@ -48,11 +84,433 @@ __all__ = [
     'SecretsManagerSecretArgsDict',
     'SystemControlArgs',
     'SystemControlArgsDict',
+    'TmpfsArgs',
+    'TmpfsArgsDict',
     'UlimitArgs',
     'UlimitArgsDict',
     'VolumeFromArgs',
     'VolumeFromArgsDict',
 ]
+
+class ContainerDefinitionDependencyArgsDict(TypedDict):
+    condition: 'ContainerDependencyCondition'
+    """
+    The condition that the other container must satisfy before this container starts.
+    """
+    container_name: _builtins.str
+    """
+    The name of the other container in the task.
+    """
+
+@pulumi.input_type
+class ContainerDefinitionDependencyArgs:
+    def __init__(__self__, *,
+                 condition: 'ContainerDependencyCondition',
+                 container_name: _builtins.str):
+        """
+        :param 'ContainerDependencyCondition' condition: The condition that the other container must satisfy before this container starts.
+        :param _builtins.str container_name: The name of the other container in the task.
+        """
+        pulumi.set(__self__, "condition", condition)
+        pulumi.set(__self__, "container_name", container_name)
+
+    @_builtins.property
+    @pulumi.getter
+    def condition(self) -> 'ContainerDependencyCondition':
+        """
+        The condition that the other container must satisfy before this container starts.
+        """
+        return pulumi.get(self, "condition")
+
+    @condition.setter
+    def condition(self, value: 'ContainerDependencyCondition'):
+        pulumi.set(self, "condition", value)
+
+    @_builtins.property
+    @pulumi.getter(name="containerName")
+    def container_name(self) -> _builtins.str:
+        """
+        The name of the other container in the task.
+        """
+        return pulumi.get(self, "container_name")
+
+    @container_name.setter
+    def container_name(self, value: _builtins.str):
+        pulumi.set(self, "container_name", value)
+
+
+class ContainerDefinitionEnvironmentFileArgsDict(TypedDict):
+    type: _builtins.str
+    """
+    The file source type. The only supported value is `s3`.
+    """
+    value: pulumi.Input[_builtins.str]
+    """
+    The ARN of the S3 object containing the environment file.
+    """
+
+@pulumi.input_type
+class ContainerDefinitionEnvironmentFileArgs:
+    def __init__(__self__, *,
+                 type: _builtins.str,
+                 value: pulumi.Input[_builtins.str]):
+        """
+        :param _builtins.str type: The file source type. The only supported value is `s3`.
+        :param pulumi.Input[_builtins.str] value: The ARN of the S3 object containing the environment file.
+        """
+        pulumi.set(__self__, "type", type)
+        pulumi.set(__self__, "value", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> _builtins.str:
+        """
+        The file source type. The only supported value is `s3`.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: _builtins.str):
+        pulumi.set(self, "type", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def value(self) -> pulumi.Input[_builtins.str]:
+        """
+        The ARN of the S3 object containing the environment file.
+        """
+        return pulumi.get(self, "value")
+
+    @value.setter
+    def value(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "value", value)
+
+
+class ContainerDefinitionHealthCheckArgsDict(TypedDict):
+    command: NotRequired[Sequence[_builtins.str]]
+    """
+    The command that determines whether the container is healthy.
+
+    Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+    An exit code of zero indicates success; any other code indicates failure.
+
+    Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+    """
+    interval: NotRequired[_builtins.float]
+    """
+    The time, in seconds, between health checks. Valid values are from 5 through 300.
+
+    Default - 30 seconds in ECS.
+    """
+    retries: NotRequired[_builtins.float]
+    """
+    The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+
+    Default - 3 in ECS.
+    """
+    start_period: NotRequired[_builtins.float]
+    """
+    The startup grace period, in seconds, before failed checks count toward the retry limit.
+
+    Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+    failures count toward the retry limit.
+
+    Default - No startup grace period in ECS.
+    """
+    timeout: NotRequired[_builtins.float]
+    """
+    The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+
+    Default - 5 seconds in ECS.
+    """
+
+@pulumi.input_type
+class ContainerDefinitionHealthCheckArgs:
+    def __init__(__self__, *,
+                 command: Optional[Sequence[_builtins.str]] = None,
+                 interval: Optional[_builtins.float] = None,
+                 retries: Optional[_builtins.float] = None,
+                 start_period: Optional[_builtins.float] = None,
+                 timeout: Optional[_builtins.float] = None):
+        """
+        :param Sequence[_builtins.str] command: The command that determines whether the container is healthy.
+               
+               Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+               An exit code of zero indicates success; any other code indicates failure.
+               
+               Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+        :param _builtins.float interval: The time, in seconds, between health checks. Valid values are from 5 through 300.
+               
+               Default - 30 seconds in ECS.
+        :param _builtins.float retries: The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+               
+               Default - 3 in ECS.
+        :param _builtins.float start_period: The startup grace period, in seconds, before failed checks count toward the retry limit.
+               
+               Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+               failures count toward the retry limit.
+               
+               Default - No startup grace period in ECS.
+        :param _builtins.float timeout: The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+               
+               Default - 5 seconds in ECS.
+        """
+        if command is not None:
+            pulumi.set(__self__, "command", command)
+        if interval is not None:
+            pulumi.set(__self__, "interval", interval)
+        if retries is not None:
+            pulumi.set(__self__, "retries", retries)
+        if start_period is not None:
+            pulumi.set(__self__, "start_period", start_period)
+        if timeout is not None:
+            pulumi.set(__self__, "timeout", timeout)
+
+    @_builtins.property
+    @pulumi.getter
+    def command(self) -> Optional[Sequence[_builtins.str]]:
+        """
+        The command that determines whether the container is healthy.
+
+        Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+        An exit code of zero indicates success; any other code indicates failure.
+
+        Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+        """
+        return pulumi.get(self, "command")
+
+    @command.setter
+    def command(self, value: Optional[Sequence[_builtins.str]]):
+        pulumi.set(self, "command", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def interval(self) -> Optional[_builtins.float]:
+        """
+        The time, in seconds, between health checks. Valid values are from 5 through 300.
+
+        Default - 30 seconds in ECS.
+        """
+        return pulumi.get(self, "interval")
+
+    @interval.setter
+    def interval(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "interval", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def retries(self) -> Optional[_builtins.float]:
+        """
+        The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+
+        Default - 3 in ECS.
+        """
+        return pulumi.get(self, "retries")
+
+    @retries.setter
+    def retries(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "retries", value)
+
+    @_builtins.property
+    @pulumi.getter(name="startPeriod")
+    def start_period(self) -> Optional[_builtins.float]:
+        """
+        The startup grace period, in seconds, before failed checks count toward the retry limit.
+
+        Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+        failures count toward the retry limit.
+
+        Default - No startup grace period in ECS.
+        """
+        return pulumi.get(self, "start_period")
+
+    @start_period.setter
+    def start_period(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "start_period", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def timeout(self) -> Optional[_builtins.float]:
+        """
+        The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+
+        Default - 5 seconds in ECS.
+        """
+        return pulumi.get(self, "timeout")
+
+    @timeout.setter
+    def timeout(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "timeout", value)
+
+
+class ContainerDefinitionSecretArgsDict(TypedDict):
+    name: _builtins.str
+    """
+    The environment variable name, or the log driver option name when used in `secretOptions`.
+    """
+    value_from: pulumi.Input[_builtins.str]
+    """
+    The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+
+    An SSM parameter name is also accepted when it is in the same Region as the task. The task
+    execution role must have permission to read the secret or parameter.
+
+    For more information, see [secret
+    sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+    """
+
+@pulumi.input_type
+class ContainerDefinitionSecretArgs:
+    def __init__(__self__, *,
+                 name: _builtins.str,
+                 value_from: pulumi.Input[_builtins.str]):
+        """
+        :param _builtins.str name: The environment variable name, or the log driver option name when used in `secretOptions`.
+        :param pulumi.Input[_builtins.str] value_from: The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+               
+               An SSM parameter name is also accepted when it is in the same Region as the task. The task
+               execution role must have permission to read the secret or parameter.
+               
+               For more information, see [secret
+               sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+        """
+        pulumi.set(__self__, "name", name)
+        pulumi.set(__self__, "value_from", value_from)
+
+    @_builtins.property
+    @pulumi.getter
+    def name(self) -> _builtins.str:
+        """
+        The environment variable name, or the log driver option name when used in `secretOptions`.
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: _builtins.str):
+        pulumi.set(self, "name", value)
+
+    @_builtins.property
+    @pulumi.getter(name="valueFrom")
+    def value_from(self) -> pulumi.Input[_builtins.str]:
+        """
+        The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+
+        An SSM parameter name is also accepted when it is in the same Region as the task. The task
+        execution role must have permission to read the secret or parameter.
+
+        For more information, see [secret
+        sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+        """
+        return pulumi.get(self, "value_from")
+
+    @value_from.setter
+    def value_from(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "value_from", value)
+
+
+class ContainerDefinitionSystemControlArgsDict(TypedDict):
+    namespace: NotRequired[_builtins.str]
+    """
+    The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+    """
+    value: NotRequired[_builtins.str]
+    """
+    The value to assign to the kernel parameter.
+    """
+
+@pulumi.input_type
+class ContainerDefinitionSystemControlArgs:
+    def __init__(__self__, *,
+                 namespace: Optional[_builtins.str] = None,
+                 value: Optional[_builtins.str] = None):
+        """
+        :param _builtins.str namespace: The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+        :param _builtins.str value: The value to assign to the kernel parameter.
+        """
+        if namespace is not None:
+            pulumi.set(__self__, "namespace", namespace)
+        if value is not None:
+            pulumi.set(__self__, "value", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def namespace(self) -> Optional[_builtins.str]:
+        """
+        The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+        """
+        return pulumi.get(self, "namespace")
+
+    @namespace.setter
+    def namespace(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "namespace", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def value(self) -> Optional[_builtins.str]:
+        """
+        The value to assign to the kernel parameter.
+        """
+        return pulumi.get(self, "value")
+
+    @value.setter
+    def value(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "value", value)
+
+
+class ContainerDefinitionVolumeFromArgsDict(TypedDict):
+    read_only: NotRequired[_builtins.bool]
+    """
+    Whether this container has read-only access to the volumes.
+
+    Default - `false` in ECS.
+    """
+    source_container: NotRequired[_builtins.str]
+    """
+    The name of the container from which to mount volumes.
+    """
+
+@pulumi.input_type
+class ContainerDefinitionVolumeFromArgs:
+    def __init__(__self__, *,
+                 read_only: Optional[_builtins.bool] = None,
+                 source_container: Optional[_builtins.str] = None):
+        """
+        :param _builtins.bool read_only: Whether this container has read-only access to the volumes.
+               
+               Default - `false` in ECS.
+        :param _builtins.str source_container: The name of the container from which to mount volumes.
+        """
+        if read_only is not None:
+            pulumi.set(__self__, "read_only", read_only)
+        if source_container is not None:
+            pulumi.set(__self__, "source_container", source_container)
+
+    @_builtins.property
+    @pulumi.getter(name="readOnly")
+    def read_only(self) -> Optional[_builtins.bool]:
+        """
+        Whether this container has read-only access to the volumes.
+
+        Default - `false` in ECS.
+        """
+        return pulumi.get(self, "read_only")
+
+    @read_only.setter
+    def read_only(self, value: Optional[_builtins.bool]):
+        pulumi.set(self, "read_only", value)
+
+    @_builtins.property
+    @pulumi.getter(name="sourceContainer")
+    def source_container(self) -> Optional[_builtins.str]:
+        """
+        The name of the container from which to mount volumes.
+        """
+        return pulumi.get(self, "source_container")
+
+    @source_container.setter
+    def source_container(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "source_container", value)
+
 
 class ContainerDependencyArgsDict(TypedDict):
     condition: 'ContainerDependencyCondition'
@@ -148,6 +606,93 @@ class ContainerPortRangeArgs:
         pulumi.set(self, "start", value)
 
 
+class ContainerRestartPolicyArgsDict(TypedDict):
+    enabled: NotRequired[_builtins.bool]
+    """
+    Whether the restart policy is enabled.
+    """
+    ignored_exit_codes: NotRequired[Sequence[_builtins.float]]
+    """
+    Exit codes that do not trigger a restart. Specify at most 50 codes.
+
+    Default - No ignored exit codes in ECS.
+    """
+    restart_attempt_period: NotRequired[_builtins.float]
+    """
+    The minimum time, in seconds, the container must run before it is eligible for a restart.
+
+    Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+
+    Default - 300 seconds in ECS.
+    """
+
+@pulumi.input_type
+class ContainerRestartPolicyArgs:
+    def __init__(__self__, *,
+                 enabled: Optional[_builtins.bool] = None,
+                 ignored_exit_codes: Optional[Sequence[_builtins.float]] = None,
+                 restart_attempt_period: Optional[_builtins.float] = None):
+        """
+        :param _builtins.bool enabled: Whether the restart policy is enabled.
+        :param Sequence[_builtins.float] ignored_exit_codes: Exit codes that do not trigger a restart. Specify at most 50 codes.
+               
+               Default - No ignored exit codes in ECS.
+        :param _builtins.float restart_attempt_period: The minimum time, in seconds, the container must run before it is eligible for a restart.
+               
+               Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+               
+               Default - 300 seconds in ECS.
+        """
+        if enabled is not None:
+            pulumi.set(__self__, "enabled", enabled)
+        if ignored_exit_codes is not None:
+            pulumi.set(__self__, "ignored_exit_codes", ignored_exit_codes)
+        if restart_attempt_period is not None:
+            pulumi.set(__self__, "restart_attempt_period", restart_attempt_period)
+
+    @_builtins.property
+    @pulumi.getter
+    def enabled(self) -> Optional[_builtins.bool]:
+        """
+        Whether the restart policy is enabled.
+        """
+        return pulumi.get(self, "enabled")
+
+    @enabled.setter
+    def enabled(self, value: Optional[_builtins.bool]):
+        pulumi.set(self, "enabled", value)
+
+    @_builtins.property
+    @pulumi.getter(name="ignoredExitCodes")
+    def ignored_exit_codes(self) -> Optional[Sequence[_builtins.float]]:
+        """
+        Exit codes that do not trigger a restart. Specify at most 50 codes.
+
+        Default - No ignored exit codes in ECS.
+        """
+        return pulumi.get(self, "ignored_exit_codes")
+
+    @ignored_exit_codes.setter
+    def ignored_exit_codes(self, value: Optional[Sequence[_builtins.float]]):
+        pulumi.set(self, "ignored_exit_codes", value)
+
+    @_builtins.property
+    @pulumi.getter(name="restartAttemptPeriod")
+    def restart_attempt_period(self) -> Optional[_builtins.float]:
+        """
+        The minimum time, in seconds, the container must run before it is eligible for a restart.
+
+        Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+
+        Default - 300 seconds in ECS.
+        """
+        return pulumi.get(self, "restart_attempt_period")
+
+    @restart_attempt_period.setter
+    def restart_attempt_period(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "restart_attempt_period", value)
+
+
 class CredentialSpecArgsDict(TypedDict):
     authentication_mode: 'CredentialSpecAuthenticationMode'
     """
@@ -214,6 +759,81 @@ class CredentialSpecArgs:
     @ssm_parameter_arn.setter
     def ssm_parameter_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
         pulumi.set(self, "ssm_parameter_arn", value)
+
+
+class DeviceArgsDict(TypedDict):
+    container_path: NotRequired[_builtins.str]
+    """
+    The path inside the container at which to expose the host device.
+    """
+    host_path: NotRequired[_builtins.str]
+    """
+    The device path on the host container instance.
+    """
+    permissions: NotRequired[Sequence['DevicePermissions']]
+    """
+    The permissions to grant the container for the device.
+
+    Default - `read`, `write`, and `mknod` in ECS.
+    """
+
+@pulumi.input_type
+class DeviceArgs:
+    def __init__(__self__, *,
+                 container_path: Optional[_builtins.str] = None,
+                 host_path: Optional[_builtins.str] = None,
+                 permissions: Optional[Sequence['DevicePermissions']] = None):
+        """
+        :param _builtins.str container_path: The path inside the container at which to expose the host device.
+        :param _builtins.str host_path: The device path on the host container instance.
+        :param Sequence['DevicePermissions'] permissions: The permissions to grant the container for the device.
+               
+               Default - `read`, `write`, and `mknod` in ECS.
+        """
+        if container_path is not None:
+            pulumi.set(__self__, "container_path", container_path)
+        if host_path is not None:
+            pulumi.set(__self__, "host_path", host_path)
+        if permissions is not None:
+            pulumi.set(__self__, "permissions", permissions)
+
+    @_builtins.property
+    @pulumi.getter(name="containerPath")
+    def container_path(self) -> Optional[_builtins.str]:
+        """
+        The path inside the container at which to expose the host device.
+        """
+        return pulumi.get(self, "container_path")
+
+    @container_path.setter
+    def container_path(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "container_path", value)
+
+    @_builtins.property
+    @pulumi.getter(name="hostPath")
+    def host_path(self) -> Optional[_builtins.str]:
+        """
+        The device path on the host container instance.
+        """
+        return pulumi.get(self, "host_path")
+
+    @host_path.setter
+    def host_path(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "host_path", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def permissions(self) -> Optional[Sequence['DevicePermissions']]:
+        """
+        The permissions to grant the container for the device.
+
+        Default - `read`, `write`, and `mknod` in ECS.
+        """
+        return pulumi.get(self, "permissions")
+
+    @permissions.setter
+    def permissions(self, value: Optional[Sequence['DevicePermissions']]):
+        pulumi.set(self, "permissions", value)
 
 
 class EnvironmentFileArgsDict(TypedDict):
@@ -1512,6 +2132,70 @@ class FargatePortMappingArgs:
         pulumi.set(self, "protocol", value)
 
 
+class FirelensConfigurationArgsDict(TypedDict):
+    options: NotRequired[Mapping[str, pulumi.Input[_builtins.str]]]
+    """
+    Log router options, such as ECS log metadata and a custom configuration file.
+
+    Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+
+    For more information, see [FireLens
+    options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+    """
+    type: NotRequired['FirelensConfigurationType']
+    """
+    The log router to use.
+    """
+
+@pulumi.input_type
+class FirelensConfigurationArgs:
+    def __init__(__self__, *,
+                 options: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
+                 type: Optional['FirelensConfigurationType'] = None):
+        """
+        :param Mapping[str, pulumi.Input[_builtins.str]] options: Log router options, such as ECS log metadata and a custom configuration file.
+               
+               Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+               
+               For more information, see [FireLens
+               options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+        :param 'FirelensConfigurationType' type: The log router to use.
+        """
+        if options is not None:
+            pulumi.set(__self__, "options", options)
+        if type is not None:
+            pulumi.set(__self__, "type", type)
+
+    @_builtins.property
+    @pulumi.getter
+    def options(self) -> Optional[Mapping[str, pulumi.Input[_builtins.str]]]:
+        """
+        Log router options, such as ECS log metadata and a custom configuration file.
+
+        Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+
+        For more information, see [FireLens
+        options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+        """
+        return pulumi.get(self, "options")
+
+    @options.setter
+    def options(self, value: Optional[Mapping[str, pulumi.Input[_builtins.str]]]):
+        pulumi.set(self, "options", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> Optional['FirelensConfigurationType']:
+        """
+        The log router to use.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: Optional['FirelensConfigurationType']):
+        pulumi.set(self, "type", value)
+
+
 class HealthCheckArgsDict(TypedDict):
     command: Sequence[_builtins.str]
     """
@@ -1660,6 +2344,884 @@ class HealthCheckArgs:
     @timeout_seconds.setter
     def timeout_seconds(self, value: Optional[_builtins.float]):
         pulumi.set(self, "timeout_seconds", value)
+
+
+class HostEntryArgsDict(TypedDict):
+    hostname: pulumi.Input[_builtins.str]
+    """
+    The hostname for the `/etc/hosts` entry.
+    """
+    ip_address: pulumi.Input[_builtins.str]
+    """
+    The IP address for the `/etc/hosts` entry.
+    """
+
+@pulumi.input_type
+class HostEntryArgs:
+    def __init__(__self__, *,
+                 hostname: pulumi.Input[_builtins.str],
+                 ip_address: pulumi.Input[_builtins.str]):
+        """
+        :param pulumi.Input[_builtins.str] hostname: The hostname for the `/etc/hosts` entry.
+        :param pulumi.Input[_builtins.str] ip_address: The IP address for the `/etc/hosts` entry.
+        """
+        pulumi.set(__self__, "hostname", hostname)
+        pulumi.set(__self__, "ip_address", ip_address)
+
+    @_builtins.property
+    @pulumi.getter
+    def hostname(self) -> pulumi.Input[_builtins.str]:
+        """
+        The hostname for the `/etc/hosts` entry.
+        """
+        return pulumi.get(self, "hostname")
+
+    @hostname.setter
+    def hostname(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "hostname", value)
+
+    @_builtins.property
+    @pulumi.getter(name="ipAddress")
+    def ip_address(self) -> pulumi.Input[_builtins.str]:
+        """
+        The IP address for the `/etc/hosts` entry.
+        """
+        return pulumi.get(self, "ip_address")
+
+    @ip_address.setter
+    def ip_address(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "ip_address", value)
+
+
+class KernelCapabilitiesArgsDict(TypedDict):
+    add: NotRequired[Sequence[_builtins.str]]
+    """
+    Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+
+    For supported names, see
+    [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+    """
+    drop: NotRequired[Sequence[_builtins.str]]
+    """
+    Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+
+    For supported names, see
+    [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+    """
+
+@pulumi.input_type
+class KernelCapabilitiesArgs:
+    def __init__(__self__, *,
+                 add: Optional[Sequence[_builtins.str]] = None,
+                 drop: Optional[Sequence[_builtins.str]] = None):
+        """
+        :param Sequence[_builtins.str] add: Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+               
+               For supported names, see
+               [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+        :param Sequence[_builtins.str] drop: Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+               
+               For supported names, see
+               [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+        """
+        if add is not None:
+            pulumi.set(__self__, "add", add)
+        if drop is not None:
+            pulumi.set(__self__, "drop", drop)
+
+    @_builtins.property
+    @pulumi.getter
+    def add(self) -> Optional[Sequence[_builtins.str]]:
+        """
+        Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+
+        For supported names, see
+        [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+        """
+        return pulumi.get(self, "add")
+
+    @add.setter
+    def add(self, value: Optional[Sequence[_builtins.str]]):
+        pulumi.set(self, "add", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def drop(self) -> Optional[Sequence[_builtins.str]]:
+        """
+        Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+
+        For supported names, see
+        [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+        """
+        return pulumi.get(self, "drop")
+
+    @drop.setter
+    def drop(self, value: Optional[Sequence[_builtins.str]]):
+        pulumi.set(self, "drop", value)
+
+
+class KeyValuePairArgsDict(TypedDict):
+    name: _builtins.str
+    """
+    The name, such as an environment variable name.
+    """
+    value: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The value assigned to the name.
+    """
+
+@pulumi.input_type
+class KeyValuePairArgs:
+    def __init__(__self__, *,
+                 name: _builtins.str,
+                 value: pulumi.Input[Optional[_builtins.str]] = None):
+        """
+        :param _builtins.str name: The name, such as an environment variable name.
+        :param pulumi.Input[_builtins.str] value: The value assigned to the name.
+        """
+        pulumi.set(__self__, "name", name)
+        if value is not None:
+            pulumi.set(__self__, "value", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def name(self) -> _builtins.str:
+        """
+        The name, such as an environment variable name.
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: _builtins.str):
+        pulumi.set(self, "name", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def value(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The value assigned to the name.
+        """
+        return pulumi.get(self, "value")
+
+    @value.setter
+    def value(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "value", value)
+
+
+class LinuxParametersArgsDict(TypedDict):
+    capabilities: NotRequired['KernelCapabilitiesArgsDict']
+    """
+    Linux capabilities to add to or remove from the default Docker configuration.
+
+    For more information, see [kernel
+    capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+    """
+    devices: NotRequired[Sequence['DeviceArgsDict']]
+    """
+    Host devices to expose to the container. Not supported for Fargate tasks.
+    """
+    init_process_enabled: NotRequired[_builtins.bool]
+    """
+    Whether to run an init process that forwards signals and removes exited child processes.
+    """
+    max_swap: NotRequired[_builtins.float]
+    """
+    The maximum swap memory, in MiB. Set to `0` to disable swap.
+
+    Required for `swappiness` to take effect. Not supported for Fargate tasks.
+
+    Default - The container instance's swap configuration.
+    """
+    shared_memory_size: NotRequired[_builtins.float]
+    """
+    The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+    """
+    swappiness: NotRequired[_builtins.float]
+    """
+    How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+
+    Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+
+    Default - 60 in ECS.
+    """
+    tmpfs: NotRequired[Sequence['TmpfsArgsDict']]
+    """
+    In-memory file systems to mount in the container.
+
+    For more information, see [tmpfs
+    mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+    """
+
+@pulumi.input_type
+class LinuxParametersArgs:
+    def __init__(__self__, *,
+                 capabilities: Optional['KernelCapabilitiesArgs'] = None,
+                 devices: Optional[Sequence['DeviceArgs']] = None,
+                 init_process_enabled: Optional[_builtins.bool] = None,
+                 max_swap: Optional[_builtins.float] = None,
+                 shared_memory_size: Optional[_builtins.float] = None,
+                 swappiness: Optional[_builtins.float] = None,
+                 tmpfs: Optional[Sequence['TmpfsArgs']] = None):
+        """
+        :param 'KernelCapabilitiesArgs' capabilities: Linux capabilities to add to or remove from the default Docker configuration.
+               
+               For more information, see [kernel
+               capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+        :param Sequence['DeviceArgs'] devices: Host devices to expose to the container. Not supported for Fargate tasks.
+        :param _builtins.bool init_process_enabled: Whether to run an init process that forwards signals and removes exited child processes.
+        :param _builtins.float max_swap: The maximum swap memory, in MiB. Set to `0` to disable swap.
+               
+               Required for `swappiness` to take effect. Not supported for Fargate tasks.
+               
+               Default - The container instance's swap configuration.
+        :param _builtins.float shared_memory_size: The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+        :param _builtins.float swappiness: How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+               
+               Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+               
+               Default - 60 in ECS.
+        :param Sequence['TmpfsArgs'] tmpfs: In-memory file systems to mount in the container.
+               
+               For more information, see [tmpfs
+               mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+        """
+        if capabilities is not None:
+            pulumi.set(__self__, "capabilities", capabilities)
+        if devices is not None:
+            pulumi.set(__self__, "devices", devices)
+        if init_process_enabled is not None:
+            pulumi.set(__self__, "init_process_enabled", init_process_enabled)
+        if max_swap is not None:
+            pulumi.set(__self__, "max_swap", max_swap)
+        if shared_memory_size is not None:
+            pulumi.set(__self__, "shared_memory_size", shared_memory_size)
+        if swappiness is not None:
+            pulumi.set(__self__, "swappiness", swappiness)
+        if tmpfs is not None:
+            pulumi.set(__self__, "tmpfs", tmpfs)
+
+    @_builtins.property
+    @pulumi.getter
+    def capabilities(self) -> Optional['KernelCapabilitiesArgs']:
+        """
+        Linux capabilities to add to or remove from the default Docker configuration.
+
+        For more information, see [kernel
+        capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+        """
+        return pulumi.get(self, "capabilities")
+
+    @capabilities.setter
+    def capabilities(self, value: Optional['KernelCapabilitiesArgs']):
+        pulumi.set(self, "capabilities", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def devices(self) -> Optional[Sequence['DeviceArgs']]:
+        """
+        Host devices to expose to the container. Not supported for Fargate tasks.
+        """
+        return pulumi.get(self, "devices")
+
+    @devices.setter
+    def devices(self, value: Optional[Sequence['DeviceArgs']]):
+        pulumi.set(self, "devices", value)
+
+    @_builtins.property
+    @pulumi.getter(name="initProcessEnabled")
+    def init_process_enabled(self) -> Optional[_builtins.bool]:
+        """
+        Whether to run an init process that forwards signals and removes exited child processes.
+        """
+        return pulumi.get(self, "init_process_enabled")
+
+    @init_process_enabled.setter
+    def init_process_enabled(self, value: Optional[_builtins.bool]):
+        pulumi.set(self, "init_process_enabled", value)
+
+    @_builtins.property
+    @pulumi.getter(name="maxSwap")
+    def max_swap(self) -> Optional[_builtins.float]:
+        """
+        The maximum swap memory, in MiB. Set to `0` to disable swap.
+
+        Required for `swappiness` to take effect. Not supported for Fargate tasks.
+
+        Default - The container instance's swap configuration.
+        """
+        return pulumi.get(self, "max_swap")
+
+    @max_swap.setter
+    def max_swap(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "max_swap", value)
+
+    @_builtins.property
+    @pulumi.getter(name="sharedMemorySize")
+    def shared_memory_size(self) -> Optional[_builtins.float]:
+        """
+        The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+        """
+        return pulumi.get(self, "shared_memory_size")
+
+    @shared_memory_size.setter
+    def shared_memory_size(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "shared_memory_size", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def swappiness(self) -> Optional[_builtins.float]:
+        """
+        How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+
+        Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+
+        Default - 60 in ECS.
+        """
+        return pulumi.get(self, "swappiness")
+
+    @swappiness.setter
+    def swappiness(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "swappiness", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def tmpfs(self) -> Optional[Sequence['TmpfsArgs']]:
+        """
+        In-memory file systems to mount in the container.
+
+        For more information, see [tmpfs
+        mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+        """
+        return pulumi.get(self, "tmpfs")
+
+    @tmpfs.setter
+    def tmpfs(self, value: Optional[Sequence['TmpfsArgs']]):
+        pulumi.set(self, "tmpfs", value)
+
+
+class LogConfigurationArgsDict(TypedDict):
+    log_driver: 'LogConfigurationLogDriver'
+    """
+    The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+
+    For more information, see
+    [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+    """
+    options: NotRequired[Mapping[str, pulumi.Input[_builtins.str]]]
+    """
+    Driver-specific configuration options.
+
+    For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+    `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+
+    The `mode` option controls delivery: `blocking` can block application writes when logging
+    fails; `non-blocking` can lose logs when its buffer fills.
+
+    For supported options and defaults, see [log
+    options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+    """
+    secret_options: NotRequired[Sequence['ContainerDefinitionSecretArgsDict']]
+    """
+    Secrets to pass as log driver options instead of plaintext values.
+
+    For more information, see [sensitive
+    data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+    """
+
+@pulumi.input_type
+class LogConfigurationArgs:
+    def __init__(__self__, *,
+                 log_driver: 'LogConfigurationLogDriver',
+                 options: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
+                 secret_options: Optional[Sequence['ContainerDefinitionSecretArgs']] = None):
+        """
+        :param 'LogConfigurationLogDriver' log_driver: The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+               
+               For more information, see
+               [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+        :param Mapping[str, pulumi.Input[_builtins.str]] options: Driver-specific configuration options.
+               
+               For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+               `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+               
+               The `mode` option controls delivery: `blocking` can block application writes when logging
+               fails; `non-blocking` can lose logs when its buffer fills.
+               
+               For supported options and defaults, see [log
+               options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+        :param Sequence['ContainerDefinitionSecretArgs'] secret_options: Secrets to pass as log driver options instead of plaintext values.
+               
+               For more information, see [sensitive
+               data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+        """
+        pulumi.set(__self__, "log_driver", log_driver)
+        if options is not None:
+            pulumi.set(__self__, "options", options)
+        if secret_options is not None:
+            pulumi.set(__self__, "secret_options", secret_options)
+
+    @_builtins.property
+    @pulumi.getter(name="logDriver")
+    def log_driver(self) -> 'LogConfigurationLogDriver':
+        """
+        The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+
+        For more information, see
+        [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+        """
+        return pulumi.get(self, "log_driver")
+
+    @log_driver.setter
+    def log_driver(self, value: 'LogConfigurationLogDriver'):
+        pulumi.set(self, "log_driver", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def options(self) -> Optional[Mapping[str, pulumi.Input[_builtins.str]]]:
+        """
+        Driver-specific configuration options.
+
+        For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+        `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+
+        The `mode` option controls delivery: `blocking` can block application writes when logging
+        fails; `non-blocking` can lose logs when its buffer fills.
+
+        For supported options and defaults, see [log
+        options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+        """
+        return pulumi.get(self, "options")
+
+    @options.setter
+    def options(self, value: Optional[Mapping[str, pulumi.Input[_builtins.str]]]):
+        pulumi.set(self, "options", value)
+
+    @_builtins.property
+    @pulumi.getter(name="secretOptions")
+    def secret_options(self) -> Optional[Sequence['ContainerDefinitionSecretArgs']]:
+        """
+        Secrets to pass as log driver options instead of plaintext values.
+
+        For more information, see [sensitive
+        data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+        """
+        return pulumi.get(self, "secret_options")
+
+    @secret_options.setter
+    def secret_options(self, value: Optional[Sequence['ContainerDefinitionSecretArgs']]):
+        pulumi.set(self, "secret_options", value)
+
+
+class MountPointArgsDict(TypedDict):
+    container_path: NotRequired[_builtins.str]
+    """
+    The path inside the container at which to mount the volume.
+    """
+    read_only: NotRequired[_builtins.bool]
+    """
+    Whether the container has read-only access to the volume.
+
+    Default - `false` in ECS.
+    """
+    source_volume: NotRequired[_builtins.str]
+    """
+    The name of a volume declared in the task definition.
+    """
+
+@pulumi.input_type
+class MountPointArgs:
+    def __init__(__self__, *,
+                 container_path: Optional[_builtins.str] = None,
+                 read_only: Optional[_builtins.bool] = None,
+                 source_volume: Optional[_builtins.str] = None):
+        """
+        :param _builtins.str container_path: The path inside the container at which to mount the volume.
+        :param _builtins.bool read_only: Whether the container has read-only access to the volume.
+               
+               Default - `false` in ECS.
+        :param _builtins.str source_volume: The name of a volume declared in the task definition.
+        """
+        if container_path is not None:
+            pulumi.set(__self__, "container_path", container_path)
+        if read_only is not None:
+            pulumi.set(__self__, "read_only", read_only)
+        if source_volume is not None:
+            pulumi.set(__self__, "source_volume", source_volume)
+
+    @_builtins.property
+    @pulumi.getter(name="containerPath")
+    def container_path(self) -> Optional[_builtins.str]:
+        """
+        The path inside the container at which to mount the volume.
+        """
+        return pulumi.get(self, "container_path")
+
+    @container_path.setter
+    def container_path(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "container_path", value)
+
+    @_builtins.property
+    @pulumi.getter(name="readOnly")
+    def read_only(self) -> Optional[_builtins.bool]:
+        """
+        Whether the container has read-only access to the volume.
+
+        Default - `false` in ECS.
+        """
+        return pulumi.get(self, "read_only")
+
+    @read_only.setter
+    def read_only(self, value: Optional[_builtins.bool]):
+        pulumi.set(self, "read_only", value)
+
+    @_builtins.property
+    @pulumi.getter(name="sourceVolume")
+    def source_volume(self) -> Optional[_builtins.str]:
+        """
+        The name of a volume declared in the task definition.
+        """
+        return pulumi.get(self, "source_volume")
+
+    @source_volume.setter
+    def source_volume(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "source_volume", value)
+
+
+class PortMappingArgsDict(TypedDict):
+    app_protocol: NotRequired['PortMappingAppProtocol']
+    """
+    The application protocol for Service Connect handling and telemetry.
+
+    Changing this value requires deleting and redeploying the Service Connect service.
+
+    Default - TCP handling without protocol-specific telemetry in ECS.
+
+    For more information, see
+    [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+    """
+    container_port: NotRequired[_builtins.float]
+    """
+    The port to expose on the container.
+
+    With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+
+    For more information, see
+    [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+    """
+    container_port_range: NotRequired[_builtins.str]
+    """
+    A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+
+    Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+    ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+    the host and container ranges match.
+
+    For more information, see
+    [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+    """
+    host_port: NotRequired[_builtins.float]
+    """
+    The host port to bind to the container port.
+
+    With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+    omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+
+    For more information, see
+    [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+    """
+    name: NotRequired[_builtins.str]
+    """
+    The port mapping name referenced by Service Connect or VPC Lattice configuration.
+
+    Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+
+    For more information, see
+    [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+    """
+    protocol: NotRequired['PortMappingProtocol']
+    """
+    The transport protocol. Changing it requires deleting and redeploying the Service Connect
+    service.
+
+    Default - `tcp` in ECS.
+
+    For more information, see
+    [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+    """
+
+@pulumi.input_type
+class PortMappingArgs:
+    def __init__(__self__, *,
+                 app_protocol: Optional['PortMappingAppProtocol'] = None,
+                 container_port: Optional[_builtins.float] = None,
+                 container_port_range: Optional[_builtins.str] = None,
+                 host_port: Optional[_builtins.float] = None,
+                 name: Optional[_builtins.str] = None,
+                 protocol: Optional['PortMappingProtocol'] = None):
+        """
+        :param 'PortMappingAppProtocol' app_protocol: The application protocol for Service Connect handling and telemetry.
+               
+               Changing this value requires deleting and redeploying the Service Connect service.
+               
+               Default - TCP handling without protocol-specific telemetry in ECS.
+               
+               For more information, see
+               [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+        :param _builtins.float container_port: The port to expose on the container.
+               
+               With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+               
+               For more information, see
+               [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+        :param _builtins.str container_port_range: A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+               
+               Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+               ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+               the host and container ranges match.
+               
+               For more information, see
+               [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+        :param _builtins.float host_port: The host port to bind to the container port.
+               
+               With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+               omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+               
+               For more information, see
+               [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+        :param _builtins.str name: The port mapping name referenced by Service Connect or VPC Lattice configuration.
+               
+               Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+               
+               For more information, see
+               [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+        :param 'PortMappingProtocol' protocol: The transport protocol. Changing it requires deleting and redeploying the Service Connect
+               service.
+               
+               Default - `tcp` in ECS.
+               
+               For more information, see
+               [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+        """
+        if app_protocol is not None:
+            pulumi.set(__self__, "app_protocol", app_protocol)
+        if container_port is not None:
+            pulumi.set(__self__, "container_port", container_port)
+        if container_port_range is not None:
+            pulumi.set(__self__, "container_port_range", container_port_range)
+        if host_port is not None:
+            pulumi.set(__self__, "host_port", host_port)
+        if name is not None:
+            pulumi.set(__self__, "name", name)
+        if protocol is not None:
+            pulumi.set(__self__, "protocol", protocol)
+
+    @_builtins.property
+    @pulumi.getter(name="appProtocol")
+    def app_protocol(self) -> Optional['PortMappingAppProtocol']:
+        """
+        The application protocol for Service Connect handling and telemetry.
+
+        Changing this value requires deleting and redeploying the Service Connect service.
+
+        Default - TCP handling without protocol-specific telemetry in ECS.
+
+        For more information, see
+        [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+        """
+        return pulumi.get(self, "app_protocol")
+
+    @app_protocol.setter
+    def app_protocol(self, value: Optional['PortMappingAppProtocol']):
+        pulumi.set(self, "app_protocol", value)
+
+    @_builtins.property
+    @pulumi.getter(name="containerPort")
+    def container_port(self) -> Optional[_builtins.float]:
+        """
+        The port to expose on the container.
+
+        With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+
+        For more information, see
+        [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+        """
+        return pulumi.get(self, "container_port")
+
+    @container_port.setter
+    def container_port(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "container_port", value)
+
+    @_builtins.property
+    @pulumi.getter(name="containerPortRange")
+    def container_port_range(self) -> Optional[_builtins.str]:
+        """
+        A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+
+        Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+        ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+        the host and container ranges match.
+
+        For more information, see
+        [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+        """
+        return pulumi.get(self, "container_port_range")
+
+    @container_port_range.setter
+    def container_port_range(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "container_port_range", value)
+
+    @_builtins.property
+    @pulumi.getter(name="hostPort")
+    def host_port(self) -> Optional[_builtins.float]:
+        """
+        The host port to bind to the container port.
+
+        With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+        omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+
+        For more information, see
+        [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+        """
+        return pulumi.get(self, "host_port")
+
+    @host_port.setter
+    def host_port(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "host_port", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def name(self) -> Optional[_builtins.str]:
+        """
+        The port mapping name referenced by Service Connect or VPC Lattice configuration.
+
+        Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+
+        For more information, see
+        [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "name", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def protocol(self) -> Optional['PortMappingProtocol']:
+        """
+        The transport protocol. Changing it requires deleting and redeploying the Service Connect
+        service.
+
+        Default - `tcp` in ECS.
+
+        For more information, see
+        [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+        """
+        return pulumi.get(self, "protocol")
+
+    @protocol.setter
+    def protocol(self, value: Optional['PortMappingProtocol']):
+        pulumi.set(self, "protocol", value)
+
+
+class RepositoryCredentialsArgsDict(TypedDict):
+    credentials_parameter: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The ARN of the secret containing registry credentials. A secret name is also accepted when the
+    secret is in the same Region as the task.
+    """
+
+@pulumi.input_type
+class RepositoryCredentialsArgs:
+    def __init__(__self__, *,
+                 credentials_parameter: pulumi.Input[Optional[_builtins.str]] = None):
+        """
+        :param pulumi.Input[_builtins.str] credentials_parameter: The ARN of the secret containing registry credentials. A secret name is also accepted when the
+               secret is in the same Region as the task.
+        """
+        if credentials_parameter is not None:
+            pulumi.set(__self__, "credentials_parameter", credentials_parameter)
+
+    @_builtins.property
+    @pulumi.getter(name="credentialsParameter")
+    def credentials_parameter(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The ARN of the secret containing registry credentials. A secret name is also accepted when the
+        secret is in the same Region as the task.
+        """
+        return pulumi.get(self, "credentials_parameter")
+
+    @credentials_parameter.setter
+    def credentials_parameter(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "credentials_parameter", value)
+
+
+class ResourceRequirementArgsDict(TypedDict):
+    type: 'ResourceRequirementType'
+    """
+    The type of resource to assign.
+    """
+    value: _builtins.str
+    """
+    The amount or identifier of the resource to assign.
+
+    For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+    `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+    only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+
+    For more information, see
+    [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+    """
+
+@pulumi.input_type
+class ResourceRequirementArgs:
+    def __init__(__self__, *,
+                 type: 'ResourceRequirementType',
+                 value: _builtins.str):
+        """
+        :param 'ResourceRequirementType' type: The type of resource to assign.
+        :param _builtins.str value: The amount or identifier of the resource to assign.
+               
+               For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+               `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+               only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+               
+               For more information, see
+               [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+        """
+        pulumi.set(__self__, "type", type)
+        pulumi.set(__self__, "value", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def type(self) -> 'ResourceRequirementType':
+        """
+        The type of resource to assign.
+        """
+        return pulumi.get(self, "type")
+
+    @type.setter
+    def type(self, value: 'ResourceRequirementType'):
+        pulumi.set(self, "type", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def value(self) -> _builtins.str:
+        """
+        The amount or identifier of the resource to assign.
+
+        For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+        `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+        only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+
+        For more information, see
+        [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+        """
+        return pulumi.get(self, "value")
+
+    @value.setter
+    def value(self, value: _builtins.str):
+        pulumi.set(self, "value", value)
 
 
 class RuntimePlatformArgsDict(TypedDict):
@@ -2002,6 +3564,83 @@ class SystemControlArgs:
     @value.setter
     def value(self, value: Optional[_builtins.str]):
         pulumi.set(self, "value", value)
+
+
+class TmpfsArgsDict(TypedDict):
+    size: _builtins.float
+    """
+    The maximum file system size, in MiB.
+    """
+    container_path: NotRequired[_builtins.str]
+    """
+    The absolute path inside the container at which to mount the file system.
+    """
+    mount_options: NotRequired[Sequence[_builtins.str]]
+    """
+    Mount options, such as `ro`, `noexec`, or `nosuid`.
+
+    For supported values, see
+    [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+    """
+
+@pulumi.input_type
+class TmpfsArgs:
+    def __init__(__self__, *,
+                 size: _builtins.float,
+                 container_path: Optional[_builtins.str] = None,
+                 mount_options: Optional[Sequence[_builtins.str]] = None):
+        """
+        :param _builtins.float size: The maximum file system size, in MiB.
+        :param _builtins.str container_path: The absolute path inside the container at which to mount the file system.
+        :param Sequence[_builtins.str] mount_options: Mount options, such as `ro`, `noexec`, or `nosuid`.
+               
+               For supported values, see
+               [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+        """
+        pulumi.set(__self__, "size", size)
+        if container_path is not None:
+            pulumi.set(__self__, "container_path", container_path)
+        if mount_options is not None:
+            pulumi.set(__self__, "mount_options", mount_options)
+
+    @_builtins.property
+    @pulumi.getter
+    def size(self) -> _builtins.float:
+        """
+        The maximum file system size, in MiB.
+        """
+        return pulumi.get(self, "size")
+
+    @size.setter
+    def size(self, value: _builtins.float):
+        pulumi.set(self, "size", value)
+
+    @_builtins.property
+    @pulumi.getter(name="containerPath")
+    def container_path(self) -> Optional[_builtins.str]:
+        """
+        The absolute path inside the container at which to mount the file system.
+        """
+        return pulumi.get(self, "container_path")
+
+    @container_path.setter
+    def container_path(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "container_path", value)
+
+    @_builtins.property
+    @pulumi.getter(name="mountOptions")
+    def mount_options(self) -> Optional[Sequence[_builtins.str]]:
+        """
+        Mount options, such as `ro`, `noexec`, or `nosuid`.
+
+        For supported values, see
+        [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+        """
+        return pulumi.get(self, "mount_options")
+
+    @mount_options.setter
+    def mount_options(self, value: Optional[Sequence[_builtins.str]]):
+        pulumi.set(self, "mount_options", value)
 
 
 class UlimitArgsDict(TypedDict):

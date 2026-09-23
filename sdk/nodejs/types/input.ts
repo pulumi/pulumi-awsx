@@ -1155,6 +1155,108 @@ export namespace ecs {
 
 export namespace experimental {
     export namespace ecs {
+        export interface ContainerDefinitionDependencyArgs {
+            /**
+             * The condition that the other container must satisfy before this container starts.
+             */
+            condition: enums.experimental.ecs.ContainerDependencyCondition;
+            /**
+             * The name of the other container in the task.
+             */
+            containerName: string;
+        }
+
+        export interface ContainerDefinitionEnvironmentFileArgs {
+            /**
+             * The file source type. The only supported value is `s3`.
+             */
+            type: string;
+            /**
+             * The ARN of the S3 object containing the environment file.
+             */
+            value: pulumi.Input<string>;
+        }
+
+        export interface ContainerDefinitionHealthCheckArgs {
+            /**
+             * The command that determines whether the container is healthy.
+             *
+             * Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+             * An exit code of zero indicates success; any other code indicates failure.
+             *
+             * Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+             */
+            command?: string[];
+            /**
+             * The time, in seconds, between health checks. Valid values are from 5 through 300.
+             *
+             * Default - 30 seconds in ECS.
+             */
+            interval?: number;
+            /**
+             * The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+             *
+             * Default - 3 in ECS.
+             */
+            retries?: number;
+            /**
+             * The startup grace period, in seconds, before failed checks count toward the retry limit.
+             *
+             * Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+             * failures count toward the retry limit.
+             *
+             * Default - No startup grace period in ECS.
+             */
+            startPeriod?: number;
+            /**
+             * The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+             *
+             * Default - 5 seconds in ECS.
+             */
+            timeout?: number;
+        }
+
+        export interface ContainerDefinitionSecretArgs {
+            /**
+             * The environment variable name, or the log driver option name when used in `secretOptions`.
+             */
+            name: string;
+            /**
+             * The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+             *
+             * An SSM parameter name is also accepted when it is in the same Region as the task. The task
+             * execution role must have permission to read the secret or parameter.
+             *
+             * For more information, see [secret
+             * sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+             */
+            valueFrom: pulumi.Input<string>;
+        }
+
+        export interface ContainerDefinitionSystemControlArgs {
+            /**
+             * The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+             */
+            namespace?: string;
+            /**
+             * The value to assign to the kernel parameter.
+             */
+            value?: string;
+        }
+
+        export interface ContainerDefinitionVolumeFromArgs {
+            /**
+             * Whether this container has read-only access to the volumes.
+             *
+             * Default - `false` in ECS.
+             */
+            readOnly?: boolean;
+            /**
+             * The name of the container from which to mount volumes.
+             */
+            sourceContainer?: string;
+        }
+
         export interface ContainerDependencyArgs {
             /**
              * The condition that the other container must satisfy.
@@ -1177,6 +1279,27 @@ export namespace experimental {
             start: number;
         }
 
+        export interface ContainerRestartPolicyArgs {
+            /**
+             * Whether the restart policy is enabled.
+             */
+            enabled?: boolean;
+            /**
+             * Exit codes that do not trigger a restart. Specify at most 50 codes.
+             *
+             * Default - No ignored exit codes in ECS.
+             */
+            ignoredExitCodes?: number[];
+            /**
+             * The minimum time, in seconds, the container must run before it is eligible for a restart.
+             *
+             * Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+             *
+             * Default - 300 seconds in ECS.
+             */
+            restartAttemptPeriod?: number;
+        }
+
         export interface CredentialSpecArgs {
             /**
              * The Active Directory authentication mode.
@@ -1190,6 +1313,23 @@ export namespace experimental {
              * The ARN of an SSM parameter that contains the credential specification file.
              */
             ssmParameterArn?: pulumi.Input<string | undefined>;
+        }
+
+        export interface DeviceArgs {
+            /**
+             * The path inside the container at which to expose the host device.
+             */
+            containerPath?: string;
+            /**
+             * The device path on the host container instance.
+             */
+            hostPath?: string;
+            /**
+             * The permissions to grant the container for the device.
+             *
+             * Default - `read`, `write`, and `mknod` in ECS.
+             */
+            permissions?: enums.experimental.ecs.DevicePermissions[];
         }
 
         export interface EnvironmentFileArgs {
@@ -1503,6 +1643,22 @@ export namespace experimental {
             protocol?: enums.experimental.ecs.PortMappingProtocol;
         }
 
+        export interface FirelensConfigurationArgs {
+            /**
+             * Log router options, such as ECS log metadata and a custom configuration file.
+             *
+             * Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+             *
+             * For more information, see [FireLens
+             * options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+             */
+            options?: {[key: string]: pulumi.Input<string>};
+            /**
+             * The log router to use.
+             */
+            type?: enums.experimental.ecs.FirelensConfigurationType;
+        }
+
         export interface HealthCheckArgs {
             /**
              * The command that the container runs to determine whether it is healthy.
@@ -1538,6 +1694,226 @@ export namespace experimental {
              * Default - 5 seconds.
              */
             timeoutSeconds?: number;
+        }
+
+        export interface HostEntryArgs {
+            /**
+             * The hostname for the `/etc/hosts` entry.
+             */
+            hostname: pulumi.Input<string>;
+            /**
+             * The IP address for the `/etc/hosts` entry.
+             */
+            ipAddress: pulumi.Input<string>;
+        }
+
+        export interface KernelCapabilitiesArgs {
+            /**
+             * Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+             *
+             * For supported names, see
+             * [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+             */
+            add?: string[];
+            /**
+             * Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+             *
+             * For supported names, see
+             * [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+             */
+            drop?: string[];
+        }
+
+        export interface KeyValuePairArgs {
+            /**
+             * The name, such as an environment variable name.
+             */
+            name: string;
+            /**
+             * The value assigned to the name.
+             */
+            value?: pulumi.Input<string | undefined>;
+        }
+
+        export interface LinuxParametersArgs {
+            /**
+             * Linux capabilities to add to or remove from the default Docker configuration.
+             *
+             * For more information, see [kernel
+             * capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+             */
+            capabilities?: inputs.experimental.ecs.KernelCapabilitiesArgs;
+            /**
+             * Host devices to expose to the container. Not supported for Fargate tasks.
+             */
+            devices?: inputs.experimental.ecs.DeviceArgs[];
+            /**
+             * Whether to run an init process that forwards signals and removes exited child processes.
+             */
+            initProcessEnabled?: boolean;
+            /**
+             * The maximum swap memory, in MiB. Set to `0` to disable swap.
+             *
+             * Required for `swappiness` to take effect. Not supported for Fargate tasks.
+             *
+             * Default - The container instance's swap configuration.
+             */
+            maxSwap?: number;
+            /**
+             * The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+             */
+            sharedMemorySize?: number;
+            /**
+             * How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+             *
+             * Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+             *
+             * Default - 60 in ECS.
+             */
+            swappiness?: number;
+            /**
+             * In-memory file systems to mount in the container.
+             *
+             * For more information, see [tmpfs
+             * mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+             */
+            tmpfs?: inputs.experimental.ecs.TmpfsArgs[];
+        }
+
+        export interface LogConfigurationArgs {
+            /**
+             * The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+             *
+             * For more information, see
+             * [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+             */
+            logDriver: enums.experimental.ecs.LogConfigurationLogDriver;
+            /**
+             * Driver-specific configuration options.
+             *
+             * For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+             * `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+             *
+             * The `mode` option controls delivery: `blocking` can block application writes when logging
+             * fails; `non-blocking` can lose logs when its buffer fills.
+             *
+             * For supported options and defaults, see [log
+             * options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+             */
+            options?: {[key: string]: pulumi.Input<string>};
+            /**
+             * Secrets to pass as log driver options instead of plaintext values.
+             *
+             * For more information, see [sensitive
+             * data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+             */
+            secretOptions?: inputs.experimental.ecs.ContainerDefinitionSecretArgs[];
+        }
+
+        export interface MountPointArgs {
+            /**
+             * The path inside the container at which to mount the volume.
+             */
+            containerPath?: string;
+            /**
+             * Whether the container has read-only access to the volume.
+             *
+             * Default - `false` in ECS.
+             */
+            readOnly?: boolean;
+            /**
+             * The name of a volume declared in the task definition.
+             */
+            sourceVolume?: string;
+        }
+
+        export interface PortMappingArgs {
+            /**
+             * The application protocol for Service Connect handling and telemetry.
+             *
+             * Changing this value requires deleting and redeploying the Service Connect service.
+             *
+             * Default - TCP handling without protocol-specific telemetry in ECS.
+             *
+             * For more information, see
+             * [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+             */
+            appProtocol?: enums.experimental.ecs.PortMappingAppProtocol;
+            /**
+             * The port to expose on the container.
+             *
+             * With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+             *
+             * For more information, see
+             * [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+             */
+            containerPort?: number;
+            /**
+             * A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+             *
+             * Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+             * ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+             * the host and container ranges match.
+             *
+             * For more information, see
+             * [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+             */
+            containerPortRange?: string;
+            /**
+             * The host port to bind to the container port.
+             *
+             * With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+             * omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+             *
+             * For more information, see
+             * [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+             */
+            hostPort?: number;
+            /**
+             * The port mapping name referenced by Service Connect or VPC Lattice configuration.
+             *
+             * Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+             *
+             * For more information, see
+             * [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+             */
+            name?: string;
+            /**
+             * The transport protocol. Changing it requires deleting and redeploying the Service Connect
+             * service.
+             *
+             * Default - `tcp` in ECS.
+             *
+             * For more information, see
+             * [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+             */
+            protocol?: enums.experimental.ecs.PortMappingProtocol;
+        }
+
+        export interface RepositoryCredentialsArgs {
+            /**
+             * The ARN of the secret containing registry credentials. A secret name is also accepted when the
+             * secret is in the same Region as the task.
+             */
+            credentialsParameter?: pulumi.Input<string | undefined>;
+        }
+
+        export interface ResourceRequirementArgs {
+            /**
+             * The type of resource to assign.
+             */
+            type: enums.experimental.ecs.ResourceRequirementType;
+            /**
+             * The amount or identifier of the resource to assign.
+             *
+             * For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+             * `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+             * only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+             *
+             * For more information, see
+             * [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+             */
+            value: string;
         }
 
         export interface RuntimePlatformArgs {
@@ -1621,6 +1997,24 @@ export namespace experimental {
              * The value assigned to the parameter.
              */
             value?: string;
+        }
+
+        export interface TmpfsArgs {
+            /**
+             * The absolute path inside the container at which to mount the file system.
+             */
+            containerPath?: string;
+            /**
+             * Mount options, such as `ro`, `noexec`, or `nosuid`.
+             *
+             * For supported values, see
+             * [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+             */
+            mountOptions?: string[];
+            /**
+             * The maximum file system size, in MiB.
+             */
+            size: number;
         }
 
         export interface UlimitArgs {

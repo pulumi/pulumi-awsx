@@ -358,6 +358,166 @@ const (
 	ContainerDependencyConditionHEALTHY = ContainerDependencyCondition("HEALTHY")
 )
 
+func (ContainerDependencyCondition) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDependencyCondition)(nil)).Elem()
+}
+
+func (e ContainerDependencyCondition) ToContainerDependencyConditionOutput() ContainerDependencyConditionOutput {
+	return pulumi.ToOutput(e).(ContainerDependencyConditionOutput)
+}
+
+func (e ContainerDependencyCondition) ToContainerDependencyConditionOutputWithContext(ctx context.Context) ContainerDependencyConditionOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(ContainerDependencyConditionOutput)
+}
+
+func (e ContainerDependencyCondition) ToContainerDependencyConditionPtrOutput() ContainerDependencyConditionPtrOutput {
+	return e.ToContainerDependencyConditionPtrOutputWithContext(context.Background())
+}
+
+func (e ContainerDependencyCondition) ToContainerDependencyConditionPtrOutputWithContext(ctx context.Context) ContainerDependencyConditionPtrOutput {
+	return ContainerDependencyCondition(e).ToContainerDependencyConditionOutputWithContext(ctx).ToContainerDependencyConditionPtrOutputWithContext(ctx)
+}
+
+func (e ContainerDependencyCondition) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e ContainerDependencyCondition) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e ContainerDependencyCondition) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e ContainerDependencyCondition) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type ContainerDependencyConditionOutput struct{ *pulumi.OutputState }
+
+func (ContainerDependencyConditionOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDependencyCondition)(nil)).Elem()
+}
+
+func (o ContainerDependencyConditionOutput) ToContainerDependencyConditionOutput() ContainerDependencyConditionOutput {
+	return o
+}
+
+func (o ContainerDependencyConditionOutput) ToContainerDependencyConditionOutputWithContext(ctx context.Context) ContainerDependencyConditionOutput {
+	return o
+}
+
+func (o ContainerDependencyConditionOutput) ToContainerDependencyConditionPtrOutput() ContainerDependencyConditionPtrOutput {
+	return o.ToContainerDependencyConditionPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerDependencyConditionOutput) ToContainerDependencyConditionPtrOutputWithContext(ctx context.Context) ContainerDependencyConditionPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerDependencyCondition) *ContainerDependencyCondition {
+		return &v
+	}).(ContainerDependencyConditionPtrOutput)
+}
+
+func (o ContainerDependencyConditionOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o ContainerDependencyConditionOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e ContainerDependencyCondition) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o ContainerDependencyConditionOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerDependencyConditionOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e ContainerDependencyCondition) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type ContainerDependencyConditionPtrOutput struct{ *pulumi.OutputState }
+
+func (ContainerDependencyConditionPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerDependencyCondition)(nil)).Elem()
+}
+
+func (o ContainerDependencyConditionPtrOutput) ToContainerDependencyConditionPtrOutput() ContainerDependencyConditionPtrOutput {
+	return o
+}
+
+func (o ContainerDependencyConditionPtrOutput) ToContainerDependencyConditionPtrOutputWithContext(ctx context.Context) ContainerDependencyConditionPtrOutput {
+	return o
+}
+
+func (o ContainerDependencyConditionPtrOutput) Elem() ContainerDependencyConditionOutput {
+	return o.ApplyT(func(v *ContainerDependencyCondition) ContainerDependencyCondition {
+		if v != nil {
+			return *v
+		}
+		var ret ContainerDependencyCondition
+		return ret
+	}).(ContainerDependencyConditionOutput)
+}
+
+func (o ContainerDependencyConditionPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerDependencyConditionPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *ContainerDependencyCondition) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// ContainerDependencyConditionInput is an input type that accepts values of the ContainerDependencyCondition enum
+// A concrete instance of `ContainerDependencyConditionInput` can be one of the following:
+//
+//	ContainerDependencyConditionSTART
+//	ContainerDependencyConditionCOMPLETE
+//	ContainerDependencyConditionSUCCESS
+//	ContainerDependencyConditionHEALTHY
+type ContainerDependencyConditionInput interface {
+	pulumi.Input
+
+	ToContainerDependencyConditionOutput() ContainerDependencyConditionOutput
+	ToContainerDependencyConditionOutputWithContext(context.Context) ContainerDependencyConditionOutput
+}
+
+var containerDependencyConditionPtrType = reflect.TypeOf((**ContainerDependencyCondition)(nil)).Elem()
+
+type ContainerDependencyConditionPtrInput interface {
+	pulumi.Input
+
+	ToContainerDependencyConditionPtrOutput() ContainerDependencyConditionPtrOutput
+	ToContainerDependencyConditionPtrOutputWithContext(context.Context) ContainerDependencyConditionPtrOutput
+}
+
+type containerDependencyConditionPtr string
+
+func ContainerDependencyConditionPtr(v string) ContainerDependencyConditionPtrInput {
+	return (*containerDependencyConditionPtr)(&v)
+}
+
+func (*containerDependencyConditionPtr) ElementType() reflect.Type {
+	return containerDependencyConditionPtrType
+}
+
+func (in *containerDependencyConditionPtr) ToContainerDependencyConditionPtrOutput() ContainerDependencyConditionPtrOutput {
+	return pulumi.ToOutput(in).(ContainerDependencyConditionPtrOutput)
+}
+
+func (in *containerDependencyConditionPtr) ToContainerDependencyConditionPtrOutputWithContext(ctx context.Context) ContainerDependencyConditionPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(ContainerDependencyConditionPtrOutput)
+}
+
 type CpuArchitecture string
 
 const (
@@ -540,6 +700,573 @@ const (
 	// containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
 	CredentialSpecAuthenticationModeDOMAINLESS = CredentialSpecAuthenticationMode("Domainless")
 )
+
+type DevicePermissions string
+
+const (
+	// Allow the container to read from the device.
+	DevicePermissionsREAD = DevicePermissions("read")
+	// Allow the container to write to the device.
+	DevicePermissionsWRITE = DevicePermissions("write")
+	// Allow the container to create device special files for the device.
+	DevicePermissionsMKNOD = DevicePermissions("mknod")
+)
+
+func (DevicePermissions) ElementType() reflect.Type {
+	return reflect.TypeOf((*DevicePermissions)(nil)).Elem()
+}
+
+func (e DevicePermissions) ToDevicePermissionsOutput() DevicePermissionsOutput {
+	return pulumi.ToOutput(e).(DevicePermissionsOutput)
+}
+
+func (e DevicePermissions) ToDevicePermissionsOutputWithContext(ctx context.Context) DevicePermissionsOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(DevicePermissionsOutput)
+}
+
+func (e DevicePermissions) ToDevicePermissionsPtrOutput() DevicePermissionsPtrOutput {
+	return e.ToDevicePermissionsPtrOutputWithContext(context.Background())
+}
+
+func (e DevicePermissions) ToDevicePermissionsPtrOutputWithContext(ctx context.Context) DevicePermissionsPtrOutput {
+	return DevicePermissions(e).ToDevicePermissionsOutputWithContext(ctx).ToDevicePermissionsPtrOutputWithContext(ctx)
+}
+
+func (e DevicePermissions) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e DevicePermissions) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e DevicePermissions) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e DevicePermissions) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type DevicePermissionsOutput struct{ *pulumi.OutputState }
+
+func (DevicePermissionsOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DevicePermissions)(nil)).Elem()
+}
+
+func (o DevicePermissionsOutput) ToDevicePermissionsOutput() DevicePermissionsOutput {
+	return o
+}
+
+func (o DevicePermissionsOutput) ToDevicePermissionsOutputWithContext(ctx context.Context) DevicePermissionsOutput {
+	return o
+}
+
+func (o DevicePermissionsOutput) ToDevicePermissionsPtrOutput() DevicePermissionsPtrOutput {
+	return o.ToDevicePermissionsPtrOutputWithContext(context.Background())
+}
+
+func (o DevicePermissionsOutput) ToDevicePermissionsPtrOutputWithContext(ctx context.Context) DevicePermissionsPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DevicePermissions) *DevicePermissions {
+		return &v
+	}).(DevicePermissionsPtrOutput)
+}
+
+func (o DevicePermissionsOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o DevicePermissionsOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e DevicePermissions) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o DevicePermissionsOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o DevicePermissionsOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e DevicePermissions) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type DevicePermissionsPtrOutput struct{ *pulumi.OutputState }
+
+func (DevicePermissionsPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DevicePermissions)(nil)).Elem()
+}
+
+func (o DevicePermissionsPtrOutput) ToDevicePermissionsPtrOutput() DevicePermissionsPtrOutput {
+	return o
+}
+
+func (o DevicePermissionsPtrOutput) ToDevicePermissionsPtrOutputWithContext(ctx context.Context) DevicePermissionsPtrOutput {
+	return o
+}
+
+func (o DevicePermissionsPtrOutput) Elem() DevicePermissionsOutput {
+	return o.ApplyT(func(v *DevicePermissions) DevicePermissions {
+		if v != nil {
+			return *v
+		}
+		var ret DevicePermissions
+		return ret
+	}).(DevicePermissionsOutput)
+}
+
+func (o DevicePermissionsPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o DevicePermissionsPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *DevicePermissions) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// DevicePermissionsInput is an input type that accepts values of the DevicePermissions enum
+// A concrete instance of `DevicePermissionsInput` can be one of the following:
+//
+//	DevicePermissionsREAD
+//	DevicePermissionsWRITE
+//	DevicePermissionsMKNOD
+type DevicePermissionsInput interface {
+	pulumi.Input
+
+	ToDevicePermissionsOutput() DevicePermissionsOutput
+	ToDevicePermissionsOutputWithContext(context.Context) DevicePermissionsOutput
+}
+
+var devicePermissionsPtrType = reflect.TypeOf((**DevicePermissions)(nil)).Elem()
+
+type DevicePermissionsPtrInput interface {
+	pulumi.Input
+
+	ToDevicePermissionsPtrOutput() DevicePermissionsPtrOutput
+	ToDevicePermissionsPtrOutputWithContext(context.Context) DevicePermissionsPtrOutput
+}
+
+type devicePermissionsPtr string
+
+func DevicePermissionsPtr(v string) DevicePermissionsPtrInput {
+	return (*devicePermissionsPtr)(&v)
+}
+
+func (*devicePermissionsPtr) ElementType() reflect.Type {
+	return devicePermissionsPtrType
+}
+
+func (in *devicePermissionsPtr) ToDevicePermissionsPtrOutput() DevicePermissionsPtrOutput {
+	return pulumi.ToOutput(in).(DevicePermissionsPtrOutput)
+}
+
+func (in *devicePermissionsPtr) ToDevicePermissionsPtrOutputWithContext(ctx context.Context) DevicePermissionsPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(DevicePermissionsPtrOutput)
+}
+
+// DevicePermissionsArrayInput is an input type that accepts DevicePermissionsArray and DevicePermissionsArrayOutput values.
+// You can construct a concrete instance of `DevicePermissionsArrayInput` via:
+//
+//	DevicePermissionsArray{ DevicePermissionsArgs{...} }
+type DevicePermissionsArrayInput interface {
+	pulumi.Input
+
+	ToDevicePermissionsArrayOutput() DevicePermissionsArrayOutput
+	ToDevicePermissionsArrayOutputWithContext(context.Context) DevicePermissionsArrayOutput
+}
+
+type DevicePermissionsArray []DevicePermissions
+
+func (DevicePermissionsArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]DevicePermissions)(nil)).Elem()
+}
+
+func (i DevicePermissionsArray) ToDevicePermissionsArrayOutput() DevicePermissionsArrayOutput {
+	return i.ToDevicePermissionsArrayOutputWithContext(context.Background())
+}
+
+func (i DevicePermissionsArray) ToDevicePermissionsArrayOutputWithContext(ctx context.Context) DevicePermissionsArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DevicePermissionsArrayOutput)
+}
+
+type DevicePermissionsArrayOutput struct{ *pulumi.OutputState }
+
+func (DevicePermissionsArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]DevicePermissions)(nil)).Elem()
+}
+
+func (o DevicePermissionsArrayOutput) ToDevicePermissionsArrayOutput() DevicePermissionsArrayOutput {
+	return o
+}
+
+func (o DevicePermissionsArrayOutput) ToDevicePermissionsArrayOutputWithContext(ctx context.Context) DevicePermissionsArrayOutput {
+	return o
+}
+
+func (o DevicePermissionsArrayOutput) Index(i pulumi.IntInput) DevicePermissionsOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) DevicePermissions {
+		return vs[0].([]DevicePermissions)[vs[1].(int)]
+	}).(DevicePermissionsOutput)
+}
+
+type FirelensConfigurationType string
+
+const (
+	// Use Fluentd as the log router.
+	FirelensConfigurationTypeFLUENTD = FirelensConfigurationType("fluentd")
+	// Use Fluent Bit as the log router.
+	FirelensConfigurationTypeFLUENTBIT = FirelensConfigurationType("fluentbit")
+)
+
+func (FirelensConfigurationType) ElementType() reflect.Type {
+	return reflect.TypeOf((*FirelensConfigurationType)(nil)).Elem()
+}
+
+func (e FirelensConfigurationType) ToFirelensConfigurationTypeOutput() FirelensConfigurationTypeOutput {
+	return pulumi.ToOutput(e).(FirelensConfigurationTypeOutput)
+}
+
+func (e FirelensConfigurationType) ToFirelensConfigurationTypeOutputWithContext(ctx context.Context) FirelensConfigurationTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(FirelensConfigurationTypeOutput)
+}
+
+func (e FirelensConfigurationType) ToFirelensConfigurationTypePtrOutput() FirelensConfigurationTypePtrOutput {
+	return e.ToFirelensConfigurationTypePtrOutputWithContext(context.Background())
+}
+
+func (e FirelensConfigurationType) ToFirelensConfigurationTypePtrOutputWithContext(ctx context.Context) FirelensConfigurationTypePtrOutput {
+	return FirelensConfigurationType(e).ToFirelensConfigurationTypeOutputWithContext(ctx).ToFirelensConfigurationTypePtrOutputWithContext(ctx)
+}
+
+func (e FirelensConfigurationType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e FirelensConfigurationType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e FirelensConfigurationType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e FirelensConfigurationType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type FirelensConfigurationTypeOutput struct{ *pulumi.OutputState }
+
+func (FirelensConfigurationTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*FirelensConfigurationType)(nil)).Elem()
+}
+
+func (o FirelensConfigurationTypeOutput) ToFirelensConfigurationTypeOutput() FirelensConfigurationTypeOutput {
+	return o
+}
+
+func (o FirelensConfigurationTypeOutput) ToFirelensConfigurationTypeOutputWithContext(ctx context.Context) FirelensConfigurationTypeOutput {
+	return o
+}
+
+func (o FirelensConfigurationTypeOutput) ToFirelensConfigurationTypePtrOutput() FirelensConfigurationTypePtrOutput {
+	return o.ToFirelensConfigurationTypePtrOutputWithContext(context.Background())
+}
+
+func (o FirelensConfigurationTypeOutput) ToFirelensConfigurationTypePtrOutputWithContext(ctx context.Context) FirelensConfigurationTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v FirelensConfigurationType) *FirelensConfigurationType {
+		return &v
+	}).(FirelensConfigurationTypePtrOutput)
+}
+
+func (o FirelensConfigurationTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o FirelensConfigurationTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e FirelensConfigurationType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o FirelensConfigurationTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o FirelensConfigurationTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e FirelensConfigurationType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type FirelensConfigurationTypePtrOutput struct{ *pulumi.OutputState }
+
+func (FirelensConfigurationTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**FirelensConfigurationType)(nil)).Elem()
+}
+
+func (o FirelensConfigurationTypePtrOutput) ToFirelensConfigurationTypePtrOutput() FirelensConfigurationTypePtrOutput {
+	return o
+}
+
+func (o FirelensConfigurationTypePtrOutput) ToFirelensConfigurationTypePtrOutputWithContext(ctx context.Context) FirelensConfigurationTypePtrOutput {
+	return o
+}
+
+func (o FirelensConfigurationTypePtrOutput) Elem() FirelensConfigurationTypeOutput {
+	return o.ApplyT(func(v *FirelensConfigurationType) FirelensConfigurationType {
+		if v != nil {
+			return *v
+		}
+		var ret FirelensConfigurationType
+		return ret
+	}).(FirelensConfigurationTypeOutput)
+}
+
+func (o FirelensConfigurationTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o FirelensConfigurationTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *FirelensConfigurationType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// FirelensConfigurationTypeInput is an input type that accepts values of the FirelensConfigurationType enum
+// A concrete instance of `FirelensConfigurationTypeInput` can be one of the following:
+//
+//	FirelensConfigurationTypeFLUENTD
+//	FirelensConfigurationTypeFLUENTBIT
+type FirelensConfigurationTypeInput interface {
+	pulumi.Input
+
+	ToFirelensConfigurationTypeOutput() FirelensConfigurationTypeOutput
+	ToFirelensConfigurationTypeOutputWithContext(context.Context) FirelensConfigurationTypeOutput
+}
+
+var firelensConfigurationTypePtrType = reflect.TypeOf((**FirelensConfigurationType)(nil)).Elem()
+
+type FirelensConfigurationTypePtrInput interface {
+	pulumi.Input
+
+	ToFirelensConfigurationTypePtrOutput() FirelensConfigurationTypePtrOutput
+	ToFirelensConfigurationTypePtrOutputWithContext(context.Context) FirelensConfigurationTypePtrOutput
+}
+
+type firelensConfigurationTypePtr string
+
+func FirelensConfigurationTypePtr(v string) FirelensConfigurationTypePtrInput {
+	return (*firelensConfigurationTypePtr)(&v)
+}
+
+func (*firelensConfigurationTypePtr) ElementType() reflect.Type {
+	return firelensConfigurationTypePtrType
+}
+
+func (in *firelensConfigurationTypePtr) ToFirelensConfigurationTypePtrOutput() FirelensConfigurationTypePtrOutput {
+	return pulumi.ToOutput(in).(FirelensConfigurationTypePtrOutput)
+}
+
+func (in *firelensConfigurationTypePtr) ToFirelensConfigurationTypePtrOutputWithContext(ctx context.Context) FirelensConfigurationTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(FirelensConfigurationTypePtrOutput)
+}
+
+type LogConfigurationLogDriver string
+
+const (
+	// Write logs as JSON files on the container host.
+	LogConfigurationLogDriver_JSON_FILE = LogConfigurationLogDriver("json-file")
+	// Send logs to the host syslog service.
+	LogConfigurationLogDriverSYSLOG = LogConfigurationLogDriver("syslog")
+	// Send logs to the host systemd journal.
+	LogConfigurationLogDriverJOURNALD = LogConfigurationLogDriver("journald")
+	// Send logs using the Graylog Extended Log Format.
+	LogConfigurationLogDriverGELF = LogConfigurationLogDriver("gelf")
+	// Send logs to a Fluentd collector.
+	LogConfigurationLogDriverFLUENTD = LogConfigurationLogDriver("fluentd")
+	// Send logs to Amazon CloudWatch Logs.
+	LogConfigurationLogDriverAWSLOGS = LogConfigurationLogDriver("awslogs")
+	// Send logs to Splunk.
+	LogConfigurationLogDriverSPLUNK = LogConfigurationLogDriver("splunk")
+	// Route logs through FireLens.
+	LogConfigurationLogDriverAWSFIRELENS = LogConfigurationLogDriver("awsfirelens")
+)
+
+func (LogConfigurationLogDriver) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogConfigurationLogDriver)(nil)).Elem()
+}
+
+func (e LogConfigurationLogDriver) ToLogConfigurationLogDriverOutput() LogConfigurationLogDriverOutput {
+	return pulumi.ToOutput(e).(LogConfigurationLogDriverOutput)
+}
+
+func (e LogConfigurationLogDriver) ToLogConfigurationLogDriverOutputWithContext(ctx context.Context) LogConfigurationLogDriverOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(LogConfigurationLogDriverOutput)
+}
+
+func (e LogConfigurationLogDriver) ToLogConfigurationLogDriverPtrOutput() LogConfigurationLogDriverPtrOutput {
+	return e.ToLogConfigurationLogDriverPtrOutputWithContext(context.Background())
+}
+
+func (e LogConfigurationLogDriver) ToLogConfigurationLogDriverPtrOutputWithContext(ctx context.Context) LogConfigurationLogDriverPtrOutput {
+	return LogConfigurationLogDriver(e).ToLogConfigurationLogDriverOutputWithContext(ctx).ToLogConfigurationLogDriverPtrOutputWithContext(ctx)
+}
+
+func (e LogConfigurationLogDriver) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e LogConfigurationLogDriver) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e LogConfigurationLogDriver) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e LogConfigurationLogDriver) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type LogConfigurationLogDriverOutput struct{ *pulumi.OutputState }
+
+func (LogConfigurationLogDriverOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogConfigurationLogDriver)(nil)).Elem()
+}
+
+func (o LogConfigurationLogDriverOutput) ToLogConfigurationLogDriverOutput() LogConfigurationLogDriverOutput {
+	return o
+}
+
+func (o LogConfigurationLogDriverOutput) ToLogConfigurationLogDriverOutputWithContext(ctx context.Context) LogConfigurationLogDriverOutput {
+	return o
+}
+
+func (o LogConfigurationLogDriverOutput) ToLogConfigurationLogDriverPtrOutput() LogConfigurationLogDriverPtrOutput {
+	return o.ToLogConfigurationLogDriverPtrOutputWithContext(context.Background())
+}
+
+func (o LogConfigurationLogDriverOutput) ToLogConfigurationLogDriverPtrOutputWithContext(ctx context.Context) LogConfigurationLogDriverPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LogConfigurationLogDriver) *LogConfigurationLogDriver {
+		return &v
+	}).(LogConfigurationLogDriverPtrOutput)
+}
+
+func (o LogConfigurationLogDriverOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o LogConfigurationLogDriverOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e LogConfigurationLogDriver) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o LogConfigurationLogDriverOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o LogConfigurationLogDriverOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e LogConfigurationLogDriver) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type LogConfigurationLogDriverPtrOutput struct{ *pulumi.OutputState }
+
+func (LogConfigurationLogDriverPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogConfigurationLogDriver)(nil)).Elem()
+}
+
+func (o LogConfigurationLogDriverPtrOutput) ToLogConfigurationLogDriverPtrOutput() LogConfigurationLogDriverPtrOutput {
+	return o
+}
+
+func (o LogConfigurationLogDriverPtrOutput) ToLogConfigurationLogDriverPtrOutputWithContext(ctx context.Context) LogConfigurationLogDriverPtrOutput {
+	return o
+}
+
+func (o LogConfigurationLogDriverPtrOutput) Elem() LogConfigurationLogDriverOutput {
+	return o.ApplyT(func(v *LogConfigurationLogDriver) LogConfigurationLogDriver {
+		if v != nil {
+			return *v
+		}
+		var ret LogConfigurationLogDriver
+		return ret
+	}).(LogConfigurationLogDriverOutput)
+}
+
+func (o LogConfigurationLogDriverPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o LogConfigurationLogDriverPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *LogConfigurationLogDriver) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// LogConfigurationLogDriverInput is an input type that accepts values of the LogConfigurationLogDriver enum
+// A concrete instance of `LogConfigurationLogDriverInput` can be one of the following:
+//
+//	LogConfigurationLogDriver_JSON_FILE
+//	LogConfigurationLogDriverSYSLOG
+//	LogConfigurationLogDriverJOURNALD
+//	LogConfigurationLogDriverGELF
+//	LogConfigurationLogDriverFLUENTD
+//	LogConfigurationLogDriverAWSLOGS
+//	LogConfigurationLogDriverSPLUNK
+//	LogConfigurationLogDriverAWSFIRELENS
+type LogConfigurationLogDriverInput interface {
+	pulumi.Input
+
+	ToLogConfigurationLogDriverOutput() LogConfigurationLogDriverOutput
+	ToLogConfigurationLogDriverOutputWithContext(context.Context) LogConfigurationLogDriverOutput
+}
+
+var logConfigurationLogDriverPtrType = reflect.TypeOf((**LogConfigurationLogDriver)(nil)).Elem()
+
+type LogConfigurationLogDriverPtrInput interface {
+	pulumi.Input
+
+	ToLogConfigurationLogDriverPtrOutput() LogConfigurationLogDriverPtrOutput
+	ToLogConfigurationLogDriverPtrOutputWithContext(context.Context) LogConfigurationLogDriverPtrOutput
+}
+
+type logConfigurationLogDriverPtr string
+
+func LogConfigurationLogDriverPtr(v string) LogConfigurationLogDriverPtrInput {
+	return (*logConfigurationLogDriverPtr)(&v)
+}
+
+func (*logConfigurationLogDriverPtr) ElementType() reflect.Type {
+	return logConfigurationLogDriverPtrType
+}
+
+func (in *logConfigurationLogDriverPtr) ToLogConfigurationLogDriverPtrOutput() LogConfigurationLogDriverPtrOutput {
+	return pulumi.ToOutput(in).(LogConfigurationLogDriverPtrOutput)
+}
+
+func (in *logConfigurationLogDriverPtr) ToLogConfigurationLogDriverPtrOutputWithContext(ctx context.Context) LogConfigurationLogDriverPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(LogConfigurationLogDriverPtrOutput)
+}
 
 type OperatingSystemFamily string
 
@@ -1053,6 +1780,176 @@ func (in *portMappingProtocolPtr) ToPortMappingProtocolPtrOutputWithContext(ctx 
 	return pulumi.ToOutputWithContext(ctx, in).(PortMappingProtocolPtrOutput)
 }
 
+type ResourceRequirementType string
+
+const (
+	// Assign physical GPUs to the container.
+	ResourceRequirementTypeGPU = ResourceRequirementType("GPU")
+	// Assign an Elastic Inference accelerator to the container.
+	ResourceRequirementType_INFERENCE_ACCELERATOR = ResourceRequirementType("InferenceAccelerator")
+	// Assign AWS Neuron devices to the container.
+	ResourceRequirementType_NEURON_DEVICE = ResourceRequirementType("NeuronDevice")
+)
+
+func (ResourceRequirementType) ElementType() reflect.Type {
+	return reflect.TypeOf((*ResourceRequirementType)(nil)).Elem()
+}
+
+func (e ResourceRequirementType) ToResourceRequirementTypeOutput() ResourceRequirementTypeOutput {
+	return pulumi.ToOutput(e).(ResourceRequirementTypeOutput)
+}
+
+func (e ResourceRequirementType) ToResourceRequirementTypeOutputWithContext(ctx context.Context) ResourceRequirementTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(ResourceRequirementTypeOutput)
+}
+
+func (e ResourceRequirementType) ToResourceRequirementTypePtrOutput() ResourceRequirementTypePtrOutput {
+	return e.ToResourceRequirementTypePtrOutputWithContext(context.Background())
+}
+
+func (e ResourceRequirementType) ToResourceRequirementTypePtrOutputWithContext(ctx context.Context) ResourceRequirementTypePtrOutput {
+	return ResourceRequirementType(e).ToResourceRequirementTypeOutputWithContext(ctx).ToResourceRequirementTypePtrOutputWithContext(ctx)
+}
+
+func (e ResourceRequirementType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e ResourceRequirementType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e ResourceRequirementType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e ResourceRequirementType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type ResourceRequirementTypeOutput struct{ *pulumi.OutputState }
+
+func (ResourceRequirementTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ResourceRequirementType)(nil)).Elem()
+}
+
+func (o ResourceRequirementTypeOutput) ToResourceRequirementTypeOutput() ResourceRequirementTypeOutput {
+	return o
+}
+
+func (o ResourceRequirementTypeOutput) ToResourceRequirementTypeOutputWithContext(ctx context.Context) ResourceRequirementTypeOutput {
+	return o
+}
+
+func (o ResourceRequirementTypeOutput) ToResourceRequirementTypePtrOutput() ResourceRequirementTypePtrOutput {
+	return o.ToResourceRequirementTypePtrOutputWithContext(context.Background())
+}
+
+func (o ResourceRequirementTypeOutput) ToResourceRequirementTypePtrOutputWithContext(ctx context.Context) ResourceRequirementTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ResourceRequirementType) *ResourceRequirementType {
+		return &v
+	}).(ResourceRequirementTypePtrOutput)
+}
+
+func (o ResourceRequirementTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o ResourceRequirementTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e ResourceRequirementType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o ResourceRequirementTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o ResourceRequirementTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e ResourceRequirementType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type ResourceRequirementTypePtrOutput struct{ *pulumi.OutputState }
+
+func (ResourceRequirementTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ResourceRequirementType)(nil)).Elem()
+}
+
+func (o ResourceRequirementTypePtrOutput) ToResourceRequirementTypePtrOutput() ResourceRequirementTypePtrOutput {
+	return o
+}
+
+func (o ResourceRequirementTypePtrOutput) ToResourceRequirementTypePtrOutputWithContext(ctx context.Context) ResourceRequirementTypePtrOutput {
+	return o
+}
+
+func (o ResourceRequirementTypePtrOutput) Elem() ResourceRequirementTypeOutput {
+	return o.ApplyT(func(v *ResourceRequirementType) ResourceRequirementType {
+		if v != nil {
+			return *v
+		}
+		var ret ResourceRequirementType
+		return ret
+	}).(ResourceRequirementTypeOutput)
+}
+
+func (o ResourceRequirementTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o ResourceRequirementTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *ResourceRequirementType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// ResourceRequirementTypeInput is an input type that accepts values of the ResourceRequirementType enum
+// A concrete instance of `ResourceRequirementTypeInput` can be one of the following:
+//
+//	ResourceRequirementTypeGPU
+//	ResourceRequirementType_INFERENCE_ACCELERATOR
+//	ResourceRequirementType_NEURON_DEVICE
+type ResourceRequirementTypeInput interface {
+	pulumi.Input
+
+	ToResourceRequirementTypeOutput() ResourceRequirementTypeOutput
+	ToResourceRequirementTypeOutputWithContext(context.Context) ResourceRequirementTypeOutput
+}
+
+var resourceRequirementTypePtrType = reflect.TypeOf((**ResourceRequirementType)(nil)).Elem()
+
+type ResourceRequirementTypePtrInput interface {
+	pulumi.Input
+
+	ToResourceRequirementTypePtrOutput() ResourceRequirementTypePtrOutput
+	ToResourceRequirementTypePtrOutputWithContext(context.Context) ResourceRequirementTypePtrOutput
+}
+
+type resourceRequirementTypePtr string
+
+func ResourceRequirementTypePtr(v string) ResourceRequirementTypePtrInput {
+	return (*resourceRequirementTypePtr)(&v)
+}
+
+func (*resourceRequirementTypePtr) ElementType() reflect.Type {
+	return resourceRequirementTypePtrType
+}
+
+func (in *resourceRequirementTypePtr) ToResourceRequirementTypePtrOutput() ResourceRequirementTypePtrOutput {
+	return pulumi.ToOutput(in).(ResourceRequirementTypePtrOutput)
+}
+
+func (in *resourceRequirementTypePtr) ToResourceRequirementTypePtrOutputWithContext(ctx context.Context) ResourceRequirementTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(ResourceRequirementTypePtrOutput)
+}
+
 type UlimitName string
 
 const (
@@ -1264,28 +2161,50 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogDriverModePtrInput)(nil)).Elem(), AwsLogDriverMode("blocking"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVersionConsistencyInput)(nil)).Elem(), ContainerDefinitionVersionConsistency("enabled"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVersionConsistencyPtrInput)(nil)).Elem(), ContainerDefinitionVersionConsistency("enabled"))
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyConditionInput)(nil)).Elem(), ContainerDependencyCondition("START"))
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyConditionPtrInput)(nil)).Elem(), ContainerDependencyCondition("START"))
 	pulumi.RegisterInputType(reflect.TypeOf((*CpuArchitectureInput)(nil)).Elem(), CpuArchitecture("X86_64"))
 	pulumi.RegisterInputType(reflect.TypeOf((*CpuArchitecturePtrInput)(nil)).Elem(), CpuArchitecture("X86_64"))
+	pulumi.RegisterInputType(reflect.TypeOf((*DevicePermissionsInput)(nil)).Elem(), DevicePermissions("read"))
+	pulumi.RegisterInputType(reflect.TypeOf((*DevicePermissionsPtrInput)(nil)).Elem(), DevicePermissions("read"))
+	pulumi.RegisterInputType(reflect.TypeOf((*DevicePermissionsArrayInput)(nil)).Elem(), DevicePermissionsArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*FirelensConfigurationTypeInput)(nil)).Elem(), FirelensConfigurationType("fluentd"))
+	pulumi.RegisterInputType(reflect.TypeOf((*FirelensConfigurationTypePtrInput)(nil)).Elem(), FirelensConfigurationType("fluentd"))
+	pulumi.RegisterInputType(reflect.TypeOf((*LogConfigurationLogDriverInput)(nil)).Elem(), LogConfigurationLogDriver("json-file"))
+	pulumi.RegisterInputType(reflect.TypeOf((*LogConfigurationLogDriverPtrInput)(nil)).Elem(), LogConfigurationLogDriver("json-file"))
 	pulumi.RegisterInputType(reflect.TypeOf((*OperatingSystemFamilyInput)(nil)).Elem(), OperatingSystemFamily("LINUX"))
 	pulumi.RegisterInputType(reflect.TypeOf((*OperatingSystemFamilyPtrInput)(nil)).Elem(), OperatingSystemFamily("LINUX"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingAppProtocolInput)(nil)).Elem(), PortMappingAppProtocol("http"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingAppProtocolPtrInput)(nil)).Elem(), PortMappingAppProtocol("http"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingProtocolInput)(nil)).Elem(), PortMappingProtocol("tcp"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingProtocolPtrInput)(nil)).Elem(), PortMappingProtocol("tcp"))
+	pulumi.RegisterInputType(reflect.TypeOf((*ResourceRequirementTypeInput)(nil)).Elem(), ResourceRequirementType("GPU"))
+	pulumi.RegisterInputType(reflect.TypeOf((*ResourceRequirementTypePtrInput)(nil)).Elem(), ResourceRequirementType("GPU"))
 	pulumi.RegisterInputType(reflect.TypeOf((*UlimitNameInput)(nil)).Elem(), UlimitName("core"))
 	pulumi.RegisterInputType(reflect.TypeOf((*UlimitNamePtrInput)(nil)).Elem(), UlimitName("core"))
 	pulumi.RegisterOutputType(AwsLogDriverModeOutput{})
 	pulumi.RegisterOutputType(AwsLogDriverModePtrOutput{})
 	pulumi.RegisterOutputType(ContainerDefinitionVersionConsistencyOutput{})
 	pulumi.RegisterOutputType(ContainerDefinitionVersionConsistencyPtrOutput{})
+	pulumi.RegisterOutputType(ContainerDependencyConditionOutput{})
+	pulumi.RegisterOutputType(ContainerDependencyConditionPtrOutput{})
 	pulumi.RegisterOutputType(CpuArchitectureOutput{})
 	pulumi.RegisterOutputType(CpuArchitecturePtrOutput{})
+	pulumi.RegisterOutputType(DevicePermissionsOutput{})
+	pulumi.RegisterOutputType(DevicePermissionsPtrOutput{})
+	pulumi.RegisterOutputType(DevicePermissionsArrayOutput{})
+	pulumi.RegisterOutputType(FirelensConfigurationTypeOutput{})
+	pulumi.RegisterOutputType(FirelensConfigurationTypePtrOutput{})
+	pulumi.RegisterOutputType(LogConfigurationLogDriverOutput{})
+	pulumi.RegisterOutputType(LogConfigurationLogDriverPtrOutput{})
 	pulumi.RegisterOutputType(OperatingSystemFamilyOutput{})
 	pulumi.RegisterOutputType(OperatingSystemFamilyPtrOutput{})
 	pulumi.RegisterOutputType(PortMappingAppProtocolOutput{})
 	pulumi.RegisterOutputType(PortMappingAppProtocolPtrOutput{})
 	pulumi.RegisterOutputType(PortMappingProtocolOutput{})
 	pulumi.RegisterOutputType(PortMappingProtocolPtrOutput{})
+	pulumi.RegisterOutputType(ResourceRequirementTypeOutput{})
+	pulumi.RegisterOutputType(ResourceRequirementTypePtrOutput{})
 	pulumi.RegisterOutputType(UlimitNameOutput{})
 	pulumi.RegisterOutputType(UlimitNamePtrOutput{})
 }

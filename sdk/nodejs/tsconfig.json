@@ -124,6 +124,7 @@
         "ecs/fargateService.ts",
         "ecs/fargateTaskDefinition.ts",
         "ecs/index.ts",
+        "experimental/ecs/containerDefinition.ts",
         "experimental/ecs/fargateTaskDefinitionV2.ts",
         "experimental/ecs/index.ts",
         "experimental/index.ts",

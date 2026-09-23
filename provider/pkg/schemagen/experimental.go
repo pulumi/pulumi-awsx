@@ -25,6 +25,31 @@ import (
 )
 
 var experimentalTokenMappings = map[string]string{
+	"awsx-next:index:ContainerDefinition":                   "awsx:experimental/ecs:ContainerDefinition",
+	"awsx-next:index:ContainerDefinitionArgs":               "awsx:experimental/ecs:ContainerDefinitionArgs",
+	"awsx-next:index:ContainerDefinitionDependency":         "awsx:experimental/ecs:ContainerDefinitionDependency",
+	"awsx-next:index:ContainerDefinitionEnvironmentFile":    "awsx:experimental/ecs:ContainerDefinitionEnvironmentFile", //nolint:lll
+	"awsx-next:index:ContainerDefinitionHealthCheck":        "awsx:experimental/ecs:ContainerDefinitionHealthCheck",
+	"awsx-next:index:ContainerDefinitionSecret":             "awsx:experimental/ecs:ContainerDefinitionSecret",
+	"awsx-next:index:ContainerDefinitionSystemControl":      "awsx:experimental/ecs:ContainerDefinitionSystemControl",
+	"awsx-next:index:ContainerDefinitionVolumeFrom":         "awsx:experimental/ecs:ContainerDefinitionVolumeFrom",
+	"awsx-next:index:ContainerRestartPolicy":                "awsx:experimental/ecs:ContainerRestartPolicy",
+	"awsx-next:index:Device":                                "awsx:experimental/ecs:Device",
+	"awsx-next:index:DevicePermissions":                     "awsx:experimental/ecs:DevicePermissions",
+	"awsx-next:index:FirelensConfiguration":                 "awsx:experimental/ecs:FirelensConfiguration",
+	"awsx-next:index:FirelensConfigurationType":             "awsx:experimental/ecs:FirelensConfigurationType", //nolint:lll
+	"awsx-next:index:HostEntry":                             "awsx:experimental/ecs:HostEntry",
+	"awsx-next:index:KernelCapabilities":                    "awsx:experimental/ecs:KernelCapabilities",
+	"awsx-next:index:KeyValuePair":                          "awsx:experimental/ecs:KeyValuePair",
+	"awsx-next:index:LinuxParameters":                       "awsx:experimental/ecs:LinuxParameters",
+	"awsx-next:index:LogConfiguration":                      "awsx:experimental/ecs:LogConfiguration",
+	"awsx-next:index:LogConfigurationLogDriver":             "awsx:experimental/ecs:LogConfigurationLogDriver", //nolint:lll
+	"awsx-next:index:MountPoint":                            "awsx:experimental/ecs:MountPoint",
+	"awsx-next:index:PortMapping":                           "awsx:experimental/ecs:PortMapping",
+	"awsx-next:index:RepositoryCredentials":                 "awsx:experimental/ecs:RepositoryCredentials",
+	"awsx-next:index:ResourceRequirement":                   "awsx:experimental/ecs:ResourceRequirement",
+	"awsx-next:index:ResourceRequirementType":               "awsx:experimental/ecs:ResourceRequirementType",
+	"awsx-next:index:Tmpfs":                                 "awsx:experimental/ecs:Tmpfs",
 	"awsx-next:index:FargateTaskDefinitionV2":               "awsx:experimental/ecs:FargateTaskDefinitionV2",
 	"awsx-next:index:LogGroup":                              "awsx:experimental/cloudwatch:LogGroup",
 	"awsx-next:index:AwsLogDriverMode":                      "awsx:experimental/ecs:AwsLogDriverMode",

@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../../utilities";
 
 // Export members:
+export { ContainerDefinitionArgs } from "./containerDefinition";
+export type ContainerDefinition = import("./containerDefinition").ContainerDefinition;
+export const ContainerDefinition: typeof import("./containerDefinition").ContainerDefinition = null as any;
+utilities.lazyLoad(exports, ["ContainerDefinition"], () => require("./containerDefinition"));
+
 export { FargateTaskDefinitionV2Args } from "./fargateTaskDefinitionV2";
 export type FargateTaskDefinitionV2 = import("./fargateTaskDefinitionV2").FargateTaskDefinitionV2;
 export const FargateTaskDefinitionV2: typeof import("./fargateTaskDefinitionV2").FargateTaskDefinitionV2 = null as any;
@@ -18,6 +23,8 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "awsx:experimental/ecs:ContainerDefinition":
+                return new ContainerDefinition(name, <any>undefined, { urn })
             case "awsx:experimental/ecs:FargateTaskDefinitionV2":
                 return new FargateTaskDefinitionV2(name, <any>undefined, { urn })
             default:

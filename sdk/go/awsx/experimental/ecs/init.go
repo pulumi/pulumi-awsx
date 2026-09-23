@@ -23,6 +23,8 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "awsx:experimental/ecs:ContainerDefinition":
+		r = &ContainerDefinition{}
 	case "awsx:experimental/ecs:FargateTaskDefinitionV2":
 		r = &FargateTaskDefinitionV2{}
 	default:

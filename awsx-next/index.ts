@@ -1,1 +1,1 @@
-export { FargateTaskDefinitionV2 } from './src';
+export { ContainerDefinition, FargateTaskDefinitionV2 } from './src';

@@ -13,6 +13,1492 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type ContainerDefinitionArgsType struct {
+	// The command passed to the container. Use a separate array item for each argument.
+	//
+	// For more information, see
+	// [command](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-command).
+	Command []string `pulumi:"command"`
+	// The CPU units reserved for the container. There are 1,024 CPU units per vCPU.
+	//
+	// On Linux, this controls relative CPU shares, not a hard limit. On Windows, it is a hard limit.
+	// For Fargate, the total container CPU reservation must be below the task CPU value.
+	//
+	// For more information, see
+	// [cpu](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-cpu).
+	Cpu *float64 `pulumi:"cpu"`
+	// Credential specifications for Active Directory authentication. Specify at most one entry.
+	//
+	// Use `credentialspec:ARN` or `credentialspecdomainless:ARN`, with an SSM or S3 ARN. Prefer this
+	// property to `dockerSecurityOptions` for credential specifications.
+	//
+	// For more information, see
+	// [credentialSpecs](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-credentialSpecs).
+	CredentialSpecs []string `pulumi:"credentialSpecs"`
+	// Dependencies on other containers in the task that control startup order.
+	//
+	// ECS reverses the dependency order during shutdown.
+	//
+	// For more information, see [container
+	// dependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html).
+	DependsOn []ContainerDefinitionDependency `pulumi:"dependsOn"`
+	// Whether to disable networking in the container. Not supported for Windows containers.
+	//
+	// For more information, see
+	// [disableNetworking](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-disableNetworking).
+	DisableNetworking *bool `pulumi:"disableNetworking"`
+	// DNS search domains for the container. Not supported for Windows containers.
+	//
+	// For more information, see
+	// [dnsSearchDomains](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsSearchDomains).
+	DnsSearchDomains []string `pulumi:"dnsSearchDomains"`
+	// DNS servers for the container. Not supported for Windows containers.
+	//
+	// For more information, see
+	// [dnsServers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsServers).
+	DnsServers []string `pulumi:"dnsServers"`
+	// Labels to add to the container.
+	//
+	// For more information, see
+	// [dockerLabels](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerLabels).
+	DockerLabels map[string]string `pulumi:"dockerLabels"`
+	// Security options for the container, such as SELinux labels or an AppArmor profile.
+	//
+	// Not supported for Fargate tasks. The container instance must support the selected security
+	// system. Use `credentialSpecs` for Active Directory authentication.
+	//
+	// For more information, see
+	// [dockerSecurityOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerSecurityOptions).
+	DockerSecurityOptions []string `pulumi:"dockerSecurityOptions"`
+	// The entry point passed to the container.
+	//
+	// For more information, see
+	// [entryPoint](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-entryPoint).
+	EntryPoint []string `pulumi:"entryPoint"`
+	// Environment variables passed to the container. Use `secrets` for sensitive values.
+	//
+	// For more information, see [environment
+	// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+	Environment []KeyValuePair `pulumi:"environment"`
+	// S3 environment files passed to the container. Specify at most ten `.env` files.
+	//
+	// Values in `environment` take precedence over file values. Files are processed in list order;
+	// the first value for a variable takes precedence over values in later files. Not supported for
+	// Windows containers.
+	//
+	// For more information, see [environment
+	// files](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/use-environment-file.html).
+	EnvironmentFiles []ContainerDefinitionEnvironmentFile `pulumi:"environmentFiles"`
+	// Whether the container is essential to the task.
+	//
+	// If an essential container stops, ECS stops all other containers in the task. Each task must
+	// have at least one essential container.
+	//
+	// Default - `true` in ECS.
+	//
+	// For more information, see
+	// [essential](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-essential).
+	Essential *bool `pulumi:"essential"`
+	// Hostname and IP address mappings to add to the container's `/etc/hosts` file.
+	//
+	// Not supported for Windows containers or the `awsvpc` network mode.
+	//
+	// For more information, see
+	// [extraHosts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-extraHosts).
+	ExtraHosts []HostEntry `pulumi:"extraHosts"`
+	// FireLens log router settings for the container.
+	//
+	// For more information, see [custom log
+	// routing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html).
+	FirelensConfiguration *FirelensConfiguration `pulumi:"firelensConfiguration"`
+	// The health check command and settings for the container.
+	//
+	// ECS only monitors health checks specified in the task definition, not checks configured only in
+	// the container image.
+	//
+	// For more information, see [container health
+	// checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
+	HealthCheck *ContainerDefinitionHealthCheck `pulumi:"healthCheck"`
+	// The container hostname. Not supported with the `awsvpc` network mode.
+	//
+	// For more information, see
+	// [hostname](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-hostname).
+	Hostname *string `pulumi:"hostname"`
+	// The image used to start the container, specified by name, tag, or digest.
+	//
+	// For private registries, include the registry address, such as `registry/repository:tag` or
+	// `registry/repository@sha256:digest`. Image updates do not update already running tasks.
+	//
+	// For more information, see
+	// [image](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-image).
+	Image string `pulumi:"image"`
+	// Whether to keep standard input open for the container.
+	//
+	// For more information, see
+	// [interactive](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-interactive).
+	Interactive *bool `pulumi:"interactive"`
+	// Links to other containers, specified as a container name or `name:alias`.
+	//
+	// Supported only with the `bridge` network mode and not for Windows containers. Links do not
+	// provide network isolation.
+	//
+	// For more information, see
+	// [links](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-links).
+	Links []string `pulumi:"links"`
+	// Linux-specific container settings, such as kernel capabilities and devices.
+	//
+	// Not supported for Windows containers.
+	//
+	// For more information, see [Linux
+	// parameters](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinuxParameters.html).
+	LinuxParameters *LinuxParameters `pulumi:"linuxParameters"`
+	// The log driver and its settings for the container.
+	//
+	// On EC2, the driver must be available and configured on the container instance.
+	//
+	// For more information, see [log
+	// configuration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html).
+	LogConfiguration *LogConfiguration `pulumi:"logConfiguration"`
+	// The hard memory limit, in MiB. The container is killed if it exceeds this limit.
+	//
+	// Must be greater than `memoryReservation` when both are set. On EC2, specify memory at the task
+	// or container level. Total container memory reservations must be below the task memory value, if
+	// set. Container-level memory is optional on Fargate.
+	//
+	// For more information, see
+	// [memory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memory).
+	Memory *float64 `pulumi:"memory"`
+	// The soft memory limit, in MiB, reserved for the container during placement.
+	//
+	// The container can use more memory, up to `memory` or the available instance memory. If both
+	// limits are set, `memory` must be greater. Without task-level memory, set a nonzero `memory` or
+	// `memoryReservation` value.
+	//
+	// For more information, see
+	// [memoryReservation](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memoryReservation).
+	MemoryReservation *float64 `pulumi:"memoryReservation"`
+	// Data volumes to mount in the container.
+	//
+	// Windows mounts must use directories on the same drive as `$env:ProgramData`.
+	//
+	// For more information, see
+	// [mountPoints](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-mountPoints).
+	MountPoints []MountPoint `pulumi:"mountPoints"`
+	// The container name, used by other containers to reference it.
+	//
+	// Use up to 255 letters, numbers, underscores, or hyphens.
+	//
+	// For more information, see
+	// [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name).
+	Name string `pulumi:"name"`
+	// Ports to expose from the container.
+	//
+	// With `awsvpc` or `host` networking, omit `hostPort` or match it to `containerPort`. Port
+	// mappings are not supported with the `none` network mode.
+	//
+	// For more information, see [port
+	// mappings](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html).
+	PortMappings []PortMapping `pulumi:"portMappings"`
+	// Whether to give the container elevated privileges on the host.
+	//
+	// Not supported for Windows containers or Fargate tasks.
+	//
+	// For more information, see
+	// [privileged](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-privileged).
+	Privileged *bool `pulumi:"privileged"`
+	// Whether to allocate a TTY for the container.
+	//
+	// For more information, see
+	// [pseudoTerminal](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-pseudoTerminal).
+	PseudoTerminal *bool `pulumi:"pseudoTerminal"`
+	// Whether the container has read-only access to its root file system.
+	//
+	// Not supported for Windows containers.
+	//
+	// For more information, see
+	// [readonlyRootFilesystem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-readonlyRootFilesystem).
+	ReadonlyRootFilesystem *bool `pulumi:"readonlyRootFilesystem"`
+	// Credentials for authentication to a private image registry.
+	//
+	// For more information, see [repository
+	// credentials](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RepositoryCredentials.html).
+	RepositoryCredentials *RepositoryCredentials `pulumi:"repositoryCredentials"`
+	// Specialized resources to assign to the container, such as GPUs or Neuron devices.
+	//
+	// For more information, see [resource
+	// requirements](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html).
+	ResourceRequirements []ResourceRequirement `pulumi:"resourceRequirements"`
+	// Settings that let ECS restart the container without replacing the task.
+	//
+	// For more information, see [container restart
+	// policies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html).
+	RestartPolicy *ContainerRestartPolicy `pulumi:"restartPolicy"`
+	// Secrets to pass to the container as environment variables.
+	//
+	// For more information, see [sensitive
+	// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+	Secrets []ContainerDefinitionSecret `pulumi:"secrets"`
+	// The time, in seconds, allowed for this container to satisfy another container's dependency.
+	//
+	// If the required condition is not met in time, the dependent container does not start and the
+	// task stops. Fargate accepts 2 through 120 seconds. The agent's `ECS_CONTAINER_START_TIMEOUT`
+	// setting is enforced independently.
+	//
+	// For more information, see
+	// [startTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-startTimeout).
+	StartTimeout *float64 `pulumi:"startTimeout"`
+	// The time, in seconds, to wait for the container to stop before it is forcibly killed.
+	//
+	// Fargate accepts 2 through 120 seconds.
+	//
+	// Default - 30 seconds on Fargate. On EC2, the agent's `ECS_CONTAINER_STOP_TIMEOUT` setting, or
+	// 30 seconds if that setting is absent.
+	//
+	// For more information, see
+	// [stopTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-stopTimeout).
+	StopTimeout *float64 `pulumi:"stopTimeout"`
+	// Namespaced kernel parameters to set in the container.
+	//
+	// Settings can affect other containers that share the same namespace. Not supported for Windows
+	// containers.
+	//
+	// For more information, see [system
+	// controls](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html).
+	SystemControls []ContainerDefinitionSystemControl `pulumi:"systemControls"`
+	// Operating-system resource limits for the container. Not supported for Windows containers.
+	//
+	// For more information, see
+	// [ulimits](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html).
+	Ulimits []Ulimit `pulumi:"ulimits"`
+	// The user that runs commands inside the container, as a name, ID, or user and group pair.
+	//
+	// Use a non-root user, especially with `host` networking. Not supported for Windows containers.
+	//
+	// For more information, see
+	// [user](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-user).
+	User *string `pulumi:"user"`
+	// Whether ECS resolves the image tag to a digest. When disabled, ECS uses the original image URI.
+	//
+	// Default - `enabled` in ECS.
+	//
+	// For more information, see [container image
+	// resolution](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability).
+	VersionConsistency *ContainerDefinitionVersionConsistency `pulumi:"versionConsistency"`
+	// Data volumes to mount from another container in the same task.
+	//
+	// For more information, see [volumes from other
+	// containers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html).
+	VolumesFrom []ContainerDefinitionVolumeFrom `pulumi:"volumesFrom"`
+	// The working directory in which commands run inside the container.
+	//
+	// For more information, see
+	// [workingDirectory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-workingDirectory).
+	WorkingDirectory *string `pulumi:"workingDirectory"`
+}
+
+type ContainerDefinitionArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionArgsType)(nil)).Elem()
+}
+
+func (o ContainerDefinitionArgsTypeOutput) ToContainerDefinitionArgsTypeOutput() ContainerDefinitionArgsTypeOutput {
+	return o
+}
+
+func (o ContainerDefinitionArgsTypeOutput) ToContainerDefinitionArgsTypeOutputWithContext(ctx context.Context) ContainerDefinitionArgsTypeOutput {
+	return o
+}
+
+// The command passed to the container. Use a separate array item for each argument.
+//
+// For more information, see
+// [command](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-command).
+func (o ContainerDefinitionArgsTypeOutput) Command() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.Command }).(pulumi.StringArrayOutput)
+}
+
+// The CPU units reserved for the container. There are 1,024 CPU units per vCPU.
+//
+// On Linux, this controls relative CPU shares, not a hard limit. On Windows, it is a hard limit.
+// For Fargate, the total container CPU reservation must be below the task CPU value.
+//
+// For more information, see
+// [cpu](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-cpu).
+func (o ContainerDefinitionArgsTypeOutput) Cpu() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *float64 { return v.Cpu }).(pulumi.Float64PtrOutput)
+}
+
+// Credential specifications for Active Directory authentication. Specify at most one entry.
+//
+// Use `credentialspec:ARN` or `credentialspecdomainless:ARN`, with an SSM or S3 ARN. Prefer this
+// property to `dockerSecurityOptions` for credential specifications.
+//
+// For more information, see
+// [credentialSpecs](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-credentialSpecs).
+func (o ContainerDefinitionArgsTypeOutput) CredentialSpecs() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.CredentialSpecs }).(pulumi.StringArrayOutput)
+}
+
+// Dependencies on other containers in the task that control startup order.
+//
+// ECS reverses the dependency order during shutdown.
+//
+// For more information, see [container
+// dependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html).
+func (o ContainerDefinitionArgsTypeOutput) DependsOn() ContainerDefinitionDependencyArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ContainerDefinitionDependency { return v.DependsOn }).(ContainerDefinitionDependencyArrayOutput)
+}
+
+// Whether to disable networking in the container. Not supported for Windows containers.
+//
+// For more information, see
+// [disableNetworking](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-disableNetworking).
+func (o ContainerDefinitionArgsTypeOutput) DisableNetworking() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.DisableNetworking }).(pulumi.BoolPtrOutput)
+}
+
+// DNS search domains for the container. Not supported for Windows containers.
+//
+// For more information, see
+// [dnsSearchDomains](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsSearchDomains).
+func (o ContainerDefinitionArgsTypeOutput) DnsSearchDomains() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.DnsSearchDomains }).(pulumi.StringArrayOutput)
+}
+
+// DNS servers for the container. Not supported for Windows containers.
+//
+// For more information, see
+// [dnsServers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsServers).
+func (o ContainerDefinitionArgsTypeOutput) DnsServers() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.DnsServers }).(pulumi.StringArrayOutput)
+}
+
+// Labels to add to the container.
+//
+// For more information, see
+// [dockerLabels](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerLabels).
+func (o ContainerDefinitionArgsTypeOutput) DockerLabels() pulumi.StringMapOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) map[string]string { return v.DockerLabels }).(pulumi.StringMapOutput)
+}
+
+// Security options for the container, such as SELinux labels or an AppArmor profile.
+//
+// Not supported for Fargate tasks. The container instance must support the selected security
+// system. Use `credentialSpecs` for Active Directory authentication.
+//
+// For more information, see
+// [dockerSecurityOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerSecurityOptions).
+func (o ContainerDefinitionArgsTypeOutput) DockerSecurityOptions() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.DockerSecurityOptions }).(pulumi.StringArrayOutput)
+}
+
+// The entry point passed to the container.
+//
+// For more information, see
+// [entryPoint](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-entryPoint).
+func (o ContainerDefinitionArgsTypeOutput) EntryPoint() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.EntryPoint }).(pulumi.StringArrayOutput)
+}
+
+// Environment variables passed to the container. Use `secrets` for sensitive values.
+//
+// For more information, see [environment
+// variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+func (o ContainerDefinitionArgsTypeOutput) Environment() KeyValuePairArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []KeyValuePair { return v.Environment }).(KeyValuePairArrayOutput)
+}
+
+// S3 environment files passed to the container. Specify at most ten `.env` files.
+//
+// Values in `environment` take precedence over file values. Files are processed in list order;
+// the first value for a variable takes precedence over values in later files. Not supported for
+// Windows containers.
+//
+// For more information, see [environment
+// files](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/use-environment-file.html).
+func (o ContainerDefinitionArgsTypeOutput) EnvironmentFiles() ContainerDefinitionEnvironmentFileArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ContainerDefinitionEnvironmentFile { return v.EnvironmentFiles }).(ContainerDefinitionEnvironmentFileArrayOutput)
+}
+
+// Whether the container is essential to the task.
+//
+// If an essential container stops, ECS stops all other containers in the task. Each task must
+// have at least one essential container.
+//
+// Default - `true` in ECS.
+//
+// For more information, see
+// [essential](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-essential).
+func (o ContainerDefinitionArgsTypeOutput) Essential() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.Essential }).(pulumi.BoolPtrOutput)
+}
+
+// Hostname and IP address mappings to add to the container's `/etc/hosts` file.
+//
+// Not supported for Windows containers or the `awsvpc` network mode.
+//
+// For more information, see
+// [extraHosts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-extraHosts).
+func (o ContainerDefinitionArgsTypeOutput) ExtraHosts() HostEntryArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []HostEntry { return v.ExtraHosts }).(HostEntryArrayOutput)
+}
+
+// FireLens log router settings for the container.
+//
+// For more information, see [custom log
+// routing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html).
+func (o ContainerDefinitionArgsTypeOutput) FirelensConfiguration() FirelensConfigurationPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *FirelensConfiguration { return v.FirelensConfiguration }).(FirelensConfigurationPtrOutput)
+}
+
+// The health check command and settings for the container.
+//
+// ECS only monitors health checks specified in the task definition, not checks configured only in
+// the container image.
+//
+// For more information, see [container health
+// checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
+func (o ContainerDefinitionArgsTypeOutput) HealthCheck() ContainerDefinitionHealthCheckPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *ContainerDefinitionHealthCheck { return v.HealthCheck }).(ContainerDefinitionHealthCheckPtrOutput)
+}
+
+// The container hostname. Not supported with the `awsvpc` network mode.
+//
+// For more information, see
+// [hostname](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-hostname).
+func (o ContainerDefinitionArgsTypeOutput) Hostname() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *string { return v.Hostname }).(pulumi.StringPtrOutput)
+}
+
+// The image used to start the container, specified by name, tag, or digest.
+//
+// For private registries, include the registry address, such as `registry/repository:tag` or
+// `registry/repository@sha256:digest`. Image updates do not update already running tasks.
+//
+// For more information, see
+// [image](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-image).
+func (o ContainerDefinitionArgsTypeOutput) Image() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) string { return v.Image }).(pulumi.StringOutput)
+}
+
+// Whether to keep standard input open for the container.
+//
+// For more information, see
+// [interactive](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-interactive).
+func (o ContainerDefinitionArgsTypeOutput) Interactive() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.Interactive }).(pulumi.BoolPtrOutput)
+}
+
+// Links to other containers, specified as a container name or `name:alias`.
+//
+// Supported only with the `bridge` network mode and not for Windows containers. Links do not
+// provide network isolation.
+//
+// For more information, see
+// [links](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-links).
+func (o ContainerDefinitionArgsTypeOutput) Links() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []string { return v.Links }).(pulumi.StringArrayOutput)
+}
+
+// Linux-specific container settings, such as kernel capabilities and devices.
+//
+// Not supported for Windows containers.
+//
+// For more information, see [Linux
+// parameters](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinuxParameters.html).
+func (o ContainerDefinitionArgsTypeOutput) LinuxParameters() LinuxParametersPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *LinuxParameters { return v.LinuxParameters }).(LinuxParametersPtrOutput)
+}
+
+// The log driver and its settings for the container.
+//
+// On EC2, the driver must be available and configured on the container instance.
+//
+// For more information, see [log
+// configuration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html).
+func (o ContainerDefinitionArgsTypeOutput) LogConfiguration() LogConfigurationPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *LogConfiguration { return v.LogConfiguration }).(LogConfigurationPtrOutput)
+}
+
+// The hard memory limit, in MiB. The container is killed if it exceeds this limit.
+//
+// Must be greater than `memoryReservation` when both are set. On EC2, specify memory at the task
+// or container level. Total container memory reservations must be below the task memory value, if
+// set. Container-level memory is optional on Fargate.
+//
+// For more information, see
+// [memory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memory).
+func (o ContainerDefinitionArgsTypeOutput) Memory() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *float64 { return v.Memory }).(pulumi.Float64PtrOutput)
+}
+
+// The soft memory limit, in MiB, reserved for the container during placement.
+//
+// The container can use more memory, up to `memory` or the available instance memory. If both
+// limits are set, `memory` must be greater. Without task-level memory, set a nonzero `memory` or
+// `memoryReservation` value.
+//
+// For more information, see
+// [memoryReservation](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memoryReservation).
+func (o ContainerDefinitionArgsTypeOutput) MemoryReservation() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *float64 { return v.MemoryReservation }).(pulumi.Float64PtrOutput)
+}
+
+// Data volumes to mount in the container.
+//
+// Windows mounts must use directories on the same drive as `$env:ProgramData`.
+//
+// For more information, see
+// [mountPoints](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-mountPoints).
+func (o ContainerDefinitionArgsTypeOutput) MountPoints() MountPointArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []MountPoint { return v.MountPoints }).(MountPointArrayOutput)
+}
+
+// The container name, used by other containers to reference it.
+//
+// Use up to 255 letters, numbers, underscores, or hyphens.
+//
+// For more information, see
+// [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name).
+func (o ContainerDefinitionArgsTypeOutput) Name() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) string { return v.Name }).(pulumi.StringOutput)
+}
+
+// Ports to expose from the container.
+//
+// With `awsvpc` or `host` networking, omit `hostPort` or match it to `containerPort`. Port
+// mappings are not supported with the `none` network mode.
+//
+// For more information, see [port
+// mappings](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html).
+func (o ContainerDefinitionArgsTypeOutput) PortMappings() PortMappingArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []PortMapping { return v.PortMappings }).(PortMappingArrayOutput)
+}
+
+// Whether to give the container elevated privileges on the host.
+//
+// Not supported for Windows containers or Fargate tasks.
+//
+// For more information, see
+// [privileged](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-privileged).
+func (o ContainerDefinitionArgsTypeOutput) Privileged() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.Privileged }).(pulumi.BoolPtrOutput)
+}
+
+// Whether to allocate a TTY for the container.
+//
+// For more information, see
+// [pseudoTerminal](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-pseudoTerminal).
+func (o ContainerDefinitionArgsTypeOutput) PseudoTerminal() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.PseudoTerminal }).(pulumi.BoolPtrOutput)
+}
+
+// Whether the container has read-only access to its root file system.
+//
+// Not supported for Windows containers.
+//
+// For more information, see
+// [readonlyRootFilesystem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-readonlyRootFilesystem).
+func (o ContainerDefinitionArgsTypeOutput) ReadonlyRootFilesystem() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *bool { return v.ReadonlyRootFilesystem }).(pulumi.BoolPtrOutput)
+}
+
+// Credentials for authentication to a private image registry.
+//
+// For more information, see [repository
+// credentials](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RepositoryCredentials.html).
+func (o ContainerDefinitionArgsTypeOutput) RepositoryCredentials() RepositoryCredentialsPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *RepositoryCredentials { return v.RepositoryCredentials }).(RepositoryCredentialsPtrOutput)
+}
+
+// Specialized resources to assign to the container, such as GPUs or Neuron devices.
+//
+// For more information, see [resource
+// requirements](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html).
+func (o ContainerDefinitionArgsTypeOutput) ResourceRequirements() ResourceRequirementArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ResourceRequirement { return v.ResourceRequirements }).(ResourceRequirementArrayOutput)
+}
+
+// Settings that let ECS restart the container without replacing the task.
+//
+// For more information, see [container restart
+// policies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html).
+func (o ContainerDefinitionArgsTypeOutput) RestartPolicy() ContainerRestartPolicyPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *ContainerRestartPolicy { return v.RestartPolicy }).(ContainerRestartPolicyPtrOutput)
+}
+
+// Secrets to pass to the container as environment variables.
+//
+// For more information, see [sensitive
+// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+func (o ContainerDefinitionArgsTypeOutput) Secrets() ContainerDefinitionSecretArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ContainerDefinitionSecret { return v.Secrets }).(ContainerDefinitionSecretArrayOutput)
+}
+
+// The time, in seconds, allowed for this container to satisfy another container's dependency.
+//
+// If the required condition is not met in time, the dependent container does not start and the
+// task stops. Fargate accepts 2 through 120 seconds. The agent's `ECS_CONTAINER_START_TIMEOUT`
+// setting is enforced independently.
+//
+// For more information, see
+// [startTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-startTimeout).
+func (o ContainerDefinitionArgsTypeOutput) StartTimeout() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *float64 { return v.StartTimeout }).(pulumi.Float64PtrOutput)
+}
+
+// The time, in seconds, to wait for the container to stop before it is forcibly killed.
+//
+// Fargate accepts 2 through 120 seconds.
+//
+// Default - 30 seconds on Fargate. On EC2, the agent's `ECS_CONTAINER_STOP_TIMEOUT` setting, or
+// 30 seconds if that setting is absent.
+//
+// For more information, see
+// [stopTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-stopTimeout).
+func (o ContainerDefinitionArgsTypeOutput) StopTimeout() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *float64 { return v.StopTimeout }).(pulumi.Float64PtrOutput)
+}
+
+// Namespaced kernel parameters to set in the container.
+//
+// Settings can affect other containers that share the same namespace. Not supported for Windows
+// containers.
+//
+// For more information, see [system
+// controls](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html).
+func (o ContainerDefinitionArgsTypeOutput) SystemControls() ContainerDefinitionSystemControlArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ContainerDefinitionSystemControl { return v.SystemControls }).(ContainerDefinitionSystemControlArrayOutput)
+}
+
+// Operating-system resource limits for the container. Not supported for Windows containers.
+//
+// For more information, see
+// [ulimits](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html).
+func (o ContainerDefinitionArgsTypeOutput) Ulimits() UlimitArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []Ulimit { return v.Ulimits }).(UlimitArrayOutput)
+}
+
+// The user that runs commands inside the container, as a name, ID, or user and group pair.
+//
+// Use a non-root user, especially with `host` networking. Not supported for Windows containers.
+//
+// For more information, see
+// [user](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-user).
+func (o ContainerDefinitionArgsTypeOutput) User() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *string { return v.User }).(pulumi.StringPtrOutput)
+}
+
+// Whether ECS resolves the image tag to a digest. When disabled, ECS uses the original image URI.
+//
+// Default - `enabled` in ECS.
+//
+// For more information, see [container image
+// resolution](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability).
+func (o ContainerDefinitionArgsTypeOutput) VersionConsistency() ContainerDefinitionVersionConsistencyPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *ContainerDefinitionVersionConsistency {
+		return v.VersionConsistency
+	}).(ContainerDefinitionVersionConsistencyPtrOutput)
+}
+
+// Data volumes to mount from another container in the same task.
+//
+// For more information, see [volumes from other
+// containers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html).
+func (o ContainerDefinitionArgsTypeOutput) VolumesFrom() ContainerDefinitionVolumeFromArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) []ContainerDefinitionVolumeFrom { return v.VolumesFrom }).(ContainerDefinitionVolumeFromArrayOutput)
+}
+
+// The working directory in which commands run inside the container.
+//
+// For more information, see
+// [workingDirectory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-workingDirectory).
+func (o ContainerDefinitionArgsTypeOutput) WorkingDirectory() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionArgsType) *string { return v.WorkingDirectory }).(pulumi.StringPtrOutput)
+}
+
+type ContainerDefinitionDependency struct {
+	// The condition that the other container must satisfy before this container starts.
+	Condition ContainerDependencyCondition `pulumi:"condition"`
+	// The name of the other container in the task.
+	ContainerName string `pulumi:"containerName"`
+}
+
+// ContainerDefinitionDependencyInput is an input type that accepts ContainerDefinitionDependencyArgs and ContainerDefinitionDependencyOutput values.
+// You can construct a concrete instance of `ContainerDefinitionDependencyInput` via:
+//
+//	ContainerDefinitionDependencyArgs{...}
+type ContainerDefinitionDependencyInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionDependencyOutput() ContainerDefinitionDependencyOutput
+	ToContainerDefinitionDependencyOutputWithContext(context.Context) ContainerDefinitionDependencyOutput
+}
+
+type ContainerDefinitionDependencyArgs struct {
+	// The condition that the other container must satisfy before this container starts.
+	Condition ContainerDependencyCondition `pulumi:"condition"`
+	// The name of the other container in the task.
+	ContainerName string `pulumi:"containerName"`
+}
+
+func (ContainerDefinitionDependencyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionDependency)(nil)).Elem()
+}
+
+func (i ContainerDefinitionDependencyArgs) ToContainerDefinitionDependencyOutput() ContainerDefinitionDependencyOutput {
+	return i.ToContainerDefinitionDependencyOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionDependencyArgs) ToContainerDefinitionDependencyOutputWithContext(ctx context.Context) ContainerDefinitionDependencyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionDependencyOutput)
+}
+
+type ContainerDefinitionDependencyOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionDependencyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionDependency)(nil)).Elem()
+}
+
+func (o ContainerDefinitionDependencyOutput) ToContainerDefinitionDependencyOutput() ContainerDefinitionDependencyOutput {
+	return o
+}
+
+func (o ContainerDefinitionDependencyOutput) ToContainerDefinitionDependencyOutputWithContext(ctx context.Context) ContainerDefinitionDependencyOutput {
+	return o
+}
+
+// The condition that the other container must satisfy before this container starts.
+func (o ContainerDefinitionDependencyOutput) Condition() ContainerDependencyConditionOutput {
+	return o.ApplyT(func(v ContainerDefinitionDependency) ContainerDependencyCondition { return v.Condition }).(ContainerDependencyConditionOutput)
+}
+
+// The name of the other container in the task.
+func (o ContainerDefinitionDependencyOutput) ContainerName() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionDependency) string { return v.ContainerName }).(pulumi.StringOutput)
+}
+
+type ContainerDefinitionDependencyArrayOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionDependencyArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionDependency)(nil)).Elem()
+}
+
+func (o ContainerDefinitionDependencyArrayOutput) ToContainerDefinitionDependencyArrayOutput() ContainerDefinitionDependencyArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionDependencyArrayOutput) ToContainerDefinitionDependencyArrayOutputWithContext(ctx context.Context) ContainerDefinitionDependencyArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionDependencyArrayOutput) Index(i pulumi.IntInput) ContainerDefinitionDependencyOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ContainerDefinitionDependency {
+		return vs[0].([]ContainerDefinitionDependency)[vs[1].(int)]
+	}).(ContainerDefinitionDependencyOutput)
+}
+
+type ContainerDefinitionEnvironmentFile struct {
+	// The file source type. The only supported value is `s3`.
+	Type string `pulumi:"type"`
+	// The ARN of the S3 object containing the environment file.
+	Value string `pulumi:"value"`
+}
+
+// ContainerDefinitionEnvironmentFileInput is an input type that accepts ContainerDefinitionEnvironmentFileArgs and ContainerDefinitionEnvironmentFileOutput values.
+// You can construct a concrete instance of `ContainerDefinitionEnvironmentFileInput` via:
+//
+//	ContainerDefinitionEnvironmentFileArgs{...}
+type ContainerDefinitionEnvironmentFileInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionEnvironmentFileOutput() ContainerDefinitionEnvironmentFileOutput
+	ToContainerDefinitionEnvironmentFileOutputWithContext(context.Context) ContainerDefinitionEnvironmentFileOutput
+}
+
+type ContainerDefinitionEnvironmentFileArgs struct {
+	// The file source type. The only supported value is `s3`.
+	Type string `pulumi:"type"`
+	// The ARN of the S3 object containing the environment file.
+	Value pulumi.StringInput `pulumi:"value"`
+}
+
+func (ContainerDefinitionEnvironmentFileArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionEnvironmentFile)(nil)).Elem()
+}
+
+func (i ContainerDefinitionEnvironmentFileArgs) ToContainerDefinitionEnvironmentFileOutput() ContainerDefinitionEnvironmentFileOutput {
+	return i.ToContainerDefinitionEnvironmentFileOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionEnvironmentFileArgs) ToContainerDefinitionEnvironmentFileOutputWithContext(ctx context.Context) ContainerDefinitionEnvironmentFileOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionEnvironmentFileOutput)
+}
+
+type ContainerDefinitionEnvironmentFileOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionEnvironmentFileOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionEnvironmentFile)(nil)).Elem()
+}
+
+func (o ContainerDefinitionEnvironmentFileOutput) ToContainerDefinitionEnvironmentFileOutput() ContainerDefinitionEnvironmentFileOutput {
+	return o
+}
+
+func (o ContainerDefinitionEnvironmentFileOutput) ToContainerDefinitionEnvironmentFileOutputWithContext(ctx context.Context) ContainerDefinitionEnvironmentFileOutput {
+	return o
+}
+
+// The file source type. The only supported value is `s3`.
+func (o ContainerDefinitionEnvironmentFileOutput) Type() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionEnvironmentFile) string { return v.Type }).(pulumi.StringOutput)
+}
+
+// The ARN of the S3 object containing the environment file.
+func (o ContainerDefinitionEnvironmentFileOutput) Value() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionEnvironmentFile) string { return v.Value }).(pulumi.StringOutput)
+}
+
+type ContainerDefinitionEnvironmentFileArrayOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionEnvironmentFileArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionEnvironmentFile)(nil)).Elem()
+}
+
+func (o ContainerDefinitionEnvironmentFileArrayOutput) ToContainerDefinitionEnvironmentFileArrayOutput() ContainerDefinitionEnvironmentFileArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionEnvironmentFileArrayOutput) ToContainerDefinitionEnvironmentFileArrayOutputWithContext(ctx context.Context) ContainerDefinitionEnvironmentFileArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionEnvironmentFileArrayOutput) Index(i pulumi.IntInput) ContainerDefinitionEnvironmentFileOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ContainerDefinitionEnvironmentFile {
+		return vs[0].([]ContainerDefinitionEnvironmentFile)[vs[1].(int)]
+	}).(ContainerDefinitionEnvironmentFileOutput)
+}
+
+type ContainerDefinitionHealthCheck struct {
+	// The command that determines whether the container is healthy.
+	//
+	// Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+	// An exit code of zero indicates success; any other code indicates failure.
+	//
+	// Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+	Command []string `pulumi:"command"`
+	// The time, in seconds, between health checks. Valid values are from 5 through 300.
+	//
+	// Default - 30 seconds in ECS.
+	Interval *float64 `pulumi:"interval"`
+	// The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+	//
+	// Default - 3 in ECS.
+	Retries *float64 `pulumi:"retries"`
+	// The startup grace period, in seconds, before failed checks count toward the retry limit.
+	//
+	// Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+	// failures count toward the retry limit.
+	//
+	// Default - No startup grace period in ECS.
+	StartPeriod *float64 `pulumi:"startPeriod"`
+	// The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+	//
+	// Default - 5 seconds in ECS.
+	Timeout *float64 `pulumi:"timeout"`
+}
+
+// ContainerDefinitionHealthCheckInput is an input type that accepts ContainerDefinitionHealthCheckArgs and ContainerDefinitionHealthCheckOutput values.
+// You can construct a concrete instance of `ContainerDefinitionHealthCheckInput` via:
+//
+//	ContainerDefinitionHealthCheckArgs{...}
+type ContainerDefinitionHealthCheckInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionHealthCheckOutput() ContainerDefinitionHealthCheckOutput
+	ToContainerDefinitionHealthCheckOutputWithContext(context.Context) ContainerDefinitionHealthCheckOutput
+}
+
+type ContainerDefinitionHealthCheckArgs struct {
+	// The command that determines whether the container is healthy.
+	//
+	// Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+	// An exit code of zero indicates success; any other code indicates failure.
+	//
+	// Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+	Command []string `pulumi:"command"`
+	// The time, in seconds, between health checks. Valid values are from 5 through 300.
+	//
+	// Default - 30 seconds in ECS.
+	Interval *float64 `pulumi:"interval"`
+	// The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+	//
+	// Default - 3 in ECS.
+	Retries *float64 `pulumi:"retries"`
+	// The startup grace period, in seconds, before failed checks count toward the retry limit.
+	//
+	// Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+	// failures count toward the retry limit.
+	//
+	// Default - No startup grace period in ECS.
+	StartPeriod *float64 `pulumi:"startPeriod"`
+	// The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+	//
+	// Default - 5 seconds in ECS.
+	Timeout *float64 `pulumi:"timeout"`
+}
+
+func (ContainerDefinitionHealthCheckArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionHealthCheck)(nil)).Elem()
+}
+
+func (i ContainerDefinitionHealthCheckArgs) ToContainerDefinitionHealthCheckOutput() ContainerDefinitionHealthCheckOutput {
+	return i.ToContainerDefinitionHealthCheckOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionHealthCheckArgs) ToContainerDefinitionHealthCheckOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionHealthCheckOutput)
+}
+
+func (i ContainerDefinitionHealthCheckArgs) ToContainerDefinitionHealthCheckPtrOutput() ContainerDefinitionHealthCheckPtrOutput {
+	return i.ToContainerDefinitionHealthCheckPtrOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionHealthCheckArgs) ToContainerDefinitionHealthCheckPtrOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionHealthCheckOutput).ToContainerDefinitionHealthCheckPtrOutputWithContext(ctx)
+}
+
+// ContainerDefinitionHealthCheckPtrInput is an input type that accepts ContainerDefinitionHealthCheckArgs, ContainerDefinitionHealthCheckPtr and ContainerDefinitionHealthCheckPtrOutput values.
+// You can construct a concrete instance of `ContainerDefinitionHealthCheckPtrInput` via:
+//
+//	        ContainerDefinitionHealthCheckArgs{...}
+//
+//	or:
+//
+//	        nil
+type ContainerDefinitionHealthCheckPtrInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionHealthCheckPtrOutput() ContainerDefinitionHealthCheckPtrOutput
+	ToContainerDefinitionHealthCheckPtrOutputWithContext(context.Context) ContainerDefinitionHealthCheckPtrOutput
+}
+
+type containerDefinitionHealthCheckPtrType ContainerDefinitionHealthCheckArgs
+
+func ContainerDefinitionHealthCheckPtr(v *ContainerDefinitionHealthCheckArgs) ContainerDefinitionHealthCheckPtrInput {
+	return (*containerDefinitionHealthCheckPtrType)(v)
+}
+
+func (*containerDefinitionHealthCheckPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerDefinitionHealthCheck)(nil)).Elem()
+}
+
+func (i *containerDefinitionHealthCheckPtrType) ToContainerDefinitionHealthCheckPtrOutput() ContainerDefinitionHealthCheckPtrOutput {
+	return i.ToContainerDefinitionHealthCheckPtrOutputWithContext(context.Background())
+}
+
+func (i *containerDefinitionHealthCheckPtrType) ToContainerDefinitionHealthCheckPtrOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionHealthCheckPtrOutput)
+}
+
+type ContainerDefinitionHealthCheckOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionHealthCheckOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionHealthCheck)(nil)).Elem()
+}
+
+func (o ContainerDefinitionHealthCheckOutput) ToContainerDefinitionHealthCheckOutput() ContainerDefinitionHealthCheckOutput {
+	return o
+}
+
+func (o ContainerDefinitionHealthCheckOutput) ToContainerDefinitionHealthCheckOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckOutput {
+	return o
+}
+
+func (o ContainerDefinitionHealthCheckOutput) ToContainerDefinitionHealthCheckPtrOutput() ContainerDefinitionHealthCheckPtrOutput {
+	return o.ToContainerDefinitionHealthCheckPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerDefinitionHealthCheckOutput) ToContainerDefinitionHealthCheckPtrOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerDefinitionHealthCheck) *ContainerDefinitionHealthCheck {
+		return &v
+	}).(ContainerDefinitionHealthCheckPtrOutput)
+}
+
+// The command that determines whether the container is healthy.
+//
+// Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+// An exit code of zero indicates success; any other code indicates failure.
+//
+// Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+func (o ContainerDefinitionHealthCheckOutput) Command() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerDefinitionHealthCheck) []string { return v.Command }).(pulumi.StringArrayOutput)
+}
+
+// The time, in seconds, between health checks. Valid values are from 5 through 300.
+//
+// Default - 30 seconds in ECS.
+func (o ContainerDefinitionHealthCheckOutput) Interval() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionHealthCheck) *float64 { return v.Interval }).(pulumi.Float64PtrOutput)
+}
+
+// The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+//
+// Default - 3 in ECS.
+func (o ContainerDefinitionHealthCheckOutput) Retries() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionHealthCheck) *float64 { return v.Retries }).(pulumi.Float64PtrOutput)
+}
+
+// The startup grace period, in seconds, before failed checks count toward the retry limit.
+//
+// Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+// failures count toward the retry limit.
+//
+// Default - No startup grace period in ECS.
+func (o ContainerDefinitionHealthCheckOutput) StartPeriod() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionHealthCheck) *float64 { return v.StartPeriod }).(pulumi.Float64PtrOutput)
+}
+
+// The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+//
+// Default - 5 seconds in ECS.
+func (o ContainerDefinitionHealthCheckOutput) Timeout() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionHealthCheck) *float64 { return v.Timeout }).(pulumi.Float64PtrOutput)
+}
+
+type ContainerDefinitionHealthCheckPtrOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionHealthCheckPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerDefinitionHealthCheck)(nil)).Elem()
+}
+
+func (o ContainerDefinitionHealthCheckPtrOutput) ToContainerDefinitionHealthCheckPtrOutput() ContainerDefinitionHealthCheckPtrOutput {
+	return o
+}
+
+func (o ContainerDefinitionHealthCheckPtrOutput) ToContainerDefinitionHealthCheckPtrOutputWithContext(ctx context.Context) ContainerDefinitionHealthCheckPtrOutput {
+	return o
+}
+
+func (o ContainerDefinitionHealthCheckPtrOutput) Elem() ContainerDefinitionHealthCheckOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) ContainerDefinitionHealthCheck {
+		if v != nil {
+			return *v
+		}
+		var ret ContainerDefinitionHealthCheck
+		return ret
+	}).(ContainerDefinitionHealthCheckOutput)
+}
+
+// The command that determines whether the container is healthy.
+//
+// Start with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.
+// An exit code of zero indicates success; any other code indicates failure.
+//
+// Example: `["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]`.
+func (o ContainerDefinitionHealthCheckPtrOutput) Command() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) []string {
+		if v == nil {
+			return nil
+		}
+		return v.Command
+	}).(pulumi.StringArrayOutput)
+}
+
+// The time, in seconds, between health checks. Valid values are from 5 through 300.
+//
+// Default - 30 seconds in ECS.
+func (o ContainerDefinitionHealthCheckPtrOutput) Interval() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.Interval
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.
+//
+// Default - 3 in ECS.
+func (o ContainerDefinitionHealthCheckPtrOutput) Retries() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.Retries
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The startup grace period, in seconds, before failed checks count toward the retry limit.
+//
+// Valid values are from 0 through 300. If a check succeeds during this period, subsequent
+// failures count toward the retry limit.
+//
+// Default - No startup grace period in ECS.
+func (o ContainerDefinitionHealthCheckPtrOutput) StartPeriod() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.StartPeriod
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.
+//
+// Default - 5 seconds in ECS.
+func (o ContainerDefinitionHealthCheckPtrOutput) Timeout() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerDefinitionHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.Timeout
+	}).(pulumi.Float64PtrOutput)
+}
+
+type ContainerDefinitionSecret struct {
+	// The environment variable name, or the log driver option name when used in `secretOptions`.
+	Name string `pulumi:"name"`
+	// The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+	//
+	// An SSM parameter name is also accepted when it is in the same Region as the task. The task
+	// execution role must have permission to read the secret or parameter.
+	//
+	// For more information, see [secret
+	// sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+	ValueFrom string `pulumi:"valueFrom"`
+}
+
+// ContainerDefinitionSecretInput is an input type that accepts ContainerDefinitionSecretArgs and ContainerDefinitionSecretOutput values.
+// You can construct a concrete instance of `ContainerDefinitionSecretInput` via:
+//
+//	ContainerDefinitionSecretArgs{...}
+type ContainerDefinitionSecretInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionSecretOutput() ContainerDefinitionSecretOutput
+	ToContainerDefinitionSecretOutputWithContext(context.Context) ContainerDefinitionSecretOutput
+}
+
+type ContainerDefinitionSecretArgs struct {
+	// The environment variable name, or the log driver option name when used in `secretOptions`.
+	Name string `pulumi:"name"`
+	// The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+	//
+	// An SSM parameter name is also accepted when it is in the same Region as the task. The task
+	// execution role must have permission to read the secret or parameter.
+	//
+	// For more information, see [secret
+	// sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+	ValueFrom pulumi.StringInput `pulumi:"valueFrom"`
+}
+
+func (ContainerDefinitionSecretArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionSecret)(nil)).Elem()
+}
+
+func (i ContainerDefinitionSecretArgs) ToContainerDefinitionSecretOutput() ContainerDefinitionSecretOutput {
+	return i.ToContainerDefinitionSecretOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionSecretArgs) ToContainerDefinitionSecretOutputWithContext(ctx context.Context) ContainerDefinitionSecretOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionSecretOutput)
+}
+
+// ContainerDefinitionSecretArrayInput is an input type that accepts ContainerDefinitionSecretArray and ContainerDefinitionSecretArrayOutput values.
+// You can construct a concrete instance of `ContainerDefinitionSecretArrayInput` via:
+//
+//	ContainerDefinitionSecretArray{ ContainerDefinitionSecretArgs{...} }
+type ContainerDefinitionSecretArrayInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionSecretArrayOutput() ContainerDefinitionSecretArrayOutput
+	ToContainerDefinitionSecretArrayOutputWithContext(context.Context) ContainerDefinitionSecretArrayOutput
+}
+
+type ContainerDefinitionSecretArray []ContainerDefinitionSecretInput
+
+func (ContainerDefinitionSecretArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionSecret)(nil)).Elem()
+}
+
+func (i ContainerDefinitionSecretArray) ToContainerDefinitionSecretArrayOutput() ContainerDefinitionSecretArrayOutput {
+	return i.ToContainerDefinitionSecretArrayOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionSecretArray) ToContainerDefinitionSecretArrayOutputWithContext(ctx context.Context) ContainerDefinitionSecretArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionSecretArrayOutput)
+}
+
+type ContainerDefinitionSecretOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionSecretOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionSecret)(nil)).Elem()
+}
+
+func (o ContainerDefinitionSecretOutput) ToContainerDefinitionSecretOutput() ContainerDefinitionSecretOutput {
+	return o
+}
+
+func (o ContainerDefinitionSecretOutput) ToContainerDefinitionSecretOutputWithContext(ctx context.Context) ContainerDefinitionSecretOutput {
+	return o
+}
+
+// The environment variable name, or the log driver option name when used in `secretOptions`.
+func (o ContainerDefinitionSecretOutput) Name() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionSecret) string { return v.Name }).(pulumi.StringOutput)
+}
+
+// The ARN of a Secrets Manager secret or SSM Parameter Store parameter.
+//
+// An SSM parameter name is also accepted when it is in the same Region as the task. The task
+// execution role must have permission to read the secret or parameter.
+//
+// For more information, see [secret
+// sources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom).
+func (o ContainerDefinitionSecretOutput) ValueFrom() pulumi.StringOutput {
+	return o.ApplyT(func(v ContainerDefinitionSecret) string { return v.ValueFrom }).(pulumi.StringOutput)
+}
+
+type ContainerDefinitionSecretArrayOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionSecretArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionSecret)(nil)).Elem()
+}
+
+func (o ContainerDefinitionSecretArrayOutput) ToContainerDefinitionSecretArrayOutput() ContainerDefinitionSecretArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionSecretArrayOutput) ToContainerDefinitionSecretArrayOutputWithContext(ctx context.Context) ContainerDefinitionSecretArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionSecretArrayOutput) Index(i pulumi.IntInput) ContainerDefinitionSecretOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ContainerDefinitionSecret {
+		return vs[0].([]ContainerDefinitionSecret)[vs[1].(int)]
+	}).(ContainerDefinitionSecretOutput)
+}
+
+type ContainerDefinitionSystemControl struct {
+	// The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+	Namespace *string `pulumi:"namespace"`
+	// The value to assign to the kernel parameter.
+	Value *string `pulumi:"value"`
+}
+
+// ContainerDefinitionSystemControlInput is an input type that accepts ContainerDefinitionSystemControlArgs and ContainerDefinitionSystemControlOutput values.
+// You can construct a concrete instance of `ContainerDefinitionSystemControlInput` via:
+//
+//	ContainerDefinitionSystemControlArgs{...}
+type ContainerDefinitionSystemControlInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionSystemControlOutput() ContainerDefinitionSystemControlOutput
+	ToContainerDefinitionSystemControlOutputWithContext(context.Context) ContainerDefinitionSystemControlOutput
+}
+
+type ContainerDefinitionSystemControlArgs struct {
+	// The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+	Namespace *string `pulumi:"namespace"`
+	// The value to assign to the kernel parameter.
+	Value *string `pulumi:"value"`
+}
+
+func (ContainerDefinitionSystemControlArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionSystemControl)(nil)).Elem()
+}
+
+func (i ContainerDefinitionSystemControlArgs) ToContainerDefinitionSystemControlOutput() ContainerDefinitionSystemControlOutput {
+	return i.ToContainerDefinitionSystemControlOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionSystemControlArgs) ToContainerDefinitionSystemControlOutputWithContext(ctx context.Context) ContainerDefinitionSystemControlOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionSystemControlOutput)
+}
+
+// ContainerDefinitionSystemControlArrayInput is an input type that accepts ContainerDefinitionSystemControlArray and ContainerDefinitionSystemControlArrayOutput values.
+// You can construct a concrete instance of `ContainerDefinitionSystemControlArrayInput` via:
+//
+//	ContainerDefinitionSystemControlArray{ ContainerDefinitionSystemControlArgs{...} }
+type ContainerDefinitionSystemControlArrayInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionSystemControlArrayOutput() ContainerDefinitionSystemControlArrayOutput
+	ToContainerDefinitionSystemControlArrayOutputWithContext(context.Context) ContainerDefinitionSystemControlArrayOutput
+}
+
+type ContainerDefinitionSystemControlArray []ContainerDefinitionSystemControlInput
+
+func (ContainerDefinitionSystemControlArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionSystemControl)(nil)).Elem()
+}
+
+func (i ContainerDefinitionSystemControlArray) ToContainerDefinitionSystemControlArrayOutput() ContainerDefinitionSystemControlArrayOutput {
+	return i.ToContainerDefinitionSystemControlArrayOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionSystemControlArray) ToContainerDefinitionSystemControlArrayOutputWithContext(ctx context.Context) ContainerDefinitionSystemControlArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionSystemControlArrayOutput)
+}
+
+type ContainerDefinitionSystemControlOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionSystemControlOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionSystemControl)(nil)).Elem()
+}
+
+func (o ContainerDefinitionSystemControlOutput) ToContainerDefinitionSystemControlOutput() ContainerDefinitionSystemControlOutput {
+	return o
+}
+
+func (o ContainerDefinitionSystemControlOutput) ToContainerDefinitionSystemControlOutputWithContext(ctx context.Context) ContainerDefinitionSystemControlOutput {
+	return o
+}
+
+// The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
+func (o ContainerDefinitionSystemControlOutput) Namespace() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionSystemControl) *string { return v.Namespace }).(pulumi.StringPtrOutput)
+}
+
+// The value to assign to the kernel parameter.
+func (o ContainerDefinitionSystemControlOutput) Value() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionSystemControl) *string { return v.Value }).(pulumi.StringPtrOutput)
+}
+
+type ContainerDefinitionSystemControlArrayOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionSystemControlArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionSystemControl)(nil)).Elem()
+}
+
+func (o ContainerDefinitionSystemControlArrayOutput) ToContainerDefinitionSystemControlArrayOutput() ContainerDefinitionSystemControlArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionSystemControlArrayOutput) ToContainerDefinitionSystemControlArrayOutputWithContext(ctx context.Context) ContainerDefinitionSystemControlArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionSystemControlArrayOutput) Index(i pulumi.IntInput) ContainerDefinitionSystemControlOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ContainerDefinitionSystemControl {
+		return vs[0].([]ContainerDefinitionSystemControl)[vs[1].(int)]
+	}).(ContainerDefinitionSystemControlOutput)
+}
+
+type ContainerDefinitionVolumeFrom struct {
+	// Whether this container has read-only access to the volumes.
+	//
+	// Default - `false` in ECS.
+	ReadOnly *bool `pulumi:"readOnly"`
+	// The name of the container from which to mount volumes.
+	SourceContainer *string `pulumi:"sourceContainer"`
+}
+
+// ContainerDefinitionVolumeFromInput is an input type that accepts ContainerDefinitionVolumeFromArgs and ContainerDefinitionVolumeFromOutput values.
+// You can construct a concrete instance of `ContainerDefinitionVolumeFromInput` via:
+//
+//	ContainerDefinitionVolumeFromArgs{...}
+type ContainerDefinitionVolumeFromInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionVolumeFromOutput() ContainerDefinitionVolumeFromOutput
+	ToContainerDefinitionVolumeFromOutputWithContext(context.Context) ContainerDefinitionVolumeFromOutput
+}
+
+type ContainerDefinitionVolumeFromArgs struct {
+	// Whether this container has read-only access to the volumes.
+	//
+	// Default - `false` in ECS.
+	ReadOnly *bool `pulumi:"readOnly"`
+	// The name of the container from which to mount volumes.
+	SourceContainer *string `pulumi:"sourceContainer"`
+}
+
+func (ContainerDefinitionVolumeFromArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionVolumeFrom)(nil)).Elem()
+}
+
+func (i ContainerDefinitionVolumeFromArgs) ToContainerDefinitionVolumeFromOutput() ContainerDefinitionVolumeFromOutput {
+	return i.ToContainerDefinitionVolumeFromOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionVolumeFromArgs) ToContainerDefinitionVolumeFromOutputWithContext(ctx context.Context) ContainerDefinitionVolumeFromOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionVolumeFromOutput)
+}
+
+// ContainerDefinitionVolumeFromArrayInput is an input type that accepts ContainerDefinitionVolumeFromArray and ContainerDefinitionVolumeFromArrayOutput values.
+// You can construct a concrete instance of `ContainerDefinitionVolumeFromArrayInput` via:
+//
+//	ContainerDefinitionVolumeFromArray{ ContainerDefinitionVolumeFromArgs{...} }
+type ContainerDefinitionVolumeFromArrayInput interface {
+	pulumi.Input
+
+	ToContainerDefinitionVolumeFromArrayOutput() ContainerDefinitionVolumeFromArrayOutput
+	ToContainerDefinitionVolumeFromArrayOutputWithContext(context.Context) ContainerDefinitionVolumeFromArrayOutput
+}
+
+type ContainerDefinitionVolumeFromArray []ContainerDefinitionVolumeFromInput
+
+func (ContainerDefinitionVolumeFromArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionVolumeFrom)(nil)).Elem()
+}
+
+func (i ContainerDefinitionVolumeFromArray) ToContainerDefinitionVolumeFromArrayOutput() ContainerDefinitionVolumeFromArrayOutput {
+	return i.ToContainerDefinitionVolumeFromArrayOutputWithContext(context.Background())
+}
+
+func (i ContainerDefinitionVolumeFromArray) ToContainerDefinitionVolumeFromArrayOutputWithContext(ctx context.Context) ContainerDefinitionVolumeFromArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerDefinitionVolumeFromArrayOutput)
+}
+
+type ContainerDefinitionVolumeFromOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionVolumeFromOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerDefinitionVolumeFrom)(nil)).Elem()
+}
+
+func (o ContainerDefinitionVolumeFromOutput) ToContainerDefinitionVolumeFromOutput() ContainerDefinitionVolumeFromOutput {
+	return o
+}
+
+func (o ContainerDefinitionVolumeFromOutput) ToContainerDefinitionVolumeFromOutputWithContext(ctx context.Context) ContainerDefinitionVolumeFromOutput {
+	return o
+}
+
+// Whether this container has read-only access to the volumes.
+//
+// Default - `false` in ECS.
+func (o ContainerDefinitionVolumeFromOutput) ReadOnly() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionVolumeFrom) *bool { return v.ReadOnly }).(pulumi.BoolPtrOutput)
+}
+
+// The name of the container from which to mount volumes.
+func (o ContainerDefinitionVolumeFromOutput) SourceContainer() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ContainerDefinitionVolumeFrom) *string { return v.SourceContainer }).(pulumi.StringPtrOutput)
+}
+
+type ContainerDefinitionVolumeFromArrayOutput struct{ *pulumi.OutputState }
+
+func (ContainerDefinitionVolumeFromArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ContainerDefinitionVolumeFrom)(nil)).Elem()
+}
+
+func (o ContainerDefinitionVolumeFromArrayOutput) ToContainerDefinitionVolumeFromArrayOutput() ContainerDefinitionVolumeFromArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionVolumeFromArrayOutput) ToContainerDefinitionVolumeFromArrayOutputWithContext(ctx context.Context) ContainerDefinitionVolumeFromArrayOutput {
+	return o
+}
+
+func (o ContainerDefinitionVolumeFromArrayOutput) Index(i pulumi.IntInput) ContainerDefinitionVolumeFromOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ContainerDefinitionVolumeFrom {
+		return vs[0].([]ContainerDefinitionVolumeFrom)[vs[1].(int)]
+	}).(ContainerDefinitionVolumeFromOutput)
+}
+
 type ContainerDependency struct {
 	// The condition that the other container must satisfy.
 	Condition ContainerDependencyCondition `pulumi:"condition"`
@@ -176,6 +1662,205 @@ func (o ContainerPortRangePtrOutput) Start() pulumi.Float64PtrOutput {
 	}).(pulumi.Float64PtrOutput)
 }
 
+type ContainerRestartPolicy struct {
+	// Whether the restart policy is enabled.
+	Enabled *bool `pulumi:"enabled"`
+	// Exit codes that do not trigger a restart. Specify at most 50 codes.
+	//
+	// Default - No ignored exit codes in ECS.
+	IgnoredExitCodes []float64 `pulumi:"ignoredExitCodes"`
+	// The minimum time, in seconds, the container must run before it is eligible for a restart.
+	//
+	// Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+	//
+	// Default - 300 seconds in ECS.
+	RestartAttemptPeriod *float64 `pulumi:"restartAttemptPeriod"`
+}
+
+// ContainerRestartPolicyInput is an input type that accepts ContainerRestartPolicyArgs and ContainerRestartPolicyOutput values.
+// You can construct a concrete instance of `ContainerRestartPolicyInput` via:
+//
+//	ContainerRestartPolicyArgs{...}
+type ContainerRestartPolicyInput interface {
+	pulumi.Input
+
+	ToContainerRestartPolicyOutput() ContainerRestartPolicyOutput
+	ToContainerRestartPolicyOutputWithContext(context.Context) ContainerRestartPolicyOutput
+}
+
+type ContainerRestartPolicyArgs struct {
+	// Whether the restart policy is enabled.
+	Enabled *bool `pulumi:"enabled"`
+	// Exit codes that do not trigger a restart. Specify at most 50 codes.
+	//
+	// Default - No ignored exit codes in ECS.
+	IgnoredExitCodes []float64 `pulumi:"ignoredExitCodes"`
+	// The minimum time, in seconds, the container must run before it is eligible for a restart.
+	//
+	// Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+	//
+	// Default - 300 seconds in ECS.
+	RestartAttemptPeriod *float64 `pulumi:"restartAttemptPeriod"`
+}
+
+func (ContainerRestartPolicyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerRestartPolicy)(nil)).Elem()
+}
+
+func (i ContainerRestartPolicyArgs) ToContainerRestartPolicyOutput() ContainerRestartPolicyOutput {
+	return i.ToContainerRestartPolicyOutputWithContext(context.Background())
+}
+
+func (i ContainerRestartPolicyArgs) ToContainerRestartPolicyOutputWithContext(ctx context.Context) ContainerRestartPolicyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerRestartPolicyOutput)
+}
+
+func (i ContainerRestartPolicyArgs) ToContainerRestartPolicyPtrOutput() ContainerRestartPolicyPtrOutput {
+	return i.ToContainerRestartPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i ContainerRestartPolicyArgs) ToContainerRestartPolicyPtrOutputWithContext(ctx context.Context) ContainerRestartPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerRestartPolicyOutput).ToContainerRestartPolicyPtrOutputWithContext(ctx)
+}
+
+// ContainerRestartPolicyPtrInput is an input type that accepts ContainerRestartPolicyArgs, ContainerRestartPolicyPtr and ContainerRestartPolicyPtrOutput values.
+// You can construct a concrete instance of `ContainerRestartPolicyPtrInput` via:
+//
+//	        ContainerRestartPolicyArgs{...}
+//
+//	or:
+//
+//	        nil
+type ContainerRestartPolicyPtrInput interface {
+	pulumi.Input
+
+	ToContainerRestartPolicyPtrOutput() ContainerRestartPolicyPtrOutput
+	ToContainerRestartPolicyPtrOutputWithContext(context.Context) ContainerRestartPolicyPtrOutput
+}
+
+type containerRestartPolicyPtrType ContainerRestartPolicyArgs
+
+func ContainerRestartPolicyPtr(v *ContainerRestartPolicyArgs) ContainerRestartPolicyPtrInput {
+	return (*containerRestartPolicyPtrType)(v)
+}
+
+func (*containerRestartPolicyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerRestartPolicy)(nil)).Elem()
+}
+
+func (i *containerRestartPolicyPtrType) ToContainerRestartPolicyPtrOutput() ContainerRestartPolicyPtrOutput {
+	return i.ToContainerRestartPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i *containerRestartPolicyPtrType) ToContainerRestartPolicyPtrOutputWithContext(ctx context.Context) ContainerRestartPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerRestartPolicyPtrOutput)
+}
+
+type ContainerRestartPolicyOutput struct{ *pulumi.OutputState }
+
+func (ContainerRestartPolicyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerRestartPolicy)(nil)).Elem()
+}
+
+func (o ContainerRestartPolicyOutput) ToContainerRestartPolicyOutput() ContainerRestartPolicyOutput {
+	return o
+}
+
+func (o ContainerRestartPolicyOutput) ToContainerRestartPolicyOutputWithContext(ctx context.Context) ContainerRestartPolicyOutput {
+	return o
+}
+
+func (o ContainerRestartPolicyOutput) ToContainerRestartPolicyPtrOutput() ContainerRestartPolicyPtrOutput {
+	return o.ToContainerRestartPolicyPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerRestartPolicyOutput) ToContainerRestartPolicyPtrOutputWithContext(ctx context.Context) ContainerRestartPolicyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerRestartPolicy) *ContainerRestartPolicy {
+		return &v
+	}).(ContainerRestartPolicyPtrOutput)
+}
+
+// Whether the restart policy is enabled.
+func (o ContainerRestartPolicyOutput) Enabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerRestartPolicy) *bool { return v.Enabled }).(pulumi.BoolPtrOutput)
+}
+
+// Exit codes that do not trigger a restart. Specify at most 50 codes.
+//
+// Default - No ignored exit codes in ECS.
+func (o ContainerRestartPolicyOutput) IgnoredExitCodes() pulumi.Float64ArrayOutput {
+	return o.ApplyT(func(v ContainerRestartPolicy) []float64 { return v.IgnoredExitCodes }).(pulumi.Float64ArrayOutput)
+}
+
+// The minimum time, in seconds, the container must run before it is eligible for a restart.
+//
+// Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+//
+// Default - 300 seconds in ECS.
+func (o ContainerRestartPolicyOutput) RestartAttemptPeriod() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerRestartPolicy) *float64 { return v.RestartAttemptPeriod }).(pulumi.Float64PtrOutput)
+}
+
+type ContainerRestartPolicyPtrOutput struct{ *pulumi.OutputState }
+
+func (ContainerRestartPolicyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerRestartPolicy)(nil)).Elem()
+}
+
+func (o ContainerRestartPolicyPtrOutput) ToContainerRestartPolicyPtrOutput() ContainerRestartPolicyPtrOutput {
+	return o
+}
+
+func (o ContainerRestartPolicyPtrOutput) ToContainerRestartPolicyPtrOutputWithContext(ctx context.Context) ContainerRestartPolicyPtrOutput {
+	return o
+}
+
+func (o ContainerRestartPolicyPtrOutput) Elem() ContainerRestartPolicyOutput {
+	return o.ApplyT(func(v *ContainerRestartPolicy) ContainerRestartPolicy {
+		if v != nil {
+			return *v
+		}
+		var ret ContainerRestartPolicy
+		return ret
+	}).(ContainerRestartPolicyOutput)
+}
+
+// Whether the restart policy is enabled.
+func (o ContainerRestartPolicyPtrOutput) Enabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *ContainerRestartPolicy) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Enabled
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Exit codes that do not trigger a restart. Specify at most 50 codes.
+//
+// Default - No ignored exit codes in ECS.
+func (o ContainerRestartPolicyPtrOutput) IgnoredExitCodes() pulumi.Float64ArrayOutput {
+	return o.ApplyT(func(v *ContainerRestartPolicy) []float64 {
+		if v == nil {
+			return nil
+		}
+		return v.IgnoredExitCodes
+	}).(pulumi.Float64ArrayOutput)
+}
+
+// The minimum time, in seconds, the container must run before it is eligible for a restart.
+//
+// Valid values are from 60 through 1800. A container that exits sooner is not restarted.
+//
+// Default - 300 seconds in ECS.
+func (o ContainerRestartPolicyPtrOutput) RestartAttemptPeriod() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerRestartPolicy) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.RestartAttemptPeriod
+	}).(pulumi.Float64PtrOutput)
+}
+
 type CredentialSpec struct {
 	// The Active Directory authentication mode.
 	AuthenticationMode CredentialSpecAuthenticationMode `pulumi:"authenticationMode"`
@@ -183,6 +1868,127 @@ type CredentialSpec struct {
 	S3Bucket *S3BucketCredentialSpec `pulumi:"s3Bucket"`
 	// The ARN of an SSM parameter that contains the credential specification file.
 	SsmParameterArn *string `pulumi:"ssmParameterArn"`
+}
+
+type Device struct {
+	// The path inside the container at which to expose the host device.
+	ContainerPath *string `pulumi:"containerPath"`
+	// The device path on the host container instance.
+	HostPath *string `pulumi:"hostPath"`
+	// The permissions to grant the container for the device.
+	//
+	// Default - `read`, `write`, and `mknod` in ECS.
+	Permissions []DevicePermissions `pulumi:"permissions"`
+}
+
+// DeviceInput is an input type that accepts DeviceArgs and DeviceOutput values.
+// You can construct a concrete instance of `DeviceInput` via:
+//
+//	DeviceArgs{...}
+type DeviceInput interface {
+	pulumi.Input
+
+	ToDeviceOutput() DeviceOutput
+	ToDeviceOutputWithContext(context.Context) DeviceOutput
+}
+
+type DeviceArgs struct {
+	// The path inside the container at which to expose the host device.
+	ContainerPath *string `pulumi:"containerPath"`
+	// The device path on the host container instance.
+	HostPath *string `pulumi:"hostPath"`
+	// The permissions to grant the container for the device.
+	//
+	// Default - `read`, `write`, and `mknod` in ECS.
+	Permissions []DevicePermissions `pulumi:"permissions"`
+}
+
+func (DeviceArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*Device)(nil)).Elem()
+}
+
+func (i DeviceArgs) ToDeviceOutput() DeviceOutput {
+	return i.ToDeviceOutputWithContext(context.Background())
+}
+
+func (i DeviceArgs) ToDeviceOutputWithContext(ctx context.Context) DeviceOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DeviceOutput)
+}
+
+// DeviceArrayInput is an input type that accepts DeviceArray and DeviceArrayOutput values.
+// You can construct a concrete instance of `DeviceArrayInput` via:
+//
+//	DeviceArray{ DeviceArgs{...} }
+type DeviceArrayInput interface {
+	pulumi.Input
+
+	ToDeviceArrayOutput() DeviceArrayOutput
+	ToDeviceArrayOutputWithContext(context.Context) DeviceArrayOutput
+}
+
+type DeviceArray []DeviceInput
+
+func (DeviceArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Device)(nil)).Elem()
+}
+
+func (i DeviceArray) ToDeviceArrayOutput() DeviceArrayOutput {
+	return i.ToDeviceArrayOutputWithContext(context.Background())
+}
+
+func (i DeviceArray) ToDeviceArrayOutputWithContext(ctx context.Context) DeviceArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DeviceArrayOutput)
+}
+
+type DeviceOutput struct{ *pulumi.OutputState }
+
+func (DeviceOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*Device)(nil)).Elem()
+}
+
+func (o DeviceOutput) ToDeviceOutput() DeviceOutput {
+	return o
+}
+
+func (o DeviceOutput) ToDeviceOutputWithContext(ctx context.Context) DeviceOutput {
+	return o
+}
+
+// The path inside the container at which to expose the host device.
+func (o DeviceOutput) ContainerPath() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Device) *string { return v.ContainerPath }).(pulumi.StringPtrOutput)
+}
+
+// The device path on the host container instance.
+func (o DeviceOutput) HostPath() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Device) *string { return v.HostPath }).(pulumi.StringPtrOutput)
+}
+
+// The permissions to grant the container for the device.
+//
+// Default - `read`, `write`, and `mknod` in ECS.
+func (o DeviceOutput) Permissions() DevicePermissionsArrayOutput {
+	return o.ApplyT(func(v Device) []DevicePermissions { return v.Permissions }).(DevicePermissionsArrayOutput)
+}
+
+type DeviceArrayOutput struct{ *pulumi.OutputState }
+
+func (DeviceArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Device)(nil)).Elem()
+}
+
+func (o DeviceArrayOutput) ToDeviceArrayOutput() DeviceArrayOutput {
+	return o
+}
+
+func (o DeviceArrayOutput) ToDeviceArrayOutputWithContext(ctx context.Context) DeviceArrayOutput {
+	return o
+}
+
+func (o DeviceArrayOutput) Index(i pulumi.IntInput) DeviceOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) Device {
+		return vs[0].([]Device)[vs[1].(int)]
+	}).(DeviceOutput)
 }
 
 type EnvironmentFile struct {
@@ -1212,6 +3018,182 @@ func (o FargatePortMappingArrayOutput) Index(i pulumi.IntInput) FargatePortMappi
 	}).(FargatePortMappingOutput)
 }
 
+type FirelensConfiguration struct {
+	// Log router options, such as ECS log metadata and a custom configuration file.
+	//
+	// Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+	//
+	// For more information, see [FireLens
+	// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+	Options map[string]string `pulumi:"options"`
+	// The log router to use.
+	Type *FirelensConfigurationType `pulumi:"type"`
+}
+
+// FirelensConfigurationInput is an input type that accepts FirelensConfigurationArgs and FirelensConfigurationOutput values.
+// You can construct a concrete instance of `FirelensConfigurationInput` via:
+//
+//	FirelensConfigurationArgs{...}
+type FirelensConfigurationInput interface {
+	pulumi.Input
+
+	ToFirelensConfigurationOutput() FirelensConfigurationOutput
+	ToFirelensConfigurationOutputWithContext(context.Context) FirelensConfigurationOutput
+}
+
+type FirelensConfigurationArgs struct {
+	// Log router options, such as ECS log metadata and a custom configuration file.
+	//
+	// Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+	//
+	// For more information, see [FireLens
+	// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+	Options map[string]pulumi.StringInput `pulumi:"options"`
+	// The log router to use.
+	Type *FirelensConfigurationType `pulumi:"type"`
+}
+
+func (FirelensConfigurationArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*FirelensConfiguration)(nil)).Elem()
+}
+
+func (i FirelensConfigurationArgs) ToFirelensConfigurationOutput() FirelensConfigurationOutput {
+	return i.ToFirelensConfigurationOutputWithContext(context.Background())
+}
+
+func (i FirelensConfigurationArgs) ToFirelensConfigurationOutputWithContext(ctx context.Context) FirelensConfigurationOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(FirelensConfigurationOutput)
+}
+
+func (i FirelensConfigurationArgs) ToFirelensConfigurationPtrOutput() FirelensConfigurationPtrOutput {
+	return i.ToFirelensConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i FirelensConfigurationArgs) ToFirelensConfigurationPtrOutputWithContext(ctx context.Context) FirelensConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(FirelensConfigurationOutput).ToFirelensConfigurationPtrOutputWithContext(ctx)
+}
+
+// FirelensConfigurationPtrInput is an input type that accepts FirelensConfigurationArgs, FirelensConfigurationPtr and FirelensConfigurationPtrOutput values.
+// You can construct a concrete instance of `FirelensConfigurationPtrInput` via:
+//
+//	        FirelensConfigurationArgs{...}
+//
+//	or:
+//
+//	        nil
+type FirelensConfigurationPtrInput interface {
+	pulumi.Input
+
+	ToFirelensConfigurationPtrOutput() FirelensConfigurationPtrOutput
+	ToFirelensConfigurationPtrOutputWithContext(context.Context) FirelensConfigurationPtrOutput
+}
+
+type firelensConfigurationPtrType FirelensConfigurationArgs
+
+func FirelensConfigurationPtr(v *FirelensConfigurationArgs) FirelensConfigurationPtrInput {
+	return (*firelensConfigurationPtrType)(v)
+}
+
+func (*firelensConfigurationPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**FirelensConfiguration)(nil)).Elem()
+}
+
+func (i *firelensConfigurationPtrType) ToFirelensConfigurationPtrOutput() FirelensConfigurationPtrOutput {
+	return i.ToFirelensConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i *firelensConfigurationPtrType) ToFirelensConfigurationPtrOutputWithContext(ctx context.Context) FirelensConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(FirelensConfigurationPtrOutput)
+}
+
+type FirelensConfigurationOutput struct{ *pulumi.OutputState }
+
+func (FirelensConfigurationOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*FirelensConfiguration)(nil)).Elem()
+}
+
+func (o FirelensConfigurationOutput) ToFirelensConfigurationOutput() FirelensConfigurationOutput {
+	return o
+}
+
+func (o FirelensConfigurationOutput) ToFirelensConfigurationOutputWithContext(ctx context.Context) FirelensConfigurationOutput {
+	return o
+}
+
+func (o FirelensConfigurationOutput) ToFirelensConfigurationPtrOutput() FirelensConfigurationPtrOutput {
+	return o.ToFirelensConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (o FirelensConfigurationOutput) ToFirelensConfigurationPtrOutputWithContext(ctx context.Context) FirelensConfigurationPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v FirelensConfiguration) *FirelensConfiguration {
+		return &v
+	}).(FirelensConfigurationPtrOutput)
+}
+
+// Log router options, such as ECS log metadata and a custom configuration file.
+//
+// Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+//
+// For more information, see [FireLens
+// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+func (o FirelensConfigurationOutput) Options() pulumi.StringMapOutput {
+	return o.ApplyT(func(v FirelensConfiguration) map[string]string { return v.Options }).(pulumi.StringMapOutput)
+}
+
+// The log router to use.
+func (o FirelensConfigurationOutput) Type() FirelensConfigurationTypePtrOutput {
+	return o.ApplyT(func(v FirelensConfiguration) *FirelensConfigurationType { return v.Type }).(FirelensConfigurationTypePtrOutput)
+}
+
+type FirelensConfigurationPtrOutput struct{ *pulumi.OutputState }
+
+func (FirelensConfigurationPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**FirelensConfiguration)(nil)).Elem()
+}
+
+func (o FirelensConfigurationPtrOutput) ToFirelensConfigurationPtrOutput() FirelensConfigurationPtrOutput {
+	return o
+}
+
+func (o FirelensConfigurationPtrOutput) ToFirelensConfigurationPtrOutputWithContext(ctx context.Context) FirelensConfigurationPtrOutput {
+	return o
+}
+
+func (o FirelensConfigurationPtrOutput) Elem() FirelensConfigurationOutput {
+	return o.ApplyT(func(v *FirelensConfiguration) FirelensConfiguration {
+		if v != nil {
+			return *v
+		}
+		var ret FirelensConfiguration
+		return ret
+	}).(FirelensConfigurationOutput)
+}
+
+// Log router options, such as ECS log metadata and a custom configuration file.
+//
+// Supported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.
+//
+// For more information, see [FireLens
+// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options).
+func (o FirelensConfigurationPtrOutput) Options() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *FirelensConfiguration) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Options
+	}).(pulumi.StringMapOutput)
+}
+
+// The log router to use.
+func (o FirelensConfigurationPtrOutput) Type() FirelensConfigurationTypePtrOutput {
+	return o.ApplyT(func(v *FirelensConfiguration) *FirelensConfigurationType {
+		if v == nil {
+			return nil
+		}
+		return v.Type
+	}).(FirelensConfigurationTypePtrOutput)
+}
+
 type HealthCheck struct {
 	// The command that the container runs to determine whether it is healthy.
 	//
@@ -1479,6 +3461,1529 @@ func (o HealthCheckPtrOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
 		}
 		return v.TimeoutSeconds
 	}).(pulumi.Float64PtrOutput)
+}
+
+type HostEntry struct {
+	// The hostname for the `/etc/hosts` entry.
+	Hostname string `pulumi:"hostname"`
+	// The IP address for the `/etc/hosts` entry.
+	IpAddress string `pulumi:"ipAddress"`
+}
+
+// HostEntryInput is an input type that accepts HostEntryArgs and HostEntryOutput values.
+// You can construct a concrete instance of `HostEntryInput` via:
+//
+//	HostEntryArgs{...}
+type HostEntryInput interface {
+	pulumi.Input
+
+	ToHostEntryOutput() HostEntryOutput
+	ToHostEntryOutputWithContext(context.Context) HostEntryOutput
+}
+
+type HostEntryArgs struct {
+	// The hostname for the `/etc/hosts` entry.
+	Hostname pulumi.StringInput `pulumi:"hostname"`
+	// The IP address for the `/etc/hosts` entry.
+	IpAddress pulumi.StringInput `pulumi:"ipAddress"`
+}
+
+func (HostEntryArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*HostEntry)(nil)).Elem()
+}
+
+func (i HostEntryArgs) ToHostEntryOutput() HostEntryOutput {
+	return i.ToHostEntryOutputWithContext(context.Background())
+}
+
+func (i HostEntryArgs) ToHostEntryOutputWithContext(ctx context.Context) HostEntryOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HostEntryOutput)
+}
+
+type HostEntryOutput struct{ *pulumi.OutputState }
+
+func (HostEntryOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*HostEntry)(nil)).Elem()
+}
+
+func (o HostEntryOutput) ToHostEntryOutput() HostEntryOutput {
+	return o
+}
+
+func (o HostEntryOutput) ToHostEntryOutputWithContext(ctx context.Context) HostEntryOutput {
+	return o
+}
+
+// The hostname for the `/etc/hosts` entry.
+func (o HostEntryOutput) Hostname() pulumi.StringOutput {
+	return o.ApplyT(func(v HostEntry) string { return v.Hostname }).(pulumi.StringOutput)
+}
+
+// The IP address for the `/etc/hosts` entry.
+func (o HostEntryOutput) IpAddress() pulumi.StringOutput {
+	return o.ApplyT(func(v HostEntry) string { return v.IpAddress }).(pulumi.StringOutput)
+}
+
+type HostEntryArrayOutput struct{ *pulumi.OutputState }
+
+func (HostEntryArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]HostEntry)(nil)).Elem()
+}
+
+func (o HostEntryArrayOutput) ToHostEntryArrayOutput() HostEntryArrayOutput {
+	return o
+}
+
+func (o HostEntryArrayOutput) ToHostEntryArrayOutputWithContext(ctx context.Context) HostEntryArrayOutput {
+	return o
+}
+
+func (o HostEntryArrayOutput) Index(i pulumi.IntInput) HostEntryOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) HostEntry {
+		return vs[0].([]HostEntry)[vs[1].(int)]
+	}).(HostEntryOutput)
+}
+
+type KernelCapabilities struct {
+	// Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+	//
+	// For supported names, see
+	// [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+	Add []string `pulumi:"add"`
+	// Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+	//
+	// For supported names, see
+	// [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+	Drop []string `pulumi:"drop"`
+}
+
+// KernelCapabilitiesInput is an input type that accepts KernelCapabilitiesArgs and KernelCapabilitiesOutput values.
+// You can construct a concrete instance of `KernelCapabilitiesInput` via:
+//
+//	KernelCapabilitiesArgs{...}
+type KernelCapabilitiesInput interface {
+	pulumi.Input
+
+	ToKernelCapabilitiesOutput() KernelCapabilitiesOutput
+	ToKernelCapabilitiesOutputWithContext(context.Context) KernelCapabilitiesOutput
+}
+
+type KernelCapabilitiesArgs struct {
+	// Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+	//
+	// For supported names, see
+	// [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+	Add []string `pulumi:"add"`
+	// Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+	//
+	// For supported names, see
+	// [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+	Drop []string `pulumi:"drop"`
+}
+
+func (KernelCapabilitiesArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*KernelCapabilities)(nil)).Elem()
+}
+
+func (i KernelCapabilitiesArgs) ToKernelCapabilitiesOutput() KernelCapabilitiesOutput {
+	return i.ToKernelCapabilitiesOutputWithContext(context.Background())
+}
+
+func (i KernelCapabilitiesArgs) ToKernelCapabilitiesOutputWithContext(ctx context.Context) KernelCapabilitiesOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(KernelCapabilitiesOutput)
+}
+
+func (i KernelCapabilitiesArgs) ToKernelCapabilitiesPtrOutput() KernelCapabilitiesPtrOutput {
+	return i.ToKernelCapabilitiesPtrOutputWithContext(context.Background())
+}
+
+func (i KernelCapabilitiesArgs) ToKernelCapabilitiesPtrOutputWithContext(ctx context.Context) KernelCapabilitiesPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(KernelCapabilitiesOutput).ToKernelCapabilitiesPtrOutputWithContext(ctx)
+}
+
+// KernelCapabilitiesPtrInput is an input type that accepts KernelCapabilitiesArgs, KernelCapabilitiesPtr and KernelCapabilitiesPtrOutput values.
+// You can construct a concrete instance of `KernelCapabilitiesPtrInput` via:
+//
+//	        KernelCapabilitiesArgs{...}
+//
+//	or:
+//
+//	        nil
+type KernelCapabilitiesPtrInput interface {
+	pulumi.Input
+
+	ToKernelCapabilitiesPtrOutput() KernelCapabilitiesPtrOutput
+	ToKernelCapabilitiesPtrOutputWithContext(context.Context) KernelCapabilitiesPtrOutput
+}
+
+type kernelCapabilitiesPtrType KernelCapabilitiesArgs
+
+func KernelCapabilitiesPtr(v *KernelCapabilitiesArgs) KernelCapabilitiesPtrInput {
+	return (*kernelCapabilitiesPtrType)(v)
+}
+
+func (*kernelCapabilitiesPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**KernelCapabilities)(nil)).Elem()
+}
+
+func (i *kernelCapabilitiesPtrType) ToKernelCapabilitiesPtrOutput() KernelCapabilitiesPtrOutput {
+	return i.ToKernelCapabilitiesPtrOutputWithContext(context.Background())
+}
+
+func (i *kernelCapabilitiesPtrType) ToKernelCapabilitiesPtrOutputWithContext(ctx context.Context) KernelCapabilitiesPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(KernelCapabilitiesPtrOutput)
+}
+
+type KernelCapabilitiesOutput struct{ *pulumi.OutputState }
+
+func (KernelCapabilitiesOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*KernelCapabilities)(nil)).Elem()
+}
+
+func (o KernelCapabilitiesOutput) ToKernelCapabilitiesOutput() KernelCapabilitiesOutput {
+	return o
+}
+
+func (o KernelCapabilitiesOutput) ToKernelCapabilitiesOutputWithContext(ctx context.Context) KernelCapabilitiesOutput {
+	return o
+}
+
+func (o KernelCapabilitiesOutput) ToKernelCapabilitiesPtrOutput() KernelCapabilitiesPtrOutput {
+	return o.ToKernelCapabilitiesPtrOutputWithContext(context.Background())
+}
+
+func (o KernelCapabilitiesOutput) ToKernelCapabilitiesPtrOutputWithContext(ctx context.Context) KernelCapabilitiesPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v KernelCapabilities) *KernelCapabilities {
+		return &v
+	}).(KernelCapabilitiesPtrOutput)
+}
+
+// Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+//
+// For supported names, see
+// [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+func (o KernelCapabilitiesOutput) Add() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v KernelCapabilities) []string { return v.Add }).(pulumi.StringArrayOutput)
+}
+
+// Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+//
+// For supported names, see
+// [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+func (o KernelCapabilitiesOutput) Drop() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v KernelCapabilities) []string { return v.Drop }).(pulumi.StringArrayOutput)
+}
+
+type KernelCapabilitiesPtrOutput struct{ *pulumi.OutputState }
+
+func (KernelCapabilitiesPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**KernelCapabilities)(nil)).Elem()
+}
+
+func (o KernelCapabilitiesPtrOutput) ToKernelCapabilitiesPtrOutput() KernelCapabilitiesPtrOutput {
+	return o
+}
+
+func (o KernelCapabilitiesPtrOutput) ToKernelCapabilitiesPtrOutputWithContext(ctx context.Context) KernelCapabilitiesPtrOutput {
+	return o
+}
+
+func (o KernelCapabilitiesPtrOutput) Elem() KernelCapabilitiesOutput {
+	return o.ApplyT(func(v *KernelCapabilities) KernelCapabilities {
+		if v != nil {
+			return *v
+		}
+		var ret KernelCapabilities
+		return ret
+	}).(KernelCapabilitiesOutput)
+}
+
+// Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.
+//
+// For supported names, see
+// [add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add).
+func (o KernelCapabilitiesPtrOutput) Add() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *KernelCapabilities) []string {
+		if v == nil {
+			return nil
+		}
+		return v.Add
+	}).(pulumi.StringArrayOutput)
+}
+
+// Linux capabilities to remove. Use `ALL` to remove all default capabilities.
+//
+// For supported names, see
+// [drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop).
+func (o KernelCapabilitiesPtrOutput) Drop() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *KernelCapabilities) []string {
+		if v == nil {
+			return nil
+		}
+		return v.Drop
+	}).(pulumi.StringArrayOutput)
+}
+
+type KeyValuePair struct {
+	// The name, such as an environment variable name.
+	Name string `pulumi:"name"`
+	// The value assigned to the name.
+	Value *string `pulumi:"value"`
+}
+
+// KeyValuePairInput is an input type that accepts KeyValuePairArgs and KeyValuePairOutput values.
+// You can construct a concrete instance of `KeyValuePairInput` via:
+//
+//	KeyValuePairArgs{...}
+type KeyValuePairInput interface {
+	pulumi.Input
+
+	ToKeyValuePairOutput() KeyValuePairOutput
+	ToKeyValuePairOutputWithContext(context.Context) KeyValuePairOutput
+}
+
+type KeyValuePairArgs struct {
+	// The name, such as an environment variable name.
+	Name string `pulumi:"name"`
+	// The value assigned to the name.
+	Value pulumi.StringPtrInput `pulumi:"value"`
+}
+
+func (KeyValuePairArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*KeyValuePair)(nil)).Elem()
+}
+
+func (i KeyValuePairArgs) ToKeyValuePairOutput() KeyValuePairOutput {
+	return i.ToKeyValuePairOutputWithContext(context.Background())
+}
+
+func (i KeyValuePairArgs) ToKeyValuePairOutputWithContext(ctx context.Context) KeyValuePairOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(KeyValuePairOutput)
+}
+
+type KeyValuePairOutput struct{ *pulumi.OutputState }
+
+func (KeyValuePairOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*KeyValuePair)(nil)).Elem()
+}
+
+func (o KeyValuePairOutput) ToKeyValuePairOutput() KeyValuePairOutput {
+	return o
+}
+
+func (o KeyValuePairOutput) ToKeyValuePairOutputWithContext(ctx context.Context) KeyValuePairOutput {
+	return o
+}
+
+// The name, such as an environment variable name.
+func (o KeyValuePairOutput) Name() pulumi.StringOutput {
+	return o.ApplyT(func(v KeyValuePair) string { return v.Name }).(pulumi.StringOutput)
+}
+
+// The value assigned to the name.
+func (o KeyValuePairOutput) Value() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v KeyValuePair) *string { return v.Value }).(pulumi.StringPtrOutput)
+}
+
+type KeyValuePairArrayOutput struct{ *pulumi.OutputState }
+
+func (KeyValuePairArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]KeyValuePair)(nil)).Elem()
+}
+
+func (o KeyValuePairArrayOutput) ToKeyValuePairArrayOutput() KeyValuePairArrayOutput {
+	return o
+}
+
+func (o KeyValuePairArrayOutput) ToKeyValuePairArrayOutputWithContext(ctx context.Context) KeyValuePairArrayOutput {
+	return o
+}
+
+func (o KeyValuePairArrayOutput) Index(i pulumi.IntInput) KeyValuePairOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) KeyValuePair {
+		return vs[0].([]KeyValuePair)[vs[1].(int)]
+	}).(KeyValuePairOutput)
+}
+
+type LinuxParameters struct {
+	// Linux capabilities to add to or remove from the default Docker configuration.
+	//
+	// For more information, see [kernel
+	// capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+	Capabilities *KernelCapabilities `pulumi:"capabilities"`
+	// Host devices to expose to the container. Not supported for Fargate tasks.
+	Devices []Device `pulumi:"devices"`
+	// Whether to run an init process that forwards signals and removes exited child processes.
+	InitProcessEnabled *bool `pulumi:"initProcessEnabled"`
+	// The maximum swap memory, in MiB. Set to `0` to disable swap.
+	//
+	// Required for `swappiness` to take effect. Not supported for Fargate tasks.
+	//
+	// Default - The container instance's swap configuration.
+	MaxSwap *float64 `pulumi:"maxSwap"`
+	// The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+	SharedMemorySize *float64 `pulumi:"sharedMemorySize"`
+	// How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+	//
+	// Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+	//
+	// Default - 60 in ECS.
+	Swappiness *float64 `pulumi:"swappiness"`
+	// In-memory file systems to mount in the container.
+	//
+	// For more information, see [tmpfs
+	// mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+	Tmpfs []Tmpfs `pulumi:"tmpfs"`
+}
+
+// LinuxParametersInput is an input type that accepts LinuxParametersArgs and LinuxParametersOutput values.
+// You can construct a concrete instance of `LinuxParametersInput` via:
+//
+//	LinuxParametersArgs{...}
+type LinuxParametersInput interface {
+	pulumi.Input
+
+	ToLinuxParametersOutput() LinuxParametersOutput
+	ToLinuxParametersOutputWithContext(context.Context) LinuxParametersOutput
+}
+
+type LinuxParametersArgs struct {
+	// Linux capabilities to add to or remove from the default Docker configuration.
+	//
+	// For more information, see [kernel
+	// capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+	Capabilities *KernelCapabilitiesArgs `pulumi:"capabilities"`
+	// Host devices to expose to the container. Not supported for Fargate tasks.
+	Devices []DeviceArgs `pulumi:"devices"`
+	// Whether to run an init process that forwards signals and removes exited child processes.
+	InitProcessEnabled *bool `pulumi:"initProcessEnabled"`
+	// The maximum swap memory, in MiB. Set to `0` to disable swap.
+	//
+	// Required for `swappiness` to take effect. Not supported for Fargate tasks.
+	//
+	// Default - The container instance's swap configuration.
+	MaxSwap *float64 `pulumi:"maxSwap"`
+	// The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+	SharedMemorySize *float64 `pulumi:"sharedMemorySize"`
+	// How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+	//
+	// Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+	//
+	// Default - 60 in ECS.
+	Swappiness *float64 `pulumi:"swappiness"`
+	// In-memory file systems to mount in the container.
+	//
+	// For more information, see [tmpfs
+	// mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+	Tmpfs []TmpfsArgs `pulumi:"tmpfs"`
+}
+
+func (LinuxParametersArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LinuxParameters)(nil)).Elem()
+}
+
+func (i LinuxParametersArgs) ToLinuxParametersOutput() LinuxParametersOutput {
+	return i.ToLinuxParametersOutputWithContext(context.Background())
+}
+
+func (i LinuxParametersArgs) ToLinuxParametersOutputWithContext(ctx context.Context) LinuxParametersOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinuxParametersOutput)
+}
+
+func (i LinuxParametersArgs) ToLinuxParametersPtrOutput() LinuxParametersPtrOutput {
+	return i.ToLinuxParametersPtrOutputWithContext(context.Background())
+}
+
+func (i LinuxParametersArgs) ToLinuxParametersPtrOutputWithContext(ctx context.Context) LinuxParametersPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinuxParametersOutput).ToLinuxParametersPtrOutputWithContext(ctx)
+}
+
+// LinuxParametersPtrInput is an input type that accepts LinuxParametersArgs, LinuxParametersPtr and LinuxParametersPtrOutput values.
+// You can construct a concrete instance of `LinuxParametersPtrInput` via:
+//
+//	        LinuxParametersArgs{...}
+//
+//	or:
+//
+//	        nil
+type LinuxParametersPtrInput interface {
+	pulumi.Input
+
+	ToLinuxParametersPtrOutput() LinuxParametersPtrOutput
+	ToLinuxParametersPtrOutputWithContext(context.Context) LinuxParametersPtrOutput
+}
+
+type linuxParametersPtrType LinuxParametersArgs
+
+func LinuxParametersPtr(v *LinuxParametersArgs) LinuxParametersPtrInput {
+	return (*linuxParametersPtrType)(v)
+}
+
+func (*linuxParametersPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**LinuxParameters)(nil)).Elem()
+}
+
+func (i *linuxParametersPtrType) ToLinuxParametersPtrOutput() LinuxParametersPtrOutput {
+	return i.ToLinuxParametersPtrOutputWithContext(context.Background())
+}
+
+func (i *linuxParametersPtrType) ToLinuxParametersPtrOutputWithContext(ctx context.Context) LinuxParametersPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinuxParametersPtrOutput)
+}
+
+type LinuxParametersOutput struct{ *pulumi.OutputState }
+
+func (LinuxParametersOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LinuxParameters)(nil)).Elem()
+}
+
+func (o LinuxParametersOutput) ToLinuxParametersOutput() LinuxParametersOutput {
+	return o
+}
+
+func (o LinuxParametersOutput) ToLinuxParametersOutputWithContext(ctx context.Context) LinuxParametersOutput {
+	return o
+}
+
+func (o LinuxParametersOutput) ToLinuxParametersPtrOutput() LinuxParametersPtrOutput {
+	return o.ToLinuxParametersPtrOutputWithContext(context.Background())
+}
+
+func (o LinuxParametersOutput) ToLinuxParametersPtrOutputWithContext(ctx context.Context) LinuxParametersPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LinuxParameters) *LinuxParameters {
+		return &v
+	}).(LinuxParametersPtrOutput)
+}
+
+// Linux capabilities to add to or remove from the default Docker configuration.
+//
+// For more information, see [kernel
+// capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+func (o LinuxParametersOutput) Capabilities() KernelCapabilitiesPtrOutput {
+	return o.ApplyT(func(v LinuxParameters) *KernelCapabilities { return v.Capabilities }).(KernelCapabilitiesPtrOutput)
+}
+
+// Host devices to expose to the container. Not supported for Fargate tasks.
+func (o LinuxParametersOutput) Devices() DeviceArrayOutput {
+	return o.ApplyT(func(v LinuxParameters) []Device { return v.Devices }).(DeviceArrayOutput)
+}
+
+// Whether to run an init process that forwards signals and removes exited child processes.
+func (o LinuxParametersOutput) InitProcessEnabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v LinuxParameters) *bool { return v.InitProcessEnabled }).(pulumi.BoolPtrOutput)
+}
+
+// The maximum swap memory, in MiB. Set to `0` to disable swap.
+//
+// Required for `swappiness` to take effect. Not supported for Fargate tasks.
+//
+// Default - The container instance's swap configuration.
+func (o LinuxParametersOutput) MaxSwap() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LinuxParameters) *float64 { return v.MaxSwap }).(pulumi.Float64PtrOutput)
+}
+
+// The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+func (o LinuxParametersOutput) SharedMemorySize() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LinuxParameters) *float64 { return v.SharedMemorySize }).(pulumi.Float64PtrOutput)
+}
+
+// How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+//
+// Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+//
+// Default - 60 in ECS.
+func (o LinuxParametersOutput) Swappiness() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LinuxParameters) *float64 { return v.Swappiness }).(pulumi.Float64PtrOutput)
+}
+
+// In-memory file systems to mount in the container.
+//
+// For more information, see [tmpfs
+// mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+func (o LinuxParametersOutput) Tmpfs() TmpfsArrayOutput {
+	return o.ApplyT(func(v LinuxParameters) []Tmpfs { return v.Tmpfs }).(TmpfsArrayOutput)
+}
+
+type LinuxParametersPtrOutput struct{ *pulumi.OutputState }
+
+func (LinuxParametersPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LinuxParameters)(nil)).Elem()
+}
+
+func (o LinuxParametersPtrOutput) ToLinuxParametersPtrOutput() LinuxParametersPtrOutput {
+	return o
+}
+
+func (o LinuxParametersPtrOutput) ToLinuxParametersPtrOutputWithContext(ctx context.Context) LinuxParametersPtrOutput {
+	return o
+}
+
+func (o LinuxParametersPtrOutput) Elem() LinuxParametersOutput {
+	return o.ApplyT(func(v *LinuxParameters) LinuxParameters {
+		if v != nil {
+			return *v
+		}
+		var ret LinuxParameters
+		return ret
+	}).(LinuxParametersOutput)
+}
+
+// Linux capabilities to add to or remove from the default Docker configuration.
+//
+// For more information, see [kernel
+// capabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
+func (o LinuxParametersPtrOutput) Capabilities() KernelCapabilitiesPtrOutput {
+	return o.ApplyT(func(v *LinuxParameters) *KernelCapabilities {
+		if v == nil {
+			return nil
+		}
+		return v.Capabilities
+	}).(KernelCapabilitiesPtrOutput)
+}
+
+// Host devices to expose to the container. Not supported for Fargate tasks.
+func (o LinuxParametersPtrOutput) Devices() DeviceArrayOutput {
+	return o.ApplyT(func(v *LinuxParameters) []Device {
+		if v == nil {
+			return nil
+		}
+		return v.Devices
+	}).(DeviceArrayOutput)
+}
+
+// Whether to run an init process that forwards signals and removes exited child processes.
+func (o LinuxParametersPtrOutput) InitProcessEnabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *LinuxParameters) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.InitProcessEnabled
+	}).(pulumi.BoolPtrOutput)
+}
+
+// The maximum swap memory, in MiB. Set to `0` to disable swap.
+//
+// Required for `swappiness` to take effect. Not supported for Fargate tasks.
+//
+// Default - The container instance's swap configuration.
+func (o LinuxParametersPtrOutput) MaxSwap() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinuxParameters) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.MaxSwap
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks.
+func (o LinuxParametersPtrOutput) SharedMemorySize() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinuxParameters) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.SharedMemorySize
+	}).(pulumi.Float64PtrOutput)
+}
+
+// How aggressively the container swaps memory, from 0 (only when necessary) through 100.
+//
+// Ignored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.
+//
+// Default - 60 in ECS.
+func (o LinuxParametersPtrOutput) Swappiness() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinuxParameters) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.Swappiness
+	}).(pulumi.Float64PtrOutput)
+}
+
+// In-memory file systems to mount in the container.
+//
+// For more information, see [tmpfs
+// mounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
+func (o LinuxParametersPtrOutput) Tmpfs() TmpfsArrayOutput {
+	return o.ApplyT(func(v *LinuxParameters) []Tmpfs {
+		if v == nil {
+			return nil
+		}
+		return v.Tmpfs
+	}).(TmpfsArrayOutput)
+}
+
+type LogConfiguration struct {
+	// The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+	//
+	// For more information, see
+	// [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+	LogDriver LogConfigurationLogDriver `pulumi:"logDriver"`
+	// Driver-specific configuration options.
+	//
+	// For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+	// `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+	//
+	// The `mode` option controls delivery: `blocking` can block application writes when logging
+	// fails; `non-blocking` can lose logs when its buffer fills.
+	//
+	// For supported options and defaults, see [log
+	// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+	Options map[string]string `pulumi:"options"`
+	// Secrets to pass as log driver options instead of plaintext values.
+	//
+	// For more information, see [sensitive
+	// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+	SecretOptions []ContainerDefinitionSecret `pulumi:"secretOptions"`
+}
+
+// LogConfigurationInput is an input type that accepts LogConfigurationArgs and LogConfigurationOutput values.
+// You can construct a concrete instance of `LogConfigurationInput` via:
+//
+//	LogConfigurationArgs{...}
+type LogConfigurationInput interface {
+	pulumi.Input
+
+	ToLogConfigurationOutput() LogConfigurationOutput
+	ToLogConfigurationOutputWithContext(context.Context) LogConfigurationOutput
+}
+
+type LogConfigurationArgs struct {
+	// The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+	//
+	// For more information, see
+	// [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+	LogDriver LogConfigurationLogDriver `pulumi:"logDriver"`
+	// Driver-specific configuration options.
+	//
+	// For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+	// `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+	//
+	// The `mode` option controls delivery: `blocking` can block application writes when logging
+	// fails; `non-blocking` can lose logs when its buffer fills.
+	//
+	// For supported options and defaults, see [log
+	// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+	Options map[string]pulumi.StringInput `pulumi:"options"`
+	// Secrets to pass as log driver options instead of plaintext values.
+	//
+	// For more information, see [sensitive
+	// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+	SecretOptions []ContainerDefinitionSecretArgs `pulumi:"secretOptions"`
+}
+
+func (LogConfigurationArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogConfiguration)(nil)).Elem()
+}
+
+func (i LogConfigurationArgs) ToLogConfigurationOutput() LogConfigurationOutput {
+	return i.ToLogConfigurationOutputWithContext(context.Background())
+}
+
+func (i LogConfigurationArgs) ToLogConfigurationOutputWithContext(ctx context.Context) LogConfigurationOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogConfigurationOutput)
+}
+
+func (i LogConfigurationArgs) ToLogConfigurationPtrOutput() LogConfigurationPtrOutput {
+	return i.ToLogConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i LogConfigurationArgs) ToLogConfigurationPtrOutputWithContext(ctx context.Context) LogConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogConfigurationOutput).ToLogConfigurationPtrOutputWithContext(ctx)
+}
+
+// LogConfigurationPtrInput is an input type that accepts LogConfigurationArgs, LogConfigurationPtr and LogConfigurationPtrOutput values.
+// You can construct a concrete instance of `LogConfigurationPtrInput` via:
+//
+//	        LogConfigurationArgs{...}
+//
+//	or:
+//
+//	        nil
+type LogConfigurationPtrInput interface {
+	pulumi.Input
+
+	ToLogConfigurationPtrOutput() LogConfigurationPtrOutput
+	ToLogConfigurationPtrOutputWithContext(context.Context) LogConfigurationPtrOutput
+}
+
+type logConfigurationPtrType LogConfigurationArgs
+
+func LogConfigurationPtr(v *LogConfigurationArgs) LogConfigurationPtrInput {
+	return (*logConfigurationPtrType)(v)
+}
+
+func (*logConfigurationPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogConfiguration)(nil)).Elem()
+}
+
+func (i *logConfigurationPtrType) ToLogConfigurationPtrOutput() LogConfigurationPtrOutput {
+	return i.ToLogConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i *logConfigurationPtrType) ToLogConfigurationPtrOutputWithContext(ctx context.Context) LogConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogConfigurationPtrOutput)
+}
+
+type LogConfigurationOutput struct{ *pulumi.OutputState }
+
+func (LogConfigurationOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogConfiguration)(nil)).Elem()
+}
+
+func (o LogConfigurationOutput) ToLogConfigurationOutput() LogConfigurationOutput {
+	return o
+}
+
+func (o LogConfigurationOutput) ToLogConfigurationOutputWithContext(ctx context.Context) LogConfigurationOutput {
+	return o
+}
+
+func (o LogConfigurationOutput) ToLogConfigurationPtrOutput() LogConfigurationPtrOutput {
+	return o.ToLogConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (o LogConfigurationOutput) ToLogConfigurationPtrOutputWithContext(ctx context.Context) LogConfigurationPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LogConfiguration) *LogConfiguration {
+		return &v
+	}).(LogConfigurationPtrOutput)
+}
+
+// The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+//
+// For more information, see
+// [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+func (o LogConfigurationOutput) LogDriver() LogConfigurationLogDriverOutput {
+	return o.ApplyT(func(v LogConfiguration) LogConfigurationLogDriver { return v.LogDriver }).(LogConfigurationLogDriverOutput)
+}
+
+// Driver-specific configuration options.
+//
+// For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+// `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+//
+// The `mode` option controls delivery: `blocking` can block application writes when logging
+// fails; `non-blocking` can lose logs when its buffer fills.
+//
+// For supported options and defaults, see [log
+// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+func (o LogConfigurationOutput) Options() pulumi.StringMapOutput {
+	return o.ApplyT(func(v LogConfiguration) map[string]string { return v.Options }).(pulumi.StringMapOutput)
+}
+
+// Secrets to pass as log driver options instead of plaintext values.
+//
+// For more information, see [sensitive
+// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+func (o LogConfigurationOutput) SecretOptions() ContainerDefinitionSecretArrayOutput {
+	return o.ApplyT(func(v LogConfiguration) []ContainerDefinitionSecret { return v.SecretOptions }).(ContainerDefinitionSecretArrayOutput)
+}
+
+type LogConfigurationPtrOutput struct{ *pulumi.OutputState }
+
+func (LogConfigurationPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogConfiguration)(nil)).Elem()
+}
+
+func (o LogConfigurationPtrOutput) ToLogConfigurationPtrOutput() LogConfigurationPtrOutput {
+	return o
+}
+
+func (o LogConfigurationPtrOutput) ToLogConfigurationPtrOutputWithContext(ctx context.Context) LogConfigurationPtrOutput {
+	return o
+}
+
+func (o LogConfigurationPtrOutput) Elem() LogConfigurationOutput {
+	return o.ApplyT(func(v *LogConfiguration) LogConfiguration {
+		if v != nil {
+			return *v
+		}
+		var ret LogConfiguration
+		return ret
+	}).(LogConfigurationOutput)
+}
+
+// The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.
+//
+// For more information, see
+// [logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver).
+func (o LogConfigurationPtrOutput) LogDriver() LogConfigurationLogDriverPtrOutput {
+	return o.ApplyT(func(v *LogConfiguration) *LogConfigurationLogDriver {
+		if v == nil {
+			return nil
+		}
+		return &v.LogDriver
+	}).(LogConfigurationLogDriverPtrOutput)
+}
+
+// Driver-specific configuration options.
+//
+// For `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires
+// `awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.
+//
+// The `mode` option controls delivery: `blocking` can block application writes when logging
+// fails; `non-blocking` can lose logs when its buffer fills.
+//
+// For supported options and defaults, see [log
+// options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
+func (o LogConfigurationPtrOutput) Options() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *LogConfiguration) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Options
+	}).(pulumi.StringMapOutput)
+}
+
+// Secrets to pass as log driver options instead of plaintext values.
+//
+// For more information, see [sensitive
+// data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html).
+func (o LogConfigurationPtrOutput) SecretOptions() ContainerDefinitionSecretArrayOutput {
+	return o.ApplyT(func(v *LogConfiguration) []ContainerDefinitionSecret {
+		if v == nil {
+			return nil
+		}
+		return v.SecretOptions
+	}).(ContainerDefinitionSecretArrayOutput)
+}
+
+type MountPoint struct {
+	// The path inside the container at which to mount the volume.
+	ContainerPath *string `pulumi:"containerPath"`
+	// Whether the container has read-only access to the volume.
+	//
+	// Default - `false` in ECS.
+	ReadOnly *bool `pulumi:"readOnly"`
+	// The name of a volume declared in the task definition.
+	SourceVolume *string `pulumi:"sourceVolume"`
+}
+
+// MountPointInput is an input type that accepts MountPointArgs and MountPointOutput values.
+// You can construct a concrete instance of `MountPointInput` via:
+//
+//	MountPointArgs{...}
+type MountPointInput interface {
+	pulumi.Input
+
+	ToMountPointOutput() MountPointOutput
+	ToMountPointOutputWithContext(context.Context) MountPointOutput
+}
+
+type MountPointArgs struct {
+	// The path inside the container at which to mount the volume.
+	ContainerPath *string `pulumi:"containerPath"`
+	// Whether the container has read-only access to the volume.
+	//
+	// Default - `false` in ECS.
+	ReadOnly *bool `pulumi:"readOnly"`
+	// The name of a volume declared in the task definition.
+	SourceVolume *string `pulumi:"sourceVolume"`
+}
+
+func (MountPointArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MountPoint)(nil)).Elem()
+}
+
+func (i MountPointArgs) ToMountPointOutput() MountPointOutput {
+	return i.ToMountPointOutputWithContext(context.Background())
+}
+
+func (i MountPointArgs) ToMountPointOutputWithContext(ctx context.Context) MountPointOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MountPointOutput)
+}
+
+// MountPointArrayInput is an input type that accepts MountPointArray and MountPointArrayOutput values.
+// You can construct a concrete instance of `MountPointArrayInput` via:
+//
+//	MountPointArray{ MountPointArgs{...} }
+type MountPointArrayInput interface {
+	pulumi.Input
+
+	ToMountPointArrayOutput() MountPointArrayOutput
+	ToMountPointArrayOutputWithContext(context.Context) MountPointArrayOutput
+}
+
+type MountPointArray []MountPointInput
+
+func (MountPointArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]MountPoint)(nil)).Elem()
+}
+
+func (i MountPointArray) ToMountPointArrayOutput() MountPointArrayOutput {
+	return i.ToMountPointArrayOutputWithContext(context.Background())
+}
+
+func (i MountPointArray) ToMountPointArrayOutputWithContext(ctx context.Context) MountPointArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MountPointArrayOutput)
+}
+
+type MountPointOutput struct{ *pulumi.OutputState }
+
+func (MountPointOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MountPoint)(nil)).Elem()
+}
+
+func (o MountPointOutput) ToMountPointOutput() MountPointOutput {
+	return o
+}
+
+func (o MountPointOutput) ToMountPointOutputWithContext(ctx context.Context) MountPointOutput {
+	return o
+}
+
+// The path inside the container at which to mount the volume.
+func (o MountPointOutput) ContainerPath() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MountPoint) *string { return v.ContainerPath }).(pulumi.StringPtrOutput)
+}
+
+// Whether the container has read-only access to the volume.
+//
+// Default - `false` in ECS.
+func (o MountPointOutput) ReadOnly() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MountPoint) *bool { return v.ReadOnly }).(pulumi.BoolPtrOutput)
+}
+
+// The name of a volume declared in the task definition.
+func (o MountPointOutput) SourceVolume() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MountPoint) *string { return v.SourceVolume }).(pulumi.StringPtrOutput)
+}
+
+type MountPointArrayOutput struct{ *pulumi.OutputState }
+
+func (MountPointArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]MountPoint)(nil)).Elem()
+}
+
+func (o MountPointArrayOutput) ToMountPointArrayOutput() MountPointArrayOutput {
+	return o
+}
+
+func (o MountPointArrayOutput) ToMountPointArrayOutputWithContext(ctx context.Context) MountPointArrayOutput {
+	return o
+}
+
+func (o MountPointArrayOutput) Index(i pulumi.IntInput) MountPointOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) MountPoint {
+		return vs[0].([]MountPoint)[vs[1].(int)]
+	}).(MountPointOutput)
+}
+
+type PortMapping struct {
+	// The application protocol for Service Connect handling and telemetry.
+	//
+	// Changing this value requires deleting and redeploying the Service Connect service.
+	//
+	// Default - TCP handling without protocol-specific telemetry in ECS.
+	//
+	// For more information, see
+	// [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+	AppProtocol *PortMappingAppProtocol `pulumi:"appProtocol"`
+	// The port to expose on the container.
+	//
+	// With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+	//
+	// For more information, see
+	// [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+	ContainerPort *float64 `pulumi:"containerPort"`
+	// A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+	//
+	// Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+	// ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+	// the host and container ranges match.
+	//
+	// For more information, see
+	// [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+	ContainerPortRange *string `pulumi:"containerPortRange"`
+	// The host port to bind to the container port.
+	//
+	// With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+	// omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+	//
+	// For more information, see
+	// [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+	HostPort *float64 `pulumi:"hostPort"`
+	// The port mapping name referenced by Service Connect or VPC Lattice configuration.
+	//
+	// Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+	//
+	// For more information, see
+	// [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+	Name *string `pulumi:"name"`
+	// The transport protocol. Changing it requires deleting and redeploying the Service Connect
+	// service.
+	//
+	// Default - `tcp` in ECS.
+	//
+	// For more information, see
+	// [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+	Protocol *PortMappingProtocol `pulumi:"protocol"`
+}
+
+// PortMappingInput is an input type that accepts PortMappingArgs and PortMappingOutput values.
+// You can construct a concrete instance of `PortMappingInput` via:
+//
+//	PortMappingArgs{...}
+type PortMappingInput interface {
+	pulumi.Input
+
+	ToPortMappingOutput() PortMappingOutput
+	ToPortMappingOutputWithContext(context.Context) PortMappingOutput
+}
+
+type PortMappingArgs struct {
+	// The application protocol for Service Connect handling and telemetry.
+	//
+	// Changing this value requires deleting and redeploying the Service Connect service.
+	//
+	// Default - TCP handling without protocol-specific telemetry in ECS.
+	//
+	// For more information, see
+	// [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+	AppProtocol *PortMappingAppProtocol `pulumi:"appProtocol"`
+	// The port to expose on the container.
+	//
+	// With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+	//
+	// For more information, see
+	// [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+	ContainerPort *float64 `pulumi:"containerPort"`
+	// A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+	//
+	// Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+	// ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+	// the host and container ranges match.
+	//
+	// For more information, see
+	// [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+	ContainerPortRange *string `pulumi:"containerPortRange"`
+	// The host port to bind to the container port.
+	//
+	// With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+	// omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+	//
+	// For more information, see
+	// [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+	HostPort *float64 `pulumi:"hostPort"`
+	// The port mapping name referenced by Service Connect or VPC Lattice configuration.
+	//
+	// Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+	//
+	// For more information, see
+	// [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+	Name *string `pulumi:"name"`
+	// The transport protocol. Changing it requires deleting and redeploying the Service Connect
+	// service.
+	//
+	// Default - `tcp` in ECS.
+	//
+	// For more information, see
+	// [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+	Protocol *PortMappingProtocol `pulumi:"protocol"`
+}
+
+func (PortMappingArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*PortMapping)(nil)).Elem()
+}
+
+func (i PortMappingArgs) ToPortMappingOutput() PortMappingOutput {
+	return i.ToPortMappingOutputWithContext(context.Background())
+}
+
+func (i PortMappingArgs) ToPortMappingOutputWithContext(ctx context.Context) PortMappingOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(PortMappingOutput)
+}
+
+// PortMappingArrayInput is an input type that accepts PortMappingArray and PortMappingArrayOutput values.
+// You can construct a concrete instance of `PortMappingArrayInput` via:
+//
+//	PortMappingArray{ PortMappingArgs{...} }
+type PortMappingArrayInput interface {
+	pulumi.Input
+
+	ToPortMappingArrayOutput() PortMappingArrayOutput
+	ToPortMappingArrayOutputWithContext(context.Context) PortMappingArrayOutput
+}
+
+type PortMappingArray []PortMappingInput
+
+func (PortMappingArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]PortMapping)(nil)).Elem()
+}
+
+func (i PortMappingArray) ToPortMappingArrayOutput() PortMappingArrayOutput {
+	return i.ToPortMappingArrayOutputWithContext(context.Background())
+}
+
+func (i PortMappingArray) ToPortMappingArrayOutputWithContext(ctx context.Context) PortMappingArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(PortMappingArrayOutput)
+}
+
+type PortMappingOutput struct{ *pulumi.OutputState }
+
+func (PortMappingOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*PortMapping)(nil)).Elem()
+}
+
+func (o PortMappingOutput) ToPortMappingOutput() PortMappingOutput {
+	return o
+}
+
+func (o PortMappingOutput) ToPortMappingOutputWithContext(ctx context.Context) PortMappingOutput {
+	return o
+}
+
+// The application protocol for Service Connect handling and telemetry.
+//
+// Changing this value requires deleting and redeploying the Service Connect service.
+//
+// Default - TCP handling without protocol-specific telemetry in ECS.
+//
+// For more information, see
+// [appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol).
+func (o PortMappingOutput) AppProtocol() PortMappingAppProtocolPtrOutput {
+	return o.ApplyT(func(v PortMapping) *PortMappingAppProtocol { return v.AppProtocol }).(PortMappingAppProtocolPtrOutput)
+}
+
+// The port to expose on the container.
+//
+// With `bridge` networking, omitting `hostPort` lets ECS assign an available host port.
+//
+// For more information, see
+// [containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort).
+func (o PortMappingOutput) ContainerPort() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v PortMapping) *float64 { return v.ContainerPort }).(pulumi.Float64PtrOutput)
+}
+
+// A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.
+//
+// Ports must be from 1 through 65535, with the first port below the last. Specify at most 100
+// ranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,
+// the host and container ranges match.
+//
+// For more information, see
+// [containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange).
+func (o PortMappingOutput) ContainerPortRange() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v PortMapping) *string { return v.ContainerPortRange }).(pulumi.StringPtrOutput)
+}
+
+// The host port to bind to the container port.
+//
+// With `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,
+// omit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.
+//
+// For more information, see
+// [hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort).
+func (o PortMappingOutput) HostPort() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v PortMapping) *float64 { return v.HostPort }).(pulumi.Float64PtrOutput)
+}
+
+// The port mapping name referenced by Service Connect or VPC Lattice configuration.
+//
+// Use up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.
+//
+// For more information, see
+// [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name).
+func (o PortMappingOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v PortMapping) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// The transport protocol. Changing it requires deleting and redeploying the Service Connect
+// service.
+//
+// Default - `tcp` in ECS.
+//
+// For more information, see
+// [protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol).
+func (o PortMappingOutput) Protocol() PortMappingProtocolPtrOutput {
+	return o.ApplyT(func(v PortMapping) *PortMappingProtocol { return v.Protocol }).(PortMappingProtocolPtrOutput)
+}
+
+type PortMappingArrayOutput struct{ *pulumi.OutputState }
+
+func (PortMappingArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]PortMapping)(nil)).Elem()
+}
+
+func (o PortMappingArrayOutput) ToPortMappingArrayOutput() PortMappingArrayOutput {
+	return o
+}
+
+func (o PortMappingArrayOutput) ToPortMappingArrayOutputWithContext(ctx context.Context) PortMappingArrayOutput {
+	return o
+}
+
+func (o PortMappingArrayOutput) Index(i pulumi.IntInput) PortMappingOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) PortMapping {
+		return vs[0].([]PortMapping)[vs[1].(int)]
+	}).(PortMappingOutput)
+}
+
+type RepositoryCredentials struct {
+	// The ARN of the secret containing registry credentials. A secret name is also accepted when the
+	// secret is in the same Region as the task.
+	CredentialsParameter *string `pulumi:"credentialsParameter"`
+}
+
+// RepositoryCredentialsInput is an input type that accepts RepositoryCredentialsArgs and RepositoryCredentialsOutput values.
+// You can construct a concrete instance of `RepositoryCredentialsInput` via:
+//
+//	RepositoryCredentialsArgs{...}
+type RepositoryCredentialsInput interface {
+	pulumi.Input
+
+	ToRepositoryCredentialsOutput() RepositoryCredentialsOutput
+	ToRepositoryCredentialsOutputWithContext(context.Context) RepositoryCredentialsOutput
+}
+
+type RepositoryCredentialsArgs struct {
+	// The ARN of the secret containing registry credentials. A secret name is also accepted when the
+	// secret is in the same Region as the task.
+	CredentialsParameter pulumi.StringPtrInput `pulumi:"credentialsParameter"`
+}
+
+func (RepositoryCredentialsArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RepositoryCredentials)(nil)).Elem()
+}
+
+func (i RepositoryCredentialsArgs) ToRepositoryCredentialsOutput() RepositoryCredentialsOutput {
+	return i.ToRepositoryCredentialsOutputWithContext(context.Background())
+}
+
+func (i RepositoryCredentialsArgs) ToRepositoryCredentialsOutputWithContext(ctx context.Context) RepositoryCredentialsOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RepositoryCredentialsOutput)
+}
+
+func (i RepositoryCredentialsArgs) ToRepositoryCredentialsPtrOutput() RepositoryCredentialsPtrOutput {
+	return i.ToRepositoryCredentialsPtrOutputWithContext(context.Background())
+}
+
+func (i RepositoryCredentialsArgs) ToRepositoryCredentialsPtrOutputWithContext(ctx context.Context) RepositoryCredentialsPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RepositoryCredentialsOutput).ToRepositoryCredentialsPtrOutputWithContext(ctx)
+}
+
+// RepositoryCredentialsPtrInput is an input type that accepts RepositoryCredentialsArgs, RepositoryCredentialsPtr and RepositoryCredentialsPtrOutput values.
+// You can construct a concrete instance of `RepositoryCredentialsPtrInput` via:
+//
+//	        RepositoryCredentialsArgs{...}
+//
+//	or:
+//
+//	        nil
+type RepositoryCredentialsPtrInput interface {
+	pulumi.Input
+
+	ToRepositoryCredentialsPtrOutput() RepositoryCredentialsPtrOutput
+	ToRepositoryCredentialsPtrOutputWithContext(context.Context) RepositoryCredentialsPtrOutput
+}
+
+type repositoryCredentialsPtrType RepositoryCredentialsArgs
+
+func RepositoryCredentialsPtr(v *RepositoryCredentialsArgs) RepositoryCredentialsPtrInput {
+	return (*repositoryCredentialsPtrType)(v)
+}
+
+func (*repositoryCredentialsPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**RepositoryCredentials)(nil)).Elem()
+}
+
+func (i *repositoryCredentialsPtrType) ToRepositoryCredentialsPtrOutput() RepositoryCredentialsPtrOutput {
+	return i.ToRepositoryCredentialsPtrOutputWithContext(context.Background())
+}
+
+func (i *repositoryCredentialsPtrType) ToRepositoryCredentialsPtrOutputWithContext(ctx context.Context) RepositoryCredentialsPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RepositoryCredentialsPtrOutput)
+}
+
+type RepositoryCredentialsOutput struct{ *pulumi.OutputState }
+
+func (RepositoryCredentialsOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RepositoryCredentials)(nil)).Elem()
+}
+
+func (o RepositoryCredentialsOutput) ToRepositoryCredentialsOutput() RepositoryCredentialsOutput {
+	return o
+}
+
+func (o RepositoryCredentialsOutput) ToRepositoryCredentialsOutputWithContext(ctx context.Context) RepositoryCredentialsOutput {
+	return o
+}
+
+func (o RepositoryCredentialsOutput) ToRepositoryCredentialsPtrOutput() RepositoryCredentialsPtrOutput {
+	return o.ToRepositoryCredentialsPtrOutputWithContext(context.Background())
+}
+
+func (o RepositoryCredentialsOutput) ToRepositoryCredentialsPtrOutputWithContext(ctx context.Context) RepositoryCredentialsPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v RepositoryCredentials) *RepositoryCredentials {
+		return &v
+	}).(RepositoryCredentialsPtrOutput)
+}
+
+// The ARN of the secret containing registry credentials. A secret name is also accepted when the
+// secret is in the same Region as the task.
+func (o RepositoryCredentialsOutput) CredentialsParameter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RepositoryCredentials) *string { return v.CredentialsParameter }).(pulumi.StringPtrOutput)
+}
+
+type RepositoryCredentialsPtrOutput struct{ *pulumi.OutputState }
+
+func (RepositoryCredentialsPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**RepositoryCredentials)(nil)).Elem()
+}
+
+func (o RepositoryCredentialsPtrOutput) ToRepositoryCredentialsPtrOutput() RepositoryCredentialsPtrOutput {
+	return o
+}
+
+func (o RepositoryCredentialsPtrOutput) ToRepositoryCredentialsPtrOutputWithContext(ctx context.Context) RepositoryCredentialsPtrOutput {
+	return o
+}
+
+func (o RepositoryCredentialsPtrOutput) Elem() RepositoryCredentialsOutput {
+	return o.ApplyT(func(v *RepositoryCredentials) RepositoryCredentials {
+		if v != nil {
+			return *v
+		}
+		var ret RepositoryCredentials
+		return ret
+	}).(RepositoryCredentialsOutput)
+}
+
+// The ARN of the secret containing registry credentials. A secret name is also accepted when the
+// secret is in the same Region as the task.
+func (o RepositoryCredentialsPtrOutput) CredentialsParameter() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RepositoryCredentials) *string {
+		if v == nil {
+			return nil
+		}
+		return v.CredentialsParameter
+	}).(pulumi.StringPtrOutput)
+}
+
+type ResourceRequirement struct {
+	// The type of resource to assign.
+	Type ResourceRequirementType `pulumi:"type"`
+	// The amount or identifier of the resource to assign.
+	//
+	// For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+	// `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+	// only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+	//
+	// For more information, see
+	// [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+	Value string `pulumi:"value"`
+}
+
+// ResourceRequirementInput is an input type that accepts ResourceRequirementArgs and ResourceRequirementOutput values.
+// You can construct a concrete instance of `ResourceRequirementInput` via:
+//
+//	ResourceRequirementArgs{...}
+type ResourceRequirementInput interface {
+	pulumi.Input
+
+	ToResourceRequirementOutput() ResourceRequirementOutput
+	ToResourceRequirementOutputWithContext(context.Context) ResourceRequirementOutput
+}
+
+type ResourceRequirementArgs struct {
+	// The type of resource to assign.
+	Type ResourceRequirementType `pulumi:"type"`
+	// The amount or identifier of the resource to assign.
+	//
+	// For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+	// `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+	// only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+	//
+	// For more information, see
+	// [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+	Value string `pulumi:"value"`
+}
+
+func (ResourceRequirementArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ResourceRequirement)(nil)).Elem()
+}
+
+func (i ResourceRequirementArgs) ToResourceRequirementOutput() ResourceRequirementOutput {
+	return i.ToResourceRequirementOutputWithContext(context.Background())
+}
+
+func (i ResourceRequirementArgs) ToResourceRequirementOutputWithContext(ctx context.Context) ResourceRequirementOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ResourceRequirementOutput)
+}
+
+// ResourceRequirementArrayInput is an input type that accepts ResourceRequirementArray and ResourceRequirementArrayOutput values.
+// You can construct a concrete instance of `ResourceRequirementArrayInput` via:
+//
+//	ResourceRequirementArray{ ResourceRequirementArgs{...} }
+type ResourceRequirementArrayInput interface {
+	pulumi.Input
+
+	ToResourceRequirementArrayOutput() ResourceRequirementArrayOutput
+	ToResourceRequirementArrayOutputWithContext(context.Context) ResourceRequirementArrayOutput
+}
+
+type ResourceRequirementArray []ResourceRequirementInput
+
+func (ResourceRequirementArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ResourceRequirement)(nil)).Elem()
+}
+
+func (i ResourceRequirementArray) ToResourceRequirementArrayOutput() ResourceRequirementArrayOutput {
+	return i.ToResourceRequirementArrayOutputWithContext(context.Background())
+}
+
+func (i ResourceRequirementArray) ToResourceRequirementArrayOutputWithContext(ctx context.Context) ResourceRequirementArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ResourceRequirementArrayOutput)
+}
+
+type ResourceRequirementOutput struct{ *pulumi.OutputState }
+
+func (ResourceRequirementOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ResourceRequirement)(nil)).Elem()
+}
+
+func (o ResourceRequirementOutput) ToResourceRequirementOutput() ResourceRequirementOutput {
+	return o
+}
+
+func (o ResourceRequirementOutput) ToResourceRequirementOutputWithContext(ctx context.Context) ResourceRequirementOutput {
+	return o
+}
+
+// The type of resource to assign.
+func (o ResourceRequirementOutput) Type() ResourceRequirementTypeOutput {
+	return o.ApplyT(func(v ResourceRequirement) ResourceRequirementType { return v.Type }).(ResourceRequirementTypeOutput)
+}
+
+// The amount or identifier of the resource to assign.
+//
+// For `GPU`, use the device count or `ALL`; total reservations must fit the instance. For
+// `NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances
+// only. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.
+//
+// For more information, see
+// [value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value).
+func (o ResourceRequirementOutput) Value() pulumi.StringOutput {
+	return o.ApplyT(func(v ResourceRequirement) string { return v.Value }).(pulumi.StringOutput)
+}
+
+type ResourceRequirementArrayOutput struct{ *pulumi.OutputState }
+
+func (ResourceRequirementArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]ResourceRequirement)(nil)).Elem()
+}
+
+func (o ResourceRequirementArrayOutput) ToResourceRequirementArrayOutput() ResourceRequirementArrayOutput {
+	return o
+}
+
+func (o ResourceRequirementArrayOutput) ToResourceRequirementArrayOutputWithContext(ctx context.Context) ResourceRequirementArrayOutput {
+	return o
+}
+
+func (o ResourceRequirementArrayOutput) Index(i pulumi.IntInput) ResourceRequirementOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) ResourceRequirement {
+		return vs[0].([]ResourceRequirement)[vs[1].(int)]
+	}).(ResourceRequirementOutput)
 }
 
 type RuntimePlatform struct {
@@ -2271,6 +5776,130 @@ func (o SystemControlArrayOutput) Index(i pulumi.IntInput) SystemControlOutput {
 	}).(SystemControlOutput)
 }
 
+type Tmpfs struct {
+	// The absolute path inside the container at which to mount the file system.
+	ContainerPath *string `pulumi:"containerPath"`
+	// Mount options, such as `ro`, `noexec`, or `nosuid`.
+	//
+	// For supported values, see
+	// [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+	MountOptions []string `pulumi:"mountOptions"`
+	// The maximum file system size, in MiB.
+	Size float64 `pulumi:"size"`
+}
+
+// TmpfsInput is an input type that accepts TmpfsArgs and TmpfsOutput values.
+// You can construct a concrete instance of `TmpfsInput` via:
+//
+//	TmpfsArgs{...}
+type TmpfsInput interface {
+	pulumi.Input
+
+	ToTmpfsOutput() TmpfsOutput
+	ToTmpfsOutputWithContext(context.Context) TmpfsOutput
+}
+
+type TmpfsArgs struct {
+	// The absolute path inside the container at which to mount the file system.
+	ContainerPath *string `pulumi:"containerPath"`
+	// Mount options, such as `ro`, `noexec`, or `nosuid`.
+	//
+	// For supported values, see
+	// [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+	MountOptions []string `pulumi:"mountOptions"`
+	// The maximum file system size, in MiB.
+	Size float64 `pulumi:"size"`
+}
+
+func (TmpfsArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*Tmpfs)(nil)).Elem()
+}
+
+func (i TmpfsArgs) ToTmpfsOutput() TmpfsOutput {
+	return i.ToTmpfsOutputWithContext(context.Background())
+}
+
+func (i TmpfsArgs) ToTmpfsOutputWithContext(ctx context.Context) TmpfsOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TmpfsOutput)
+}
+
+// TmpfsArrayInput is an input type that accepts TmpfsArray and TmpfsArrayOutput values.
+// You can construct a concrete instance of `TmpfsArrayInput` via:
+//
+//	TmpfsArray{ TmpfsArgs{...} }
+type TmpfsArrayInput interface {
+	pulumi.Input
+
+	ToTmpfsArrayOutput() TmpfsArrayOutput
+	ToTmpfsArrayOutputWithContext(context.Context) TmpfsArrayOutput
+}
+
+type TmpfsArray []TmpfsInput
+
+func (TmpfsArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Tmpfs)(nil)).Elem()
+}
+
+func (i TmpfsArray) ToTmpfsArrayOutput() TmpfsArrayOutput {
+	return i.ToTmpfsArrayOutputWithContext(context.Background())
+}
+
+func (i TmpfsArray) ToTmpfsArrayOutputWithContext(ctx context.Context) TmpfsArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TmpfsArrayOutput)
+}
+
+type TmpfsOutput struct{ *pulumi.OutputState }
+
+func (TmpfsOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*Tmpfs)(nil)).Elem()
+}
+
+func (o TmpfsOutput) ToTmpfsOutput() TmpfsOutput {
+	return o
+}
+
+func (o TmpfsOutput) ToTmpfsOutputWithContext(ctx context.Context) TmpfsOutput {
+	return o
+}
+
+// The absolute path inside the container at which to mount the file system.
+func (o TmpfsOutput) ContainerPath() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Tmpfs) *string { return v.ContainerPath }).(pulumi.StringPtrOutput)
+}
+
+// Mount options, such as `ro`, `noexec`, or `nosuid`.
+//
+// For supported values, see
+// [mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions).
+func (o TmpfsOutput) MountOptions() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v Tmpfs) []string { return v.MountOptions }).(pulumi.StringArrayOutput)
+}
+
+// The maximum file system size, in MiB.
+func (o TmpfsOutput) Size() pulumi.Float64Output {
+	return o.ApplyT(func(v Tmpfs) float64 { return v.Size }).(pulumi.Float64Output)
+}
+
+type TmpfsArrayOutput struct{ *pulumi.OutputState }
+
+func (TmpfsArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Tmpfs)(nil)).Elem()
+}
+
+func (o TmpfsArrayOutput) ToTmpfsArrayOutput() TmpfsArrayOutput {
+	return o
+}
+
+func (o TmpfsArrayOutput) ToTmpfsArrayOutputWithContext(ctx context.Context) TmpfsArrayOutput {
+	return o
+}
+
+func (o TmpfsArrayOutput) Index(i pulumi.IntInput) TmpfsOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) Tmpfs {
+		return vs[0].([]Tmpfs)[vs[1].(int)]
+	}).(TmpfsOutput)
+}
+
 type Ulimit struct {
 	// The hard limit, in bytes, seconds, or a count, depending on `name`.
 	HardLimit float64 `pulumi:"hardLimit"`
@@ -2499,8 +6128,22 @@ func (o VolumeFromArrayOutput) Index(i pulumi.IntInput) VolumeFromOutput {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionDependencyInput)(nil)).Elem(), ContainerDefinitionDependencyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionEnvironmentFileInput)(nil)).Elem(), ContainerDefinitionEnvironmentFileArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionHealthCheckInput)(nil)).Elem(), ContainerDefinitionHealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionHealthCheckPtrInput)(nil)).Elem(), ContainerDefinitionHealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionSecretInput)(nil)).Elem(), ContainerDefinitionSecretArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionSecretArrayInput)(nil)).Elem(), ContainerDefinitionSecretArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionSystemControlInput)(nil)).Elem(), ContainerDefinitionSystemControlArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionSystemControlArrayInput)(nil)).Elem(), ContainerDefinitionSystemControlArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVolumeFromInput)(nil)).Elem(), ContainerDefinitionVolumeFromArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDefinitionVolumeFromArrayInput)(nil)).Elem(), ContainerDefinitionVolumeFromArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerPortRangeInput)(nil)).Elem(), ContainerPortRangeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerPortRangePtrInput)(nil)).Elem(), ContainerPortRangeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerRestartPolicyInput)(nil)).Elem(), ContainerRestartPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerRestartPolicyPtrInput)(nil)).Elem(), ContainerRestartPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DeviceInput)(nil)).Elem(), DeviceArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DeviceArrayInput)(nil)).Elem(), DeviceArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*FargateAwsLogsLogDriverInput)(nil)).Elem(), FargateAwsLogsLogDriverArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*FargateAwsLogsLogDriverPtrInput)(nil)).Elem(), FargateAwsLogsLogDriverArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*FargateKernelCapabilitiesInput)(nil)).Elem(), FargateKernelCapabilitiesArgs{})
@@ -2511,8 +6154,26 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*FargateLogDriverPtrInput)(nil)).Elem(), FargateLogDriverArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*FargatePortMappingInput)(nil)).Elem(), FargatePortMappingArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*FargatePortMappingArrayInput)(nil)).Elem(), FargatePortMappingArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*FirelensConfigurationInput)(nil)).Elem(), FirelensConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*FirelensConfigurationPtrInput)(nil)).Elem(), FirelensConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckInput)(nil)).Elem(), HealthCheckArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckPtrInput)(nil)).Elem(), HealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HostEntryInput)(nil)).Elem(), HostEntryArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*KernelCapabilitiesInput)(nil)).Elem(), KernelCapabilitiesArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*KernelCapabilitiesPtrInput)(nil)).Elem(), KernelCapabilitiesArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*KeyValuePairInput)(nil)).Elem(), KeyValuePairArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LinuxParametersInput)(nil)).Elem(), LinuxParametersArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LinuxParametersPtrInput)(nil)).Elem(), LinuxParametersArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LogConfigurationInput)(nil)).Elem(), LogConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LogConfigurationPtrInput)(nil)).Elem(), LogConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*MountPointInput)(nil)).Elem(), MountPointArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*MountPointArrayInput)(nil)).Elem(), MountPointArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingInput)(nil)).Elem(), PortMappingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingArrayInput)(nil)).Elem(), PortMappingArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RepositoryCredentialsInput)(nil)).Elem(), RepositoryCredentialsArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RepositoryCredentialsPtrInput)(nil)).Elem(), RepositoryCredentialsArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ResourceRequirementInput)(nil)).Elem(), ResourceRequirementArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ResourceRequirementArrayInput)(nil)).Elem(), ResourceRequirementArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RuntimePlatformInput)(nil)).Elem(), RuntimePlatformArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RuntimePlatformPtrInput)(nil)).Elem(), RuntimePlatformArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*S3BucketCredentialSpecInput)(nil)).Elem(), S3BucketCredentialSpecArgs{})
@@ -2523,12 +6184,31 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*SecretsManagerSecretPtrInput)(nil)).Elem(), SecretsManagerSecretArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SystemControlInput)(nil)).Elem(), SystemControlArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SystemControlArrayInput)(nil)).Elem(), SystemControlArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TmpfsInput)(nil)).Elem(), TmpfsArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TmpfsArrayInput)(nil)).Elem(), TmpfsArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*UlimitInput)(nil)).Elem(), UlimitArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*UlimitArrayInput)(nil)).Elem(), UlimitArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*VolumeFromInput)(nil)).Elem(), VolumeFromArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*VolumeFromArrayInput)(nil)).Elem(), VolumeFromArray{})
+	pulumi.RegisterOutputType(ContainerDefinitionArgsTypeOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionDependencyOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionDependencyArrayOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionEnvironmentFileOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionEnvironmentFileArrayOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionHealthCheckOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionHealthCheckPtrOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionSecretOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionSecretArrayOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionSystemControlOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionSystemControlArrayOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionVolumeFromOutput{})
+	pulumi.RegisterOutputType(ContainerDefinitionVolumeFromArrayOutput{})
 	pulumi.RegisterOutputType(ContainerPortRangeOutput{})
 	pulumi.RegisterOutputType(ContainerPortRangePtrOutput{})
+	pulumi.RegisterOutputType(ContainerRestartPolicyOutput{})
+	pulumi.RegisterOutputType(ContainerRestartPolicyPtrOutput{})
+	pulumi.RegisterOutputType(DeviceOutput{})
+	pulumi.RegisterOutputType(DeviceArrayOutput{})
 	pulumi.RegisterOutputType(FargateAwsLogsLogDriverOutput{})
 	pulumi.RegisterOutputType(FargateAwsLogsLogDriverPtrOutput{})
 	pulumi.RegisterOutputType(FargateKernelCapabilitiesOutput{})
@@ -2539,8 +6219,28 @@ func init() {
 	pulumi.RegisterOutputType(FargateLogDriverPtrOutput{})
 	pulumi.RegisterOutputType(FargatePortMappingOutput{})
 	pulumi.RegisterOutputType(FargatePortMappingArrayOutput{})
+	pulumi.RegisterOutputType(FirelensConfigurationOutput{})
+	pulumi.RegisterOutputType(FirelensConfigurationPtrOutput{})
 	pulumi.RegisterOutputType(HealthCheckOutput{})
 	pulumi.RegisterOutputType(HealthCheckPtrOutput{})
+	pulumi.RegisterOutputType(HostEntryOutput{})
+	pulumi.RegisterOutputType(HostEntryArrayOutput{})
+	pulumi.RegisterOutputType(KernelCapabilitiesOutput{})
+	pulumi.RegisterOutputType(KernelCapabilitiesPtrOutput{})
+	pulumi.RegisterOutputType(KeyValuePairOutput{})
+	pulumi.RegisterOutputType(KeyValuePairArrayOutput{})
+	pulumi.RegisterOutputType(LinuxParametersOutput{})
+	pulumi.RegisterOutputType(LinuxParametersPtrOutput{})
+	pulumi.RegisterOutputType(LogConfigurationOutput{})
+	pulumi.RegisterOutputType(LogConfigurationPtrOutput{})
+	pulumi.RegisterOutputType(MountPointOutput{})
+	pulumi.RegisterOutputType(MountPointArrayOutput{})
+	pulumi.RegisterOutputType(PortMappingOutput{})
+	pulumi.RegisterOutputType(PortMappingArrayOutput{})
+	pulumi.RegisterOutputType(RepositoryCredentialsOutput{})
+	pulumi.RegisterOutputType(RepositoryCredentialsPtrOutput{})
+	pulumi.RegisterOutputType(ResourceRequirementOutput{})
+	pulumi.RegisterOutputType(ResourceRequirementArrayOutput{})
 	pulumi.RegisterOutputType(RuntimePlatformOutput{})
 	pulumi.RegisterOutputType(RuntimePlatformPtrOutput{})
 	pulumi.RegisterOutputType(S3BucketCredentialSpecOutput{})
@@ -2551,6 +6251,8 @@ func init() {
 	pulumi.RegisterOutputType(SecretsManagerSecretPtrOutput{})
 	pulumi.RegisterOutputType(SystemControlOutput{})
 	pulumi.RegisterOutputType(SystemControlArrayOutput{})
+	pulumi.RegisterOutputType(TmpfsOutput{})
+	pulumi.RegisterOutputType(TmpfsArrayOutput{})
 	pulumi.RegisterOutputType(UlimitOutput{})
 	pulumi.RegisterOutputType(UlimitArrayOutput{})
 	pulumi.RegisterOutputType(VolumeFromOutput{})

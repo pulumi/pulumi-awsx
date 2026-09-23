@@ -1732,6 +1732,344 @@
                 }
             ]
         },
+        "awsx:experimental/ecs:ContainerDefinitionArgs": {
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The command passed to the container. Use a separate array item for each argument.\n\nFor more information, see\n[command](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-command)."
+                },
+                "cpu": {
+                    "type": "number",
+                    "description": "The CPU units reserved for the container. There are 1,024 CPU units per vCPU.\n\nOn Linux, this controls relative CPU shares, not a hard limit. On Windows, it is a hard limit.\nFor Fargate, the total container CPU reservation must be below the task CPU value.\n\nFor more information, see\n[cpu](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-cpu)."
+                },
+                "credentialSpecs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Credential specifications for Active Directory authentication. Specify at most one entry.\n\nUse `credentialspec:ARN` or `credentialspecdomainless:ARN`, with an SSM or S3 ARN. Prefer this\nproperty to `dockerSecurityOptions` for credential specifications.\n\nFor more information, see\n[credentialSpecs](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-credentialSpecs)."
+                },
+                "dependsOn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionDependency"
+                    },
+                    "description": "Dependencies on other containers in the task that control startup order.\n\nECS reverses the dependency order during shutdown.\n\nFor more information, see [container\ndependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html)."
+                },
+                "disableNetworking": {
+                    "type": "boolean",
+                    "description": "Whether to disable networking in the container. Not supported for Windows containers.\n\nFor more information, see\n[disableNetworking](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-disableNetworking)."
+                },
+                "dnsSearchDomains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "DNS search domains for the container. Not supported for Windows containers.\n\nFor more information, see\n[dnsSearchDomains](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsSearchDomains)."
+                },
+                "dnsServers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "DNS servers for the container. Not supported for Windows containers.\n\nFor more information, see\n[dnsServers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsServers)."
+                },
+                "dockerLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Labels to add to the container.\n\nFor more information, see\n[dockerLabels](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerLabels)."
+                },
+                "dockerSecurityOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Security options for the container, such as SELinux labels or an AppArmor profile.\n\nNot supported for Fargate tasks. The container instance must support the selected security\nsystem. Use `credentialSpecs` for Active Directory authentication.\n\nFor more information, see\n[dockerSecurityOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerSecurityOptions)."
+                },
+                "entryPoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The entry point passed to the container.\n\nFor more information, see\n[entryPoint](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-entryPoint)."
+                },
+                "environment": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:KeyValuePair"
+                    },
+                    "description": "Environment variables passed to the container. Use `secrets` for sensitive values.\n\nFor more information, see [environment\nvariables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html)."
+                },
+                "environmentFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionEnvironmentFile"
+                    },
+                    "description": "S3 environment files passed to the container. Specify at most ten `.env` files.\n\nValues in `environment` take precedence over file values. Files are processed in list order;\nthe first value for a variable takes precedence over values in later files. Not supported for\nWindows containers.\n\nFor more information, see [environment\nfiles](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/use-environment-file.html)."
+                },
+                "essential": {
+                    "type": "boolean",
+                    "description": "Whether the container is essential to the task.\n\nIf an essential container stops, ECS stops all other containers in the task. Each task must\nhave at least one essential container.\n\nDefault - `true` in ECS.\n\nFor more information, see\n[essential](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-essential)."
+                },
+                "extraHosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:HostEntry"
+                    },
+                    "description": "Hostname and IP address mappings to add to the container's `/etc/hosts` file.\n\nNot supported for Windows containers or the `awsvpc` network mode.\n\nFor more information, see\n[extraHosts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-extraHosts)."
+                },
+                "firelensConfiguration": {
+                    "$ref": "#/types/awsx:experimental/ecs:FirelensConfiguration",
+                    "description": "FireLens log router settings for the container.\n\nFor more information, see [custom log\nrouting](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html)."
+                },
+                "healthCheck": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionHealthCheck",
+                    "description": "The health check command and settings for the container.\n\nECS only monitors health checks specified in the task definition, not checks configured only in\nthe container image.\n\nFor more information, see [container health\nchecks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html)."
+                },
+                "hostname": {
+                    "type": "string",
+                    "description": "The container hostname. Not supported with the `awsvpc` network mode.\n\nFor more information, see\n[hostname](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-hostname)."
+                },
+                "image": {
+                    "type": "string",
+                    "description": "The image used to start the container, specified by name, tag, or digest.\n\nFor private registries, include the registry address, such as `registry/repository:tag` or\n`registry/repository@sha256:digest`. Image updates do not update already running tasks.\n\nFor more information, see\n[image](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-image)."
+                },
+                "interactive": {
+                    "type": "boolean",
+                    "description": "Whether to keep standard input open for the container.\n\nFor more information, see\n[interactive](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-interactive)."
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Links to other containers, specified as a container name or `name:alias`.\n\nSupported only with the `bridge` network mode and not for Windows containers. Links do not\nprovide network isolation.\n\nFor more information, see\n[links](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-links)."
+                },
+                "linuxParameters": {
+                    "$ref": "#/types/awsx:experimental/ecs:LinuxParameters",
+                    "description": "Linux-specific container settings, such as kernel capabilities and devices.\n\nNot supported for Windows containers.\n\nFor more information, see [Linux\nparameters](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinuxParameters.html)."
+                },
+                "logConfiguration": {
+                    "$ref": "#/types/awsx:experimental/ecs:LogConfiguration",
+                    "description": "The log driver and its settings for the container.\n\nOn EC2, the driver must be available and configured on the container instance.\n\nFor more information, see [log\nconfiguration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html)."
+                },
+                "memory": {
+                    "type": "number",
+                    "description": "The hard memory limit, in MiB. The container is killed if it exceeds this limit.\n\nMust be greater than `memoryReservation` when both are set. On EC2, specify memory at the task\nor container level. Total container memory reservations must be below the task memory value, if\nset. Container-level memory is optional on Fargate.\n\nFor more information, see\n[memory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memory)."
+                },
+                "memoryReservation": {
+                    "type": "number",
+                    "description": "The soft memory limit, in MiB, reserved for the container during placement.\n\nThe container can use more memory, up to `memory` or the available instance memory. If both\nlimits are set, `memory` must be greater. Without task-level memory, set a nonzero `memory` or\n`memoryReservation` value.\n\nFor more information, see\n[memoryReservation](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memoryReservation)."
+                },
+                "mountPoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:MountPoint"
+                    },
+                    "description": "Data volumes to mount in the container.\n\nWindows mounts must use directories on the same drive as `$env:ProgramData`.\n\nFor more information, see\n[mountPoints](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-mountPoints)."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The container name, used by other containers to reference it.\n\nUse up to 255 letters, numbers, underscores, or hyphens.\n\nFor more information, see\n[name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name)."
+                },
+                "portMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:PortMapping"
+                    },
+                    "description": "Ports to expose from the container.\n\nWith `awsvpc` or `host` networking, omit `hostPort` or match it to `containerPort`. Port\nmappings are not supported with the `none` network mode.\n\nFor more information, see [port\nmappings](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html)."
+                },
+                "privileged": {
+                    "type": "boolean",
+                    "description": "Whether to give the container elevated privileges on the host.\n\nNot supported for Windows containers or Fargate tasks.\n\nFor more information, see\n[privileged](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-privileged)."
+                },
+                "pseudoTerminal": {
+                    "type": "boolean",
+                    "description": "Whether to allocate a TTY for the container.\n\nFor more information, see\n[pseudoTerminal](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-pseudoTerminal)."
+                },
+                "readonlyRootFilesystem": {
+                    "type": "boolean",
+                    "description": "Whether the container has read-only access to its root file system.\n\nNot supported for Windows containers.\n\nFor more information, see\n[readonlyRootFilesystem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-readonlyRootFilesystem)."
+                },
+                "repositoryCredentials": {
+                    "$ref": "#/types/awsx:experimental/ecs:RepositoryCredentials",
+                    "description": "Credentials for authentication to a private image registry.\n\nFor more information, see [repository\ncredentials](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RepositoryCredentials.html)."
+                },
+                "resourceRequirements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ResourceRequirement"
+                    },
+                    "description": "Specialized resources to assign to the container, such as GPUs or Neuron devices.\n\nFor more information, see [resource\nrequirements](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html)."
+                },
+                "restartPolicy": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerRestartPolicy",
+                    "description": "Settings that let ECS restart the container without replacing the task.\n\nFor more information, see [container restart\npolicies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html)."
+                },
+                "secrets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionSecret"
+                    },
+                    "description": "Secrets to pass to the container as environment variables.\n\nFor more information, see [sensitive\ndata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html)."
+                },
+                "startTimeout": {
+                    "type": "number",
+                    "description": "The time, in seconds, allowed for this container to satisfy another container's dependency.\n\nIf the required condition is not met in time, the dependent container does not start and the\ntask stops. Fargate accepts 2 through 120 seconds. The agent's `ECS_CONTAINER_START_TIMEOUT`\nsetting is enforced independently.\n\nFor more information, see\n[startTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-startTimeout)."
+                },
+                "stopTimeout": {
+                    "type": "number",
+                    "description": "The time, in seconds, to wait for the container to stop before it is forcibly killed.\n\nFargate accepts 2 through 120 seconds.\n\nDefault - 30 seconds on Fargate. On EC2, the agent's `ECS_CONTAINER_STOP_TIMEOUT` setting, or\n30 seconds if that setting is absent.\n\nFor more information, see\n[stopTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-stopTimeout)."
+                },
+                "systemControls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionSystemControl"
+                    },
+                    "description": "Namespaced kernel parameters to set in the container.\n\nSettings can affect other containers that share the same namespace. Not supported for Windows\ncontainers.\n\nFor more information, see [system\ncontrols](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html)."
+                },
+                "ulimits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:Ulimit"
+                    },
+                    "description": "Operating-system resource limits for the container. Not supported for Windows containers.\n\nFor more information, see\n[ulimits](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html)."
+                },
+                "user": {
+                    "type": "string",
+                    "description": "The user that runs commands inside the container, as a name, ID, or user and group pair.\n\nUse a non-root user, especially with `host` networking. Not supported for Windows containers.\n\nFor more information, see\n[user](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-user)."
+                },
+                "versionConsistency": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionVersionConsistency",
+                    "description": "Whether ECS resolves the image tag to a digest. When disabled, ECS uses the original image URI.\n\nDefault - `enabled` in ECS.\n\nFor more information, see [container image\nresolution](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)."
+                },
+                "volumesFrom": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionVolumeFrom"
+                    },
+                    "description": "Data volumes to mount from another container in the same task.\n\nFor more information, see [volumes from other\ncontainers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html)."
+                },
+                "workingDirectory": {
+                    "type": "string",
+                    "description": "The working directory in which commands run inside the container.\n\nFor more information, see\n[workingDirectory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-workingDirectory)."
+                }
+            },
+            "type": "object",
+            "required": [
+                "image",
+                "name"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDefinitionDependency": {
+            "properties": {
+                "condition": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDependencyCondition",
+                    "plain": true,
+                    "description": "The condition that the other container must satisfy before this container starts."
+                },
+                "containerName": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of the other container in the task."
+                }
+            },
+            "type": "object",
+            "required": [
+                "condition",
+                "containerName"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDefinitionEnvironmentFile": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The file source type. The only supported value is `s3`."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The ARN of the S3 object containing the environment file."
+                }
+            },
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDefinitionHealthCheck": {
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The command that determines whether the container is healthy.\n\nStart with `CMD` to run arguments directly or `CMD-SHELL` to use the container's default shell.\nAn exit code of zero indicates success; any other code indicates failure.\n\nExample: `[\"CMD-SHELL\", \"curl --fail http://localhost/health || exit 1\"]`."
+                },
+                "interval": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, between health checks. Valid values are from 5 through 300.\n\nDefault - 30 seconds in ECS."
+                },
+                "retries": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The number of failed checks before the container is unhealthy. Valid values are from 1 through 10.\n\nDefault - 3 in ECS."
+                },
+                "startPeriod": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The startup grace period, in seconds, before failed checks count toward the retry limit.\n\nValid values are from 0 through 300. If a check succeeds during this period, subsequent\nfailures count toward the retry limit.\n\nDefault - No startup grace period in ECS."
+                },
+                "timeout": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, allowed for a health check to succeed. Valid values are from 2 through 60.\n\nDefault - 5 seconds in ECS."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ContainerDefinitionSecret": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The environment variable name, or the log driver option name when used in `secretOptions`."
+                },
+                "valueFrom": {
+                    "type": "string",
+                    "description": "The ARN of a Secrets Manager secret or SSM Parameter Store parameter.\n\nAn SSM parameter name is also accepted when it is in the same Region as the task. The task\nexecution role must have permission to read the secret or parameter.\n\nFor more information, see [secret\nsources](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html#ECS-Type-Secret-valueFrom)."
+                }
+            },
+            "type": "object",
+            "required": [
+                "name",
+                "valueFrom"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDefinitionSystemControl": {
+            "properties": {
+                "namespace": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`."
+                },
+                "value": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The value to assign to the kernel parameter."
+                }
+            },
+            "type": "object"
+        },
         "awsx:experimental/ecs:ContainerDefinitionVersionConsistency": {
             "type": "string",
             "enum": [
@@ -1746,6 +2084,21 @@
                     "value": "disabled"
                 }
             ]
+        },
+        "awsx:experimental/ecs:ContainerDefinitionVolumeFrom": {
+            "properties": {
+                "readOnly": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether this container has read-only access to the volumes.\n\nDefault - `false` in ECS."
+                },
+                "sourceContainer": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of the container from which to mount volumes."
+                }
+            },
+            "type": "object"
         },
         "awsx:experimental/ecs:ContainerDependency": {
             "properties": {
@@ -1810,6 +2163,30 @@
                 "start"
             ]
         },
+        "awsx:experimental/ecs:ContainerRestartPolicy": {
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the restart policy is enabled."
+                },
+                "ignoredExitCodes": {
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Exit codes that do not trigger a restart. Specify at most 50 codes.\n\nDefault - No ignored exit codes in ECS."
+                },
+                "restartAttemptPeriod": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The minimum time, in seconds, the container must run before it is eligible for a restart.\n\nValid values are from 60 through 1800. A container that exits sooner is not restarted.\n\nDefault - 300 seconds in ECS."
+                }
+            },
+            "type": "object"
+        },
         "awsx:experimental/ecs:CpuArchitecture": {
             "type": "string",
             "enum": [
@@ -1857,6 +2234,50 @@
                     "name": "DOMAINLESS",
                     "description": "Use credentials referenced by the credential specification without joining the container\ninstance to the domain.\n\nFor more information, see [domainless gMSA\nsetup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)\nand [gMSAs for Linux\ncontainers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).",
                     "value": "Domainless"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:Device": {
+            "properties": {
+                "containerPath": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The path inside the container at which to expose the host device."
+                },
+                "hostPath": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The device path on the host container instance."
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:DevicePermissions",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The permissions to grant the container for the device.\n\nDefault - `read`, `write`, and `mknod` in ECS."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:DevicePermissions": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "READ",
+                    "description": "Allow the container to read from the device.",
+                    "value": "read"
+                },
+                {
+                    "name": "WRITE",
+                    "description": "Allow the container to write to the device.",
+                    "value": "write"
+                },
+                {
+                    "name": "MKNOD",
+                    "description": "Allow the container to create device special files for the device.",
+                    "value": "mknod"
                 }
             ]
         },
@@ -2185,6 +2606,39 @@
             },
             "type": "object"
         },
+        "awsx:experimental/ecs:FirelensConfiguration": {
+            "properties": {
+                "options": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Log router options, such as ECS log metadata and a custom configuration file.\n\nSupported keys are `enable-ecs-log-metadata`, `config-file-type`, and `config-file-value`.\n\nFor more information, see [FireLens\noptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html#ECS-Type-FirelensConfiguration-options)."
+                },
+                "type": {
+                    "$ref": "#/types/awsx:experimental/ecs:FirelensConfigurationType",
+                    "plain": true,
+                    "description": "The log router to use."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:FirelensConfigurationType": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "FLUENTD",
+                    "description": "Use Fluentd as the log router.",
+                    "value": "fluentd"
+                },
+                {
+                    "name": "FLUENTBIT",
+                    "description": "Use Fluent Bit as the log router.",
+                    "value": "fluentbit"
+                }
+            ]
+        },
         "awsx:experimental/ecs:HealthCheck": {
             "properties": {
                 "command": {
@@ -2222,6 +2676,206 @@
                 "command"
             ]
         },
+        "awsx:experimental/ecs:HostEntry": {
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                    "description": "The hostname for the `/etc/hosts` entry."
+                },
+                "ipAddress": {
+                    "type": "string",
+                    "description": "The IP address for the `/etc/hosts` entry."
+                }
+            },
+            "type": "object",
+            "required": [
+                "hostname",
+                "ipAddress"
+            ]
+        },
+        "awsx:experimental/ecs:KernelCapabilities": {
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Linux capabilities to add. Fargate supports adding only `SYS_PTRACE`.\n\nFor supported names, see\n[add](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-add)."
+                },
+                "drop": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Linux capabilities to remove. Use `ALL` to remove all default capabilities.\n\nFor supported names, see\n[drop](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html#ECS-Type-KernelCapabilities-drop)."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:KeyValuePair": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name, such as an environment variable name."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The value assigned to the name."
+                }
+            },
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "awsx:experimental/ecs:LinuxParameters": {
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/types/awsx:experimental/ecs:KernelCapabilities",
+                    "plain": true,
+                    "description": "Linux capabilities to add to or remove from the default Docker configuration.\n\nFor more information, see [kernel\ncapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html)."
+                },
+                "devices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:Device",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Host devices to expose to the container. Not supported for Fargate tasks."
+                },
+                "initProcessEnabled": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to run an init process that forwards signals and removes exited child processes."
+                },
+                "maxSwap": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The maximum swap memory, in MiB. Set to `0` to disable swap.\n\nRequired for `swappiness` to take effect. Not supported for Fargate tasks.\n\nDefault - The container instance's swap configuration."
+                },
+                "sharedMemorySize": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The size, in MiB, of `/dev/shm`. Not supported for Fargate tasks."
+                },
+                "swappiness": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "How aggressively the container swaps memory, from 0 (only when necessary) through 100.\n\nIgnored unless `maxSwap` is set. Not supported for Fargate tasks or Amazon Linux 2023.\n\nDefault - 60 in ECS."
+                },
+                "tmpfs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:Tmpfs",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "In-memory file systems to mount in the container.\n\nFor more information, see [tmpfs\nmounts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html)."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:LogConfiguration": {
+            "properties": {
+                "logDriver": {
+                    "$ref": "#/types/awsx:experimental/ecs:LogConfigurationLogDriver",
+                    "plain": true,
+                    "description": "The log driver to use. Fargate supports `awslogs`, `splunk`, and `awsfirelens`.\n\nFor more information, see\n[logDriver](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-logDriver)."
+                },
+                "options": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Driver-specific configuration options.\n\nFor `awslogs`, specify `awslogs-region` and `awslogs-group`. Fargate also requires\n`awslogs-stream-prefix`. Creating a log group requires `logs:CreateLogGroup` permission.\n\nThe `mode` option controls delivery: `blocking` can block application writes when logging\nfails; `non-blocking` can lose logs when its buffer fills.\n\nFor supported options and defaults, see [log\noptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options)."
+                },
+                "secretOptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionSecret",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Secrets to pass as log driver options instead of plaintext values.\n\nFor more information, see [sensitive\ndata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html)."
+                }
+            },
+            "type": "object",
+            "required": [
+                "logDriver"
+            ]
+        },
+        "awsx:experimental/ecs:LogConfigurationLogDriver": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "JSON_FILE",
+                    "description": "Write logs as JSON files on the container host.",
+                    "value": "json-file"
+                },
+                {
+                    "name": "SYSLOG",
+                    "description": "Send logs to the host syslog service.",
+                    "value": "syslog"
+                },
+                {
+                    "name": "JOURNALD",
+                    "description": "Send logs to the host systemd journal.",
+                    "value": "journald"
+                },
+                {
+                    "name": "GELF",
+                    "description": "Send logs using the Graylog Extended Log Format.",
+                    "value": "gelf"
+                },
+                {
+                    "name": "FLUENTD",
+                    "description": "Send logs to a Fluentd collector.",
+                    "value": "fluentd"
+                },
+                {
+                    "name": "AWSLOGS",
+                    "description": "Send logs to Amazon CloudWatch Logs.",
+                    "value": "awslogs"
+                },
+                {
+                    "name": "SPLUNK",
+                    "description": "Send logs to Splunk.",
+                    "value": "splunk"
+                },
+                {
+                    "name": "AWSFIRELENS",
+                    "description": "Route logs through FireLens.",
+                    "value": "awsfirelens"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:MountPoint": {
+            "properties": {
+                "containerPath": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The path inside the container at which to mount the volume."
+                },
+                "readOnly": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the container has read-only access to the volume.\n\nDefault - `false` in ECS."
+                },
+                "sourceVolume": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of a volume declared in the task definition."
+                }
+            },
+            "type": "object"
+        },
         "awsx:experimental/ecs:OperatingSystemFamily": {
             "type": "string",
             "enum": [
@@ -2255,6 +2909,41 @@
                 }
             ]
         },
+        "awsx:experimental/ecs:PortMapping": {
+            "properties": {
+                "appProtocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:PortMappingAppProtocol",
+                    "plain": true,
+                    "description": "The application protocol for Service Connect handling and telemetry.\n\nChanging this value requires deleting and redeploying the Service Connect service.\n\nDefault - TCP handling without protocol-specific telemetry in ECS.\n\nFor more information, see\n[appProtocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-appProtocol)."
+                },
+                "containerPort": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The port to expose on the container.\n\nWith `bridge` networking, omitting `hostPort` lets ECS assign an available host port.\n\nFor more information, see\n[containerPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPort)."
+                },
+                "containerPortRange": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "A container port range, such as `8000-8010`, for `bridge` or `awsvpc` networking.\n\nPorts must be from 1 through 65535, with the first port below the last. Specify at most 100\nranges per container, without overlaps. ECS assigns host ranges automatically; with `awsvpc`,\nthe host and container ranges match.\n\nFor more information, see\n[containerPortRange](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-containerPortRange)."
+                },
+                "hostPort": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The host port to bind to the container port.\n\nWith `awsvpc` or `host` networking, omit this value or match `containerPort`. With `bridge`,\nomit it or use `0` for automatic assignment. Omit it when using `containerPortRange`.\n\nFor more information, see\n[hostPort](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-hostPort)."
+                },
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The port mapping name referenced by Service Connect or VPC Lattice configuration.\n\nUse up to 64 lowercase letters, numbers, underscores, or hyphens. Do not start with a hyphen.\n\nFor more information, see\n[name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-name)."
+                },
+                "protocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:PortMappingProtocol",
+                    "plain": true,
+                    "description": "The transport protocol. Changing it requires deleting and redeploying the Service Connect\nservice.\n\nDefault - `tcp` in ECS.\n\nFor more information, see\n[protocol](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html#ECS-Type-PortMapping-protocol)."
+                }
+            },
+            "type": "object"
+        },
         "awsx:experimental/ecs:PortMappingAppProtocol": {
             "type": "string",
             "enum": [
@@ -2287,6 +2976,54 @@
                     "name": "UDP",
                     "description": "Use the User Datagram Protocol.",
                     "value": "udp"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:RepositoryCredentials": {
+            "properties": {
+                "credentialsParameter": {
+                    "type": "string",
+                    "description": "The ARN of the secret containing registry credentials. A secret name is also accepted when the\nsecret is in the same Region as the task."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ResourceRequirement": {
+            "properties": {
+                "type": {
+                    "$ref": "#/types/awsx:experimental/ecs:ResourceRequirementType",
+                    "plain": true,
+                    "description": "The type of resource to assign."
+                },
+                "value": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The amount or identifier of the resource to assign.\n\nFor `GPU`, use the device count or `ALL`; total reservations must fit the instance. For\n`NeuronDevice`, use `ALL`; only one container per task can request it, on Managed Instances\nonly. For `InferenceAccelerator`, use the task definition's accelerator `deviceName`.\n\nFor more information, see\n[value](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html#ECS-Type-ResourceRequirement-value)."
+                }
+            },
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ]
+        },
+        "awsx:experimental/ecs:ResourceRequirementType": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "GPU",
+                    "description": "Assign physical GPUs to the container.",
+                    "value": "GPU"
+                },
+                {
+                    "name": "INFERENCE_ACCELERATOR",
+                    "description": "Assign an Elastic Inference accelerator to the container.",
+                    "value": "InferenceAccelerator"
+                },
+                {
+                    "name": "NEURON_DEVICE",
+                    "description": "Assign AWS Neuron devices to the container.",
+                    "value": "NeuronDevice"
                 }
             ]
         },
@@ -2374,6 +3111,33 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:experimental/ecs:Tmpfs": {
+            "properties": {
+                "containerPath": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The absolute path inside the container at which to mount the file system."
+                },
+                "mountOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Mount options, such as `ro`, `noexec`, or `nosuid`.\n\nFor supported values, see\n[mountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html#ECS-Type-Tmpfs-mountOptions)."
+                },
+                "size": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The maximum file system size, in MiB."
+                }
+            },
+            "type": "object",
+            "required": [
+                "size"
+            ]
         },
         "awsx:experimental/ecs:Ulimit": {
             "properties": {
@@ -3997,6 +4761,302 @@
                     "willReplaceOnChanges": true
                 }
             },
+            "isComponent": true
+        },
+        "awsx:experimental/ecs:ContainerDefinition": {
+            "description": "Represents one container definition used in an ECS Task Definition.\n\nThe component provides a resource boundary where Pulumi resource transforms can modify the raw\ncontainer definition before a task definition serializes it.",
+            "properties": {
+                "definition": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionArgs",
+                    "description": "The typed container definition. This can be combined with other container definitions and used\nto construct the containerDefinition string value used in a TaskDefinition."
+                }
+            },
+            "type": "object",
+            "required": [
+                "definition"
+            ],
+            "inputProperties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "The command passed to the container. Use a separate array item for each argument.\n\nFor more information, see\n[command](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-command)."
+                },
+                "cpu": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The CPU units reserved for the container. There are 1,024 CPU units per vCPU.\n\nOn Linux, this controls relative CPU shares, not a hard limit. On Windows, it is a hard limit.\nFor Fargate, the total container CPU reservation must be below the task CPU value.\n\nFor more information, see\n[cpu](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-cpu)."
+                },
+                "credentialSpecs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Credential specifications for Active Directory authentication. Specify at most one entry.\n\nUse `credentialspec:ARN` or `credentialspecdomainless:ARN`, with an SSM or S3 ARN. Prefer this\nproperty to `dockerSecurityOptions` for credential specifications.\n\nFor more information, see\n[credentialSpecs](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-credentialSpecs)."
+                },
+                "dependsOn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionDependency"
+                    },
+                    "plain": true,
+                    "description": "Dependencies on other containers in the task that control startup order.\n\nECS reverses the dependency order during shutdown.\n\nFor more information, see [container\ndependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html)."
+                },
+                "disableNetworking": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to disable networking in the container. Not supported for Windows containers.\n\nFor more information, see\n[disableNetworking](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-disableNetworking)."
+                },
+                "dnsSearchDomains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "DNS search domains for the container. Not supported for Windows containers.\n\nFor more information, see\n[dnsSearchDomains](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsSearchDomains)."
+                },
+                "dnsServers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "DNS servers for the container. Not supported for Windows containers.\n\nFor more information, see\n[dnsServers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dnsServers)."
+                },
+                "dockerLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Labels to add to the container.\n\nFor more information, see\n[dockerLabels](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerLabels)."
+                },
+                "dockerSecurityOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Security options for the container, such as SELinux labels or an AppArmor profile.\n\nNot supported for Fargate tasks. The container instance must support the selected security\nsystem. Use `credentialSpecs` for Active Directory authentication.\n\nFor more information, see\n[dockerSecurityOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-dockerSecurityOptions)."
+                },
+                "entryPoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The entry point passed to the container.\n\nFor more information, see\n[entryPoint](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-entryPoint)."
+                },
+                "environment": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:KeyValuePair"
+                    },
+                    "plain": true,
+                    "description": "Environment variables passed to the container. Use `secrets` for sensitive values.\n\nFor more information, see [environment\nvariables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html)."
+                },
+                "environmentFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionEnvironmentFile"
+                    },
+                    "plain": true,
+                    "description": "S3 environment files passed to the container. Specify at most ten `.env` files.\n\nValues in `environment` take precedence over file values. Files are processed in list order;\nthe first value for a variable takes precedence over values in later files. Not supported for\nWindows containers.\n\nFor more information, see [environment\nfiles](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/use-environment-file.html)."
+                },
+                "essential": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the container is essential to the task.\n\nIf an essential container stops, ECS stops all other containers in the task. Each task must\nhave at least one essential container.\n\nDefault - `true` in ECS.\n\nFor more information, see\n[essential](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-essential)."
+                },
+                "extraHosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:HostEntry"
+                    },
+                    "plain": true,
+                    "description": "Hostname and IP address mappings to add to the container's `/etc/hosts` file.\n\nNot supported for Windows containers or the `awsvpc` network mode.\n\nFor more information, see\n[extraHosts](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-extraHosts)."
+                },
+                "firelensConfiguration": {
+                    "$ref": "#/types/awsx:experimental/ecs:FirelensConfiguration",
+                    "plain": true,
+                    "description": "FireLens log router settings for the container.\n\nFor more information, see [custom log\nrouting](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html)."
+                },
+                "healthCheck": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionHealthCheck",
+                    "plain": true,
+                    "description": "The health check command and settings for the container.\n\nECS only monitors health checks specified in the task definition, not checks configured only in\nthe container image.\n\nFor more information, see [container health\nchecks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html)."
+                },
+                "hostname": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The container hostname. Not supported with the `awsvpc` network mode.\n\nFor more information, see\n[hostname](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-hostname)."
+                },
+                "image": {
+                    "type": "string",
+                    "description": "The image used to start the container, specified by name, tag, or digest.\n\nFor private registries, include the registry address, such as `registry/repository:tag` or\n`registry/repository@sha256:digest`. Image updates do not update already running tasks.\n\nFor more information, see\n[image](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-image)."
+                },
+                "interactive": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to keep standard input open for the container.\n\nFor more information, see\n[interactive](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-interactive)."
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Links to other containers, specified as a container name or `name:alias`.\n\nSupported only with the `bridge` network mode and not for Windows containers. Links do not\nprovide network isolation.\n\nFor more information, see\n[links](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-links)."
+                },
+                "linuxParameters": {
+                    "$ref": "#/types/awsx:experimental/ecs:LinuxParameters",
+                    "plain": true,
+                    "description": "Linux-specific container settings, such as kernel capabilities and devices.\n\nNot supported for Windows containers.\n\nFor more information, see [Linux\nparameters](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinuxParameters.html)."
+                },
+                "logConfiguration": {
+                    "$ref": "#/types/awsx:experimental/ecs:LogConfiguration",
+                    "description": "The log driver and its settings for the container.\n\nOn EC2, the driver must be available and configured on the container instance.\n\nFor more information, see [log\nconfiguration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html)."
+                },
+                "memory": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The hard memory limit, in MiB. The container is killed if it exceeds this limit.\n\nMust be greater than `memoryReservation` when both are set. On EC2, specify memory at the task\nor container level. Total container memory reservations must be below the task memory value, if\nset. Container-level memory is optional on Fargate.\n\nFor more information, see\n[memory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memory)."
+                },
+                "memoryReservation": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The soft memory limit, in MiB, reserved for the container during placement.\n\nThe container can use more memory, up to `memory` or the available instance memory. If both\nlimits are set, `memory` must be greater. Without task-level memory, set a nonzero `memory` or\n`memoryReservation` value.\n\nFor more information, see\n[memoryReservation](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-memoryReservation)."
+                },
+                "mountPoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:MountPoint",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Data volumes to mount in the container.\n\nWindows mounts must use directories on the same drive as `$env:ProgramData`.\n\nFor more information, see\n[mountPoints](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-mountPoints)."
+                },
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The container name, used by other containers to reference it.\n\nUse up to 255 letters, numbers, underscores, or hyphens.\n\nFor more information, see\n[name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name)."
+                },
+                "portMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:PortMapping",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Ports to expose from the container.\n\nWith `awsvpc` or `host` networking, omit `hostPort` or match it to `containerPort`. Port\nmappings are not supported with the `none` network mode.\n\nFor more information, see [port\nmappings](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html)."
+                },
+                "privileged": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to give the container elevated privileges on the host.\n\nNot supported for Windows containers or Fargate tasks.\n\nFor more information, see\n[privileged](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-privileged)."
+                },
+                "pseudoTerminal": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to allocate a TTY for the container.\n\nFor more information, see\n[pseudoTerminal](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-pseudoTerminal)."
+                },
+                "readonlyRootFilesystem": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the container has read-only access to its root file system.\n\nNot supported for Windows containers.\n\nFor more information, see\n[readonlyRootFilesystem](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-readonlyRootFilesystem)."
+                },
+                "repositoryCredentials": {
+                    "$ref": "#/types/awsx:experimental/ecs:RepositoryCredentials",
+                    "plain": true,
+                    "description": "Credentials for authentication to a private image registry.\n\nFor more information, see [repository\ncredentials](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RepositoryCredentials.html)."
+                },
+                "resourceRequirements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ResourceRequirement",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Specialized resources to assign to the container, such as GPUs or Neuron devices.\n\nFor more information, see [resource\nrequirements](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ResourceRequirement.html)."
+                },
+                "restartPolicy": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerRestartPolicy",
+                    "plain": true,
+                    "description": "Settings that let ECS restart the container without replacing the task.\n\nFor more information, see [container restart\npolicies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html)."
+                },
+                "secrets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionSecret"
+                    },
+                    "plain": true,
+                    "description": "Secrets to pass to the container as environment variables.\n\nFor more information, see [sensitive\ndata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html)."
+                },
+                "startTimeout": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, allowed for this container to satisfy another container's dependency.\n\nIf the required condition is not met in time, the dependent container does not start and the\ntask stops. Fargate accepts 2 through 120 seconds. The agent's `ECS_CONTAINER_START_TIMEOUT`\nsetting is enforced independently.\n\nFor more information, see\n[startTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-startTimeout)."
+                },
+                "stopTimeout": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, to wait for the container to stop before it is forcibly killed.\n\nFargate accepts 2 through 120 seconds.\n\nDefault - 30 seconds on Fargate. On EC2, the agent's `ECS_CONTAINER_STOP_TIMEOUT` setting, or\n30 seconds if that setting is absent.\n\nFor more information, see\n[stopTimeout](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-stopTimeout)."
+                },
+                "systemControls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionSystemControl",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Namespaced kernel parameters to set in the container.\n\nSettings can affect other containers that share the same namespace. Not supported for Windows\ncontainers.\n\nFor more information, see [system\ncontrols](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html)."
+                },
+                "ulimits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:Ulimit",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Operating-system resource limits for the container. Not supported for Windows containers.\n\nFor more information, see\n[ulimits](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html)."
+                },
+                "user": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The user that runs commands inside the container, as a name, ID, or user and group pair.\n\nUse a non-root user, especially with `host` networking. Not supported for Windows containers.\n\nFor more information, see\n[user](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-user)."
+                },
+                "versionConsistency": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionVersionConsistency",
+                    "plain": true,
+                    "description": "Whether ECS resolves the image tag to a digest. When disabled, ECS uses the original image URI.\n\nDefault - `enabled` in ECS.\n\nFor more information, see [container image\nresolution](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)."
+                },
+                "volumesFrom": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionVolumeFrom",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Data volumes to mount from another container in the same task.\n\nFor more information, see [volumes from other\ncontainers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html)."
+                },
+                "workingDirectory": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The working directory in which commands run inside the container.\n\nFor more information, see\n[workingDirectory](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-workingDirectory)."
+                }
+            },
+            "requiredInputs": [
+                "image",
+                "name"
+            ],
             "isComponent": true
         },
         "awsx:experimental/ecs:FargateTaskDefinitionV2": {

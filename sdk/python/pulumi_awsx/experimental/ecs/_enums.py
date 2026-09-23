@@ -12,9 +12,13 @@ __all__ = [
     'ContainerDependencyCondition',
     'CpuArchitecture',
     'CredentialSpecAuthenticationMode',
+    'DevicePermissions',
+    'FirelensConfigurationType',
+    'LogConfigurationLogDriver',
     'OperatingSystemFamily',
     'PortMappingAppProtocol',
     'PortMappingProtocol',
+    'ResourceRequirementType',
     'UlimitName',
 ]
 
@@ -91,6 +95,70 @@ class CredentialSpecAuthenticationMode(_builtins.str, Enum):
     """
 
 
+@pulumi.type_token("awsx:experimental/ecs:DevicePermissions")
+class DevicePermissions(_builtins.str, Enum):
+    READ = "read"
+    """
+    Allow the container to read from the device.
+    """
+    WRITE = "write"
+    """
+    Allow the container to write to the device.
+    """
+    MKNOD = "mknod"
+    """
+    Allow the container to create device special files for the device.
+    """
+
+
+@pulumi.type_token("awsx:experimental/ecs:FirelensConfigurationType")
+class FirelensConfigurationType(_builtins.str, Enum):
+    FLUENTD = "fluentd"
+    """
+    Use Fluentd as the log router.
+    """
+    FLUENTBIT = "fluentbit"
+    """
+    Use Fluent Bit as the log router.
+    """
+
+
+@pulumi.type_token("awsx:experimental/ecs:LogConfigurationLogDriver")
+class LogConfigurationLogDriver(_builtins.str, Enum):
+    JSO_N_FILE = "json-file"
+    """
+    Write logs as JSON files on the container host.
+    """
+    SYSLOG = "syslog"
+    """
+    Send logs to the host syslog service.
+    """
+    JOURNALD = "journald"
+    """
+    Send logs to the host systemd journal.
+    """
+    GELF = "gelf"
+    """
+    Send logs using the Graylog Extended Log Format.
+    """
+    FLUENTD = "fluentd"
+    """
+    Send logs to a Fluentd collector.
+    """
+    AWSLOGS = "awslogs"
+    """
+    Send logs to Amazon CloudWatch Logs.
+    """
+    SPLUNK = "splunk"
+    """
+    Send logs to Splunk.
+    """
+    AWSFIRELENS = "awsfirelens"
+    """
+    Route logs through FireLens.
+    """
+
+
 @pulumi.type_token("awsx:experimental/ecs:OperatingSystemFamily")
 class OperatingSystemFamily(_builtins.str, Enum):
     LINUX = "LINUX"
@@ -127,6 +195,22 @@ class PortMappingProtocol(_builtins.str, Enum):
     UDP = "udp"
     """
     Use the User Datagram Protocol.
+    """
+
+
+@pulumi.type_token("awsx:experimental/ecs:ResourceRequirementType")
+class ResourceRequirementType(_builtins.str, Enum):
+    GPU = "GPU"
+    """
+    Assign physical GPUs to the container.
+    """
+    INFERENC_E_ACCELERATOR = "InferenceAccelerator"
+    """
+    Assign an Elastic Inference accelerator to the container.
+    """
+    NEURO_N_DEVICE = "NeuronDevice"
+    """
+    Assign AWS Neuron devices to the container.
     """
 
 
