@@ -22,22 +22,8 @@
   gitIgnoredAuthors: [],
   packageRules: [
     {
-      matchDatasources: ["npm", "go", "golang-version"],
-      // Dependent files need to be rebuilt when key dependencies change.
-      //
-      // https://docs.renovatebot.com/configuration-options/#postupgradetasks
-      postUpgradeTasks: {
-        commands: ["make renovate"],
-        executionMode: "branch", // Only run once.
-      },
-    },
-    {
       matchManagers: ["gomod"],
       matchPackageNames: ["github.com/pulumi/pulumi/pkg/v3", "github.com/pulumi/pulumi/sdk/v3"],
-      postUpgradeTasks: {
-        commands: ["make renovate"],
-        executionMode: "branch", // Only run once. 
-      },
       groupName: "update Pulumi CLI",
       groupSlug: "pulumi-cli",
       // automatically bump these, don't require manual trigger
@@ -46,14 +32,179 @@
     {
       matchDatasources: ["npm", "gomod"],
       matchPackageNames: ["@pulumi/aws", "github.com/pulumi/pulumi-aws/sdk/v7"],
-      postUpgradeTasks: {
-        commands: ["make renovate"],
-        executionMode: "branch", // Only run once. 
-      },
       groupName: "upstream AWS dependencies",
       groupSlug: "aws",
       // automatically bump these, don't require manual trigger
       dependencyDashboardApproval: false,
     },
-  ]
+    {
+      // These names occur in several compatibility domains. Only the explicit
+      // file-scoped rules below may update them.
+      matchPackageNames: [
+        "node",
+        "typescript",
+        "@typescript/typescript6",
+        "@types/node",
+      ],
+      matchFileNames: [
+        "mise.toml",
+        "awsx/package.json",
+        "provider/pkg/schemagen/schema.go",
+      ],
+      enabled: false,
+    },
+    {
+      // Compatibility fixtures and legacy examples intentionally preserve
+      // their historical compiler and declaration versions.
+      matchPackageNames: [
+        "node",
+        "typescript",
+        "@typescript/typescript6",
+        "@types/node",
+      ],
+      matchFileNames: [
+        "examples/compatibility/**",
+        "examples_legacy/**",
+      ],
+      enabled: false,
+    },
+    {
+      // Node.js used to run repository builds and tests.
+      matchManagers: ["mise"],
+      matchFileNames: ["mise.toml"],
+      matchPackageNames: ["node"],
+      enabled: true,
+      groupName: "repository Node.js",
+      groupSlug: "repository-node",
+      automerge: false,
+    },
+    {
+      // Node.js embedded in provider artifacts. This is independent of the
+      // repository toolchain and must pass the platform compatibility checks.
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["embedded-provider-node"],
+      enabled: true,
+      groupName: "embedded provider Node.js",
+      groupSlug: "provider-node",
+      automerge: false,
+      addLabels: ["run-platform-compatibility"],
+    },
+    {
+      // These aliases check and emit the provider JavaScript.
+      matchManagers: ["npm"],
+      matchFileNames: ["awsx/package.json"],
+      matchDepNames: ["@typescript/native", "typescript"],
+      enabled: true,
+      groupName: "provider TypeScript tooling",
+      groupSlug: "provider-typescript",
+      automerge: false,
+    },
+    {
+      // Keep provider declarations within the embedded Node.js major.
+      matchManagers: ["npm"],
+      matchFileNames: ["awsx/package.json"],
+      matchDepNames: ["@types/node"],
+      enabled: true,
+      groupName: "provider Node.js types",
+      groupSlug: "provider-node-types",
+      automerge: false,
+    },
+    {
+      // This compiler must preserve the generated SDK compatibility baseline.
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["generated-sdk-typescript"],
+      enabled: true,
+      groupName: "generated SDK TypeScript",
+      groupSlug: "sdk-typescript",
+      automerge: false,
+    },
+    {
+      // Keep customer declarations within the supported Node.js major.
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["generated-sdk-node-types"],
+      enabled: true,
+      groupName: "generated SDK Node.js types",
+      groupSlug: "sdk-node-types",
+      automerge: false,
+    },
+    {
+      // Node.js major updates change compatibility contracts and must be
+      // coordinated by a maintainer. Keep normal minor and patch updates.
+      matchManagers: ["mise"],
+      matchFileNames: ["mise.toml"],
+      matchPackageNames: ["node"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
+    {
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["embedded-provider-node"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
+    {
+      matchManagers: ["npm"],
+      matchFileNames: ["awsx/package.json"],
+      matchDepNames: ["@types/node"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
+    {
+      matchManagers: ["custom.regex"],
+      matchDepNames: ["generated-sdk-node-types"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
+    {
+      // Packager support is independent of an embedded Node.js patch update.
+      matchManagers: ["npm"],
+      matchFileNames: ["awsx/package.json"],
+      matchDepNames: ["@yao-pkg/pkg"],
+      groupName: "provider executable packager",
+      groupSlug: "provider-packager",
+      automerge: false,
+      addLabels: ["run-platform-compatibility"],
+    },
+  ],
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: [
+        "/^awsx\\/node-runtime-policy\\.json$/",
+      ],
+      matchStrings: [
+        '"packagedNodeVersion":\\s+"(?<currentValue>\\d+\\.\\d+\\.\\d+)"',
+      ],
+      datasourceTemplate: "node-version",
+      versioningTemplate: "node",
+      depNameTemplate: "embedded-provider-node",
+      packageNameTemplate: "node",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: [
+        "/^provider\\/pkg\\/schemagen\\/schema\\.go$/",
+      ],
+      matchStrings: [
+        '"typescript":\\s+"(?<currentValue>\\^?\\d+(?:\\.\\d+){0,2})"',
+      ],
+      datasourceTemplate: "npm",
+      versioningTemplate: "npm",
+      depNameTemplate: "generated-sdk-typescript",
+      packageNameTemplate: "typescript",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: [
+        "/^provider\\/pkg\\/schemagen\\/schema\\.go$/",
+      ],
+      matchStrings: [
+        '"@types/node":\\s+"(?<currentValue>\\^?\\d+(?:\\.\\d+){0,2})"',
+      ],
+      datasourceTemplate: "npm",
+      versioningTemplate: "npm",
+      depNameTemplate: "generated-sdk-node-types",
+      packageNameTemplate: "@types/node",
+    },
+  ],
 }
