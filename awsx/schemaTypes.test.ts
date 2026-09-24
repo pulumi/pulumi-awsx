@@ -53,4 +53,27 @@ describe("generated provider component types", () => {
       { enableLogging: true },
     );
   });
+
+  it("preserves outputs initialized by ComponentResource", () => {
+    jest.isolateModules(() => {
+      jest.doMock("@pulumi/pulumi", () => ({
+        ComponentResource: class {
+          constructor(_type: string, _name: string, props: pulumi.Inputs) {
+            Object.assign(this, props);
+          }
+        },
+      }));
+
+      const emittedSchema: typeof schema = require("./bin/schema-types.js");
+      class EmittedImage extends emittedSchema.Image {}
+
+      const image = new EmittedImage(
+        "restored-image",
+        { imageUri: "example.invalid/restored@sha256:abc" },
+        {},
+      );
+      expect(image.imageUri).toBe("example.invalid/restored@sha256:abc");
+    });
+    jest.dontMock("@pulumi/pulumi");
+  });
 });
