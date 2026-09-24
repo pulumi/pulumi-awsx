@@ -3,8 +3,8 @@ module github.com/pulumi/pulumi-awsx/examples/go-trail
 go 1.26.6
 
 require (
-	github.com/pulumi/pulumi-awsx/sdk/v3 v3.1.0
-	github.com/pulumi/pulumi/sdk/v3 v3.261.0
+	github.com/pulumi/pulumi-awsx/sdk/v3 v3.10.0
+	github.com/pulumi/pulumi/sdk/v3 v3.263.0
 )
 
 require (
@@ -28,9 +28,8 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/deckarep/golang-set/v2 v2.9.0 // indirect
-	github.com/djherbis/times v1.5.0 // indirect
+	github.com/djherbis/times v1.6.0 // indirect
 	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
@@ -75,9 +74,9 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
-	github.com/pulumi/pulumi-aws/sdk/v7 v7.11.0 // indirect
-	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.3 // indirect
-	github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8 // indirect
+	github.com/pulumi/pulumi-aws/sdk/v7 v7.48.0 // indirect
+	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.22 // indirect
+	github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
@@ -89,7 +88,7 @@ require (
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
 	github.com/zalando/go-keyring v0.2.8 // indirect
-	github.com/zclconf/go-cty v1.16.3 // indirect
+	github.com/zclconf/go-cty v1.17.0 // indirect
 	go.mongodb.org/mongo-driver v1.17.9 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/collector/featuregate v1.66.0 // indirect
