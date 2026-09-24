@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	"github.com/pulumi/providertest/pulumitest"
+	"github.com/pulumi/providertest/pulumitest/opttest"
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"github.com/stretchr/testify/require"
 )
@@ -31,6 +34,36 @@ func getCwd(t *testing.T) string {
 	}
 
 	return cwd
+}
+
+func newExperimentalPackageTest(t *testing.T, language string) *pulumitest.PulumiTest {
+	t.Helper()
+
+	cwd := getCwd(t)
+	pt := pulumitest.NewPulumiTest(
+		t,
+		filepath.Join(cwd, "ecs-experimental-standalone", language),
+		opttest.RequireYarnLinks(false),
+		opttest.SkipInstall(),
+	)
+	pt.CopyToTempDir(t)
+	pt.SetConfig(t, "aws:region", getEnvRegion(t))
+
+	packagePath, err := filepath.Abs(filepath.Join(cwd, "..", "awsx-next"))
+	require.NoError(t, err)
+	stdout, stderr, exitCode, err := pt.CurrentStack().Workspace().PulumiCommand().Run(
+		context.Background(),
+		pt.WorkingDir(),
+		nil,
+		nil,
+		nil,
+		nil,
+		"package", "add", packagePath,
+	)
+	require.NoErrorf(t, err, "pulumi package add failed:\n%s\n%s", stdout, stderr)
+	require.Equalf(t, 0, exitCode, "pulumi package add failed:\n%s\n%s", stdout, stderr)
+
+	return pt
 }
 
 func getBaseOptions(t *testing.T) integration.ProgramTestOptions {

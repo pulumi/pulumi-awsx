@@ -1,0 +1,3 @@
+name: ecs-experimental-standalone-go
+runtime: go
+description: Standalone AWSX Experimental Go SDK preview test
