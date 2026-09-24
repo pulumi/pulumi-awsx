@@ -1,7 +1,0 @@
-{
-  "name": "awsx-bun-compatibility",
-  "private": true,
-  "dependencies": {
-    "@pulumi/awsx": "*"
-  }
-}
