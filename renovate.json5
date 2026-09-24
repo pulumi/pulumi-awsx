@@ -46,6 +46,26 @@
         "@typescript/typescript6",
         "@types/node",
       ],
+      matchFileNames: [
+        "mise.toml",
+        "awsx/package.json",
+        "provider/pkg/schemagen/schema.go",
+      ],
+      enabled: false,
+    },
+    {
+      // Compatibility fixtures and legacy examples intentionally preserve
+      // their historical compiler and declaration versions.
+      matchPackageNames: [
+        "node",
+        "typescript",
+        "@typescript/typescript6",
+        "@types/node",
+      ],
+      matchFileNames: [
+        "examples/compatibility/**",
+        "examples_legacy/**",
+      ],
       enabled: false,
     },
     {
