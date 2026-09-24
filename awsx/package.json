@@ -17,7 +17,7 @@
     "build": "SCHEMA=../provider/cmd/pulumi-resource-awsx/schema-embed.json ./scripts/build.sh",
     "format": "oxfmt --write .",
     "lint": "oxlint --deny-warnings .",
-    "test": "jest",
+    "test": "npm run emit && jest",
     "tsc": "npm run typecheck && npm run emit",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
     "emit": "node ./node_modules/typescript/bin/tsc6 --incremental --noCheck",
