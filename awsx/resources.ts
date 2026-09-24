@@ -19,8 +19,19 @@ import { Image, RegistryImage, Repository } from "./ecr";
 import * as ecs from "./ecs";
 import * as lb from "./lb";
 import * as schemaTypes from "./schema-types";
+import {
+  containerDefinitionAwsxIdentity,
+  fargateTaskDefinitionAwsxIdentity,
+  FargateTaskDefinitionV2,
+} from "@pulumi/awsx-next/src/ecs";
+import { ContainerDefinition } from "@pulumi/awsx-next/src/ecs/containerDefinition";
 
-const resources: schemaTypes.ResourceConstructor = {
+type ExperimentalResourceConstructors = {
+  "awsx:experimental/ecs:FargateTaskDefinitionV2": schemaTypes.ConstructComponent<FargateTaskDefinitionV2>;
+  "awsx:experimental/ecs:ContainerDefinition": schemaTypes.ConstructComponent<ContainerDefinition>;
+};
+
+const resources: schemaTypes.ResourceConstructor & ExperimentalResourceConstructors = {
   "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
   "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
   "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),
@@ -34,6 +45,16 @@ const resources: schemaTypes.ResourceConstructor = {
   "awsx:ecr:Repository": (...args) => new Repository(...args),
   "awsx:ecr:Image": (...args) => new Image(...args),
   "awsx:ecr:RegistryImage": (...args) => new RegistryImage(...args),
+  "awsx:experimental/ecs:FargateTaskDefinitionV2": (name, args, opts) =>
+    new FargateTaskDefinitionV2(
+      name,
+      args,
+      opts,
+      fargateTaskDefinitionAwsxIdentity,
+      containerDefinitionAwsxIdentity,
+    ),
+  "awsx:experimental/ecs:ContainerDefinition": (name, args, opts) =>
+    new ContainerDefinition(name, args, opts, containerDefinitionAwsxIdentity, false),
 };
 
 export function construct(

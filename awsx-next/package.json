@@ -2,7 +2,7 @@
   "name": "@pulumi/awsx-next",
   "version": "0.0.1",
   "private": true,
-  "description": "Experimental Pulumi components for AWS.",
+  "description": "Internal source workspace for the next AWSX component architecture.",
   "type": "commonjs",
   "main": "index.ts",
   "scripts": {
@@ -11,19 +11,21 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint --deny-warnings .",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
+    "emit": "node ./node_modules/typescript/bin/tsc6 --noCheck",
+    "tsc": "npm run typecheck && npm run emit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:plugin": "node scripts/check-plugin.mjs"
   },
   "dependencies": {
-    "@pulumi/aws": "7.43.0",
-    "@pulumi/pulumi": "3.261.0"
+    "@pulumi/aws": "7.43.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@pulumi/pulumi": "3.261.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24",
     "@typescript/native": "npm:typescript@7.0.2",
@@ -34,8 +36,10 @@
     "oxlint": "^1.81.0",
     "typescript": "npm:@typescript/typescript6@6.0.2"
   },
+  "peerDependencies": {
+    "@pulumi/pulumi": ">=3.200.0 <4.0.0"
+  },
   "engines": {
     "node": ">=22.12.0"
-  },
-  "packageManager": "npm@11.16.0"
+  }
 }

@@ -28,6 +28,7 @@
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
     "@pulumi/aws": "7.43.0",
+    "@pulumi/awsx-next": "file:../awsx-next",
     "@pulumi/docker": "4.6.0",
     "@pulumi/docker-build": "0.0.14",
     "@pulumi/pulumi": "3.261.0",
