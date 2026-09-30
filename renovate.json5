@@ -22,6 +22,12 @@
   gitIgnoredAuthors: [],
   packageRules: [
     {
+      // Consolidate provider dependencies while preparing updates, not during builds.
+      matchManagers: ["npm"],
+      matchFileNames: ["awsx/package.json"],
+      postUpdateOptions: ["npmDedupe"],
+    },
+    {
       matchManagers: ["gomod"],
       matchPackageNames: ["github.com/pulumi/pulumi/pkg/v3", "github.com/pulumi/pulumi/sdk/v3"],
       groupName: "update Pulumi CLI",
