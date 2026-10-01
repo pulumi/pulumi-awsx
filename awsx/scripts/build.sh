@@ -47,6 +47,8 @@ VERSION=$(jq -r .version "${SCHEMA}")
 npm ci
 npm run gen-types
 npm run tsc
+rm -rf bin/node_modules/@pulumi/awsx-next
+npm --prefix ../awsx-next run tsc
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 cp node-runtime-policy.json bin/node-runtime-policy.json

@@ -14,6 +14,12 @@
         "module": "commonjs",
         // The provider is emitted as CommonJS and packaged into a stand-alone executable.
         "moduleResolution": "bundler",
+        "paths": {
+            "@pulumi/aws": ["./node_modules/@pulumi/aws"],
+            "@pulumi/aws/*": ["./node_modules/@pulumi/aws/*"],
+            "@pulumi/pulumi": ["./node_modules/@pulumi/pulumi"],
+            "@pulumi/pulumi/*": ["./node_modules/@pulumi/pulumi/*"]
+        },
         "sourceMap": true,
         "stripInternal": true,
         "experimentalDecorators": true,
