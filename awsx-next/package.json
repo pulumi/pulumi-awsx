@@ -17,7 +17,7 @@
     "test:plugin": "node scripts/check-plugin.mjs"
   },
   "dependencies": {
-    "@pulumi/aws": "7.43.0",
+    "@pulumi/aws": "7.48.0",
     "@pulumi/pulumi": "3.261.0"
   },
   "devDependencies": {

@@ -407,6 +407,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
             : undefined,
       },
       {
+        retainOnDelete: true,
         parent: this,
         dependsOn: rolePolicy ? [rolePolicy] : [],
       },

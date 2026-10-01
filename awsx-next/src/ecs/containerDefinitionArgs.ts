@@ -36,6 +36,15 @@ export enum ContainerDefinitionVersionConsistency {
  */
 export interface ContainerDefinitionArgs {
   /**
+   * The container name, used by other containers to reference it.
+   *
+   * Use up to 255 letters, numbers, underscores, or hyphens.
+   *
+   * For more information, see
+   * [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name).
+   */
+  name: string;
+  /**
    * The command passed to the container. Use a separate array item for each argument.
    *
    * For more information, see
@@ -255,15 +264,6 @@ export interface ContainerDefinitionArgs {
    * [mountPoints](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-mountPoints).
    */
   mountPoints?: MountPoint[];
-  /**
-   * The container name, used by other containers to reference it.
-   *
-   * Use up to 255 letters, numbers, underscores, or hyphens.
-   *
-   * For more information, see
-   * [name](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html#ECS-Type-ContainerDefinition-name).
-   */
-  name: string;
   /**
    * Ports to expose from the container.
    *
