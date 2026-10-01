@@ -1,0 +1,6 @@
+name: ecs-experimental-standalone-nodejs
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+description: Standalone AWSX Experimental package acceptance test
