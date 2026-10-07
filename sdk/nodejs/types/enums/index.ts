@@ -5,9 +5,11 @@
 import * as ec2 from "./ec2";
 import * as ecr from "./ecr";
 import * as ecs from "./ecs";
+import * as experimental from "./experimental";
 
 export {
     ec2,
     ecr,
     ecs,
+    experimental,
 };

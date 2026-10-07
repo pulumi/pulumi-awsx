@@ -19,6 +19,51 @@ interface ExternalRef {
 
 type Direction = "Input" | "Output";
 
+const externallyImplementedTokenPrefixes = [
+  "awsx:experimental/ecs:",
+  "awsx:experimental/cloudwatch:",
+];
+
+function isExternallyImplementedToken(token: string): boolean {
+  return externallyImplementedTokenPrefixes.some((prefix) => token.startsWith(prefix));
+}
+
+function excludeExternallyImplemented<T>(
+  entries: Record<string, T> | undefined,
+): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(entries ?? {}).filter(([token]) => !isExternallyImplementedToken(token)),
+  );
+}
+
+function findExternallyImplementedRef(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    const token = value.match(/^#\/(?:types|resources)\/(.+)$/)?.[1];
+    return token !== undefined && isExternallyImplementedToken(token) ? value : undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map(findExternallyImplementedRef).find((ref) => ref !== undefined);
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.values(value)
+      .map(findExternallyImplementedRef)
+      .find((ref) => ref !== undefined);
+  }
+  return undefined;
+}
+
+function assertNoExternallyImplementedRefs(
+  section: string,
+  entries: Record<string, unknown>,
+): void {
+  for (const [token, value] of Object.entries(entries)) {
+    const ref = findExternallyImplementedRef(value);
+    if (ref !== undefined) {
+      throw new Error(`${section} ${token} refers to externally implemented schema type ${ref}`);
+    }
+  }
+}
+
 const externalRefs = (() => {
   const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
 
@@ -510,6 +555,13 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
   const schemaPath = path.resolve(args.schema);
   const schemaText = fs.readFileSync(schemaPath, { encoding: "utf-8" });
   const schema: pulumiSchema.PulumiPackageMetaschema = JSON.parse(schemaText);
+  const resources = excludeExternallyImplemented(schema.resources);
+  const types = excludeExternallyImplemented(schema.types);
+  const functions = excludeExternallyImplemented(schema.functions);
+
+  assertNoExternallyImplementedRefs("resource", resources);
+  assertNoExternallyImplementedRefs("type", types);
+  assertNoExternallyImplementedRefs("function", functions);
 
   const nodes = ts.factory.createNodeArray([
     ts.factory.createJSDocComment(headerWarning),
@@ -519,8 +571,8 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
       ts.factory.createStringLiteral("@pulumi/pulumi"),
     ),
     resourceConstructorType(),
-    genResourceConstructors(schema.resources),
-    genFunctionCallsType(schema.functions),
+    genResourceConstructors(resources),
+    genFunctionCallsType(functions),
     ...Object.values(externalRefs).map((externalRef) =>
       ts.factory.createImportDeclaration(
         undefined,
@@ -532,9 +584,9 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
         ts.factory.createStringLiteral(externalRef.import),
       ),
     ),
-    ...genResources(schema.resources),
-    ...genTypes(schema.types),
-    ...genFunctions(schema.functions),
+    ...genResources(resources),
+    ...genTypes(types),
+    ...genFunctions(functions),
   ]);
   const sourceFile = ts.createSourceFile(
     "provider-types.d.ts",

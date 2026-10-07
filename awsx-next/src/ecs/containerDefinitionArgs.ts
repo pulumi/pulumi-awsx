@@ -70,7 +70,7 @@ export interface ContainerDefinitionArgs {
    * For more information, see [container
    * dependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html).
    */
-  dependsOn?: Array<pulumi.Input<ContainerDependency>>;
+  dependsOn?: Array<pulumi.Input<ContainerDefinitionDependency>>;
   /**
    * Whether to disable networking in the container. Not supported for Windows containers.
    *
@@ -171,7 +171,7 @@ export interface ContainerDefinitionArgs {
    * For more information, see [container health
    * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
    */
-  healthCheck?: HealthCheck;
+  healthCheck?: ContainerDefinitionHealthCheck;
   /**
    * The container hostname. Not supported with the `awsvpc` network mode.
    *
@@ -359,7 +359,7 @@ export interface ContainerDefinitionArgs {
    * For more information, see [system
    * controls](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html).
    */
-  systemControls?: SystemControl[];
+  systemControls?: ContainerDefinitionSystemControl[];
   /**
    * Operating-system resource limits for the container. Not supported for Windows containers.
    *
@@ -391,7 +391,7 @@ export interface ContainerDefinitionArgs {
    * For more information, see [volumes from other
    * containers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html).
    */
-  volumesFrom?: VolumeFrom[];
+  volumesFrom?: ContainerDefinitionVolumeFrom[];
   /**
    * The working directory in which commands run inside the container.
    *
@@ -429,7 +429,7 @@ export enum ContainerDependencyCondition {
  * For more information, see [container
  * dependencies](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html).
  */
-export interface ContainerDependency {
+export interface ContainerDefinitionDependency {
   /**
    * The condition that the other container must satisfy before this container starts.
    */
@@ -547,7 +547,7 @@ export interface FirelensConfiguration {
  * For more information, see [health
  * checks](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html).
  */
-export interface HealthCheck {
+export interface ContainerDefinitionHealthCheck {
   /**
    * The command that determines whether the container is healthy.
    *
@@ -1008,7 +1008,7 @@ export interface ContainerDefinitionSecret {
  * For more information, see [system
  * controls](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_SystemControl.html).
  */
-export interface SystemControl {
+export interface ContainerDefinitionSystemControl {
   /**
    * The namespaced kernel parameter name, such as `net.ipv4.tcp_keepalive_time`.
    */
@@ -1139,7 +1139,7 @@ export interface Ulimit {
  * For more information, see [volumes from other
  * containers](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_VolumeFrom.html).
  */
-export interface VolumeFrom {
+export interface ContainerDefinitionVolumeFrom {
   /**
    * Whether this container has read-only access to the volumes.
    *

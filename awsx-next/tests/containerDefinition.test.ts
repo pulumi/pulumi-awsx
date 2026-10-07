@@ -1,6 +1,10 @@
 import * as pulumi from '@pulumi/pulumi';
 
-import { ContainerDefinition } from '../src/ecs/containerDefinition';
+import {
+  ContainerDefinition,
+  containerDefinitionStandaloneIdentity,
+} from '../src/ecs/containerDefinition';
+import { ContainerDefinitionArgs } from '../src/ecs/containerDefinitionArgs';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 
@@ -33,9 +37,25 @@ function unwrap<T>(output: pulumi.Output<T>): Promise<T> {
   return new Promise<T>((resolve) => output.apply(resolve));
 }
 
+/**
+ * Creates the local implementation used by the standalone component provider.
+ *
+ * @param args The raw ECS container definition.
+ * @returns The local container definition component.
+ */
+function createContainerDefinition(args: ContainerDefinitionArgs): ContainerDefinition {
+  return new ContainerDefinition(
+    'container',
+    args,
+    {},
+    containerDefinitionStandaloneIdentity,
+    false,
+  );
+}
+
 describe('ContainerDefinition', () => {
   test('registers the standalone component and renders its definition', async () => {
-    const component = new ContainerDefinition('container', {
+    const component = createContainerDefinition({
       image: 'nginx',
       name: 'web',
     });
@@ -52,25 +72,23 @@ describe('ContainerDefinition', () => {
   });
 
   test('rejects more than one credential spec', () => {
-    expect(
-      () =>
-        new ContainerDefinition('container', {
-          image: 'nginx',
-          name: 'web',
-          credentialSpecs: ['credentialspec:first', 'credentialspec:second'],
-        }),
+    expect(() =>
+      createContainerDefinition({
+        image: 'nginx',
+        name: 'web',
+        credentialSpecs: ['credentialspec:first', 'credentialspec:second'],
+      }),
     ).toThrow('Only one credential spec is allowed per container definition');
   });
 
   test('rejects a hard memory limit that is not greater than the reservation', () => {
-    expect(
-      () =>
-        new ContainerDefinition('container', {
-          image: 'nginx',
-          name: 'web',
-          memory: 128,
-          memoryReservation: 128,
-        }),
+    expect(() =>
+      createContainerDefinition({
+        image: 'nginx',
+        name: 'web',
+        memory: 128,
+        memoryReservation: 128,
+      }),
     ).toThrow('memory must be greater than memoryReservation');
   });
 
@@ -80,13 +98,12 @@ describe('ContainerDefinition', () => {
     { property: 'stopTimeout', value: 1 },
     { property: 'stopTimeout', value: 121 },
   ] as const)('rejects $property=$value outside the supported range', ({ property, value }) => {
-    expect(
-      () =>
-        new ContainerDefinition('container', {
-          image: 'nginx',
-          name: 'web',
-          [property]: value,
-        }),
+    expect(() =>
+      createContainerDefinition({
+        image: 'nginx',
+        name: 'web',
+        [property]: value,
+      }),
     ).toThrow(`${property} must be between 2 and 120`);
   });
 
@@ -113,9 +130,9 @@ describe('ContainerDefinition', () => {
       error: 'healthCheck.timeout must be an integer between 2 and 60',
     },
   ])('rejects invalid health check values', ({ healthCheck, error }) => {
-    expect(
-      () => new ContainerDefinition('container', { image: 'nginx', name: 'web', healthCheck }),
-    ).toThrow(error);
+    expect(() => createContainerDefinition({ image: 'nginx', name: 'web', healthCheck })).toThrow(
+      error,
+    );
   });
 
   test.each([
@@ -152,8 +169,8 @@ describe('ContainerDefinition', () => {
       error: 'containerPortRange must contain values between 1 and 65535',
     },
   ])('rejects invalid port mappings', ({ portMappings, error }) => {
-    expect(
-      () => new ContainerDefinition('container', { image: 'nginx', name: 'web', portMappings }),
-    ).toThrow(error);
+    expect(() => createContainerDefinition({ image: 'nginx', name: 'web', portMappings })).toThrow(
+      error,
+    );
   });
 });
