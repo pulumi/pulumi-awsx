@@ -1,1 +1,1 @@
-export { ExampleComponent, type ExampleComponentArgs } from './src/exampleComponent';
+export * from './src';
