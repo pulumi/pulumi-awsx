@@ -72,8 +72,6 @@ export class ContainerDefinition extends pulumi.ComponentResource {
 function validateContainerDefinition(args: ContainerDefinitionArgs): void {
   validateCredentialSpecs(args.credentialSpecs);
   validateMemory(args);
-  validateTimeout('startTimeout', args.startTimeout, 2, 120);
-  validateTimeout('stopTimeout', args.stopTimeout, 2, 120);
   validateHealthCheck(args.healthCheck);
   validatePortMappings(args.portMappings);
 }
@@ -108,28 +106,6 @@ function validateMemory(args: ContainerDefinitionArgs): void {
     throw new pulumi.InputPropertyError({
       propertyPath: 'memory',
       reason: `memory must be greater than memoryReservation. Got memory: ${args.memory}; memoryReservation: ${args.memoryReservation}`,
-    });
-  }
-}
-
-/**
- * Validates a timeout value.
- *
- * @param propertyPath The input property path used in validation errors.
- * @param value The timeout value to validate.
- * @param minimum The minimum permitted value.
- * @param maximum The maximum permitted value.
- */
-function validateTimeout(
-  propertyPath: string,
-  value: number | undefined,
-  minimum: number,
-  maximum: number,
-): void {
-  if (value !== undefined && (value < minimum || value > maximum)) {
-    throw new pulumi.InputPropertyError({
-      propertyPath,
-      reason: `${propertyPath} must be between ${minimum} and ${maximum}; got ${value}`,
     });
   }
 }

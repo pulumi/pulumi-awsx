@@ -47,6 +47,16 @@ Use the focused skills for detailed guidance:
   behavior, such as version-like defaults.
 - Review AWSX-owned defaults as provisioned security controls, not only
   convenience behavior.
+- Do not request exhaustive validation of inputs that AWS already validates.
+  AWSX validation should prevent a concrete, likely user mistake, enforce a
+  component-specific invariant, or provide a materially better diagnostic.
+  Do not flag unusual malformed values (fractional ports, hexadecimal range
+  strings, whitespace, unexpected Unicode, etc.) solely because an existing
+  check accepts them. Existing lightweight validation does not imply a
+  requirement to validate the entire AWS input domain. For validation gaps,
+  explain a realistic user scenario and a concrete consequence beyond AWS
+  returning a validation error. Report validation that rejects valid AWS
+  configurations.
 - When a change encodes AWS service behavior, verify it against AWS docs,
   installed `@pulumi/aws` schema/SDK behavior, or live AWS evidence as
   appropriate. Use `.agents/skills/awsx-aws-service-validation/SKILL.md` for the

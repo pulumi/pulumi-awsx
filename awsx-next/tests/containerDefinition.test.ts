@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 
 import { ContainerDefinition } from '../src/ecs/containerDefinition';
+import { ContainerDefinitionArgs } from '../src/ecs/containerDefinitionArgs';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 
@@ -36,10 +37,20 @@ function unwrap<T>(output: pulumi.Output<T>): Promise<T> {
 describe('ContainerDefinition', () => {
   test('registers the standalone component and renders its definition', async () => {
     const component = new ContainerDefinition('container', {
-      image: 'nginx',
+      image: pulumi.output('nginx'),
       name: 'web',
+      environment: [{ name: 'A', value: pulumi.output('x') }],
+      dockerLabels: { service: pulumi.output('web') },
+      portMappings: [{ containerPort: 80 }],
     });
 
+    expect(await unwrap(component.definition)).toEqual({
+      image: 'nginx',
+      name: 'web',
+      environment: [{ name: 'A', value: 'x' }],
+      dockerLabels: { service: 'web' },
+      portMappings: [{ containerPort: 80 }],
+    });
     await unwrap(component.urn);
 
     expect(resources.map(({ type, name, custom }) => ({ type, name, custom }))).toEqual([
@@ -74,20 +85,67 @@ describe('ContainerDefinition', () => {
     ).toThrow('memory must be greater than memoryReservation');
   });
 
+  test('preserves secrets in the definition and serialized JSON', async () => {
+    const component = new ContainerDefinition('secret-container', {
+      image: 'nginx',
+      name: 'web',
+      environment: [{ name: 'TOKEN', value: pulumi.secret('token') }],
+    });
+    const serialized = pulumi.jsonStringify([component.definition]);
+
+    expect(await pulumi.isSecret(component.definition)).toBe(true);
+    expect(await pulumi.isSecret(serialized)).toBe(true);
+    expect(JSON.parse(await unwrap(serialized))).toEqual([
+      { image: 'nginx', name: 'web', environment: [{ name: 'TOKEN', value: 'token' }] },
+    ]);
+  });
+
   test.each([
-    { property: 'startTimeout', value: 1 },
-    { property: 'startTimeout', value: 121 },
-    { property: 'stopTimeout', value: 1 },
-    { property: 'stopTimeout', value: 121 },
-  ] as const)('rejects $property=$value outside the supported range', ({ property, value }) => {
-    expect(
-      () =>
-        new ContainerDefinition('container', {
-          image: 'nginx',
-          name: 'web',
-          [property]: value,
-        }),
-    ).toThrow(`${property} must be between 2 and 120`);
+    { startTimeout: 1, stopTimeout: 300 },
+    { startTimeout: 300, stopTimeout: 1 },
+  ])('does not impose Fargate timeout limits on raw definitions: %j', async (timeouts) => {
+    const component = new ContainerDefinition('timeouts', {
+      image: 'nginx',
+      name: 'web',
+      ...timeouts,
+    });
+
+    expect(await unwrap(component.definition)).toEqual({
+      image: 'nginx',
+      name: 'web',
+      ...timeouts,
+    });
+  });
+
+  test.each<Partial<ContainerDefinitionArgs>>([
+    { portMappings: [{ containerPort: 1 }] },
+    { portMappings: [{ containerPort: 65535 }] },
+    { portMappings: [{ containerPortRange: '1-65535' }] },
+    { memory: 256, memoryReservation: 128 },
+    { credentialSpecs: ['credentialspec:first'] },
+    {
+      healthCheck: {
+        command: ['CMD', 'true'],
+        interval: 5,
+        retries: 1,
+        startPeriod: 0,
+        timeout: 2,
+      },
+    },
+    {
+      healthCheck: {
+        command: ['CMD-SHELL', 'true'],
+        interval: 300,
+        retries: 10,
+        startPeriod: 300,
+        timeout: 60,
+      },
+    },
+  ])('accepts and preserves valid validator boundaries: %j', async (properties) => {
+    const args = { image: 'nginx', name: 'web', ...properties };
+    const component = new ContainerDefinition('valid-container', args);
+
+    expect(await unwrap(component.definition)).toEqual(args);
   });
 
   test.each([
