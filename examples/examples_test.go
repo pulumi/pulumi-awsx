@@ -46,7 +46,6 @@ func newExperimentalPackageTest(t *testing.T, language string) *pulumitest.Pulum
 		opttest.RequireYarnLinks(false),
 		opttest.SkipInstall(),
 	)
-	pt.CopyToTempDir(t)
 	pt.SetConfig(t, "aws:region", getEnvRegion(t))
 
 	packagePath, err := filepath.Abs(filepath.Join(cwd, "..", "awsx-next"))

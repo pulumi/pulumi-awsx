@@ -20,6 +20,7 @@ import {
   CpuArchitecture,
   OperatingSystemFamily,
   renderPortMappings,
+  fargateTaskDefinitionAwsxIdentity,
 } from '../../../src/ecs/fargate/taskDefinition';
 import {
   PortMappingAppProtocol,
@@ -106,6 +107,7 @@ beforeAll(async () => {
         case 'aws:ecs/taskDefinition:TaskDefinition':
           state.arn = `arn:aws:ecs:${args.inputs.region ?? providerRegion}:${accountId}:task-definition/${args.name}`;
           break;
+        case 'awsx:experimental/ecs:ContainerDefinition':
         case 'awsx-next:index:ContainerDefinition': {
           const { definition: _definition, ...container } = args.inputs;
           state.definition = container;
@@ -464,6 +466,73 @@ describe('FargateTaskDefinitionV2', () => {
     expect(containers[0]!.secrets).toEqual([{ name: 'DATABASE_PASSWORD', valueFrom: expected }]);
   });
 
+  test('rejects an empty container map', () => {
+    expect(() => new FargateTaskDefinitionV2('empty-containers', { containers: {} })).toThrow(
+      'At least one container must be provided',
+    );
+  });
+
+  test('rejects conflicting credential-spec sources', () => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('conflicting-credentials', {
+          containers: {
+            app: {
+              image: 'nginx',
+              credentialSpecs: [
+                {
+                  authenticationMode: CredentialSpecAuthenticationMode.DOMAINLESS,
+                  s3Bucket: { bucketArn: 'arn:aws:s3:::credentials', key: 'spec.json' },
+                  ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/spec`,
+                },
+              ],
+            },
+          },
+        }),
+    ).toThrow('Only one of s3Bucket or ssmParameter can be defined');
+  });
+
+  test('rejects conflicting secret sources', () => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('conflicting-secrets', {
+          containers: {
+            app: {
+              image: 'nginx',
+              secrets: {
+                CONFIG: {
+                  secretsManager: {
+                    secretArn: `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:config`,
+                  },
+                  ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/config`,
+                },
+              },
+            },
+          },
+        }),
+    ).toThrow('Only one secret source can be set');
+  });
+
+  test('rejects conflicting multiline log options', () => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('conflicting-logs', {
+          containers: {
+            app: {
+              image: 'nginx',
+              logging: {
+                cloudwatch: {
+                  streamPrefix: 'app',
+                  datetimeFormat: '%Y',
+                  multilinePattern: '^',
+                },
+              },
+            },
+          },
+        }),
+    ).toThrow('Only one of datetimeFormat and multilinePattern can be provided');
+  });
+
   test('rejects simultaneous Secrets Manager version selectors', () => {
     expect(
       () =>
@@ -659,6 +728,122 @@ describe('FargateTaskDefinitionV2', () => {
       resourcesOfType('aws:cloudwatch/logGroup:LogGroup').map(({ name, id }) => ({ name, id })),
     ).toEqual([{ name: 'existing-log-group-app-log-group', id: '/service/existing' }]);
     expect(task.logGroup).toBeUndefined();
+  });
+
+  test.each([
+    'my.repo:latest',
+    `team/my.repo:tag@sha256:${'a'.repeat(64)}`,
+    `team/repo@sha256:${'b'.repeat(64)}`,
+  ])('grants pull access for ECR image %s', async (reference) => {
+    const task = new FargateTaskDefinitionV2('image-reference', {
+      containers: { app: { image: `${accountId}.dkr.ecr.us-east-1.amazonaws.com/${reference}` } },
+    });
+    await unwrap(task.taskDefinition.arn);
+    expect(executionRolePolicy('image-reference').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: [
+          'ecr:BatchCheckLayerAvailability',
+          'ecr:GetDownloadUrlForLayer',
+          'ecr:BatchGetImage',
+        ],
+        Resource: [`arn:aws:ecr:us-east-1:${accountId}:repository/${reference.split(/[:@]/)[0]}`],
+      },
+    ]);
+  });
+
+  test('uses the AWSX identity for nested containers in the AWSX provider', async () => {
+    const task = new FargateTaskDefinitionV2(
+      'awsx-identity',
+      {
+        containers: { app: { image: 'nginx' } },
+      },
+      {},
+      fargateTaskDefinitionAwsxIdentity,
+    );
+    expect(await resolveContainers(task, 'awsx-identity')).toEqual([
+      { name: 'app', image: 'nginx', essential: true },
+    ]);
+    expect(
+      resourcesOfType('awsx:experimental/ecs:ContainerDefinition').map(({ name }) => name),
+    ).toEqual(['awsx-identity-app']);
+    expect(resourcesOfType('awsx-next:index:ContainerDefinition')).toEqual([]);
+  });
+
+  test('sizes Windows tasks using Windows configurations', async () => {
+    const task = new FargateTaskDefinitionV2('windows-default', {
+      runtimePlatform: { operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2022_CORE },
+      containers: { app: { image: 'windows-image' } },
+    });
+    await unwrap(task.taskDefinition.arn);
+    expect(taskDefinitionResource('windows-default')!.inputs).toMatchObject({
+      cpu: '1024',
+      memory: '2048',
+    });
+  });
+
+  test.each(['startTimeoutSeconds', 'stopTimeoutSeconds'] as const)(
+    'preserves %s boundaries',
+    async (property) => {
+      const task = new FargateTaskDefinitionV2(`timeout-${property}`, {
+        containers: {
+          minimum: { image: 'nginx', [property]: 2 },
+          maximum: { image: 'nginx', [property]: 120 },
+          omitted: { image: 'nginx' },
+        },
+      });
+      const containers = await resolveContainers(task, `timeout-${property}`);
+      const apiProperty = property === 'startTimeoutSeconds' ? 'startTimeout' : 'stopTimeout';
+      expect(containers.map((container) => container[apiProperty])).toEqual([2, 120, undefined]);
+    },
+  );
+
+  test.each([
+    ['startTimeoutSeconds', 1],
+    ['startTimeoutSeconds', 121],
+    ['stopTimeoutSeconds', 1],
+    ['stopTimeoutSeconds', 121],
+    ['stopTimeoutSeconds', 2.5],
+  ])('rejects %s=%s at the Fargate boundary', (property, value) => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('invalid-timeout', {
+          containers: { app: { image: 'nginx', [property]: value } },
+        }),
+    ).toThrow(`${property} must be an integer between 2 and 120; got ${value}`);
+  });
+
+  test('adds KMS decrypt for a customer-managed SSM parameter key in its region', async () => {
+    const task = new FargateTaskDefinitionV2('ssm-kms', {
+      containers: {
+        app: {
+          image: 'nginx',
+          secrets: {
+            CONFIG: {
+              ssmParameterArn: `arn:aws:ssm:us-east-2:${accountId}:parameter/customer-key`,
+            },
+          },
+        },
+      },
+    });
+    await unwrap(task.taskDefinition.arn);
+    expect(executionRolePolicy('ssm-kms').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: ['ssm:GetParameters', 'ssm:GetParameter'],
+        Resource: `arn:aws:ssm:us-east-2:${accountId}:parameter/customer-key`,
+      },
+      {
+        Effect: 'Allow',
+        Action: 'kms:Decrypt',
+        Resource: `arn:aws:kms:us-east-2:${accountId}:key/customer-key`,
+      },
+    ]);
+    expect(
+      calls.filter(({ token }) => token === 'aws:kms/getKey:getKey').map(({ inputs }) => inputs),
+    ).toEqual([{ keyId: 'alias/customer-key', region: 'us-east-2' }]);
   });
 
   test('renders the exact base and ECR execution policy', async () => {

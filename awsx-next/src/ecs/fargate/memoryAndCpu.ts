@@ -128,14 +128,16 @@ function getRequiredFargateTaskResources(
  * @param required The minimum required resources.
  * @param cpu The optional exact CPU value.
  * @param memory The optional exact memory value.
+ * @param configurations The configurations supported by the task operating system.
  * @returns A matching configuration, if one exists.
  */
 function findFargateTaskConfiguration(
   required: RequiredFargateTaskResources,
   cpu?: number,
   memory?: number,
+  configurations = validFargateTaskConfigurations,
 ): FargateTaskMemoryAndCpu | undefined {
-  return validFargateTaskConfigurations.find(
+  return configurations.find(
     (candidate) =>
       (cpu === undefined || candidate.cpu === cpu) &&
       (memory === undefined || candidate.memory === memory) &&
@@ -153,23 +155,28 @@ function findFargateTaskConfiguration(
  * @param containers The containers whose resource requirements must be satisfied.
  * @param cpu The optional explicit number of CPU units for the task.
  * @param memory The optional explicit amount of task memory in MiB.
+ * @param operatingSystemFamily The task operating system, defaulting to Linux.
  * @returns A valid task-level CPU and memory configuration.
  */
 export function resolveFargateTaskMemoryAndCpu(
   containers: FargateContainerMemoryAndCpu[],
   cpu?: number,
   memory?: number,
+  operatingSystemFamily = 'LINUX',
 ): FargateTaskMemoryAndCpu {
+  const configurations = operatingSystemFamily.startsWith('WINDOWS_')
+    ? validFargateTaskConfigurations.filter((config) => config.cpu >= 1024 && config.cpu <= 4096)
+    : validFargateTaskConfigurations;
   const required = getRequiredFargateTaskResources(containers);
   const errors: InputPropertyErrorDetails[] = [];
 
-  if (cpu !== undefined && !validFargateTaskConfigurations.some((c) => c.cpu === cpu)) {
+  if (cpu !== undefined && !configurations.some((c) => c.cpu === cpu)) {
     errors.push({
       propertyPath: 'cpu',
       reason: `Unsupported Fargate task CPU value: ${cpu}.`,
     });
   }
-  if (memory !== undefined && !validFargateTaskConfigurations.some((c) => c.memory === memory)) {
+  if (memory !== undefined && !configurations.some((c) => c.memory === memory)) {
     errors.push({
       propertyPath: 'memory',
       reason: `Unsupported Fargate task memory value: ${memory} MiB.`,
@@ -195,7 +202,7 @@ export function resolveFargateTaskMemoryAndCpu(
     });
   }
 
-  const configuration = findFargateTaskConfiguration(required, cpu, memory);
+  const configuration = findFargateTaskConfiguration(required, cpu, memory, configurations);
   if (configuration) {
     return configuration;
   }

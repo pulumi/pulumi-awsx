@@ -20,7 +20,11 @@ import {
 import { CredentialSpec } from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
-import { ContainerDefinition, containerDefinitionStandaloneIdentity } from '../containerDefinition';
+import {
+  ContainerDefinition,
+  containerDefinitionStandaloneIdentity,
+  containerDefinitionAwsxIdentity,
+} from '../containerDefinition';
 import { Arn, ArnFormat } from '../arn';
 
 export interface CommonTaskdefinitionOptions {
@@ -237,6 +241,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
   public readonly region?: string;
   private providerRegion?: pulumi.Output<string>;
+  private readonly containerIdentity!: ComponentIdentity;
 
   constructor(
     name: string,
@@ -271,6 +276,10 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     if (opts.urn) {
       return;
     }
+    this.containerIdentity =
+      identity.type === fargateTaskDefinitionAwsxIdentity.type
+        ? containerDefinitionAwsxIdentity
+        : containerDefinitionStandaloneIdentity;
     this.region = args.region;
 
     this.name = name;
@@ -298,6 +307,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       containerEntries.map(([, container]) => container),
       args.cpu,
       args.memory,
+      args.runtimePlatform?.operatingSystemFamily,
     );
 
     const family = args.family ?? name;
@@ -347,6 +357,16 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     const ecrRepositories: pulumi.Output<string | undefined>[] = [];
     const containerDefinitionsApi: pulumi.Output<ContainerDefinitionArgs>[] = containerEntries.map(
       ([containerName, container]) => {
+        for (const property of ['startTimeoutSeconds', 'stopTimeoutSeconds'] as const) {
+          const value = container[property];
+          if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 120)) {
+            throw new pulumi.InputPropertyError({
+              propertyPath: `containers.${containerName}.${property}`,
+              reason: `${property} must be an integer between 2 and 120; got ${value}`,
+            });
+          }
+        }
+
         const ecrRepo = this.renderEcrPullStatementResource(container.image);
         ecrRepositories.push(ecrRepo);
         const credentialSpecs = container.credentialSpecs?.map((spec, i) =>
@@ -408,7 +428,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       },
       {
         parent: this,
-        dependsOn: rolePolicy ? [rolePolicy] : [],
+        dependsOn: [rolePolicy],
       },
     );
 
@@ -463,7 +483,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   ): pulumi.Output<string | undefined> {
     return pulumi.output(imageUri).apply((image) => {
       const match =
-        /^(?<account>\d{12})\.dkr\.ecr\.(?<region>[a-z0-9-]+)\.(?<domain>amazonaws\.com(?:\.cn)?)\/(?<repo>[a-zA-Z0-9_\-/]+)(?::(?<tag>[a-zA-Z0-9_.-]+)|@(?<digest>sha256:[a-fA-F0-9]{64}))?$/.exec(
+        /^(?<account>\d{12})\.dkr\.ecr\.(?<region>[a-z0-9-]+)\.(?<domain>amazonaws\.com(?:\.cn)?)\/(?<repo>[a-zA-Z0-9_.\-/]+)(?::(?<tag>[a-zA-Z0-9_.-]+))?(?:@(?<digest>sha256:[a-fA-F0-9]{64}))?$/.exec(
           image,
         );
 
@@ -999,7 +1019,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           : undefined,
       },
       { parent: this },
-      containerDefinitionStandaloneIdentity,
+      this.containerIdentity,
       true,
     );
   }
@@ -1117,7 +1137,7 @@ function logGroupNameFromArn(
   const arnParts = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME, parent);
   return pulumi.all([arnParts, currentRegion]).apply(([parts, region]) => {
     if (!parts.resourceName) {
-      throw new Error(`Could not extract role name from arn ${arn}`);
+      throw new Error('Could not extract log group name from ARN');
     }
     const name = parts.resourceName.endsWith(':*')
       ? parts.resourceName.slice(0, -2)

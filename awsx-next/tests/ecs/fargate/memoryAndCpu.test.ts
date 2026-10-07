@@ -84,6 +84,35 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
     expect(resolveFargateTaskMemoryAndCpu(containers, cpu, memory)).toEqual(expected);
   });
 
+  test.each([
+    { cpu: undefined, memory: undefined, expected: { cpu: 1024, memory: 2048 } },
+    { cpu: undefined, memory: 4096, expected: { cpu: 1024, memory: 4096 } },
+    { cpu: 2048, memory: undefined, expected: { cpu: 2048, memory: 4096 } },
+    { cpu: 4096, memory: 30720, expected: { cpu: 4096, memory: 30720 } },
+  ])('selects a supported Windows size: %j', ({ cpu, memory, expected }) => {
+    expect(resolveFargateTaskMemoryAndCpu([], cpu, memory, 'WINDOWS_SERVER_2022_CORE')).toEqual(
+      expected,
+    );
+  });
+
+  test.each([256, 512, 8192, 16384, 32768])('rejects Linux-only CPU %i for Windows', (cpu) => {
+    expectInputPropertyReason(
+      () => resolveFargateTaskMemoryAndCpu([], cpu, undefined, 'WINDOWS_SERVER_2022_CORE'),
+      `Unsupported Fargate task CPU value: ${cpu}.`,
+    );
+  });
+
+  test('rejects container requirements beyond Windows sizes', () => {
+    expect(() =>
+      resolveFargateTaskMemoryAndCpu(
+        [{ cpu: 4097 }],
+        undefined,
+        undefined,
+        'WINDOWS_SERVER_2022_CORE',
+      ),
+    ).toThrow('No Fargate task configuration can satisfy');
+  });
+
   test('rejects an unsupported CPU value', () => {
     expectInputPropertyReason(
       () => resolveFargateTaskMemoryAndCpu([], 300, 512),

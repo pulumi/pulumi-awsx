@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "useDefineForClassFields": false,
     "lib": ["ES2022"],
     "module": "commonjs",
     "moduleResolution": "bundler",
