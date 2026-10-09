@@ -1,3 +1,0 @@
-name: cloudtrail-with-logs-nodejs
-runtime: nodejs
-description: A minimal TypeScript Pulumi program

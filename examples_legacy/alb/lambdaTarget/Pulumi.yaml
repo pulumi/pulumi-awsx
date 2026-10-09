@@ -1,3 +1,0 @@
-name: alb-lambda-target
-runtime: nodejs
-description: A simple application load balancer example using lambda.

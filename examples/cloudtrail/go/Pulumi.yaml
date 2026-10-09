@@ -1,3 +1,0 @@
-name: cloudtrail-go
-runtime: go
-description: A minimal AWS Go Pulumi program to create an AWSX Cloudtrail
