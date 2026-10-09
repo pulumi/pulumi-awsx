@@ -170,8 +170,8 @@ github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 h1:vkHw5I/plNdTr435
 github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231/go.mod h1:murToZ2N9hNJzewjHBgfFdXhZKjY3z5cYC1VXk+lbFE=
 github.com/pulumi/pulumi-aws/sdk/v7 v7.50.0 h1:i2TFvp0/kd2cTtZrd3iKKnvW4xMSM619FOz4n+xZoEM=
 github.com/pulumi/pulumi-aws/sdk/v7 v7.50.0/go.mod h1:nhIaBxnniaMZevWJTmP06Du/NADWclVJsgIk7DoSn84=
-github.com/pulumi/pulumi-awsx/sdk/v3 v3.10.0 h1:iieEO9U4UkDFI8TagXwumKpL3Lomd6+PLGs53uWAKts=
-github.com/pulumi/pulumi-awsx/sdk/v3 v3.10.0/go.mod h1:izCGsD172CdFQaCfwNkVp7/+8rp+lTGV+UYQHfgHltg=
+github.com/pulumi/pulumi-awsx/sdk/v3 v3.11.0 h1:yvc/5r3m90TjFNF20UgEoOAO7315ZMPGY+jvZPCiPLY=
+github.com/pulumi/pulumi-awsx/sdk/v3 v3.11.0/go.mod h1:izCGsD172CdFQaCfwNkVp7/+8rp+lTGV+UYQHfgHltg=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.22 h1:CC/bpL3NHv0Hcw71mRju3HMGgqn1iyB6y3cnGe2Q45I=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.22/go.mod h1:rWyNO5asSqvmDD9yi6ZoSF3PO93nwdYcqujoxWtSGwI=
 github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 h1:mc9IbrRi1pWSg9HWEFT6EcQ274WnZ97nyP2pmUEvSp4=
