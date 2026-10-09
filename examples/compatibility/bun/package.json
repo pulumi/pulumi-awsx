@@ -2,6 +2,6 @@
   "name": "awsx-bun-compatibility",
   "private": true,
   "dependencies": {
-    "@pulumi/awsx": "3.10.0"
+    "@pulumi/awsx": "3.11.0"
   }
 }
