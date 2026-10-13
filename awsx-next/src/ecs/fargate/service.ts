@@ -1,6 +1,12 @@
 import * as pulumi from '@pulumi/pulumi';
 import { ComponentIdentity } from '../../componentIdentity';
 import * as aws from '@pulumi/aws';
+import {
+  createApplicationServiceAttachment,
+  CreatedApplicationServiceAttachment,
+  RequiredIngress,
+  ServiceLoadBalancer,
+} from './serviceLoadBalancer';
 
 export const fargateServiceStandaloneIdentity: ComponentIdentity = {
   type: 'awsx-next:index:FargateServiceV2',
@@ -146,6 +152,13 @@ export interface FargateServiceV2Args {
    * The subnets where the service will be deployed in
    */
   readonly vpcSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
+
+  /**
+   * Attach the ECS Service to a Load Balancer.
+   *
+   * Default - The ECS service is not attached to a load balancer
+   */
+  readonly loadBalancer?: Record<string, ServiceLoadBalancer>;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -341,6 +354,97 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       weight: providerStrategy.weight ?? 1,
     }));
 
+    const loadBalancers: aws.types.input.ecs.ServiceLoadBalancer[] = [];
+    const readyDependencies: pulumi.Resource[] = [];
+    const attachments: CreatedApplicationServiceAttachment[] = [];
+    const publicIngressRequests: {
+      attachmentName: string;
+      securityGroupId: pulumi.Output<string>;
+      port: number;
+    }[] = [];
+    for (const [attachmentName, attachmentArgs] of Object.entries(args.loadBalancer ?? {})) {
+      if (!attachmentArgs.application) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: `loadBalancer.${attachmentName}.application`,
+          reason: 'application configuration must be provided',
+        });
+      }
+      const attachment = createApplicationServiceAttachment(
+        name,
+        attachmentName,
+        attachmentArgs.application,
+        {
+          parent: this,
+          region: args.region,
+        },
+      );
+      attachments.push(attachment);
+      loadBalancers.push(attachment.serviceBinding);
+      readyDependencies.push(...attachment.readyDependencies);
+      if (attachment.publicIngress) {
+        publicIngressRequests.push({ attachmentName, ...attachment.publicIngress });
+      }
+    }
+
+    // We can't de-duplicate rules because that would require us to create the ingress rules in an apply
+    // so we have to do the next best thing and add validation prior to deployment.
+    const validatedPublicGroups = pulumi
+      .all(publicIngressRequests.map((request) => request.securityGroupId))
+      .apply((groups) => {
+        const owners = new Map<string, string>();
+        for (const [index, request] of publicIngressRequests.entries()) {
+          const groupId = groups[index]!;
+          const key = `${groupId}:${request.port}`;
+          const owner = owners.get(key);
+          if (owner !== undefined) {
+            throw new pulumi.InputPropertyError({
+              propertyPath: `loadBalancer.${request.attachmentName}.application.listener.open`,
+              reason:
+                `Attachments "${owner}" and "${request.attachmentName}" both request public ingress ` +
+                `for security group ${groupId} on TCP port ${request.port}. ` +
+                'Set open: true on only one attachment sharing this security group and port.',
+            });
+          }
+          owners.set(key, request.attachmentName);
+        }
+        return groups;
+      });
+    for (const [index, request] of publicIngressRequests.entries()) {
+      new aws.vpc.SecurityGroupIngressRule(
+        `${name}-${request.attachmentName}-alb-ingress-all`,
+        {
+          region: args.region,
+          ipProtocol: 'tcp',
+          securityGroupId: validatedPublicGroups.apply((groups) => groups[index]!),
+          fromPort: request.port,
+          toPort: request.port,
+          cidrIpv4: '0.0.0.0/0',
+        },
+        { parent: this },
+      );
+    }
+
+    // We can have multiple attachments to the same load balancer and multiple attachments to multiple load balancer.
+    // We need to ensure that all rules are unique to a given security group, and due to outputs the only way to
+    // accomplish this is to use inline rules
+    const ingress = pulumi.all(attachments.map((a) => a.requiredIngress)).apply((requirements) => {
+      const unique = new Map<string, RequiredIngress>();
+      for (const permission of requirements.flat()) {
+        unique.set(`${permission.sourceGroupId}:${permission.port}`, permission);
+      }
+      return (
+        [...unique.entries()]
+          // oxlint-disable-next-line unicorn/no-array-sort -- Sort a newly allocated array.
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([, { sourceGroupId, port }]) => ({
+            protocol: 'tcp',
+            fromPort: port,
+            toPort: port,
+            securityGroups: [sourceGroupId],
+          }))
+      );
+    });
+
     if (args.securityGroupIds) {
       this.securityGroups = args.securityGroupIds.flatMap((id, idx) => {
         const importId = args.region ? pulumi.interpolate`${id}@${args.region}` : id;
@@ -354,6 +458,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         {
           vpcId,
           region: args.region,
+          ingress: args.loadBalancer ? ingress : undefined,
           // By default AWS always creates an egress all rule when a security group is created.
           // The Terraform provider removes that egress-all rule and make you add it yourself
           egress: [
@@ -393,6 +498,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
           securityGroups: this.securityGroups.flatMap((sg) => sg.id),
         },
         platformVersion: args.platformVersion,
+        loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
         // TODO: these are the remaining configs
         // deploymentController,
         // deploymentConfiguration,
@@ -405,6 +511,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       },
       {
         parent: this,
+        dependsOn: readyDependencies,
         customTimeouts:
           args.deploymentTimeout !== undefined
             ? { create: args.deploymentTimeout, update: args.deploymentTimeout }

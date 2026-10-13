@@ -4,3 +4,4 @@ export type { FargateCredentialSpec, FargateCredentialSpecConfig } from './crede
 export * from './fargate/containerDefinition';
 export * from './fargate/taskDefinition';
 export * from './fargate/service';
+export * from './fargate/serviceLoadBalancer';
