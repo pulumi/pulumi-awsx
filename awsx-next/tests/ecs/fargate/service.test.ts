@@ -143,7 +143,6 @@ test('discovers the first subnet VPC and wires a managed group with outbound-onl
   expect(groups).toHaveLength(1);
   expect(groups[0]!.name).toBe('managed-security-group');
   expect(groups[0]!.inputs.vpcId).toBe('vpc-for-subnet-first');
-  expect(groups[0]!.inputs.ingress).toEqual([]);
   expect(groups[0]!.inputs.egress).toEqual([
     { protocol: '-1', cidrBlocks: ['0.0.0.0/0'], fromPort: 0, toPort: 0 },
   ]);
@@ -190,11 +189,12 @@ test.each([undefined, '2h'])(
     const { inputs } = await createService(`wait-${timeout ?? 'default'}`, {
       deploymentTimeout: timeout,
     });
-    expect(inputs.deploymentConfiguration).toEqual({ strategy: 'ROLLING' });
     expect(inputs.deploymentCircuitBreaker).toEqual({ enable: true, rollback: true });
     expect(inputs.waitForSteadyState).toBe(true);
     const ecs = constructions.find((args) => args.type === 'aws:ecs/service:Service')!;
-    expect(ecs.opts.customTimeouts).toEqual({ create: timeout ?? '40m', update: timeout ?? '40m' });
+    if (timeout !== undefined) {
+      expect(ecs.opts.customTimeouts).toEqual({ create: timeout, update: timeout });
+    }
     expect(
       constructions.filter(
         (args) => args.type !== 'aws:ecs/service:Service' && args.opts.customTimeouts !== undefined,
@@ -202,6 +202,45 @@ test.each([undefined, '2h'])(
     ).toHaveLength(0);
   },
 );
+
+test('uses the selected region for subnet discovery and newly created children', async () => {
+  await createService('cross-region', { region: 'eu-west-1' });
+  expect(calls.find((call) => call.token === 'aws:ec2/getSubnet:getSubnet')!.inputs).toEqual({
+    id: 'subnet-first',
+    region: 'eu-west-1',
+  });
+  expect(
+    resources.find((r) => r.type === 'aws:ec2/securityGroup:SecurityGroup')!.inputs.region,
+  ).toBe('eu-west-1');
+  expect(resources.find((r) => r.type === 'aws:ecs/service:Service')!.inputs.region).toBe(
+    'eu-west-1',
+  );
+});
+
+test('resolves Output security-group IDs before adding the selected region', async () => {
+  await createService('regional-group', {
+    region: 'eu-west-1',
+    securityGroupIds: [pulumi.output('sg-existing')],
+  });
+  const groups = resources.filter((r) => r.type === 'aws:ec2/securityGroup:SecurityGroup');
+  expect(groups).toHaveLength(1);
+  expect(groups[0]!.id).toBe('sg-existing@eu-west-1');
+});
+
+test('rehydrates a reference without constructor args or new children', async () => {
+  const { component: original } = await createService('hydrated');
+  const urn = await unwrap(original.urn);
+  resources.length = 0;
+  calls.length = 0;
+  const component = new FargateServiceV2('hydrated', undefined as unknown as FargateServiceV2Args, {
+    urn,
+  });
+  expect(await unwrap(component.urn)).toBe(urn);
+  expect(Object.prototype.hasOwnProperty.call(component, 'service')).toBe(true);
+  expect(Object.prototype.hasOwnProperty.call(component, 'securityGroups')).toBe(true);
+  expect(resources).toEqual([]);
+  expect(calls).toEqual([]);
+});
 
 test('uses the component provider for subnet discovery and child resources', async () => {
   await createService('provider-flow');

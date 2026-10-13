@@ -158,15 +158,14 @@ export interface FargateServiceV2Args {
 
   /**
    * Total time Pulumi allows for ECS service creation or an update while waiting for steady state.
-   * Uses Pulumi duration syntax, for example "90m" or "2h". Overrides the calculated timeout for
+   * Uses Pulumi duration syntax, for example "90m" or "2h". Overrides the AWS provider timeout for
    * both operations.
    *
-   * Default - Configured pause and bake times plus 40 minutes of startup, health-check, and
-   * rollback headroom. Omitted pause and traffic-shift settings use AWS defaults.
+   * Default - The AWS provider's ECS service timeout (currently 20 minutes).
    *
-   * This is an estimate, so if you know you need a longer timeout then set this explicitly. This
-   * only applies to the Pulumi resource create/update timeout. If that timeout is reached the
-   * Pulumi deployment fails, but the ECS deployment is unaffected.
+   * Set this explicitly when the service needs more time to stabilize. This only applies to the
+   * Pulumi resource create/update timeout. If that timeout is reached the Pulumi deployment fails,
+   * but the ECS deployment is unaffected.
    */
   readonly deploymentTimeout?: string;
 
@@ -279,14 +278,14 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
    * The underlying ECS service resource. Use its outputs to inspect the service ARN, name, and
    * deployment configuration.
    */
-  public readonly service: aws.ecs.Service;
+  public readonly service!: aws.ecs.Service;
 
   /**
    * Security groups attached to the service. Do not add standalone rules to an AWSX-managed group,
    * because they will conflict with inline rules. Provide your own groups when custom rule
    * management is required.
    */
-  public readonly securityGroups: aws.ec2.SecurityGroup[];
+  public readonly securityGroups!: aws.ec2.SecurityGroup[];
   constructor(
     name: string,
     args: FargateServiceV2Args,
@@ -296,10 +295,15 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
      */
     identity: ComponentIdentity = fargateServiceStandaloneIdentity,
   ) {
-    const inputs = opts.urn ? {} : args;
+    // Resource references supply a URN without the original args. Declare outputs for hydration
+    // and skip child construction, as their references are restored by the runtime.
+    const inputs = opts.urn ? { service: undefined, securityGroups: undefined } : args;
     super(identity.type, name, inputs, pulumi.mergeOptions(opts, { aliases: identity.aliases }));
+    if (opts.urn) {
+      return;
+    }
 
-    const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds);
+    const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
 
     if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
       throw new pulumi.InputPropertyError({
@@ -339,7 +343,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
 
     if (args.securityGroupIds) {
       this.securityGroups = args.securityGroupIds.flatMap((id, idx) => {
-        const importId = args.region ? `${id}@${args.region}` : id;
+        const importId = args.region ? pulumi.interpolate`${id}@${args.region}` : id;
         return aws.ec2.SecurityGroup.get(`${name}-security-group-${idx}`, importId, undefined, {
           parent: this,
         });
@@ -419,10 +423,12 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
    * lookup the vpc it is associated with
    *
    * @param subnetIds A list of subnets ids
+   * @param region The region containing the subnets, or the provider region when omitted.
    * @returns The VPC that contains the subnets
    */
   private getVpcFromSubnets(
     subnetIds: pulumi.Input<pulumi.Input<string>[]>,
+    region?: string,
   ): pulumi.Output<string> {
     const firstSubnetId = pulumi.output(subnetIds).apply((subnets) => {
       const id = subnets[0];
@@ -434,7 +440,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       }
       return id;
     });
-    const subnet = aws.ec2.getSubnetOutput({ id: firstSubnetId }, { parent: this });
+    const subnet = aws.ec2.getSubnetOutput({ id: firstSubnetId, region }, { parent: this });
     return subnet.vpcId;
   }
 }
