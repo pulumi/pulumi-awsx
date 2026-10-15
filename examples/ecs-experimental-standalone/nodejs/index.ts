@@ -3,8 +3,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awsxNext from "@pulumi/awsx-next";
 
 const task = new awsxNext.FargateTaskDefinitionV2("task", {
-  cpu: 256,
-  memory: 512,
+  cpuUnits: 256,
+  memoryMiB: 512,
   containers: {
     app: {
       image: "public.ecr.aws/nginx/nginx:latest",

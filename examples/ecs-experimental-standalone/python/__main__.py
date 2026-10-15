@@ -9,8 +9,8 @@ task = awsx_next.FargateTaskDefinitionV2(
             image="public.ecr.aws/nginx/nginx:latest"
         )
     },
-    cpu=256,
-    memory=512,
+    cpu_units=256,
+    memory_mi_b=512,
 )
 
 pulumi.export("componentName", task.name)

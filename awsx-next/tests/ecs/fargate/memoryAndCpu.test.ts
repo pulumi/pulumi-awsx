@@ -40,7 +40,7 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
   test.each([
     {
       name: 'derives both values',
-      containers: [{ cpu: 300, memoryMiB: 700 }],
+      containers: [{ cpuUnits: 300, memoryMiB: 700 }],
       cpu: undefined,
       memory: undefined,
       expected: { cpu: 512, memory: 1024 },
@@ -54,28 +54,28 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
     },
     {
       name: 'derives CPU for explicit memory',
-      containers: [{ cpu: 700 }],
+      containers: [{ cpuUnits: 700 }],
       cpu: undefined,
       memory: 4096,
       expected: { cpu: 1024, memory: 4096 },
     },
     {
       name: 'preserves an explicit valid configuration',
-      containers: [{ cpu: 256, memoryMiB: 512 }],
+      containers: [{ cpuUnits: 256, memoryMiB: 512 }],
       cpu: 2048,
       memory: 8192,
       expected: { cpu: 2048, memory: 8192 },
     },
     {
       name: 'uses 8 GiB memory increments for 16 vCPU',
-      containers: [{ cpu: 16000, memoryMiB: 33000 }],
+      containers: [{ cpuUnits: 16000, memoryMiB: 33000 }],
       cpu: undefined,
       memory: undefined,
       expected: { cpu: 16384, memory: 40960 },
     },
     {
       name: 'supports 32 vCPU configurations',
-      containers: [{ cpu: 17000, memoryMiB: 62000 }],
+      containers: [{ cpuUnits: 17000, memoryMiB: 62000 }],
       cpu: undefined,
       memory: undefined,
       expected: { cpu: 32768, memory: 122880 },
@@ -105,7 +105,7 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
   test('rejects container requirements beyond Windows sizes', () => {
     expect(() =>
       resolveFargateTaskMemoryAndCpu(
-        [{ cpu: 4097 }],
+        [{ cpuUnits: 4097 }],
         undefined,
         undefined,
         'WINDOWS_SERVER_2022_CORE',
@@ -128,7 +128,7 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
 
   test('rejects task resources below the container requirements', () => {
     expectInputPropertyReason(
-      () => resolveFargateTaskMemoryAndCpu([{ cpu: 600 }], 512),
+      () => resolveFargateTaskMemoryAndCpu([{ cpuUnits: 600 }], 512),
       'Fargate task CPU 512 is less than the 600 CPU units requested by its containers.',
     );
     expectInputPropertyReason(
@@ -138,7 +138,7 @@ describe('resolveFargateTaskMemoryAndCpu', () => {
   });
 
   test('rejects container requirements above the Fargate maximum', () => {
-    expect(() => resolveFargateTaskMemoryAndCpu([{ cpu: 33000, memoryMiB: 250000 }])).toThrow(
+    expect(() => resolveFargateTaskMemoryAndCpu([{ cpuUnits: 33000, memoryMiB: 250000 }])).toThrow(
       'No Fargate task configuration can satisfy the 33000 CPU units and 250000 MiB requested by its containers.',
     );
   });
@@ -156,7 +156,7 @@ describe('max vcpu and memory', () => {
   test('can request valid exact values', async () => {
     const memCpu = calculateFargateMemoryAndCPU([
       {
-        cpu: 8192, // 8 vcpu * 1024
+        cpuUnits: 8192, // 8 vcpu * 1024
         memoryMiB: 20480, // 20 GB * 1024
       },
     ]);
@@ -167,7 +167,7 @@ describe('max vcpu and memory', () => {
   test('can request valid approximate values', async () => {
     const memCpu = calculateFargateMemoryAndCPU([
       {
-        cpu: 8000, // will be rounded up to 8 vcpu * 1024
+        cpuUnits: 8000, // will be rounded up to 8 vcpu * 1024
         memoryMiB: 21000, // will be rounded up to 24 GB because 8 vCPU uses 4 GB increments
       },
     ]);
@@ -179,11 +179,11 @@ describe('max vcpu and memory', () => {
     expect(() => {
       calculateFargateMemoryAndCPU([
         {
-          cpu: (maxVCPU * 1024) / 2,
+          cpuUnits: (maxVCPU * 1024) / 2,
           memoryMiB: (maxMemGB * 1024) / 2,
         },
         {
-          cpu: (maxVCPU * 1024) / 2,
+          cpuUnits: (maxVCPU * 1024) / 2,
           memoryMiB: (maxMemGB * 1024) / 2,
         },
       ]);
@@ -193,11 +193,11 @@ describe('max vcpu and memory', () => {
     expect(() => {
       calculateFargateMemoryAndCPU([
         {
-          cpu: 17 * 1024,
+          cpuUnits: 17 * 1024,
           memoryMiB: 123 * 1024,
         },
         {
-          cpu: 17 * 1024,
+          cpuUnits: 17 * 1024,
           memoryMiB: 123 * 1024,
         },
       ]);
@@ -209,7 +209,7 @@ describe('max vcpu and memory', () => {
     expect(() => {
       calculateFargateMemoryAndCPU([
         {
-          cpu: (maxVCPU + 1) * 1024,
+          cpuUnits: (maxVCPU + 1) * 1024,
           memoryMiB: maxMemGB * 1024,
         },
       ]);
@@ -223,7 +223,7 @@ describe('max vcpu and memory', () => {
     expect(() => {
       calculateFargateMemoryAndCPU([
         {
-          cpu: maxVCPU * 1024,
+          cpuUnits: maxVCPU * 1024,
           memoryMiB: (maxMemGB + 1) * 1024,
         },
       ]);

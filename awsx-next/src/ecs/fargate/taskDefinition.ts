@@ -140,7 +140,7 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    * Default - A CPU value will be automatically selected based on the container-level CPU and
    * memory requirements
    */
-  readonly cpu?: number;
+  readonly cpuUnits?: number;
   /**
    * The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
    * field is required and must be valid for the selected CPU value:
@@ -171,7 +171,7 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    * Default - A memory value will be automatically selected based on the container-level CPU and
    * memory requirements
    */
-  readonly memory?: number;
+  readonly memoryMiB?: number;
 
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
@@ -180,7 +180,7 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    *
    * Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
-  readonly ephemeralStorage?: number;
+  readonly ephemeralStorageGiB?: number;
 
   /**
    * Containers in the task, keyed by container name.
@@ -231,9 +231,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   public readonly taskDefinition!: aws.ecs.TaskDefinition;
 
   /**
-   * The shared CloudWatch Logs log group created by the component for containers that enable
-   * CloudWatch logging without specifying `logGroupArn`. This output is undefined when the
-   * component does not create a default log group
+   * The shared CloudWatch Logs log group created by the component for containers using CloudWatch
+   * logging (enabled by default) without specifying `logGroupArn`. This output is undefined when
+   * the component does not create a default log group
    */
   public logGroup?: aws.cloudwatch.LogGroup;
 
@@ -292,21 +292,21 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     }
 
     if (
-      args.ephemeralStorage !== undefined &&
-      (!Number.isInteger(args.ephemeralStorage) ||
-        args.ephemeralStorage < 21 ||
-        args.ephemeralStorage > 200)
+      args.ephemeralStorageGiB !== undefined &&
+      (!Number.isInteger(args.ephemeralStorageGiB) ||
+        args.ephemeralStorageGiB < 21 ||
+        args.ephemeralStorageGiB > 200)
     ) {
       throw new pulumi.InputPropertyError({
-        propertyPath: 'ephemeralStorage',
-        reason: 'ephemeralStorage must be an integer between 21 and 200',
+        propertyPath: 'ephemeralStorageGiB',
+        reason: 'ephemeralStorageGiB must be an integer between 21 and 200',
       });
     }
 
     const { cpu, memory } = resolveFargateTaskMemoryAndCpu(
       containerEntries.map(([, container]) => container),
-      args.cpu,
-      args.memory,
+      args.cpuUnits,
+      args.memoryMiB,
       args.runtimePlatform?.operatingSystemFamily,
     );
 
@@ -376,7 +376,15 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
         );
         const secrets = this.renderSecrets(containerName, container.secrets);
-        const logs = this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch);
+        if (container.logging?.disabled && container.logging.cloudwatch !== undefined) {
+          throw new pulumi.InputPropertyError({
+            propertyPath: `containers.${containerName}.logging`,
+            reason: 'Only one of disabled: true or cloudwatch can be provided',
+          });
+        }
+        const logs = container.logging?.disabled
+          ? undefined
+          : this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch ?? {});
 
         executionRoleStatements.push(
           ...(credentialSpecs?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
@@ -420,9 +428,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         networkMode: 'awsvpc',
         runtimePlatform: args.runtimePlatform,
         ephemeralStorage:
-          args.ephemeralStorage !== undefined
+          args.ephemeralStorageGiB !== undefined
             ? {
-                sizeInGib: args.ephemeralStorage,
+                sizeInGib: args.ephemeralStorageGiB,
               }
             : undefined,
       },
@@ -906,7 +914,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       .all([
         logGroup.name,
         logGroup.region,
-        driver.streamPrefix,
+        driver.streamPrefix ?? this.name,
         driver.datetimeFormat,
         driver.multilinePattern,
         driver.mode,
@@ -977,7 +985,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         secrets,
         environmentFiles,
         command: options.command,
-        cpu: options.cpu,
+        cpu: options.cpuUnits,
         memory: options.memoryMiB,
         memoryReservation: options.memoryReservationMiB,
         portMappings: renderPortMappings(options.portMappings),

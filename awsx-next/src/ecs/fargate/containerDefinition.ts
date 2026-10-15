@@ -141,7 +141,7 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    *
    * Default - No minimum CPU reservation.
    */
-  readonly cpu?: number;
+  readonly cpuUnits?: number;
 
   /**
    * The dependencies that control the container startup and shutdown order.
@@ -158,8 +158,8 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
    * ECS stops the container if it uses more than this limit. Container-level memory is optional
    * because Fargate requires a task-level memory value.
    *
-   * If you set both container-level memory values, `memory` must be greater than
-   * `memoryReservation`.
+   * If you set both container-level memory values, `memoryMiB` must be greater than
+   * `memoryReservationMiB`.
    *
    * Default - No container-level hard memory limit.
    */
@@ -234,8 +234,10 @@ export interface FargateContainerDefinitionProperties extends ContainerDefinitio
 export interface FargateAwsLogsLogDriver extends AwsLogsLogDriverBase {
   /**
    * Prefix used for the container's log streams.
+   *
+   * Default - The task definition component name.
    */
-  readonly streamPrefix: pulumi.Input<string>;
+  readonly streamPrefix?: pulumi.Input<string>;
 }
 
 /**
@@ -248,7 +250,15 @@ export interface FargateLogDriver {
    * For more information, see [CloudWatch
    * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
    */
-  readonly cloudwatch: FargateAwsLogsLogDriver;
+  readonly cloudwatch?: FargateAwsLogsLogDriver;
+
+  /**
+   * Disable collection of this container's stdout and stderr through the log driver. Cannot be
+   * combined with `cloudwatch`.
+   *
+   * Default - false; logs are sent to CloudWatch Logs.
+   */
+  readonly disabled?: boolean;
 }
 
 /**
@@ -258,6 +268,10 @@ export interface FargateContainerDefinitionOptions
   extends ContainerDefinitionOptionsBase, FargateContainerDefinitionProperties {
   /**
    * The log driver and settings used to collect container logs.
+   *
+   * Default - CloudWatch logging with a shared log group created by this component. The component
+   * grants its execution role access to write logs, including when an existing execution role ARN
+   * is supplied. Set `disabled: true` to disable log collection.
    */
   readonly logging?: FargateLogDriver;
 }

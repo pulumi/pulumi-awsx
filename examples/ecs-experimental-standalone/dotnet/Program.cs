@@ -7,8 +7,8 @@ return await Deployment.RunAsync(() =>
 {
     var task = new FargateTaskDefinitionV2("task", new FargateTaskDefinitionV2Args
     {
-        Cpu = 256,
-        Memory = 512,
+        CpuUnits = 256,
+        MemoryMiB = 512,
         Containers =
         {
             ["app"] = new FargateContainerDefinitionOptionsArgs

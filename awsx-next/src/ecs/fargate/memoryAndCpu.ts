@@ -17,7 +17,7 @@ import { FargateContainerDefinitionProperties } from './containerDefinition';
 
 export type FargateContainerMemoryAndCpu = Pick<
   FargateContainerDefinitionProperties,
-  'cpu' | 'memoryMiB' | 'memoryReservationMiB'
+  'cpuUnits' | 'memoryMiB' | 'memoryReservationMiB'
 >;
 
 export interface FargateTaskMemoryAndCpu {
@@ -116,7 +116,7 @@ function getRequiredFargateTaskResources(
 
   for (const container of containers) {
     memory += container.memoryReservationMiB ?? container.memoryMiB ?? 0;
-    cpu += container.cpu ?? 0;
+    cpu += container.cpuUnits ?? 0;
   }
 
   return { cpu, memory };
@@ -172,25 +172,25 @@ export function resolveFargateTaskMemoryAndCpu(
 
   if (cpu !== undefined && !configurations.some((c) => c.cpu === cpu)) {
     errors.push({
-      propertyPath: 'cpu',
+      propertyPath: 'cpuUnits',
       reason: `Unsupported Fargate task CPU value: ${cpu}.`,
     });
   }
   if (memory !== undefined && !configurations.some((c) => c.memory === memory)) {
     errors.push({
-      propertyPath: 'memory',
+      propertyPath: 'memoryMiB',
       reason: `Unsupported Fargate task memory value: ${memory} MiB.`,
     });
   }
   if (cpu !== undefined && cpu < required.cpu) {
     errors.push({
-      propertyPath: 'cpu',
+      propertyPath: 'cpuUnits',
       reason: `Fargate task CPU ${cpu} is less than the ${required.cpu} CPU units requested by its containers.`,
     });
   }
   if (memory !== undefined && memory < required.memory) {
     errors.push({
-      propertyPath: 'memory',
+      propertyPath: 'memoryMiB',
       reason: `Fargate task memory ${memory} MiB is less than the ${required.memory} MiB requested by its containers.`,
     });
   }

@@ -271,12 +271,12 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          cpu: 300,
+          cpuUnits: 300,
           memoryMiB: 700,
         },
         sidecar: {
           image: 'busybox',
-          cpu: 100,
+          cpuUnits: 100,
           memoryReservationMiB: 100,
         },
       },
@@ -310,32 +310,34 @@ describe('FargateTaskDefinitionV2', () => {
     ]);
   });
 
-  test.each([20, 201, 0, 21.5])('rejects invalid ephemeral storage %s', (ephemeralStorage) => {
+  test.each([20, 201, 0, 21.5])('rejects invalid ephemeral storage %s', (ephemeralStorageGiB) => {
     expect(
       () =>
         new FargateTaskDefinitionV2('invalid-storage', {
-          ephemeralStorage,
+          ephemeralStorageGiB,
           containers: { app: { image: 'nginx' } },
         }),
-    ).toThrow('ephemeralStorage must be an integer between 21 and 200');
+    ).toThrow('ephemeralStorageGiB must be an integer between 21 and 200');
   });
 
-  test.each([21, 200])('accepts ephemeral storage boundary %s', async (ephemeralStorage) => {
-    const task = new FargateTaskDefinitionV2(`storage-${ephemeralStorage}`, {
-      ephemeralStorage,
+  test.each([21, 200])('accepts ephemeral storage boundary %s', async (ephemeralStorageGiB) => {
+    const task = new FargateTaskDefinitionV2(`storage-${ephemeralStorageGiB}`, {
+      ephemeralStorageGiB,
       containers: { app: { image: 'nginx' } },
     });
 
     await unwrap(task.taskDefinition.arn);
-    expect(taskDefinitionResource(`storage-${ephemeralStorage}`)!.inputs.ephemeralStorage).toEqual({
-      sizeInGib: ephemeralStorage,
+    expect(
+      taskDefinitionResource(`storage-${ephemeralStorageGiB}`)!.inputs.ephemeralStorage,
+    ).toEqual({
+      sizeInGib: ephemeralStorageGiB,
     });
   });
 
   test('preserves an explicit valid task configuration and runtime platform', async () => {
     const task = new FargateTaskDefinitionV2('explicit', {
-      cpu: 2048,
-      memory: 8192,
+      cpuUnits: 2048,
+      memoryMiB: 8192,
       runtimePlatform: {
         cpuArchitecture: CpuArchitecture.ARM64,
         operatingSystemFamily: OperatingSystemFamily.LINUX,
@@ -343,7 +345,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          cpu: 256,
+          cpuUnits: 256,
           memoryMiB: 512,
         },
       },
@@ -660,6 +662,91 @@ describe('FargateTaskDefinitionV2', () => {
     expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!.id).toBe('/service/application');
   });
 
+  test('enables CloudWatch by default with one shared group and scoped permissions', async () => {
+    const task = new FargateTaskDefinitionV2('default-logging', {
+      containers: {
+        app: { image: 'nginx' },
+        sidecar: { image: 'busybox', logging: { cloudwatch: {} } },
+      },
+    });
+    const containers = await resolveContainers(task, 'default-logging');
+    expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup').map((r) => r.name)).toEqual([
+      'default-logging-log-group',
+    ]);
+    expect(containers.map((container) => container.logConfiguration)).toEqual([
+      {
+        logDriver: 'awslogs',
+        options: {
+          'awslogs-group': 'default-logging-log-group',
+          'awslogs-region': providerRegion,
+          'awslogs-stream-prefix': 'default-logging',
+        },
+      },
+      {
+        logDriver: 'awslogs',
+        options: {
+          'awslogs-group': 'default-logging-log-group',
+          'awslogs-region': providerRegion,
+          'awslogs-stream-prefix': 'default-logging',
+        },
+      },
+    ]);
+    expect(executionRolePolicy('default-logging').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:default-logging-log-group:*`,
+      },
+    ]);
+  });
+
+  test('omits logging resources and permissions when every container opts out', async () => {
+    const task = new FargateTaskDefinitionV2('disabled-logging', {
+      containers: { app: { image: 'nginx', logging: { disabled: true } } },
+    });
+    const containers = await resolveContainers(task, 'disabled-logging');
+    expect(containers[0]!.logConfiguration).toBeUndefined();
+    expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup')).toEqual([]);
+    expect(task.logGroup).toBeUndefined();
+    expect(executionRolePolicy('disabled-logging').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+    ]);
+  });
+
+  test('allows individual containers to opt out while others use default logging', async () => {
+    const task = new FargateTaskDefinitionV2('mixed-logging', {
+      containers: {
+        app: { image: 'nginx', logging: { disabled: false } },
+        sidecar: { image: 'busybox', logging: { disabled: true } },
+      },
+    });
+    const containers = await resolveContainers(task, 'mixed-logging');
+    expect(containers.map((container) => container.logConfiguration)).toEqual([
+      {
+        logDriver: 'awslogs',
+        options: {
+          'awslogs-group': 'mixed-logging-log-group',
+          'awslogs-region': providerRegion,
+          'awslogs-stream-prefix': 'mixed-logging',
+        },
+      },
+      undefined,
+    ]);
+    expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup').map((r) => r.name)).toEqual([
+      'mixed-logging-log-group',
+    ]);
+  });
+
+  test('rejects CloudWatch settings combined with disabled logging', () => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('conflicting-logging', {
+          containers: { app: { image: 'nginx', logging: { disabled: true, cloudwatch: {} } } },
+        }),
+    ).toThrow('Only one of disabled: true or cloudwatch can be provided');
+  });
+
   test('shares one default log group and renders exact log options', async () => {
     const task = new FargateTaskDefinitionV2('logging', {
       region: 'us-east-2',
@@ -750,6 +837,11 @@ describe('FargateTaskDefinitionV2', () => {
         ],
         Resource: [`arn:aws:ecr:us-east-1:${accountId}:repository/${reference.split(/[:@]/)[0]}`],
       },
+      {
+        Effect: 'Allow',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:image-reference-log-group:*`,
+      },
     ]);
   });
 
@@ -763,7 +855,19 @@ describe('FargateTaskDefinitionV2', () => {
       fargateTaskDefinitionAwsxIdentity,
     );
     expect(await resolveContainers(task, 'awsx-identity')).toEqual([
-      { name: 'app', image: 'nginx', essential: true },
+      {
+        name: 'app',
+        image: 'nginx',
+        essential: true,
+        logConfiguration: {
+          logDriver: 'awslogs',
+          options: {
+            'awslogs-group': 'awsx-identity-log-group',
+            'awslogs-region': providerRegion,
+            'awslogs-stream-prefix': 'awsx-identity',
+          },
+        },
+      },
     ]);
     expect(
       resourcesOfType('awsx:experimental/ecs:ContainerDefinition').map(({ name }) => name),
@@ -840,6 +944,11 @@ describe('FargateTaskDefinitionV2', () => {
         Action: 'kms:Decrypt',
         Resource: `arn:aws:kms:us-east-2:${accountId}:key/customer-key`,
       },
+      {
+        Effect: 'Allow',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:ssm-kms-log-group:*`,
+      },
     ]);
     expect(
       calls.filter(({ token }) => token === 'aws:kms/getKey:getKey').map(({ inputs }) => inputs),
@@ -872,6 +981,11 @@ describe('FargateTaskDefinitionV2', () => {
             'ecr:BatchGetImage',
           ],
           Resource: [`arn:aws:ecr:us-east-1:${accountId}:repository/team/application`],
+        },
+        {
+          Effect: 'Allow',
+          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+          Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:ecr-policy-log-group:*`,
         },
       ],
     });
@@ -920,6 +1034,11 @@ describe('FargateTaskDefinitionV2', () => {
         Effect: 'Allow',
         Action: 's3:GetObject',
         Resource: 'arn:aws:s3:::environment-bucket/configs/app.env',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:s3-policy-log-group:*`,
       },
     ]);
   });
@@ -993,6 +1112,11 @@ describe('FargateTaskDefinitionV2', () => {
         Effect: 'Allow',
         Action: 'secretsmanager:GetSecretValue',
         Resource: `arn:aws:secretsmanager:us-east-1:${accountId}:secret:aws-managed`,
+      },
+      {
+        Effect: 'Allow',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Resource: `arn:aws:logs:${providerRegion}:${accountId}:log-group:kms-policy-log-group:*`,
       },
     ]);
   });
