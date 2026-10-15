@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	ecrTypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
 	"github.com/pulumi/providertest/pulumitest"
@@ -107,6 +108,34 @@ func TestAccEcsExperimentalStandalone(t *testing.T) {
 	require.Equal(t, "app", definitions[0]["name"])
 	require.Equal(t, "public.ecr.aws/nginx/nginx:latest", definitions[0]["image"])
 	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, definitions[0]["environment"])
+}
+
+func TestAccEcsExperimentalPermissions(t *testing.T) {
+	pt := newExperimentalExampleTest(t, "ecs-experimental-permissions", "nodejs")
+	// The service waits for a stable running task. Failed image pulls, secret/environment-file loading,
+	// or application checks prevent the deployment from reaching steady state.
+	result := pt.Up(t)
+	logs := cloudwatchlogs.NewFromConfig(loadAwsDefaultConfig(t))
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
+	defer cancel()
+	require.EventuallyWithT(t, func(c *assert.CollectT) {
+		pages := cloudwatchlogs.NewFilterLogEventsPaginator(logs, &cloudwatchlogs.FilterLogEventsInput{
+			LogGroupName:  aws.String(result.Outputs["logGroupName"].Value.(string)),
+			FilterPattern: aws.String("\"AWSX_PERMISSION_OK:startup\""),
+		})
+		var messages []string
+		// CloudWatch can return an empty page with a next token even when matching events exist.
+		for pages.HasMorePages() {
+			events, err := pages.NextPage(ctx)
+			if !assert.NoError(c, err) {
+				return
+			}
+			for _, event := range events.Events {
+				messages = append(messages, aws.ToString(event.Message))
+			}
+		}
+		assert.Contains(c, messages, "AWSX_PERMISSION_OK:startup")
+	}, 2*time.Minute, 3*time.Second)
 }
 
 func TestAccEcsService(t *testing.T) {

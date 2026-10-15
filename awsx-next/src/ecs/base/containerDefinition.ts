@@ -257,8 +257,16 @@ export interface ContainerDefinitionCommonProperties {
   /**
    * The health check command and settings for the container.
    *
+   * Use a health check when the container can remain running while the application is unhealthy,
+   * such as an unresponsive server or a worker that has stopped processing jobs. A health check is
+   * not required merely to validate startup configuration if the application exits when that
+   * validation fails.
+   *
+   * ECS services can replace tasks with unhealthy essential containers. A health check does not
+   * provide automatic replacement for standalone tasks.
+   *
    * ECS only monitors health checks specified in the task definition. It does not monitor a health
-   * check that is configured only in the container image.
+   * check configured only in the container image.
    *
    * Default - No ECS container health check.
    *

@@ -38,15 +38,21 @@ func getCwd(t *testing.T) string {
 
 func newExperimentalPackageTest(t *testing.T, language string) *pulumitest.PulumiTest {
 	t.Helper()
+	return newExperimentalExampleTest(t, "ecs-experimental-standalone", language)
+}
+
+func newExperimentalExampleTest(t *testing.T, example, language string) *pulumitest.PulumiTest {
+	t.Helper()
+	region := getEnvRegion(t)
 
 	cwd := getCwd(t)
 	pt := pulumitest.NewPulumiTest(
 		t,
-		filepath.Join(cwd, "ecs-experimental-standalone", language),
+		filepath.Join(cwd, example, language),
 		opttest.RequireYarnLinks(false),
 		opttest.SkipInstall(),
 	)
-	pt.SetConfig(t, "aws:region", getEnvRegion(t))
+	pt.SetConfig(t, "aws:region", region)
 
 	packagePath, err := filepath.Abs(filepath.Join(cwd, "..", "awsx-next"))
 	require.NoError(t, err)
