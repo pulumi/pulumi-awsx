@@ -422,6 +422,18 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         },
         { parent: this },
       );
+      new aws.vpc.SecurityGroupIngressRule(
+        `${name}-${request.attachmentName}-alb-ingress-all-ipv6`,
+        {
+          region: args.region,
+          ipProtocol: 'tcp',
+          securityGroupId: validatedPublicGroups.apply((groups) => groups[index]!),
+          fromPort: request.port,
+          toPort: request.port,
+          cidrIpv6: '::/0',
+        },
+        { parent: this },
+      );
     }
 
     // We can have multiple attachments to the same load balancer and multiple attachments to multiple load balancer.

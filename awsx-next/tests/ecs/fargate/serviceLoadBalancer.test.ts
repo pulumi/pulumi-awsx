@@ -15,7 +15,8 @@ import { FargateServiceV2 } from '../../../src/ecs/fargate/service';
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const loadBalancerGroups = new Map<string, string[]>();
-const ruleOptions: pulumi.ResourceOptions[] = [];
+const loadBalancerAddressTypes = new Map<string, string>();
+const constructions: pulumi.ResourceTransformationArgs[] = [];
 const attachmentResources: pulumi.Resource[] = [];
 const loadBalancerArn =
   'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/shared/abc';
@@ -50,6 +51,7 @@ beforeAll(async () => {
           ...args.inputs,
           vpcId: 'vpc-shared',
           loadBalancerType: 'application',
+          ipAddressType: loadBalancerAddressTypes.get(args.inputs.arn) ?? 'ipv4',
           securityGroups: loadBalancerGroups.get(args.inputs.arn) ?? ['sg-alb'],
         };
       }
@@ -67,7 +69,8 @@ beforeEach(() => {
   resources.length = 0;
   calls.length = 0;
   loadBalancerGroups.clear();
-  ruleOptions.length = 0;
+  loadBalancerAddressTypes.clear();
+  constructions.length = 0;
   attachmentResources.length = 0;
 });
 
@@ -98,9 +101,7 @@ function parent(): pulumi.ComponentResource {
           if (args.type.startsWith('aws:')) {
             attachmentResources.push(args.resource);
           }
-          if (args.type === 'aws:lb/listenerRule:ListenerRule') {
-            ruleOptions.push(args.opts);
-          }
+          constructions.push(args);
           return undefined;
         },
       ],
@@ -267,6 +268,141 @@ it('reads a shared listener and creates only its own rules, using its ALB VPC an
   ]);
 });
 
+it.each([false, true])(
+  'wires dedicated routing and all ECS readiness dependencies with match=%s',
+  async (matched) => {
+    const name = `routing-${sequence++}`;
+    const service = new FargateServiceV2(
+      name,
+      {
+        clusterArn: 'arn:mock:cluster',
+        taskDefinition: 'arn:mock:task',
+        vpcSubnetIds: ['subnet-private'],
+        loadBalancer: {
+          public: {
+            application: {
+              ...configuration().application!,
+              listener: {
+                loadBalancerArn,
+                certificateArns: ['arn:certificate:primary', 'arn:certificate:secondary'],
+                match: matched ? { methods: ['GET'] } : undefined,
+              },
+            },
+          },
+          shared: {
+            application: {
+              containerName: 'app',
+              containerPort: 3000,
+              existingListener: {
+                listenerArn,
+                priority: 25,
+                match: { methods: ['POST'] },
+              },
+            },
+          },
+        },
+      },
+      {
+        providers: { aws: provider },
+        transformations: [
+          (args): undefined => {
+            constructions.push(args);
+            if (args.type.startsWith('aws:')) attachmentResources.push(args.resource);
+            return undefined;
+          },
+        ],
+      },
+    );
+    await resolve(service.service.urn);
+    await Promise.all(attachmentResources.map((resource) => resolve(resource.urn)));
+
+    const ecs = constructions.find((args) => args.type === 'aws:ecs/service:Service')!;
+    const dependencies = ecs.opts.dependsOn as pulumi.Resource[];
+    expect(dependencies).toEqual(
+      constructions
+        .filter((args) =>
+          [
+            'aws:lb/listener:Listener',
+            'aws:lb/listenerCertificate:ListenerCertificate',
+            'aws:lb/listenerRule:ListenerRule',
+          ].includes(args.type),
+        )
+        .map((args) => args.resource),
+    );
+    expect(
+      await Promise.all(
+        dependencies.map(async (resource) => (await resolve(resource.urn)).split('::').at(-1)),
+      ),
+    ).toEqual([
+      `${name}-public-listener`,
+      `${name}-public-certificate-0`,
+      ...(matched ? [`${name}-public-listener-rule`] : []),
+      `${name}-shared-existing-listener`,
+      `${name}-shared-listener-rule`,
+    ]);
+
+    const dedicated = registrations('aws:lb/listener:Listener').find((resource) => !resource.id)!;
+    expect(dedicated.inputs.defaultActions).toEqual(
+      matched
+        ? [
+            {
+              type: 'fixed-response',
+              fixedResponse: {
+                statusCode: '404',
+                contentType: 'text/plain',
+                messageBody: 'Not found',
+              },
+            },
+          ]
+        : [
+            {
+              type: 'forward',
+              forward: { targetGroups: [{ arn: `arn:mock:${name}-public-target-main` }] },
+            },
+          ],
+    );
+    expect(
+      registrations('aws:lb/listenerRule:ListenerRule').map(({ name: ruleName, inputs }) => ({
+        name: ruleName,
+        inputs,
+      })),
+    ).toEqual([
+      ...(matched
+        ? [
+            {
+              name: `${name}-public-listener-rule`,
+              inputs: {
+                listenerArn: `arn:mock:${name}-public-listener`,
+                priority: 200,
+                conditions: [{ httpRequestMethod: { values: ['GET'] } }],
+                actions: [
+                  {
+                    type: 'forward',
+                    forward: { targetGroups: [{ arn: `arn:mock:${name}-public-target-main` }] },
+                  },
+                ],
+              },
+            },
+          ]
+        : []),
+      {
+        name: `${name}-shared-listener-rule`,
+        inputs: {
+          listenerArn,
+          priority: 25,
+          conditions: [{ httpRequestMethod: { values: ['POST'] } }],
+          actions: [
+            {
+              type: 'forward',
+              forward: { targetGroups: [{ arn: `arn:mock:${name}-shared-target-main` }] },
+            },
+          ],
+        },
+      },
+    ]);
+  },
+);
+
 it('gives two attachments to the same container and port distinct resource identities', async () => {
   const owner = parent();
   const publicAttachment = createApplicationServiceAttachment(
@@ -299,49 +435,60 @@ it('gives two attachments to the same container and port distinct resource ident
   expect(publicBinding.targetGroupArn).not.toBe(internalBinding.targetGroupArn);
 });
 
-it('opens only the dedicated listener port when public access is requested', async () => {
-  const service = new FargateServiceV2(
-    `open-${sequence++}`,
-    {
-      clusterArn: 'arn:mock:cluster',
-      taskDefinition: 'arn:mock:task',
-      vpcSubnetIds: ['subnet-private'],
-      loadBalancer: {
-        public: {
-          application: {
-            ...configuration().application!,
-            listener: { loadBalancerArn, listenerPort: 8080, open: true },
+it.each(['ipv4', 'dualstack', 'dualstack-without-public-ipv4'])(
+  'opens only the dedicated listener port for IPv4 and IPv6 on a %s ALB',
+  async (addressType) => {
+    loadBalancerAddressTypes.set(loadBalancerArn, addressType);
+    const service = new FargateServiceV2(
+      `open-${sequence++}`,
+      {
+        clusterArn: 'arn:mock:cluster',
+        taskDefinition: 'arn:mock:task',
+        vpcSubnetIds: ['subnet-private'],
+        loadBalancer: {
+          public: {
+            application: {
+              ...configuration().application!,
+              listener: { loadBalancerArn, listenerPort: 8080, open: true },
+            },
           },
         },
       },
-    },
-    {
-      providers: { aws: provider },
-      transformations: [
-        (args): undefined => {
-          if (args.type.startsWith('aws:')) attachmentResources.push(args.resource);
-          return undefined;
-        },
-      ],
-    },
-  );
-  await resolve(service.service.urn);
-  await Promise.all(attachmentResources.map((resource) => resolve(resource.urn)));
+      {
+        providers: { aws: provider },
+        transformations: [
+          (args): undefined => {
+            if (args.type.startsWith('aws:')) attachmentResources.push(args.resource);
+            return undefined;
+          },
+        ],
+      },
+    );
+    await resolve(service.service.urn);
+    await Promise.all(attachmentResources.map((resource) => resolve(resource.urn)));
 
-  expect(
-    registrations('aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule').map(
-      (resource) => resource.inputs,
-    ),
-  ).toEqual([
-    {
-      ipProtocol: 'tcp',
-      securityGroupId: 'sg-alb',
-      fromPort: 8080,
-      toPort: 8080,
-      cidrIpv4: '0.0.0.0/0',
-    },
-  ]);
-});
+    expect(
+      registrations('aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule').map(
+        (resource) => resource.inputs,
+      ),
+    ).toEqual([
+      {
+        ipProtocol: 'tcp',
+        securityGroupId: 'sg-alb',
+        fromPort: 8080,
+        toPort: 8080,
+        cidrIpv4: '0.0.0.0/0',
+      },
+      {
+        ipProtocol: 'tcp',
+        securityGroupId: 'sg-alb',
+        fromPort: 8080,
+        toPort: 8080,
+        cidrIpv6: '::/0',
+      },
+    ]);
+  },
+);
 
 it.each([
   { scenario: 'different security groups', group: 'sg-private', port: 8080, open: true },
@@ -399,6 +546,16 @@ it.each([
         cidrIpv4: '0.0.0.0/0',
       },
     },
+    {
+      name: `${name}-public-alb-ingress-all-ipv6`,
+      inputs: {
+        ipProtocol: 'tcp',
+        securityGroupId: 'sg-alb',
+        fromPort: 8080,
+        toPort: 8080,
+        cidrIpv6: '::/0',
+      },
+    },
     ...(open
       ? [
           {
@@ -409,6 +566,16 @@ it.each([
               fromPort: port,
               toPort: port,
               cidrIpv4: '0.0.0.0/0',
+            },
+          },
+          {
+            name: `${name}-private-alb-ingress-all-ipv6`,
+            inputs: {
+              ipProtocol: 'tcp',
+              securityGroupId: group,
+              fromPort: port,
+              toPort: port,
+              cidrIpv6: '::/0',
             },
           },
         ]
@@ -436,7 +603,7 @@ it.each(['duplicate', 'unknown-preview'])(
           const rules = [];
           const registrations = [];
           // A rejected resource input also rejects internal Pulumi Outputs. Capture those only
-          // in this subprocess; the assertions below check both rules' registration failures.
+          // in this subprocess; the assertions below check every rule's registration failure.
           process.on('unhandledRejection', () => {});
           (async () => {
             await pulumi.runtime.setMocks({
@@ -492,16 +659,18 @@ it.each(['duplicate', 'unknown-preview'])(
     const line = result.stdout.split('\n').find((entry) => entry.startsWith('RESULT:'));
     expect(line).toBeDefined();
     const observation = JSON.parse(line!.slice('RESULT:'.length));
-    expect(observation.declaredCount).toBe(2);
+    expect(observation.declaredCount).toBe(4);
     if (mode === 'unknown-preview') {
       expect(observation.errors).toEqual([]);
       expect(observation.registrations).toEqual([
         'service-public-alb-ingress-all',
+        'service-public-alb-ingress-all-ipv6',
         'service-private-alb-ingress-all',
+        'service-private-alb-ingress-all-ipv6',
       ]);
     } else {
       expect(observation.registrations).toEqual([]);
-      expect(observation.errors).toHaveLength(2);
+      expect(observation.errors).toHaveLength(4);
       for (const error of observation.errors) {
         expect(error.inputPropertyError).toBe(true);
         expect(error.propertyPath).toBe('loadBalancer.private.application.listener.open');

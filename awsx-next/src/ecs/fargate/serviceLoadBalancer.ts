@@ -273,8 +273,14 @@ export interface ServiceApplicationListener {
   readonly listenerPort?: number;
 
   /**
-   * If this is set to true then a rule will be added to the Load Balancer SecurityGroup that allows
-   * public access on the listenerPort.
+   * If true, adds rules to the Load Balancer SecurityGroup allowing public IPv4 (0.0.0.0/0) and
+   * IPv6 (::/0) access on the listenerPort. Both rules are created regardless of the ALB's current
+   * IP address type, so switching to dual-stack does not require changing this configuration.
+   *
+   * Creates standalone ingress rules on the ALB security group. Do not enable this when that
+   * group's ingress is managed through inline SecurityGroup.ingress rules, because the two
+   * ownership models conflict. In that case, configure public access where the security group is
+   * managed and leave open false.
    *
    * Only one attachment may open a given security-group/port pair. If the security group already
    * permits public access on this port, leave this false; existing rules are not adopted.
