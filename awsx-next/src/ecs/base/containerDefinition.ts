@@ -1,5 +1,4 @@
 import * as pulumi from '@pulumi/pulumi';
-import type { CredentialSpec } from '../credentialSpec';
 
 // NOTE:
 // ContainerDefinitionCommonProperties includes properties from the API level ContainerDefinitionArgs.
@@ -465,11 +464,6 @@ export interface ContainerDefinitionOptionsBase {
    * The image used to start the container.
    */
   readonly image: pulumi.Input<string>;
-
-  /**
-   * Credential specifications used for Active Directory authentication.
-   */
-  readonly credentialSpecs?: CredentialSpec[];
 
   /**
    * Environment variables passed to the container.

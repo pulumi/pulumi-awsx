@@ -1,4 +1,5 @@
 import type * as pulumi from '@pulumi/pulumi';
+import type { FargateCredentialSpec } from '../credentialSpec';
 import type {
   AwsLogsLogDriverBase,
   ContainerDefinitionCommonProperties,
@@ -274,4 +275,13 @@ export interface FargateContainerDefinitionOptions
    * is supplied. Set `disabled: true` to disable log collection.
    */
   readonly logging?: FargateLogDriver;
+
+  /**
+   * Domainless Active Directory authentication using an S3 credential specification.
+   *
+   * Supported only for Linux containers on Fargate platform version 1.4.0 or later.
+   *
+   * Default - No Active Directory authentication.
+   */
+  readonly credentialSpec?: FargateCredentialSpec;
 }

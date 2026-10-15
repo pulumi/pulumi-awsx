@@ -15,7 +15,11 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 import { AwsLogDriverMode, FargateTaskDefinitionV2 } from '../../../src/ecs';
-import { CredentialSpecAuthenticationMode } from '../../../src/ecs/credentialSpec';
+import {
+  credentialsSecretArnFromSpec,
+  renderCredentialSpecConfig,
+  type FargateCredentialSpecConfig,
+} from '../../../src/ecs/credentialSpec';
 import {
   CpuArchitecture,
   OperatingSystemFamily,
@@ -31,6 +35,35 @@ const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const providerRegion = 'us-west-2';
 const accountId = '123456789012';
+const credentialsSecretArn = `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:ad-credentials`;
+const credentialConfig: FargateCredentialSpecConfig = {
+  domainSid: 'S-1-5-21-2554468230-2647958158-2204241789',
+  domainGuid: '8665abd4-e947-4dd0-9a51-f8254943c90b',
+  domainName: 'example.com',
+  netBiosName: 'EXAMPLE',
+  gmsaAccountName: 'WebApp01',
+  credentialsSecretArn,
+};
+const existingCredSpec = {
+  CmsPlugins: ['ActiveDirectory'],
+  DomainJoinConfig: {
+    Sid: 'S-1-5-21-2554468230-2647958158-2204241789',
+    MachineAccountName: 'WebApp01',
+    Guid: '8665abd4-e947-4dd0-9a51-f8254943c90b',
+    DnsTreeName: 'example.com',
+    DnsName: 'example.com',
+    NetBiosName: 'EXAMPLE',
+  },
+  ActiveDirectoryConfig: {
+    GroupManagedServiceAccounts: [{ Name: 'WebApp01', Scope: 'example.com' }],
+    HostAccountConfig: {
+      PortableCcgVersion: '1',
+      PluginGUID: '{859E1386-BDB4-49E8-85C7-3070B13920E1}',
+      PluginInput: { CredentialArn: credentialsSecretArn },
+    },
+  },
+};
+const existingObjects = new Map<string, { body: string; kmsKeyId?: string }>();
 
 /**
  * Parses the ARN fields returned by the AWS ARN parser invoke.
@@ -104,6 +137,15 @@ beforeAll(async () => {
           state.arn = `arn:aws:logs:${state.region}:${accountId}:log-group:${imported.id}`;
           break;
         }
+        case 'aws:s3/bucketObjectv2:BucketObjectv2': {
+          state.key = args.inputs.key ?? `${args.name}-autonamed`;
+          state.arn = `arn:aws:s3:::${args.inputs.bucket}/${state.key}`;
+          // Simulate S3 returning the actual encryption key after applying bucket defaults.
+          state.kmsKeyId = args.inputs.bucket.includes('kms')
+            ? `arn:aws:kms:${args.inputs.region}:${accountId}:key/object-key`
+            : '';
+          break;
+        }
         case 'aws:ecs/taskDefinition:TaskDefinition':
           state.arn = `arn:aws:ecs:${args.inputs.region ?? providerRegion}:${accountId}:task-definition/${args.name}`;
           break;
@@ -136,11 +178,30 @@ beforeAll(async () => {
             name: providerRegion,
             region: providerRegion,
           };
+        case 'aws:s3/getBucket:getBucket':
+          return {
+            ...args.inputs,
+            bucketRegion: args.inputs.bucket.includes('regional') ? 'eu-west-1' : providerRegion,
+          };
+        case 'aws:s3/getObject:getObject': {
+          const object = existingObjects.get(args.inputs.key) ?? {
+            body: JSON.stringify(existingCredSpec),
+          };
+          return {
+            ...args.inputs,
+            bodyBase64: Buffer.from(object.body).toString('base64'),
+            sseKmsKeyId: object.kmsKeyId ?? '',
+          };
+        }
         case 'aws:kms/getKey:getKey':
           return {
-            arn: `arn:aws:kms:${args.inputs.region}:${accountId}:key/customer-key`,
+            arn: args.inputs.keyId.startsWith('arn:')
+              ? args.inputs.keyId
+              : `arn:aws:kms:${args.inputs.region}:${accountId}:key/${args.inputs.keyId.replace('alias/', '')}`,
             keyId: args.inputs.keyId,
-            keyManager: args.inputs.keyId === 'alias/customer-key' ? 'CUSTOMER' : 'AWS',
+            keyManager: /(?:alias\/|:key\/)(?:customer-key|object-key)$/.test(args.inputs.keyId)
+              ? 'CUSTOMER'
+              : 'AWS',
           };
         default:
           return args.inputs;
@@ -152,6 +213,7 @@ beforeAll(async () => {
 beforeEach(() => {
   resources.length = 0;
   calls.length = 0;
+  existingObjects.clear();
 });
 
 /**
@@ -263,6 +325,211 @@ describe('Fargate container rendering', () => {
         }),
     ).toThrow('containerPortRange must contain values between 1 and 65535');
   });
+});
+
+describe('Fargate credential specifications', () => {
+  test('creates exact domainless JSON with bucket encryption and Output-valued inputs', async () => {
+    const provider = new aws.Provider('generated-credential-provider', { region: 'us-east-1' });
+    const task = new FargateTaskDefinitionV2(
+      'generated-credentials',
+      {
+        region: 'us-east-2',
+        containers: {
+          app: {
+            image: 'nginx',
+            logging: { disabled: true },
+            credentialSpec: {
+              bucketArn: pulumi.output('arn:aws:s3:::regional-kms-credential-bucket'),
+              config: {
+                ...credentialConfig,
+                credentialsSecretArn: pulumi.output(credentialsSecretArn),
+              },
+            },
+          },
+        },
+      },
+      { provider },
+    );
+    const containers = await resolveContainers(task, 'generated-credentials');
+    const objects = resourcesOfType('aws:s3/bucketObjectv2:BucketObjectv2');
+    expect(objects).toHaveLength(1);
+    const object = objects[0]!;
+    expect(object.name).toBe('generated-credentials-app-credential-spec');
+    expect(object.inputs).toMatchObject({
+      bucket: 'regional-kms-credential-bucket',
+      region: 'eu-west-1',
+      contentType: 'application/json',
+    });
+    expect(object.inputs.key).toBeUndefined();
+    expect(object.inputs.serverSideEncryption).toBeUndefined();
+    expect(object.inputs.kmsKeyId).toBeUndefined();
+    expect(object.inputs.bucketKeyEnabled).toBeUndefined();
+    expect(JSON.parse(object.inputs.content)).toEqual(existingCredSpec);
+    const providerRef = taskDefinitionResource('generated-credentials')!.provider;
+    expect(providerRef).toBeDefined();
+    expect(object.provider).toBe(providerRef);
+    expect(new Set(calls.map((call) => call.provider))).toEqual(new Set([providerRef]));
+    expect(containers[0]!.credentialSpecs).toEqual([
+      'credentialspecdomainless:arn:aws:s3:::regional-kms-credential-bucket/generated-credentials-app-credential-spec-autonamed',
+    ]);
+    expect(calls.filter(({ token }) => token === 'aws:s3/getObject:getObject')).toEqual([]);
+    expect(
+      resourcesOfType(
+        'aws:s3/bucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration',
+      ),
+    ).toEqual([]);
+    expect(executionRolePolicy('generated-credentials').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: ['s3:GetBucketLocation', 's3:ListBucket'],
+        Resource: 'arn:aws:s3:::regional-kms-credential-bucket',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Resource:
+          'arn:aws:s3:::regional-kms-credential-bucket/generated-credentials-app-credential-spec-autonamed',
+      },
+      {
+        Effect: 'Allow',
+        Action: 'kms:Decrypt',
+        Resource: `arn:aws:kms:eu-west-1:${accountId}:key/object-key`,
+      },
+      { Effect: 'Allow', Action: 'secretsmanager:GetSecretValue', Resource: credentialsSecretArn },
+    ]);
+  });
+
+  test('discovers the actual existing-object key and credentials secret in their own regions', async () => {
+    const secretArn = `arn:aws:secretsmanager:eu-central-1:${accountId}:secret:customer-key`;
+    const body = JSON.parse(JSON.stringify(existingCredSpec));
+    body.ActiveDirectoryConfig.HostAccountConfig.PluginInput.CredentialArn = secretArn;
+    existingObjects.set('encrypted.json', {
+      body: JSON.stringify(body),
+      kmsKeyId: 'alias/object-key',
+    });
+    const provider = new aws.Provider('credential-provider', { region: 'us-east-1' });
+    const task = new FargateTaskDefinitionV2(
+      'existing-credentials',
+      {
+        region: 'us-east-2',
+        containers: {
+          app: {
+            image: 'nginx',
+            logging: { disabled: true },
+            credentialSpec: {
+              bucketArn: 'arn:aws:s3:::regional-credentials',
+              key: pulumi.output('encrypted.json'),
+            },
+          },
+        },
+      },
+      { provider },
+    );
+    const containers = await resolveContainers(task, 'existing-credentials');
+    expect(containers[0]!.credentialSpecs).toEqual([
+      'credentialspecdomainless:arn:aws:s3:::regional-credentials/encrypted.json',
+    ]);
+    expect(resourcesOfType('aws:s3/bucketObjectv2:BucketObjectv2')).toEqual([]);
+    expect(
+      resourcesOfType(
+        'aws:s3/bucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration',
+      ),
+    ).toEqual([]);
+    expect(
+      calls
+        .filter(({ token }) => token === 'aws:s3/getObject:getObject')
+        .map(({ inputs }) => inputs),
+    ).toEqual([
+      {
+        bucket: 'regional-credentials',
+        key: 'encrypted.json',
+        region: 'eu-west-1',
+        downloadBody: 'true',
+      },
+    ]);
+    expect(
+      resourcesOfType('aws:secretsmanager/secret:Secret').map(({ id, inputs }) => ({
+        id,
+        region: inputs.region,
+      })),
+    ).toEqual([{ id: secretArn, region: 'eu-central-1' }]);
+    expect(executionRolePolicy('existing-credentials').Statement).toEqual([
+      { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: ['s3:GetBucketLocation', 's3:ListBucket'],
+        Resource: 'arn:aws:s3:::regional-credentials',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Resource: 'arn:aws:s3:::regional-credentials/encrypted.json',
+      },
+      {
+        Effect: 'Allow',
+        Action: 'kms:Decrypt',
+        Resource: `arn:aws:kms:eu-west-1:${accountId}:key/object-key`,
+      },
+      { Effect: 'Allow', Action: 'secretsmanager:GetSecretValue', Resource: secretArn },
+      {
+        Effect: 'Allow',
+        Action: 'kms:Decrypt',
+        Resource: `arn:aws:kms:eu-central-1:${accountId}:key/customer-key`,
+      },
+    ]);
+    const providerRef = taskDefinitionResource('existing-credentials')!.provider;
+    expect(providerRef).toBeDefined();
+    expect(new Set(calls.map((call) => call.provider))).toEqual(new Set([providerRef]));
+    expect(
+      new Set(resourcesOfType('aws:secretsmanager/secret:Secret').map((r) => r.provider)),
+    ).toEqual(new Set([providerRef]));
+    expect(calls.some(({ token }) => token.includes('getSecretVersion'))).toBe(false);
+  });
+
+  test('uses SSE-S3 defaults without adding a KMS grant or creating a bucket', async () => {
+    const task = new FargateTaskDefinitionV2('sse-s3-credentials', {
+      containers: {
+        app: {
+          image: 'nginx',
+          credentialSpec: { bucketArn: 'arn:aws:s3:::credentials', config: credentialConfig },
+        },
+      },
+    });
+    await unwrap(task.taskDefinition.arn);
+    const object = resourcesOfType('aws:s3/bucketObjectv2:BucketObjectv2')[0]!;
+    expect(object.inputs.serverSideEncryption).toBeUndefined();
+    expect(object.inputs.bucketKeyEnabled).toBeUndefined();
+    expect(object.inputs.kmsKeyId).toBeUndefined();
+    expect(calls.filter(({ token }) => token === 'aws:kms/getKey:getKey')).toEqual([]);
+    expect(
+      resources.filter(
+        (r) => r.type === 'aws:s3/bucket:Bucket' || r.type === 'aws:s3/bucketV2:BucketV2',
+      ),
+    ).toEqual([]);
+  });
+
+  test('supports a separate forest root when rendering domain metadata', async () => {
+    const content = await unwrap(
+      renderCredentialSpecConfig(
+        { ...credentialConfig, dnsTreeName: 'root.example.com' },
+        'config',
+      ),
+    );
+    expect(JSON.parse(content).DomainJoinConfig).toEqual({
+      ...existingCredSpec.DomainJoinConfig,
+      DnsTreeName: 'root.example.com',
+    });
+  });
+
+  test.each(['not json', '{"ActiveDirectoryConfig":{}}', 'null'])(
+    'rejects unreadable or non-domainless files: %s',
+    (body) => {
+      expect(() => credentialsSecretArnFromSpec(body, 'containers.app.credentialSpec.key')).toThrow(
+        pulumi.InputPropertyError,
+      );
+    },
+  );
 });
 
 describe('FargateTaskDefinitionV2', () => {
@@ -393,39 +660,24 @@ describe('FargateTaskDefinitionV2', () => {
     ]);
   });
 
-  test('creates distinct SSM children for credential specs and secrets', async () => {
+  test('keeps credential-secret and environment-secret children distinct', async () => {
     const task = new FargateTaskDefinitionV2('identity', {
       containers: {
         app: {
           image: 'nginx',
-          credentialSpecs: [
-            {
-              authenticationMode: CredentialSpecAuthenticationMode.DOMAIN_JOINED,
-              ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/credentials`,
-            },
-          ],
+          credentialSpec: { bucketArn: 'arn:aws:s3:::credential-bucket', key: 'spec.json' },
           secrets: {
-            '0': {
-              ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/application`,
-            },
+            'credential-spec': { secretsManager: { secretArn: credentialsSecretArn } },
           },
         },
       },
     });
     await unwrap(task.taskDefinition.arn);
-
-    const parameters = resourcesOfType('aws:ssm/parameter:Parameter');
-    expect(parameters.map(({ name, id }) => ({ name, id }))).toEqual([
-      {
-        name: 'identity-app-credential-spec-0-param',
-        id: 'credentials',
-      },
-      {
-        name: 'identity-app-secret-0-param',
-        id: 'application',
-      },
-    ]);
-    expect(new Set(parameters.map((parameter) => parameter.name)).size).toBe(2);
+    const secrets = resourcesOfType('aws:secretsmanager/secret:Secret');
+    expect(secrets).toHaveLength(2);
+    expect(new Set(secrets.map(({ name }) => name))).toEqual(
+      new Set(['identity-app-credential-spec-credentials', 'identity-app-credential-spec-secret']),
+    );
   });
 
   test.each([
@@ -474,24 +726,38 @@ describe('FargateTaskDefinitionV2', () => {
     );
   });
 
-  test('rejects conflicting credential-spec sources', () => {
+  test.each([{}, { key: 'spec.json', config: credentialConfig }])(
+    'rejects missing or conflicting credential-spec sources: %j',
+    (source) => {
+      expect(
+        () =>
+          new FargateTaskDefinitionV2('conflicting-credentials', {
+            containers: {
+              app: {
+                image: 'nginx',
+                credentialSpec: { bucketArn: 'arn:aws:s3:::credentials', ...source },
+              },
+            },
+          }),
+      ).toThrow('Specify exactly one of key or config');
+    },
+  );
+
+  test('rejects credential specs for Windows Fargate tasks', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('conflicting-credentials', {
+        new FargateTaskDefinitionV2('windows-credentials', {
+          runtimePlatform: {
+            operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2022_CORE,
+          },
           containers: {
             app: {
-              image: 'nginx',
-              credentialSpecs: [
-                {
-                  authenticationMode: CredentialSpecAuthenticationMode.DOMAINLESS,
-                  s3Bucket: { bucketArn: 'arn:aws:s3:::credentials', key: 'spec.json' },
-                  ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/spec`,
-                },
-              ],
+              image: 'windows',
+              credentialSpec: { bucketArn: 'arn:aws:s3:::credentials', key: 'spec.json' },
             },
           },
         }),
-    ).toThrow('Only one of s3Bucket or ssmParameter can be defined');
+    ).toThrow('supported only for Linux containers on Fargate');
   });
 
   test('rejects conflicting secret sources', () => {
@@ -999,15 +1265,10 @@ describe('FargateTaskDefinitionV2', () => {
           environmentFiles: [
             { bucketArn: 'arn:aws:s3:::environment-bucket', key: 'configs/app.env' },
           ],
-          credentialSpecs: [
-            {
-              authenticationMode: CredentialSpecAuthenticationMode.DOMAINLESS,
-              s3Bucket: {
-                bucketArn: 'arn:aws:s3:::credential-bucket',
-                key: 'credentials/domainless.json',
-              },
-            },
-          ],
+          credentialSpec: {
+            bucketArn: 'arn:aws:s3:::credential-bucket',
+            key: 'credentials/domainless.json',
+          },
         },
       },
     });
@@ -1024,6 +1285,11 @@ describe('FargateTaskDefinitionV2', () => {
         Effect: 'Allow',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
         Resource: 'arn:aws:s3:::credential-bucket/credentials/domainless.json',
+      },
+      {
+        Effect: 'Allow',
+        Action: 'secretsmanager:GetSecretValue',
+        Resource: credentialsSecretArn,
       },
       {
         Effect: 'Allow',

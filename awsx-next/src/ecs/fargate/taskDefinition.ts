@@ -17,7 +17,11 @@ import {
   PortMappingAppProtocol,
   PortMappingProtocol,
 } from '../containerDefinitionArgs';
-import { CredentialSpec } from '../credentialSpec';
+import {
+  type FargateCredentialSpec,
+  renderCredentialSpecConfig,
+  credentialsSecretArnFromSpec,
+} from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
 import {
@@ -369,9 +373,19 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
         const ecrRepo = this.renderEcrPullStatementResource(container.image);
         ecrRepositories.push(ecrRepo);
-        const credentialSpecs = container.credentialSpecs?.map((spec, i) =>
-          this.renderCredentialSpec(spec, containerName, i),
-        );
+        if (
+          container.credentialSpec &&
+          args.runtimePlatform?.operatingSystemFamily?.startsWith('WINDOWS')
+        ) {
+          throw new pulumi.InputPropertyError({
+            propertyPath: `containers.${containerName}.credentialSpec`,
+            reason:
+              'gMSA credential specifications are supported only for Linux containers on Fargate',
+          });
+        }
+        const credentialSpec = container.credentialSpec
+          ? this.renderCredentialSpec(container.credentialSpec, containerName, opts.dependsOn)
+          : undefined;
         const environmentFiles = container.environmentFiles?.map((file, i) =>
           this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
         );
@@ -387,7 +401,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           : this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch ?? {});
 
         executionRoleStatements.push(
-          ...(credentialSpecs?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
+          ...(credentialSpec?.executionRoleStatements ?? []),
           ...(environmentFiles?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
           ...(secrets?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
           ...(logs?.executionRoleStatements ?? []),
@@ -396,7 +410,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         const c = this.toContainerDefinition(
           containerName,
           container,
-          credentialSpecs?.map((rendered) => rendered.value),
+          credentialSpec ? [credentialSpec.value] : undefined,
           environmentFiles?.map((rendered) => rendered.value),
           secrets?.map((rendered) => rendered.value),
           logs?.value,
@@ -581,82 +595,124 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   }
 
   /**
-   * Converts a credential specification input to the value expected by ECS.
+   * Creates or reads a domainless S3 CredSpec and grants access to its referenced credentials.
    *
-   * @param spec The credential specification to render.
-   * @param containerName The name of the container this spec is associated with
-   * @param idx The array index of this specific spec (each container can have multiple)
-   * @returns The rendered value and its execution-role statements.
+   * @param spec The S3 source or configuration.
+   * @param containerName The container using the specification.
+   * @param dependsOn Explicit component dependencies that must precede S3 lookups.
+   * @returns The ECS reference and scoped execution-role statements.
    */
   private renderCredentialSpec(
-    spec: CredentialSpec,
+    spec: FargateCredentialSpec,
     containerName: string,
-    idx: number,
+    dependsOn: pulumi.ComponentResourceOptions['dependsOn'],
   ): Rendered<string> {
-    const propertyPath = `containers.${containerName}.credentialSpecs[${idx}]`;
-    if (spec.s3Bucket && spec.ssmParameterArn) {
+    const propertyPath = `containers.${containerName}.credentialSpec`;
+    if ((spec.key !== undefined) === (spec.config !== undefined)) {
       throw new pulumi.InputPropertyError({
         propertyPath,
-        reason: 'Only one of s3Bucket or ssmParameter can be defined',
+        reason: 'Specify exactly one of key or config for the credential specification',
       });
     }
-
-    if (!spec.s3Bucket && !spec.ssmParameterArn) {
-      throw new pulumi.InputPropertyError({
-        propertyPath,
-        reason: 'One of s3Bucket or ssmParameter must be provided',
+    const name = `${this.name}-${containerName}-credential-spec`;
+    const bucketName = Arn.split(spec.bucketArn, ArnFormat.NO_RESOURCE_NAME, this).apply(
+      (parts) => parts.resource,
+    );
+    const bucket = aws.s3.getBucketOutput(
+      { bucket: bucketName, region: this.region },
+      { parent: this, dependsOn },
+    );
+    let objectArn: pulumi.Output<string>;
+    let objectKeyId: pulumi.Output<string | undefined>;
+    let credentialsSecretArn: pulumi.Output<string>;
+    if (spec.config !== undefined) {
+      const content = renderCredentialSpecConfig(spec.config, `${propertyPath}.config`);
+      const object = new aws.s3.BucketObjectv2(
+        name,
+        {
+          bucket: bucketName,
+          region: bucket.bucketRegion,
+          content,
+          contentType: 'application/json',
+        },
+        // A new key on configuration changes also changes the task definition's CredSpec ARN.
+        { parent: this, replaceOnChanges: ['content'] },
+      );
+      // Depend on creation, not just the bucket name and predictable key.
+      objectArn = object.arn;
+      // S3 applies bucket-default encryption, the returned metadata identifies the actual key.
+      objectKeyId = object.kmsKeyId;
+      credentialsSecretArn = pulumi.output(spec.config.credentialsSecretArn);
+    } else {
+      const key = pulumi.output(spec.key!).apply((resolvedKey) => {
+        if (!resolvedKey) {
+          throw new pulumi.InputPropertyError({
+            propertyPath: `${propertyPath}.key`,
+            reason: 'The credential specification key must not be empty',
+          });
+        }
+        return resolvedKey;
       });
+      const object = aws.s3.getObjectOutput(
+        { bucket: bucketName, key, region: bucket.bucketRegion, downloadBody: 'true' },
+        { parent: this, dependsOn },
+      );
+      // Force downloading the body, including application/octet-stream objects.
+      credentialsSecretArn = object.bodyBase64.apply((body) =>
+        credentialsSecretArnFromSpec(
+          Buffer.from(body, 'base64').toString('utf8'),
+          `${propertyPath}.key`,
+        ),
+      );
+      objectArn = pulumi.interpolate`${spec.bucketArn}/${key}`;
+      objectKeyId = object.sseKmsKeyId;
     }
-
-    let prefix: string;
-    switch (spec.authenticationMode) {
-      case 'DomainJoined':
-        prefix = 'credentialspec';
-        break;
-      case 'Domainless':
-        prefix = 'credentialspecdomainless';
-        break;
-      default:
-        throw new pulumi.InputPropertyError({
-          propertyPath: `${propertyPath}.authenticationMode`,
-          reason: `Unsupported credential spec authentication mode: ${spec.authenticationMode}`,
-        });
-    }
-
-    if (spec.s3Bucket) {
-      const objectArn = pulumi.interpolate`${spec.s3Bucket.bucketArn}/${spec.s3Bucket.key}`;
-      return {
-        value: pulumi.interpolate`${prefix}:${objectArn}`,
-        executionRoleStatements: [
-          this.executionRoleStatement({
-            Effect: 'Allow',
-            Action: ['s3:GetBucketLocation', 's3:ListBucket'],
-            Resource: spec.s3Bucket.bucketArn,
-          }),
-          this.executionRoleStatement({
-            Effect: 'Allow',
-            Action: ['s3:GetObject', 's3:GetObjectVersion'],
-            Resource: objectArn,
-          }),
-        ],
-      };
-    }
-
-    const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-credential-spec-${idx}-param`,
-      parameterNameFromArn(spec.ssmParameterArn!, this.getProviderRegion(), this),
-      undefined,
+    const secretRegion = Arn.split(credentialsSecretArn, ArnFormat.COLON_RESOURCE_NAME, this).apply(
+      (parts) => {
+        if (
+          parts.service !== 'secretsmanager' ||
+          parts.resource !== 'secret' ||
+          !parts.resourceName ||
+          !parts.region ||
+          !parts.account ||
+          parts.resourceName.includes(':')
+        ) {
+          throw new pulumi.InputPropertyError({
+            propertyPath: spec.config
+              ? `${propertyPath}.config.credentialsSecretArn`
+              : `${propertyPath}.key`,
+            reason: 'The credential specification must reference a Secrets Manager secret ARN',
+          });
+        }
+        return parts.region;
+      },
+    );
+    const secret = aws.secretsmanager.Secret.get(
+      `${name}-credentials`,
+      credentialsSecretArn,
+      { region: secretRegion },
       { parent: this },
     );
     return {
-      value: pulumi.interpolate`${prefix}:${parameter.arn}`,
+      value: objectArn.apply((arn) => `credentialspecdomainless:${arn}`),
       executionRoleStatements: [
         this.executionRoleStatement({
           Effect: 'Allow',
-          Action: ['ssm:GetParameter', 'ssm:GetParameters'],
-          Resource: parameter.arn,
+          Action: ['s3:GetBucketLocation', 's3:ListBucket'],
+          Resource: spec.bucketArn,
         }),
-        this.renderKmsDecryptStatement(parameter.keyId, parameter.region),
+        this.executionRoleStatement({
+          Effect: 'Allow',
+          Action: ['s3:GetObject', 's3:GetObjectVersion'],
+          Resource: objectArn,
+        }),
+        this.renderKmsDecryptStatement(objectKeyId, bucket.bucketRegion),
+        this.executionRoleStatement({
+          Effect: 'Allow',
+          Action: 'secretsmanager:GetSecretValue',
+          Resource: secret.arn,
+        }),
+        this.renderKmsDecryptStatement(secret.kmsKeyId, secret.region),
       ],
     };
   }
@@ -970,7 +1026,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     containerName: string,
     options: Omit<
       FargateContainerDefinitionOptions,
-      'credentialSpecs' | 'environmentFiles' | 'secrets' | 'logging'
+      'credentialSpec' | 'environmentFiles' | 'secrets' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
     environmentFiles?: pulumi.Output<ContainerDefinitionEnvironmentFile>[],
