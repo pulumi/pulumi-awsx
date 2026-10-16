@@ -134,6 +134,18 @@ test('rejects conflicting capacity-provider choices', () => {
   );
 });
 
+test('rejects an attachment without application configuration', () => {
+  expect(
+    () =>
+      new FargateServiceV2('invalid-attachment', {
+        clusterArn: 'cluster',
+        taskDefinition: 'task',
+        vpcSubnetIds: ['subnet'],
+        loadBalancer: { invalid: {} },
+      }),
+  ).toThrow(expect.objectContaining({ propertyPath: 'loadBalancer.invalid.application' }));
+});
+
 test('discovers the first subnet VPC and wires a managed group with outbound-only access', async () => {
   const { component, inputs } = await createService('managed');
   expect(

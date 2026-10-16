@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import { ComponentIdentity } from '../../componentIdentity';
 import * as aws from '@pulumi/aws';
+import { validateListenerRulePriorities } from './serviceLoadBalancerValidation';
 import {
   createApplicationServiceAttachment,
   CreatedApplicationServiceAttachment,
@@ -357,12 +358,22 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     const loadBalancers: aws.types.input.ecs.ServiceLoadBalancer[] = [];
     const readyDependencies: pulumi.Resource[] = [];
     const attachments: CreatedApplicationServiceAttachment[] = [];
-    const publicIngressRequests: {
-      attachmentName: string;
-      securityGroupId: pulumi.Output<string>;
-      port: number;
-    }[] = [];
-    for (const [attachmentName, attachmentArgs] of Object.entries(args.loadBalancer ?? {})) {
+    const attachmentEntries = Object.entries(args.loadBalancer ?? {});
+    // Listener IDs may be Outputs. Validate collisions after resolution, but declare every
+    // attachment synchronously and gate its forwarding rule on this shared validation.
+    const listenerRuleValidation = pulumi
+      .all(attachmentEntries.map(([, attachment]) => attachment.application?.listenerArn))
+      .apply((arns) => {
+        const rules = attachmentEntries.flatMap(([attachmentName, attachment], index) => {
+          const rule = attachment.application;
+          const listenerArn = arns[index];
+          return rule && listenerArn !== undefined
+            ? [{ attachmentName, listenerArn, priority: rule.priority }]
+            : [];
+        });
+        validateListenerRulePriorities(rules);
+      });
+    for (const [attachmentName, attachmentArgs] of attachmentEntries) {
       if (!attachmentArgs.application) {
         throw new pulumi.InputPropertyError({
           propertyPath: `loadBalancer.${attachmentName}.application`,
@@ -376,64 +387,12 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         {
           parent: this,
           region: args.region,
+          listenerRuleValidation,
         },
       );
       attachments.push(attachment);
       loadBalancers.push(attachment.serviceBinding);
       readyDependencies.push(...attachment.readyDependencies);
-      if (attachment.publicIngress) {
-        publicIngressRequests.push({ attachmentName, ...attachment.publicIngress });
-      }
-    }
-
-    // We can't de-duplicate rules because that would require us to create the ingress rules in an apply
-    // so we have to do the next best thing and add validation prior to deployment.
-    const validatedPublicGroups = pulumi
-      .all(publicIngressRequests.map((request) => request.securityGroupId))
-      .apply((groups) => {
-        const owners = new Map<string, string>();
-        for (const [index, request] of publicIngressRequests.entries()) {
-          const groupId = groups[index]!;
-          const key = `${groupId}:${request.port}`;
-          const owner = owners.get(key);
-          if (owner !== undefined) {
-            throw new pulumi.InputPropertyError({
-              propertyPath: `loadBalancer.${request.attachmentName}.application.listener.open`,
-              reason:
-                `Attachments "${owner}" and "${request.attachmentName}" both request public ingress ` +
-                `for security group ${groupId} on TCP port ${request.port}. ` +
-                'Set open: true on only one attachment sharing this security group and port.',
-            });
-          }
-          owners.set(key, request.attachmentName);
-        }
-        return groups;
-      });
-    for (const [index, request] of publicIngressRequests.entries()) {
-      new aws.vpc.SecurityGroupIngressRule(
-        `${name}-${request.attachmentName}-alb-ingress-all`,
-        {
-          region: args.region,
-          ipProtocol: 'tcp',
-          securityGroupId: validatedPublicGroups.apply((groups) => groups[index]!),
-          fromPort: request.port,
-          toPort: request.port,
-          cidrIpv4: '0.0.0.0/0',
-        },
-        { parent: this },
-      );
-      new aws.vpc.SecurityGroupIngressRule(
-        `${name}-${request.attachmentName}-alb-ingress-all-ipv6`,
-        {
-          region: args.region,
-          ipProtocol: 'tcp',
-          securityGroupId: validatedPublicGroups.apply((groups) => groups[index]!),
-          fromPort: request.port,
-          toPort: request.port,
-          cidrIpv6: '::/0',
-        },
-        { parent: this },
-      );
     }
 
     // We can have multiple attachments to the same load balancer and multiple attachments to multiple load balancer.

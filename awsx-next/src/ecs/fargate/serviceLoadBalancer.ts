@@ -1,44 +1,6 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
-
-/**
- * TLS security policies for HTTPS listeners.
- *
- * Use `RECOMMENDED` for general use. Select another policy when your application requires
- * FIPS-validated cryptography, TLS 1.3-only connections, or RFC 9151 compliance. See each member's
- * documentation for its requirements and supported protocols.
- *
- * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html
- */
-export enum SslPolicy {
-  /**
-   * Recommended for general use. Supports TLS 1.3 and TLS 1.2, forward secrecy, and hybrid
-   * post-quantum key exchange when supported by the client.
-   */
-  RECOMMENDED = 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
-
-  /**
-   * Use when FIPS-validated cryptography is required. Supports TLS 1.3 and TLS 1.2 and hybrid
-   * post-quantum key exchange.
-   */
-  FIPS = 'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09',
-
-  /**
-   * Use only when every client supports TLS 1.3.
-   */
-  TLS13_ONLY = 'ELBSecurityPolicy-TLS13-1-3-PQ-2025-09',
-
-  /**
-   * Use when strict RFC 9151/CNSA 1.0 compliance is required and every client supports its
-   * restricted algorithms.
-   */
-  RFC9151 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-FIPS-2023-07',
-
-  /**
-   * Use while migrating clients toward RFC 9151/CNSA 1.0.
-   */
-  RFC9151_INTEROP = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP4-FIPS-2023-07',
-}
+import { validateTargetProtocolVersion } from './serviceLoadBalancerValidation';
 
 export interface StringMatch {
   /**
@@ -168,7 +130,7 @@ export interface TargetGroupHealthCheck {
    * Protocol the load balancer uses when performing health checks on targets. Must be one of
    * `HTTP`, or `HTTPS`.
    *
-   * Default - HealthCheckProtocol.HTTP.
+   * Default - ApplicationProtocol.HTTP.
    */
   protocol?: ApplicationProtocol;
 
@@ -209,15 +171,20 @@ export interface ApplicationServiceLoadBalancer {
   readonly containerName: string;
 
   /**
-   * Creates a dedicated listener. Exactly one of listener or existingListener is required.
+   * The ARN of the application listener to attach a production forwarding rule to. The listener's
+   * frontend access, certificates, and default action are not modified.
    */
-  readonly listener?: ServiceApplicationListener;
+  readonly listenerArn: pulumi.Input<string>;
 
   /**
-   * Creates a forwarding rule on an existing listener without changing its default action or TLS
-   * configuration. Exactly one of listener or existingListener is required.
+   * The available priority for the production rule, from 1 to 50000.
    */
-  readonly existingListener?: ExistingServiceApplicationListener;
+  readonly priority: number;
+
+  /**
+   * Conditions selecting production requests. At least one condition is required.
+   */
+  readonly match: ListenerConditions;
 
   /**
    * Health checks used by the Load Balancer to determine whether the ECS Service target can receive
@@ -243,86 +210,10 @@ export interface ApplicationServiceLoadBalancer {
   readonly targetProtocol?: ApplicationProtocol;
 }
 
-export interface ExistingServiceApplicationListener {
-  /**
-   * The ARN of the application listener to read and attach a forwarding rule to.
-   */
-  readonly listenerArn: pulumi.Input<string>;
-
-  /**
-   * The available priority for the production rule, from 1 to 50000.
-   */
-  readonly priority: number;
-
-  /**
-   * Conditions selecting production requests. At least one condition is required.
-   */
-  readonly match: ListenerConditions;
-}
-export interface ServiceApplicationListener {
-  /**
-   * The ARN of the Application Load Balancer
-   */
-  readonly loadBalancerArn: pulumi.Input<string>;
-
-  /**
-   * The port that the Load Balancer accepts client connections on.
-   *
-   * Default - 443 when `certificateArns` is non-empty, otherwise 80
-   */
-  readonly listenerPort?: number;
-
-  /**
-   * If true, adds rules to the Load Balancer SecurityGroup allowing public IPv4 (0.0.0.0/0) and
-   * IPv6 (::/0) access on the listenerPort. Both rules are created regardless of the ALB's current
-   * IP address type, so switching to dual-stack does not require changing this configuration.
-   *
-   * Creates standalone ingress rules on the ALB security group. Do not enable this when that
-   * group's ingress is managed through inline SecurityGroup.ingress rules, because the two
-   * ownership models conflict. In that case, configure public access where the security group is
-   * managed and leave open false.
-   *
-   * Only one attachment may open a given security-group/port pair. If the security group already
-   * permits public access on this port, leave this false; existing rules are not adopted.
-   *
-   * Default - false
-   */
-  readonly open?: boolean;
-
-  /**
-   * ACM Certificate ARNs to use for HTTPS connections. This is _required_ in order to use HTTPS.
-   * The first certificate provided is the default certificate. Any additional certificates are
-   * associated with the Load Balancer through Server Name Indication (SNI)
-   *
-   * Certificates must be available in the same AWS Region as the Load Balancer
-   *
-   * Default - No certificates. The listener uses HTTP.
-   */
-  readonly certificateArns?: pulumi.Input<string>[];
-
-  /**
-   * TLS security policy used for HTTPS client connections. Can only be provided alongside
-   * certificateArns.
-   *
-   * Default - SslPolicy.RECOMMENDED
-   */
-  readonly sslPolicy?: SslPolicy;
-
-  /**
-   * Optional conditions to use when routing requests to the ECS Service target. All configured
-   * conditions must match. Any requests that don't match will receive a 404 default response.
-   *
-   * If conditions are provided a listener rule is created with a priority of 200
-   *
-   * Default - All requests go to the target
-   */
-  readonly match?: ListenerConditions;
-}
 export interface ServiceLoadBalancer {
   /**
    * Application Load Balancer attachment for a named service endpoint. Creates target groups and
-   * listener routing for the service's deployment strategy, using a dedicated or existing
-   * listener.
+   * forwarding rules on a caller-managed listener.
    *
    * An application configuration must be provided for each entry in the service's loadBalancer map.
    */
@@ -338,6 +229,10 @@ export interface ApplicationServiceAttachmentContext {
    * Region selected by the service, or the inherited provider region when omitted.
    */
   readonly region?: string;
+  /**
+   * Optional service-wide validation that must finish before forwarding rules can be created.
+   */
+  readonly listenerRuleValidation?: pulumi.Input<void>;
 }
 
 export interface RequiredIngress {
@@ -352,10 +247,6 @@ export interface CreatedApplicationServiceAttachment {
   readonly serviceBinding: aws.types.input.ecs.ServiceLoadBalancer;
   readonly readyDependencies: pulumi.Resource[];
   readonly requiredIngress: pulumi.Output<RequiredIngress[]>;
-  readonly publicIngress?: {
-    readonly securityGroupId: pulumi.Output<string>;
-    readonly port: number;
-  };
 }
 
 /**
@@ -384,12 +275,11 @@ export function createApplicationServiceAttachment(
     });
   };
 
-  if (!args.listener && !args.existingListener) {
-    fail('', 'One of listener or existingListener must be provided');
+  if (!args.listenerArn) {
+    fail('listenerArn', 'A listener ARN must be provided');
   }
-
-  if (args.listener && args.existingListener) {
-    fail('', 'listener and existingListener cannot both be provided');
+  if (!args.match) {
+    fail('match', 'At least one condition is required for a listener rule');
   }
 
   if (
@@ -415,64 +305,33 @@ export function createApplicationServiceAttachment(
     fail('targetHealthCheck.healthGrpcCodes', 'healthGrpcCodes requires the GRPC protocol version');
   }
 
-  const existing = args.existingListener;
-  const productionPriority = existing?.priority ?? 200;
-  if (
-    !Number.isInteger(productionPriority) ||
-    productionPriority < 1 ||
-    productionPriority > 50000
-  ) {
-    fail('existingListener.priority', 'The rule priority must be an integer between 1 and 50000');
+  if (!Number.isInteger(args.priority) || args.priority < 1 || args.priority > 50000) {
+    fail('priority', 'The rule priority must be an integer between 1 and 50000');
+  }
+  const conditions = renderConditions(args.match, `${propertyPath}.match`);
+  if (conditions.length === 0) {
+    fail('match', 'At least one condition is required for a listener rule');
   }
 
-  const conditions = renderConditions(
-    existing?.match ?? args.listener?.match ?? {},
-    `${propertyPath}.${existing ? 'existingListener' : 'listener'}.match`,
+  // Keep the existing read name: renaming the configuration must not rename child resources.
+  const listener = aws.lb.Listener.get(
+    `${resourceName}-existing-listener`,
+    context.region ? pulumi.interpolate`${args.listenerArn}@${context.region}` : args.listenerArn,
+    undefined,
+    opts,
   );
-  if (existing && conditions.length === 0) {
-    fail('existingListener.match', 'At least one condition is required for an existing listener');
-  }
-  const dedicated = args.listener;
-  const certificates = dedicated?.certificateArns ?? [];
-  const protocol = certificates.length > 0 ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP;
-  const port = dedicated?.listenerPort ?? (protocol === ApplicationProtocol.HTTPS ? 443 : 80);
-  if (dedicated && (!Number.isInteger(port) || port < 1 || port > 65535)) {
-    fail('listener.listenerPort', 'The listener port must be an integer between 1 and 65535');
-  }
-  if (dedicated?.sslPolicy && protocol !== ApplicationProtocol.HTTPS) {
-    fail(
-      'listener.sslPolicy',
-      'A TLS security policy requires certificateArns and an HTTPS listener',
-    );
-  }
-  const requiresHttps = args.targetProtocolVersion === ApplicationProtocolVersion.HTTP_2 || grpc;
-  if (dedicated && requiresHttps && protocol !== ApplicationProtocol.HTTPS) {
-    fail('targetProtocolVersion', 'HTTP_2 and GRPC require an HTTPS listener');
-  }
-
-  const existingListener = existing
-    ? aws.lb.Listener.get(
-        `${resourceName}-existing-listener`,
-        context.region
-          ? pulumi.interpolate`${existing.listenerArn}@${context.region}`
-          : existing.listenerArn,
-        undefined,
-        opts,
-      )
-    : undefined;
   const loadBalancer = aws.lb.getLoadBalancerOutput(
-    {
-      arn: existingListener ? existingListener.loadBalancerArn : dedicated!.loadBalancerArn,
-      region: context.region,
-    },
+    { arn: listener.loadBalancerArn, region: context.region },
     opts,
   );
   const vpcId = pulumi
-    .all([loadBalancer.vpcId, existingListener?.protocol ?? protocol])
+    .all([loadBalancer.vpcId, listener.protocol])
     .apply(([id, listenerProtocol]) => {
-      if (requiresHttps && listenerProtocol !== ApplicationProtocol.HTTPS) {
-        fail('targetProtocolVersion', 'HTTP_2 and GRPC require an HTTPS listener');
-      }
+      validateTargetProtocolVersion(
+        args.targetProtocolVersion,
+        listenerProtocol,
+        `${propertyPath}.targetProtocolVersion`,
+      );
       return id;
     });
 
@@ -500,75 +359,27 @@ export function createApplicationServiceAttachment(
   const targets: aws.types.input.lb.ListenerRuleActionForwardTargetGroup[] = [
     { arn: targetGroup.arn },
   ];
-  const listener =
-    existingListener ??
-    new aws.lb.Listener(
-      `${resourceName}-listener`,
-      {
-        region: context.region,
-        loadBalancerArn: dedicated!.loadBalancerArn,
-        port,
-        protocol,
-        certificateArn: certificates[0],
-        sslPolicy:
-          protocol === ApplicationProtocol.HTTPS
-            ? (dedicated!.sslPolicy ?? SslPolicy.RECOMMENDED)
-            : undefined,
-        defaultActions:
-          conditions.length === 0
-            ? [{ type: 'forward', forward: { targetGroups: targets } }]
-            : [
-                {
-                  type: 'fixed-response',
-                  fixedResponse: {
-                    statusCode: '404',
-                    contentType: 'text/plain',
-                    messageBody: 'Not found',
-                  },
-                },
-              ],
-      },
-      opts,
-    );
-  const readyDependencies: pulumi.Resource[] = [listener];
-  certificates.slice(1).forEach((certificateArn, index) => {
-    readyDependencies.push(
-      new aws.lb.ListenerCertificate(
-        `${resourceName}-certificate-${index}`,
-        { listenerArn: listener.arn, certificateArn, region: context.region },
-        opts,
-      ),
-    );
-  });
-
   const ports = [
     ...new Set([args.containerPort, args.targetHealthCheck?.port ?? args.containerPort]),
   ];
-  const firstGroup = loadBalancer.securityGroups.apply((groups) => {
-    return groups[0]!;
-  });
   const requiredIngress = loadBalancer.securityGroups.apply((groups) => {
     const group = groups[0]!;
     return ports.flatMap((p) => ({ sourceGroupId: group, port: p }));
   });
 
-  const productionRule =
-    conditions.length > 0
-      ? new aws.lb.ListenerRule(
-          `${resourceName}-listener-rule`,
-          {
-            region: context.region,
-            listenerArn: listener.arn,
-            priority: productionPriority,
-            conditions,
-            actions: [{ type: 'forward', forward: { targetGroups: targets } }],
-          },
-          opts,
-        )
-      : undefined;
-  if (productionRule) {
-    readyDependencies.push(productionRule);
-  }
+  const productionRule = new aws.lb.ListenerRule(
+    `${resourceName}-listener-rule`,
+    {
+      region: context.region,
+      listenerArn: pulumi
+        .output({ arn: listener.arn, validation: context.listenerRuleValidation })
+        .apply(({ arn }) => arn),
+      priority: args.priority,
+      conditions,
+      actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+    },
+    opts,
+  );
 
   return {
     serviceBinding: {
@@ -576,9 +387,8 @@ export function createApplicationServiceAttachment(
       containerPort: args.containerPort,
       targetGroupArn: targetGroup.arn,
     },
-    readyDependencies,
+    readyDependencies: [listener, productionRule],
     requiredIngress,
-    publicIngress: dedicated?.open ? { securityGroupId: firstGroup, port } : undefined,
   };
 }
 
