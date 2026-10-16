@@ -20,6 +20,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -108,6 +110,49 @@ func TestAccEcsExperimentalStandalone(t *testing.T) {
 	require.Equal(t, "app", definitions[0]["name"])
 	require.Equal(t, "public.ecr.aws/nginx/nginx:latest", definitions[0]["image"])
 	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, definitions[0]["environment"])
+}
+
+func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
+	// Check before constructing a Pulumi test, so an unconfigured local run creates no stack.
+	getEnvRegion(t)
+	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
+	result := pt.Up(t)
+
+	url, ok := result.Outputs["url"].Value.(string)
+	require.True(t, ok)
+	client := &http.Client{Timeout: 10 * time.Second}
+	for _, route := range []struct {
+		name   string
+		path   string
+		status int
+		body   string
+	}{
+		{"api", "/api/ping", http.StatusOK, "api-ok\n"},
+		{"admin", "/admin/ping", http.StatusOK, "admin-ok\n"},
+		{"listener-default", "/unmatched", http.StatusNotFound, "listener-default\n"},
+	} {
+		t.Run(route.name, func(t *testing.T) {
+			// This checks actual ALB-to-task traffic, including health checks on a separate port.
+			// The final case also proves the service did not replace the caller's default action.
+			require.EventuallyWithT(t, func(c *assert.CollectT) {
+				response, err := client.Get(url + route.path)
+				if !assert.NoError(c, err) {
+					return
+				}
+				defer response.Body.Close()
+				body, err := io.ReadAll(io.LimitReader(response.Body, 1024))
+				if !assert.NoError(c, err) {
+					return
+				}
+				assert.Equal(c, route.status, response.StatusCode)
+				assert.Equal(c, route.body, string(body))
+			}, 2*time.Minute, 5*time.Second)
+		})
+	}
+
+	// Initial acceptance and a no-change preview are separate claims. This does not test a
+	// progressive rollout, certificate rotation, or refresh/update of an existing deployment.
+	pt.Preview(t, optpreview.ExpectNoChanges())
 }
 
 func TestAccEcsExperimentalPermissions(t *testing.T) {

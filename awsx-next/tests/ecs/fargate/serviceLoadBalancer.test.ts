@@ -1,6 +1,7 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 import {
+  ApplicationProtocol,
   ApplicationProtocolVersion,
   ApplicationServiceLoadBalancer,
   CreatedApplicationServiceAttachment,
@@ -19,20 +20,16 @@ beforeAll(async () => {
   await pulumi.runtime.setMocks({
     newResource(args) {
       resources.push(args);
-      const state = { ...args.inputs, arn: `arn:mock:${args.name}` };
-      if (args.type === 'aws:lb/listener:Listener' && args.id) {
-        Object.assign(state, {
-          arn: listenerArn,
-          loadBalancerArn,
-          protocol: 'HTTPS',
-          port: 443,
-          defaultActions: [{ type: 'fixed-response', fixedResponse: { statusCode: '403' } }],
-        });
-      }
-      return { id: args.id || `${args.name}_id`, state };
+      return {
+        id: `${args.name}_id`,
+        state: { ...args.inputs, arn: `arn:mock:${args.name}` },
+      };
     },
     call(args) {
       calls.push(args);
+      if (args.token === 'aws:lb/getListener:getListener') {
+        return { ...args.inputs, loadBalancerArn, protocol: 'HTTPS', port: 443 };
+      }
       return {
         ...args.inputs,
         vpcId: 'vpc-shared',
@@ -109,7 +106,7 @@ async function settle(
 ): Promise<pulumi.Unwrap<aws.types.input.ecs.ServiceLoadBalancer>> {
   const [binding] = await Promise.all([
     resolve(pulumi.output(attachment.serviceBinding)),
-    resolve(attachment.requiredIngress),
+    resolve(pulumi.output(attachment.requiredIngress)),
     ...children.map((child) => resolve(child.urn)),
   ]);
   return binding;
@@ -127,6 +124,9 @@ it('creates only backend resources, keeping health-check and application ports i
         intervalSeconds: 15,
         timeoutSeconds: 4,
         healthyHttpCodes: '200-299',
+        protocol: ApplicationProtocol.HTTPS,
+        healthyThreshold: 6,
+        unhealthyThreshold: 4,
       },
     },
     { parent: parent() },
@@ -137,7 +137,7 @@ it('creates only backend resources, keeping health-check and application ports i
     containerPort: 3000,
     targetGroupArn: 'arn:mock:service-public-target-main',
   });
-  expect(await resolve(attachment.requiredIngress)).toEqual([
+  expect(await resolve(pulumi.output(attachment.requiredIngress))).toEqual([
     { sourceGroupId: 'sg-alb', port: 3000 },
     { sourceGroupId: 'sg-alb', port: 3001 },
   ]);
@@ -146,7 +146,6 @@ it('creates only backend resources, keeping health-check and application ports i
       .filter((resource) => resource.type.startsWith('aws:'))
       .map(({ type, name, id }) => ({ type, name, id: id || undefined })),
   ).toEqual([
-    { type: 'aws:lb/listener:Listener', name: 'service-public-existing-listener', id: listenerArn },
     { type: 'aws:lb/targetGroup:TargetGroup', name: 'service-public-target-main', id: undefined },
     {
       type: 'aws:lb/listenerRule:ListenerRule',
@@ -157,11 +156,22 @@ it('creates only backend resources, keeping health-check and application ports i
   expect(
     resources.find((resource) => resource.type === 'aws:lb/targetGroup:TargetGroup')!.inputs,
   ).toEqual({
+    namePrefix: 'tg-',
+    tags: { Name: 'service-public-target-main' },
     vpcId: 'vpc-shared',
     targetType: 'ip',
     port: 3000,
     protocol: 'HTTP',
-    healthCheck: { path: '/health', port: '3001', interval: 15, timeout: 4, matcher: '200-299' },
+    healthCheck: {
+      protocol: 'HTTPS',
+      path: '/health',
+      port: '3001',
+      interval: 15,
+      timeout: 4,
+      matcher: '200-299',
+      healthyThreshold: 6,
+      unhealthyThreshold: 4,
+    },
   });
   expect(
     resources.find((resource) => resource.type === 'aws:lb/listenerRule:ListenerRule')!.inputs,
@@ -177,8 +187,47 @@ it('creates only backend resources, keeping health-check and application ports i
         (await resolve(child.urn)).split('::').at(-1),
       ),
     ),
-  ).toEqual(['service-public-existing-listener', 'service-public-listener-rule']);
+  ).toEqual(['service-public-listener-rule']);
 });
+
+it.each<{
+  description: string;
+  args: Partial<ApplicationServiceLoadBalancer>;
+  expectedHealthCheck: Record<string, unknown>;
+}>([
+  { description: 'omitted health check', args: {}, expectedHealthCheck: {} },
+  { description: 'empty health check', args: { targetHealthCheck: {} }, expectedHealthCheck: {} },
+  {
+    description: 'path-only health check',
+    args: { targetHealthCheck: { path: '/ready' } },
+    expectedHealthCheck: { path: '/ready' },
+  },
+  {
+    description: 'gRPC backend',
+    args: { targetProtocolVersion: ApplicationProtocolVersion.GRPC },
+    expectedHealthCheck: {},
+  },
+  {
+    description: 'HTTPS backend',
+    args: { targetProtocol: ApplicationProtocol.HTTPS },
+    expectedHealthCheck: {},
+  },
+])(
+  'delegates health-check defaults to the provider for $description',
+  async ({ args, expectedHealthCheck }) => {
+    const attachment = createApplicationServiceAttachment(
+      'service',
+      'defaults',
+      { ...configuration(), ...args },
+      { parent: parent() },
+    );
+    await settle(attachment);
+    expect(
+      resources.find((resource) => resource.type === 'aws:lb/targetGroup:TargetGroup')!.inputs
+        .healthCheck,
+    ).toEqual(expectedHealthCheck);
+  },
+);
 
 it.each([undefined, 'us-east-2'])(
   'preserves listener reads, provider inheritance, and region %s',
@@ -190,24 +239,52 @@ it.each([undefined, 'us-east-2'])(
       { parent: parent(), region },
     );
     await settle(attachment);
-    const imported = resources.find((resource) => resource.type === 'aws:lb/listener:Listener')!;
-    expect(imported.id).toBe(region ? `${listenerArn}@${region}` : listenerArn);
-    expect(
-      await resolve((attachment.readyDependencies[0] as aws.lb.Listener).defaultActions),
-    ).toEqual([{ type: 'fixed-response', fixedResponse: { statusCode: '403' } }]);
     const reference = `${await resolve(provider.urn)}::${await resolve(provider.id)}`;
     const awsResources = resources.filter((resource) => resource.type.startsWith('aws:'));
     expect(awsResources.map((resource) => resource.provider)).toEqual(
       awsResources.map(() => reference),
     );
-    expect(calls).toHaveLength(1);
-    expect(calls[0]!.provider).toBe(reference);
-    expect(calls[0]!.inputs).toEqual({ arn: loadBalancerArn, ...(region ? { region } : {}) });
+    expect(
+      calls.map(({ token, provider: callProvider, inputs }) => ({
+        token,
+        provider: callProvider,
+        inputs,
+      })),
+    ).toEqual([
+      {
+        token: 'aws:lb/getListener:getListener',
+        provider: reference,
+        inputs: { arn: listenerArn, ...(region ? { region } : {}) },
+      },
+      {
+        token: 'aws:lb/getLoadBalancer:getLoadBalancer',
+        provider: reference,
+        inputs: { arn: loadBalancerArn, ...(region ? { region } : {}) },
+      },
+    ]);
     expect(
       awsResources.filter((resource) => !resource.id).map((resource) => resource.inputs.region),
     ).toEqual([region, region]);
   },
 );
+
+it('defaults omitted match to a catch-all path forwarding rule', async () => {
+  const attachment = createApplicationServiceAttachment(
+    'service',
+    'catch-all',
+    { ...configuration(), match: undefined },
+    { parent: parent() },
+  );
+  const binding = await settle(attachment);
+  expect(
+    resources.find((resource) => resource.type === 'aws:lb/listenerRule:ListenerRule')!.inputs,
+  ).toEqual({
+    listenerArn,
+    priority: 25,
+    conditions: [{ pathPattern: { values: ['/*'] } }],
+    actions: [{ type: 'forward', forward: { targetGroups: [{ arn: binding.targetGroupArn }] } }],
+  });
+});
 
 it('renders hostname/path alternatives and header, method, and query conditions in one rule', async () => {
   const attachment = createApplicationServiceAttachment(
@@ -262,6 +339,13 @@ it('gives attachments to the same backend stable, distinct resource names', asyn
     'arn:mock:service-public-target-main',
     'arn:mock:service-internal-target-main',
   ]);
+  const rules = resources.filter(
+    (resource) => resource.type === 'aws:lb/listenerRule:ListenerRule',
+  );
+  expect(rules).toHaveLength(2);
+  expect(new Set(rules.map((resource) => resource.name))).toEqual(
+    new Set(['service-internal-listener-rule', 'service-public-listener-rule']),
+  );
 });
 
 it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; property: string }>([
@@ -269,11 +353,6 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
     description: 'missing listener ARN',
     args: { containerName: 'app', containerPort: 3000 },
     property: 'listenerArn',
-  },
-  {
-    description: 'missing conditions',
-    args: { containerName: 'app', containerPort: 3000, listenerArn, priority: 25 },
-    property: 'match',
   },
   {
     description: 'empty conditions',
@@ -333,7 +412,9 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
       { parent: owner },
     ),
   ).toThrow(
-    expect.objectContaining({ propertyPath: `loadBalancer.invalid.application.${property}` }),
+    expect.objectContaining({
+      propertyPath: `loadBalancerAttachments.invalid.application.${property}`,
+    }),
   );
   expect(resources.filter((resource) => resource.type.startsWith('aws:'))).toEqual([]);
 });

@@ -1,9 +1,36 @@
 import * as pulumi from '@pulumi/pulumi';
-import { ApplicationProtocolVersion } from '../../../src/ecs/fargate/serviceLoadBalancer';
 import {
+  ApplicationProtocolVersion,
   validateListenerRulePriorities,
   validateTargetProtocolVersion,
-} from '../../../src/ecs/fargate/serviceLoadBalancerValidation';
+  resolveIngressSourceGroup,
+} from '../../../src/ecs/fargate/serviceLoadBalancer';
+
+it('reuses one source group when attachments request the same task port', () => {
+  expect(
+    resolveIngressSourceGroup(3000, [
+      { attachmentName: 'api', sourceGroupId: 'sg-shared' },
+      { attachmentName: 'admin', sourceGroupId: 'sg-shared' },
+    ]),
+  ).toBe('sg-shared');
+});
+
+it('rejects different source groups on the same port with manual-mode guidance', () => {
+  expect(() =>
+    resolveIngressSourceGroup(3000, [
+      { attachmentName: 'public', sourceGroupId: 'sg-public' },
+      { attachmentName: 'private', sourceGroupId: 'sg-private' },
+    ]),
+  ).toThrow(
+    expect.objectContaining({
+      propertyPath: 'manageIngress',
+      message:
+        'Cannot automatically configure ingress for port 3000 from multiple ALB security groups ' +
+        '(attachments: public, private). Set manageIngress: false, supply securityGroupIds, and create ' +
+        'the required standalone ingress rules independently of this component.',
+    }),
+  );
+});
 
 it('rejects two attachments using the same listener and priority', () => {
   expect(() =>
@@ -13,7 +40,7 @@ it('rejects two attachments using the same listener and priority', () => {
     ]),
   ).toThrow(
     expect.objectContaining({
-      propertyPath: 'loadBalancer.admin.application.priority',
+      propertyPath: 'loadBalancerAttachments.admin.application.priority',
       message: expect.stringContaining('Attachments "api" and "admin" both use priority 10'),
     }),
   );
@@ -36,11 +63,11 @@ it.each([ApplicationProtocolVersion.HTTP_2, ApplicationProtocolVersion.GRPC])(
       validateTargetProtocolVersion(
         version,
         'HTTP',
-        'loadBalancer.app.application.targetProtocolVersion',
+        'loadBalancerAttachments.app.application.targetProtocolVersion',
       ),
     ).toThrow(
       new pulumi.InputPropertyError({
-        propertyPath: 'loadBalancer.app.application.targetProtocolVersion',
+        propertyPath: 'loadBalancerAttachments.app.application.targetProtocolVersion',
         reason: 'HTTP_2 and GRPC require an HTTPS listener',
       }),
     );
@@ -58,7 +85,7 @@ it.each([
     validateTargetProtocolVersion(
       version,
       listenerProtocol,
-      'loadBalancer.app.application.targetProtocolVersion',
+      'loadBalancerAttachments.app.application.targetProtocolVersion',
     ),
   ).not.toThrow();
 });

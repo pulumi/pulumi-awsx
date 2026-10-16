@@ -120,7 +120,7 @@ new awsxNext.FargateServiceV2(
     taskDefinition: task.taskDefinition.arn,
     vpcSubnetIds: vpc.publicSubnetIds,
     assignPublicIp: true,
-    loadBalancer: {
+    loadBalancerAttachments: {
       api: {
         application: {
           ...backend,

@@ -4,5 +4,3 @@ runtime:
   options:
     packagemanager: npm
 description: Fargate service attachments to a caller-owned ALB and listener
-packages:
-  awsx-next: ../../../awsx-next

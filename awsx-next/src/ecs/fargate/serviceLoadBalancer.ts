@@ -1,6 +1,5 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
-import { validateTargetProtocolVersion } from './serviceLoadBalancerValidation';
 
 export interface StringMatch {
   /**
@@ -114,7 +113,7 @@ export interface TargetGroupHealthCheck {
    * Destination for the health check request. Once the value has been set, removing it has no
    * effect. To unset it, set it to an empty string `""`.
    *
-   * Default - `/`.
+   * Default - `/` for HTTP/1 and HTTP/2, or `/AWS.ALB/healthcheck` for gRPC.
    */
   path?: string;
 
@@ -137,7 +136,7 @@ export interface TargetGroupHealthCheck {
   /**
    * Amount of time in seconds to wait before a health check times out. Range: 2-120 seconds.
    *
-   * Default - AWS default of 5 seconds
+   * Default - 5 seconds
    */
   timeoutSeconds?: number;
 
@@ -178,19 +177,26 @@ export interface ApplicationServiceLoadBalancer {
 
   /**
    * The available priority for the production rule, from 1 to 50000.
+   *
+   * If you add multiple load balancer attachments you must ensure the priorities are unique
    */
   readonly priority: number;
 
   /**
-   * Conditions selecting production requests. At least one condition is required.
+   * Conditions selecting production requests. When omitted, a path rule matches all requests. An
+   * explicitly empty configuration is not allowed.
+   *
+   * Default - Match the path pattern `/*`.
    */
-  readonly match: ListenerConditions;
+  readonly match?: ListenerConditions;
 
   /**
    * Health checks used by the Load Balancer to determine whether the ECS Service target can receive
    * traffic.
    *
-   * Default - Health checks use the target group's service/provider defaults.
+   * Default - HTTP on the target's traffic port, every 30 seconds with a 5-second timeout. Healthy
+   * and unhealthy thresholds are both 3. The default path is `/` with success code `200`, or
+   * `/AWS.ALB/healthcheck` with success code `12` for gRPC.
    */
   readonly targetHealthCheck?: TargetGroupHealthCheck;
 
@@ -215,9 +221,10 @@ export interface ServiceLoadBalancer {
    * Application Load Balancer attachment for a named service endpoint. Creates target groups and
    * forwarding rules on a caller-managed listener.
    *
-   * An application configuration must be provided for each entry in the service's loadBalancer map.
+   * An application configuration must be provided for each entry in the service's
+   * loadBalancerAttachments map.
    */
-  readonly application?: ApplicationServiceLoadBalancer;
+  readonly application: ApplicationServiceLoadBalancer;
 }
 
 export interface ApplicationServiceAttachmentContext {
@@ -236,7 +243,7 @@ export interface ApplicationServiceAttachmentContext {
 }
 
 export interface RequiredIngress {
-  sourceGroupId: string;
+  sourceGroupId: pulumi.Input<string>;
   port: number;
 }
 
@@ -246,7 +253,7 @@ export interface RequiredIngress {
 export interface CreatedApplicationServiceAttachment {
   readonly serviceBinding: aws.types.input.ecs.ServiceLoadBalancer;
   readonly readyDependencies: pulumi.Resource[];
-  readonly requiredIngress: pulumi.Output<RequiredIngress[]>;
+  readonly requiredIngress: RequiredIngress[];
 }
 
 /**
@@ -254,7 +261,7 @@ export interface CreatedApplicationServiceAttachment {
  * task-port validation, service networking, and service registration.
  *
  * @param name The service component's logical name.
- * @param attachmentName The stable key of the attachment in loadBalancer.
+ * @param attachmentName The stable key of the attachment in loadBalancerAttachments.
  * @param args The attachment's public configuration.
  * @param context The owning component and selected region.
  * @returns The ECS binding, routing resources, and dependencies required before service creation.
@@ -266,7 +273,7 @@ export function createApplicationServiceAttachment(
   context: ApplicationServiceAttachmentContext,
 ): CreatedApplicationServiceAttachment {
   const resourceName = `${name}-${attachmentName}`;
-  const propertyPath = `loadBalancer.${attachmentName}.application`;
+  const propertyPath = `loadBalancerAttachments.${attachmentName}.application`;
   const opts = { parent: context.parent };
   const fail: (property: string, reason: string) => never = (property, reason) => {
     throw new pulumi.InputPropertyError({
@@ -278,10 +285,6 @@ export function createApplicationServiceAttachment(
   if (!args.listenerArn) {
     fail('listenerArn', 'A listener ARN must be provided');
   }
-  if (!args.match) {
-    fail('match', 'At least one condition is required for a listener rule');
-  }
-
   if (
     !Number.isInteger(args.containerPort) ||
     args.containerPort < 1 ||
@@ -308,16 +311,16 @@ export function createApplicationServiceAttachment(
   if (!Number.isInteger(args.priority) || args.priority < 1 || args.priority > 50000) {
     fail('priority', 'The rule priority must be an integer between 1 and 50000');
   }
-  const conditions = renderConditions(args.match, `${propertyPath}.match`);
+  const conditions = renderConditions(
+    args.match ?? { pathPatterns: { values: ['/*'] } },
+    `${propertyPath}.match`,
+  );
   if (conditions.length === 0) {
     fail('match', 'At least one condition is required for a listener rule');
   }
 
-  // Keep the existing read name: renaming the configuration must not rename child resources.
-  const listener = aws.lb.Listener.get(
-    `${resourceName}-existing-listener`,
-    context.region ? pulumi.interpolate`${args.listenerArn}@${context.region}` : args.listenerArn,
-    undefined,
+  const listener = aws.lb.getListenerOutput(
+    { arn: args.listenerArn, region: context.region },
     opts,
   );
   const loadBalancer = aws.lb.getLoadBalancerOutput(
@@ -336,24 +339,25 @@ export function createApplicationServiceAttachment(
     });
 
   const targetGroupArgs: aws.lb.TargetGroupArgs = {
+    namePrefix: 'tg-',
+    tags: { Name: `${resourceName}-target-main` },
     region: context.region,
     vpcId,
     targetType: 'ip',
     port: args.containerPort,
     protocol: args.targetProtocol ?? ApplicationProtocol.HTTP,
     protocolVersion: args.targetProtocolVersion,
-    healthCheck: healthCheck
-      ? {
-          protocol: healthCheck.protocol,
-          healthyThreshold: healthCheck.healthyThreshold,
-          unhealthyThreshold: healthCheck.unhealthyThreshold,
-          interval: healthCheck.intervalSeconds,
-          timeout: healthCheck.timeoutSeconds,
-          matcher: healthCheck.healthyHttpCodes ?? healthCheck.healthGrpcCodes,
-          path: healthCheck.path,
-          port: healthCheck.port === undefined ? undefined : `${healthCheck.port}`,
-        }
-      : undefined,
+    // Always supply the block so provider defaults apply consistently, including 3/3 thresholds.
+    healthCheck: {
+      protocol: healthCheck?.protocol,
+      healthyThreshold: healthCheck?.healthyThreshold,
+      unhealthyThreshold: healthCheck?.unhealthyThreshold,
+      interval: healthCheck?.intervalSeconds,
+      timeout: healthCheck?.timeoutSeconds,
+      matcher: healthCheck?.healthyHttpCodes ?? healthCheck?.healthGrpcCodes,
+      path: healthCheck?.path,
+      port: healthCheck?.port === undefined ? undefined : `${healthCheck.port}`,
+    },
   };
   const targetGroup = new aws.lb.TargetGroup(`${resourceName}-target-main`, targetGroupArgs, opts);
   const targets: aws.types.input.lb.ListenerRuleActionForwardTargetGroup[] = [
@@ -362,10 +366,8 @@ export function createApplicationServiceAttachment(
   const ports = [
     ...new Set([args.containerPort, args.targetHealthCheck?.port ?? args.containerPort]),
   ];
-  const requiredIngress = loadBalancer.securityGroups.apply((groups) => {
-    const group = groups[0]!;
-    return ports.flatMap((p) => ({ sourceGroupId: group, port: p }));
-  });
+  const sourceGroupId = loadBalancer.securityGroups.apply((groups) => groups[0]!);
+  const requiredIngress = ports.map((port) => ({ sourceGroupId, port }));
 
   const productionRule = new aws.lb.ListenerRule(
     `${resourceName}-listener-rule`,
@@ -387,9 +389,88 @@ export function createApplicationServiceAttachment(
       containerPort: args.containerPort,
       targetGroupArn: targetGroup.arn,
     },
-    readyDependencies: [listener, productionRule],
+    readyDependencies: [productionRule],
     requiredIngress,
   };
+}
+
+interface NamedIngressSource {
+  readonly attachmentName: string;
+  readonly sourceGroupId: string;
+}
+
+/**
+ * Resolves the single ALB source group supported by automatic ingress on a task port.
+ *
+ * @param port The application or health-check port.
+ * @param sources The resolved ingress sources requested by attachments on this port.
+ * @returns The shared source security-group ID.
+ */
+export function resolveIngressSourceGroup(
+  port: number,
+  sources: readonly NamedIngressSource[],
+): string {
+  const sourceGroupId = sources[0]!.sourceGroupId;
+  if (sources.some((source) => source.sourceGroupId !== sourceGroupId)) {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'manageIngress',
+      reason:
+        `Cannot automatically configure ingress for port ${port} from multiple ALB security groups ` +
+        `(attachments: ${sources.map((source) => source.attachmentName).join(', ')}). ` +
+        'Set manageIngress: false, supply securityGroupIds, and create the required standalone ' +
+        'ingress rules independently of this component.',
+    });
+  }
+  return sourceGroupId;
+}
+
+interface ListenerRulePriority {
+  readonly attachmentName: string;
+  readonly listenerArn: string;
+  readonly priority: number;
+}
+
+/**
+ * Validates production priorities after listener ARNs have resolved.
+ *
+ * @param rules The resolved listener rules requested by this service.
+ */
+export function validateListenerRulePriorities(rules: readonly ListenerRulePriority[]): void {
+  const prioritiesByListener = new Map<string, Map<number, string>>();
+  for (const { attachmentName, listenerArn, priority } of rules) {
+    const priorities = prioritiesByListener.get(listenerArn) ?? new Map<number, string>();
+    const owner = priorities.get(priority);
+    if (owner !== undefined) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: `loadBalancerAttachments.${attachmentName}.application.priority`,
+        reason:
+          `Attachments "${owner}" and "${attachmentName}" both use priority ${priority} ` +
+          `on listener ${listenerArn}. Choose a different priority for each rule on the same listener.`,
+      });
+    }
+    priorities.set(priority, attachmentName);
+    prioritiesByListener.set(listenerArn, priorities);
+  }
+}
+
+/**
+ * Checks the listener requirement for HTTP/2 and gRPC backend connections.
+ *
+ * @param version The requested backend protocol version.
+ * @param listenerProtocol The resolved frontend listener protocol.
+ * @param propertyPath The public input path used in the diagnostic.
+ */
+export function validateTargetProtocolVersion(
+  version: ApplicationProtocolVersion | undefined,
+  listenerProtocol: string,
+  propertyPath: string,
+): void {
+  if ((version === 'HTTP2' || version === 'GRPC') && listenerProtocol !== 'HTTPS') {
+    throw new pulumi.InputPropertyError({
+      propertyPath,
+      reason: 'HTTP_2 and GRPC require an HTTPS listener',
+    });
+  }
 }
 
 /**
