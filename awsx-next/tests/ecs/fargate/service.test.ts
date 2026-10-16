@@ -6,6 +6,7 @@ import {
   FargateServiceV2Args,
 } from '../../../src/ecs/fargate/service';
 import { ServiceLoadBalancer } from '../../../src/ecs/fargate/serviceLoadBalancer';
+import * as serviceLoadBalancer from '../../../src/ecs/fargate/serviceLoadBalancer';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
@@ -104,7 +105,7 @@ async function createService(
  * @returns The attachment configuration.
  */
 function applicationAttachment(
-  listenerArn: string,
+  listenerArn: pulumi.Input<string>,
   containerPort: number,
   priority: number,
   healthPort: number = containerPort,
@@ -272,15 +273,100 @@ test('deduplicates shared application and health ports into standalone rules and
   expect(group.inputs).toEqual({ description: 'Managed by Pulumi', vpcId: 'vpc-for-subnet-first' });
   const ecs = constructions.find((r) => r.type === 'aws:ecs/service:Service')!;
   const dependencies = (await unwrap(pulumi.output(ecs.opts.dependsOn))) as pulumi.Resource[];
+  expect(dependencies).toHaveLength(6);
   expect(
-    await Promise.all(dependencies.map(async (r) => (await unwrap(r.urn)).split('::').at(-1))),
+    new Set(
+      await Promise.all(dependencies.map(async (r) => (await unwrap(r.urn)).split('::').at(-1))),
+    ),
   ).toEqual(
-    expect.arrayContaining([
+    new Set([
+      'shared-ingress-admin-listener-rule',
+      'shared-ingress-api-listener-rule',
+      'shared-ingress-egress',
+      'shared-ingress-health-listener-rule',
       'shared-ingress-ingress-3000',
       'shared-ingress-ingress-3001',
-      'shared-ingress-egress',
     ]),
   );
+});
+
+test('uses the application port for health-check ingress when targetHealthCheck is omitted', async () => {
+  await createService('default-health-port', {
+    loadBalancerAttachments: {
+      app: {
+        application: {
+          listenerArn: 'listener-shared',
+          containerName: 'app',
+          containerPort: 3000,
+          priority: 10,
+        },
+      },
+    },
+  });
+  expect(
+    resources
+      .filter((r) => r.type === 'aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule')
+      .map(({ name, inputs }) => ({ name, inputs })),
+  ).toEqual([
+    {
+      name: 'default-health-port-ingress-3000',
+      inputs: {
+        securityGroupId: 'default-health-port-security-group-id',
+        referencedSecurityGroupId: 'sg-shared',
+        ipProtocol: 'tcp',
+        fromPort: 3000,
+        toPort: 3000,
+      },
+    },
+  ]);
+});
+
+test('validates resolved listener priorities through the service', async () => {
+  const validate = jest.spyOn(serviceLoadBalancer, 'validateListenerRulePriorities');
+  try {
+    await createService('resolved-priorities', {
+      loadBalancerAttachments: {
+        api: applicationAttachment(pulumi.output('listener-shared'), 3000, 10),
+        admin: applicationAttachment(pulumi.output('listener-shared'), 3000, 20),
+      },
+    });
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(validate).toHaveBeenCalledWith([
+      { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10 },
+      { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20 },
+    ]);
+  } finally {
+    validate.mockRestore();
+  }
+});
+
+test.each([
+  { manageIngress: undefined, attached: false },
+  { manageIngress: undefined, attached: true },
+  { manageIngress: false, attached: false },
+  { manageIngress: false, attached: true },
+])('rejects empty securityGroupIds before creating children: %j', ({ manageIngress, attached }) => {
+  expect(
+    () =>
+      new FargateServiceV2(`empty-groups-${manageIngress}-${attached}`, {
+        clusterArn: 'cluster',
+        taskDefinition: 'task',
+        vpcSubnetIds: ['subnet'],
+        securityGroupIds: [],
+        manageIngress,
+        loadBalancerAttachments: attached
+          ? { app: applicationAttachment('listener-shared', 3000, 10) }
+          : undefined,
+      }),
+  ).toThrow(
+    new pulumi.InputPropertyError({
+      propertyPath: 'securityGroupIds',
+      reason:
+        'securityGroupIds must contain at least one security group when provided. Omit it to create a security group automatically.',
+    }),
+  );
+  expect(resources.filter((r) => r.type.startsWith('aws:'))).toHaveLength(0);
+  expect(calls).toEqual([]);
 });
 
 test('automatically adds ingress only to the first supplied group and leaves egress alone', async () => {
@@ -436,20 +522,36 @@ test('uses the selected region for subnet discovery and newly created children',
     id: 'subnet-first',
     region: 'eu-west-1',
   });
-  expect(
-    resources.find((r) => r.type === 'aws:ec2/securityGroup:SecurityGroup')!.inputs.region,
-  ).toBe('eu-west-1');
-  expect(resources.find((r) => r.type === 'aws:ecs/service:Service')!.inputs.region).toBe(
-    'eu-west-1',
+  const regionalResources = resources
+    .filter((r) => r.type.startsWith('aws:'))
+    .map(({ type, inputs }) => ({ type, region: inputs.region }));
+  expect(regionalResources).toHaveLength(6);
+  expect(regionalResources).toEqual(
+    expect.arrayContaining(
+      [
+        'aws:ec2/securityGroup:SecurityGroup',
+        'aws:ecs/service:Service',
+        'aws:lb/listenerRule:ListenerRule',
+        'aws:lb/targetGroup:TargetGroup',
+        'aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule',
+        'aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule',
+      ].map((type) => ({ type, region: 'eu-west-1' })),
+    ),
   );
   expect(
-    resources.find((r) => r.type === 'aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule')!
-      .inputs.region,
-  ).toBe('eu-west-1');
-  expect(
-    resources.find((r) => r.type === 'aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule')!
-      .inputs.region,
-  ).toBe('eu-west-1');
+    calls
+      .filter((call) => call.token.startsWith('aws:lb/'))
+      .map(({ token, inputs }) => ({ token, inputs })),
+  ).toEqual([
+    {
+      token: 'aws:lb/getListener:getListener',
+      inputs: { arn: 'listener-shared', region: 'eu-west-1' },
+    },
+    {
+      token: 'aws:lb/getLoadBalancer:getLoadBalancer',
+      inputs: { arn: 'alb-shared', region: 'eu-west-1' },
+    },
+  ]);
 });
 
 test('resolves Output security-group IDs before adding the selected region', async () => {

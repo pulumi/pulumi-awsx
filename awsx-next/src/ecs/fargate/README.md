@@ -189,31 +189,61 @@ For progressive deployments, each production rule has its own primary/alternate 
 
 The same pattern works with different `listenerArn` values. For example, maybe you configure a private Load Balancer and a public Load Balancer to route to the same backend. In that case you need two attachments.
 
+> **Automatic ingress limitation:** When attachments share an application or health-check port, automatic ingress requires them to use the same ALB source security group. Different ALBs with different source groups require `manageIngress: false` and user managed task ingress.
+>
+> AWSX declares ingress resources during preview, when ALB security-group IDs may still be unknown. This restriction avoids duplicate rules without creating resources inside an apply.
+
 ```ts
-new awsxNext.FargateServiceV2('service', {
-  ...serviceArgs,
-  loadBalancerAttachments: {
-    public: {
-      application: {
-        containerName: 'app',
-        containerPort: 80,
-        listenerArn: publicListener.arn,
-        priority: 50,
-        match: { pathPatterns: { values: ['/*'] } },
+const taskGroup = new aws.ec2.SecurityGroup('task', {
+  vpcId: vpc.vpcId,
+});
+// Configure task egress separately for image pulls and other dependencies.
+const privateIngress = new aws.vpc.SecurityGroupIngressRule('task-private', {
+  securityGroupId: taskGroup.id,
+  referencedSecurityGroupId: privateAlbGroup.id,
+  ipProtocol: 'tcp',
+  fromPort: 80,
+  toPort: 80,
+});
+const publicIngress = new aws.vpc.SecurityGroupIngressRule('task-public', {
+  securityGroupId: taskGroup.id,
+  referencedSecurityGroupId: publicAlbGroup.id,
+  ipProtocol: 'tcp',
+  fromPort: 80,
+  toPort: 80,
+});
+new awsxNext.FargateServiceV2(
+  'service',
+  {
+    ...serviceArgs,
+    manageIngress: false,
+    securityGroupIds: [taskGroup.id],
+    loadBalancerAttachments: {
+      public: {
+        application: {
+          containerName: 'app',
+          containerPort: 80,
+          listenerArn: publicListener.arn,
+          priority: 50,
+          match: { pathPatterns: { values: ['/*'] } },
+        },
       },
-    },
-    private: {
-      application: {
-        containerName: 'app',
-        containerPort: 80,
-        listenerArn: privateListener.arn,
-        priority: 50,
-        match: { pathPatterns: { values: ['/*'] } },
+      private: {
+        application: {
+          containerName: 'app',
+          containerPort: 80,
+          listenerArn: privateListener.arn,
+          priority: 50,
+          match: { pathPatterns: { values: ['/*'] } },
+        },
       },
     },
   },
-});
+  { dependsOn: [privateIngress, publicIngress] },
+);
 ```
+
+If health checks use a separate port, allow that port from both ALB security groups too.
 
 ### Multiple attachments to different backends
 

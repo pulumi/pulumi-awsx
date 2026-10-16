@@ -233,7 +233,8 @@ export interface FargateServiceV2Args {
   readonly deploymentMaximumPercent?: number;
 
   /**
-   * Security groups to attach to the service's tasks, in order.
+   * Security groups to attach to the service's tasks, in order. If provided, the list must not be
+   * empty.
    *
    * When manageIngress is true (the default), AWSX adds standalone application and health-check
    * ingress rules to ONLY the first supplied group.
@@ -344,6 +345,14 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     super(identity.type, name, inputs, pulumi.mergeOptions(opts, { aliases: identity.aliases }));
     if (opts.urn) {
       return;
+    }
+
+    if (args.securityGroupIds?.length === 0) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: 'securityGroupIds',
+        reason:
+          'securityGroupIds must contain at least one security group when provided. Omit it to create a security group automatically.',
+      });
     }
 
     if (
