@@ -25,18 +25,22 @@ export const containerDefinitionAwsxIdentity = {
   aliases: [],
 };
 
+interface ContainerDefinitionData {
+  definition: ContainerDefinitionArgs;
+}
+
 /**
  * Represents one container definition used in an ECS Task Definition.
  *
  * The component provides a resource boundary where Pulumi resource transforms can modify the raw
  * container definition before a task definition serializes it.
  */
-export class ContainerDefinition extends pulumi.ComponentResource {
+export class ContainerDefinition extends pulumi.ComponentResource<ContainerDefinitionData> {
   /**
    * The typed container definition. This can be combined with other container definitions and used
    * to construct the containerDefinition string value used in a TaskDefinition.
    */
-  public readonly definition: pulumi.Output<ContainerDefinitionArgs>;
+  public readonly definition!: pulumi.Output<ContainerDefinitionArgs>;
   constructor(
     name: string,
     args: ContainerDefinitionArgs,
@@ -45,22 +49,35 @@ export class ContainerDefinition extends pulumi.ComponentResource {
      * @internal
      */
     identity: ComponentIdentity = containerDefinitionStandaloneIdentity,
+    /**
+     * @internal
+     */
+    remote = false,
   ) {
+    validateContainerDefinition(args);
+
     super(
       identity.type,
       name,
-      args,
+      remote
+        ? {
+            ...args,
+            definition: undefined,
+          }
+        : args,
       pulumi.mergeOptions(opts, {
         aliases: identity.aliases,
       }),
+      remote,
     );
-    validateContainerDefinition(args);
 
-    this.definition = pulumi.output(args);
+    if (!remote) {
+      this.definition = pulumi.output(args);
 
-    this.registerOutputs({
-      definition: this.definition,
-    });
+      this.registerOutputs({
+        definition: this.definition,
+      });
+    }
   }
 }
 

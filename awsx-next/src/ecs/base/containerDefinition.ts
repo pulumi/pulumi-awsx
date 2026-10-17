@@ -1,5 +1,4 @@
 import * as pulumi from '@pulumi/pulumi';
-import type { CredentialSpec } from '../credentialSpec';
 
 // NOTE:
 // ContainerDefinitionCommonProperties includes properties from the API level ContainerDefinitionArgs.
@@ -258,8 +257,16 @@ export interface ContainerDefinitionCommonProperties {
   /**
    * The health check command and settings for the container.
    *
+   * Use a health check when the container can remain running while the application is unhealthy,
+   * such as an unresponsive server or a worker that has stopped processing jobs. A health check is
+   * not required merely to validate startup configuration if the application exits when that
+   * validation fails.
+   *
+   * ECS services can replace tasks with unhealthy essential containers. A health check does not
+   * provide automatic replacement for standalone tasks.
+   *
    * ECS only monitors health checks specified in the task definition. It does not monitor a health
-   * check that is configured only in the container image.
+   * check configured only in the container image.
    *
    * Default - No ECS container health check.
    *
@@ -465,11 +472,6 @@ export interface ContainerDefinitionOptionsBase {
    * The image used to start the container.
    */
   readonly image: pulumi.Input<string>;
-
-  /**
-   * Credential specifications used for Active Directory authentication.
-   */
-  readonly credentialSpecs?: CredentialSpec[];
 
   /**
    * Environment variables passed to the container.

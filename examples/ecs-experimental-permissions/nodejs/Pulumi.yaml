@@ -1,0 +1,6 @@
+name: ecs-experimental-permissions
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+description: Exercise AWSX-generated execution-role permissions with real Fargate tasks

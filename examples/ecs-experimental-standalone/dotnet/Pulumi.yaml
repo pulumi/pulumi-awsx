@@ -1,0 +1,3 @@
+name: ecs-experimental-standalone-dotnet
+runtime: dotnet
+description: Standalone AWSX Experimental .NET SDK preview test
