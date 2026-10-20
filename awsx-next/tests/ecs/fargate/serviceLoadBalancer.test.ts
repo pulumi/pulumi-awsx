@@ -8,7 +8,10 @@ import {
   createApplicationServiceAttachment,
 } from '../../../src/ecs/fargate/serviceLoadBalancer';
 
+import { DeploymentStrategy } from '../../../src/ecs/fargate/serviceDeployment';
+
 const resources: pulumi.runtime.MockResourceArgs[] = [];
+const ruleOptions: pulumi.ResourceOptions[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const children: pulumi.Resource[] = [];
 const loadBalancerArn = 'arn:mock:load-balancer';
@@ -44,6 +47,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   resources.length = 0;
+  ruleOptions.length = 0;
   calls.length = 0;
   children.length = 0;
 });
@@ -73,6 +77,7 @@ function parent(): pulumi.ComponentResource {
       transformations: [
         (args): undefined => {
           if (args.type.startsWith('aws:')) children.push(args.resource);
+          if (args.type === 'aws:lb/listenerRule:ListenerRule') ruleOptions.push(args.opts);
           return undefined;
         },
       ],
@@ -111,6 +116,161 @@ async function settle(
   ]);
   return binding;
 }
+
+it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStrategy.LINEAR])(
+  '%s prepares production and test routing, scoped IAM, and service readiness',
+  async (strategy) => {
+    const attachment = createApplicationServiceAttachment(
+      'progressive',
+      'app',
+      {
+        ...configuration(),
+        testTraffic: { match: { headers: [{ name: 'X-Test', values: ['true'] }] } },
+      },
+      { parent: parent(), strategy, region: 'us-east-2' },
+    );
+    const binding = await settle(attachment);
+    const groups = resources.filter((r) => r.type === 'aws:lb/targetGroup:TargetGroup');
+    expect(groups.map((r) => r.name)).toEqual([
+      'progressive-app-target-main',
+      'progressive-app-target-alt',
+    ]);
+    expect(groups[1]!.inputs).toEqual({
+      ...groups[0]!.inputs,
+      tags: { Name: 'progressive-app-target-alt' },
+    });
+    const targets = [
+      { arn: 'arn:mock:progressive-app-target-main', weight: 1 },
+      { arn: 'arn:mock:progressive-app-target-alt', weight: 0 },
+    ];
+    expect(
+      resources.filter((r) => r.type === 'aws:lb/listenerRule:ListenerRule').map((r) => r.inputs),
+    ).toEqual([
+      {
+        region: 'us-east-2',
+        listenerArn,
+        priority: 25,
+        conditions: [{ httpRequestMethod: { values: ['GET'] } }],
+        actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+      },
+      {
+        region: 'us-east-2',
+        listenerArn,
+        priority: 24,
+        conditions: [{ httpHeader: { httpHeaderName: 'X-Test', values: ['true'] } }],
+        actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+      },
+    ]);
+    expect(binding.advancedConfiguration).toEqual({
+      alternateTargetGroupArn: targets[1]!.arn,
+      productionListenerRule: 'arn:mock:progressive-app-listener-rule',
+      testListenerRule: 'arn:mock:progressive-app-listener-rule-test',
+      roleArn: 'arn:mock:progressive-app-traffic-shift-role',
+    });
+    expect(ruleOptions.map((opts) => opts.ignoreChanges)).toEqual([
+      ['actions[*].forward.targetGroups[*].weight'],
+      ['actions[*].forward.targetGroups[*].weight'],
+    ]);
+    const role = resources.filter((r) => r.type === 'aws:iam/role:Role');
+    expect(role).toHaveLength(1);
+    expect(role[0]!.inputs.assumeRolePolicy).toEqual({
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Sid: 'AllowAssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs.amazonaws.com' },
+          Action: 'sts:AssumeRole',
+        },
+      ],
+    });
+    const policies = resources.filter((r) => r.type === 'aws:iam/rolePolicy:RolePolicy');
+    expect(policies).toHaveLength(1);
+    expect(policies[0]!.inputs.policy.Statement).toEqual([
+      {
+        Effect: 'Allow',
+        Action: [
+          'elasticloadbalancing:DescribeListeners',
+          'elasticloadbalancing:DescribeRules',
+          'elasticloadbalancing:DescribeTargetGroups',
+          'elasticloadbalancing:DescribeTargetHealth',
+        ],
+        Resource: '*',
+      },
+      {
+        Effect: 'Allow',
+        Action: ['elasticloadbalancing:RegisterTargets', 'elasticloadbalancing:DeregisterTargets'],
+        Resource: targets.map((target) => target.arn),
+      },
+      {
+        Effect: 'Allow',
+        Action: 'elasticloadbalancing:ModifyRule',
+        Resource: [
+          'arn:mock:progressive-app-listener-rule',
+          'arn:mock:progressive-app-listener-rule-test',
+        ],
+      },
+    ]);
+    expect(
+      await Promise.all(attachment.readyDependencies.map((child) => resolve(child.urn))),
+    ).toEqual([
+      expect.stringContaining('::progressive-app-listener-rule'),
+      expect.stringContaining('::progressive-app-listener-rule-test'),
+      expect.stringContaining('::progressive-app-traffic-shift-role-policy'),
+    ]);
+    const providerReference = `${await resolve(provider.urn)}::${await resolve(provider.id)}`;
+    for (const resource of resources.filter((r) => r.type.startsWith('aws:'))) {
+      expect(resource.provider).toBe(providerReference);
+    }
+  },
+);
+
+it('creates progressive production routing without a test rule when test traffic is omitted', async () => {
+  const attachment = createApplicationServiceAttachment('no-test', 'app', configuration(), {
+    parent: parent(),
+    strategy: DeploymentStrategy.BLUE_GREEN,
+  });
+  const binding = await settle(attachment);
+  expect(resources.filter((r) => r.type === 'aws:lb/listenerRule:ListenerRule')).toHaveLength(1);
+  expect(binding.advancedConfiguration!.testListenerRule).toBeUndefined();
+  expect(attachment.readyDependencies).toHaveLength(2);
+});
+
+it.each([
+  {
+    strategy: DeploymentStrategy.ROLLING,
+    priority: 25,
+    match: { methods: ['GET'] },
+    property: 'testTraffic',
+  },
+  {
+    strategy: DeploymentStrategy.CANARY,
+    priority: 1,
+    match: { methods: ['GET'] },
+    property: 'priority',
+  },
+  { strategy: DeploymentStrategy.LINEAR, priority: 25, match: {}, property: 'testTraffic.match' },
+])(
+  'rejects invalid test routing for $strategy at $property',
+  ({ strategy, priority, match, property }) => {
+    expect(() =>
+      createApplicationServiceAttachment(
+        'invalid',
+        'app',
+        {
+          ...configuration(),
+          priority,
+          testTraffic: { match },
+        },
+        { parent: parent(), strategy },
+      ),
+    ).toThrow(
+      expect.objectContaining({
+        propertyPath: `loadBalancerAttachments.app.application.${property}`,
+      }),
+    );
+  },
+);
 
 it('creates only backend resources, keeping health-check and application ports independent', async () => {
   const attachment = createApplicationServiceAttachment(

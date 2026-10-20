@@ -4,6 +4,7 @@ import {
   createApplicationServiceAttachment,
 } from '../../../src/ecs/fargate/serviceLoadBalancer';
 import { FargateServiceV2 } from '../../../src/ecs/fargate/service';
+import { DeploymentStrategy } from '../../../src/ecs/fargate/serviceDeployment';
 
 // Pulumi's mock runtime is shared within a test file. Keep preview mode and unknown
 // outputs isolated from the deployment-mode mocks in serviceLoadBalancer.test.ts.
@@ -75,6 +76,49 @@ it('declares the target group and rule even when the listener protocol is unknow
     { type: 'aws:lb/targetGroup:TargetGroup', name: 'service-app-target-main' },
     { type: 'aws:lb/listenerRule:ListenerRule', name: 'service-app-listener-rule' },
   ]);
+});
+
+it('declares progressive routing and IAM synchronously when ALB metadata is unknown', async () => {
+  const children: pulumi.Resource[] = [];
+  const owner = new pulumi.ComponentResource(
+    'test:index:Service',
+    'progressive-preview',
+    {},
+    {
+      transformations: [
+        (args): undefined => {
+          if (args.type.startsWith('aws:')) children.push(args.resource);
+          return undefined;
+        },
+      ],
+    },
+  );
+  createApplicationServiceAttachment(
+    'progressive-preview',
+    'app',
+    {
+      containerName: 'app',
+      containerPort: 3000,
+      listenerArn: 'listener',
+      priority: 25,
+      testTraffic: { match: { methods: ['GET'] } },
+    },
+    { parent: owner, strategy: DeploymentStrategy.CANARY },
+  );
+  expect(children).toHaveLength(6);
+  await Promise.all(children.map((child) => new Promise((done) => child.urn.apply(done))));
+  expect(
+    new Set(registrations.filter((args) => args.type.startsWith('aws:')).map((args) => args.name)),
+  ).toEqual(
+    new Set([
+      'progressive-preview-app-target-main',
+      'progressive-preview-app-target-alt',
+      'progressive-preview-app-listener-rule',
+      'progressive-preview-app-listener-rule-test',
+      'progressive-preview-app-traffic-shift-role',
+      'progressive-preview-app-traffic-shift-role-policy',
+    ]),
+  );
 });
 
 it('declares deduplicated service ingress synchronously when ALB source groups are unknown', async () => {

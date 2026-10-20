@@ -8,6 +8,15 @@ import {
   ServiceLoadBalancer,
 } from './serviceLoadBalancer';
 
+import {
+  DeploymentStrategy,
+  DeploymentFailureAction,
+  ServiceDeploymentStrategy,
+  resolveDeploymentStrategy,
+  renderStrategySettings,
+  estimateDeploymentTimeout,
+} from './serviceDeployment';
+
 export const fargateServiceStandaloneIdentity: ComponentIdentity = {
   type: 'awsx-next:index:FargateServiceV2',
   aliases: [],
@@ -138,6 +147,13 @@ export enum PropagateTags {
 
 export interface FargateServiceV2Args {
   /**
+   * The deployment strategy to use for the Service.
+   *
+   * Default - Rolling deployment strategy
+   */
+  readonly deploymentStrategy?: ServiceDeploymentStrategy;
+
+  /**
    * The ARN of the cluster that hosts the service.
    */
   readonly clusterArn: pulumi.Input<string>;
@@ -182,7 +198,8 @@ export interface FargateServiceV2Args {
    * Uses Pulumi duration syntax, for example "90m" or "2h". Overrides the AWS provider timeout for
    * both operations.
    *
-   * Default - The AWS provider's ECS service timeout (currently 20 minutes).
+   * Default - The AWS provider's ECS service timeout for rolling updates. Progressive deployments
+   * use that baseline, currently 20 minutes, plus configured bake times.
    *
    * Set this explicitly when the service needs more time to stabilize. This only applies to the
    * Pulumi resource create/update timeout. If that timeout is reached the Pulumi deployment fails,
@@ -367,6 +384,21 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       });
     }
 
+    const selected = resolveDeploymentStrategy(args.deploymentStrategy ?? {});
+    const progressive = selected.strategy !== DeploymentStrategy.ROLLING;
+    if (
+      (selected.strategy === DeploymentStrategy.CANARY ||
+        selected.strategy === DeploymentStrategy.LINEAR) &&
+      Object.keys(args.loadBalancerAttachments ?? {}).length === 0
+    ) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: 'loadBalancerAttachments',
+        reason:
+          'Canary and linear deployments require at least one load-balancer attachment for traffic shifting.',
+      });
+    }
+    const deploymentTimeout =
+      args.deploymentTimeout ?? (progressive ? estimateDeploymentTimeout(selected) : undefined);
     const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
 
     if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
@@ -421,6 +453,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
           attachmentName,
           listenerArn: arns[index]!,
           priority: attachment.application.priority,
+          testTraffic: attachment.application.testTraffic !== undefined,
         }));
         validateListenerRulePriorities(rules);
       });
@@ -433,6 +466,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
           parent: this,
           region: args.region,
           listenerRuleValidation,
+          strategy: selected.strategy,
         },
       );
       if (args.manageIngress !== false) {
@@ -518,7 +552,17 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         propagateTags: args.propagateTags ?? PropagateTags.SERVICE,
         capacityProviderStrategies,
         enableEcsManagedTags: args.enableEcsManagedTags ?? true,
-        deploymentCircuitBreaker: { enable: true, rollback: true },
+        // Verified with progressive strategies too, despite AWS API docs describing this as rolling-only.
+        deploymentCircuitBreaker: {
+          enable: true,
+          rollback:
+            (selected.config.failureAction ?? DeploymentFailureAction.ROLLBACK) ===
+            DeploymentFailureAction.ROLLBACK,
+        },
+        deploymentConfiguration: {
+          strategy: selected.strategy,
+          ...renderStrategySettings(selected),
+        },
         waitForSteadyState: true,
         tags: args.tags,
         cluster: args.clusterArn,
@@ -531,7 +575,6 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
         // TODO: these are the remaining configs
         // deploymentController,
-        // deploymentConfiguration,
         // healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
         // alarms,
         // serviceConnectConfiguration,
@@ -543,8 +586,8 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         parent: this,
         dependsOn: readyDependencies,
         customTimeouts:
-          args.deploymentTimeout !== undefined
-            ? { create: args.deploymentTimeout, update: args.deploymentTimeout }
+          deploymentTimeout !== undefined
+            ? { create: deploymentTimeout, update: deploymentTimeout }
             : undefined,
       },
     );
