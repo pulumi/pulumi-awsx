@@ -419,24 +419,33 @@ test('uses the application port for health-check ingress when targetHealthCheck 
   ]);
 });
 
-test('validates resolved listener priorities through the service', async () => {
-  const validate = jest.spyOn(serviceLoadBalancer, 'validateListenerRulePriorities');
-  try {
-    await createService('resolved-priorities', {
-      loadBalancerAttachments: {
-        api: applicationAttachment(pulumi.output('listener-shared'), 3000, 10),
-        admin: applicationAttachment(pulumi.output('listener-shared'), 3000, 20),
-      },
-    });
-    expect(validate).toHaveBeenCalledTimes(1);
-    expect(validate).toHaveBeenCalledWith([
-      { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10, testTraffic: false },
-      { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20, testTraffic: false },
-    ]);
-  } finally {
-    validate.mockRestore();
-  }
-});
+test.each([false, true])(
+  'validates resolved listener priorities with test traffic %s',
+  async (testTraffic) => {
+    const validate = jest.spyOn(serviceLoadBalancer, 'validateListenerRulePriorities');
+    try {
+      await createService('resolved-priorities', {
+        deploymentStrategy: testTraffic ? { canary: { bakeTimeMinutes: 5 } } : undefined,
+        loadBalancerAttachments: {
+          api: applicationAttachment(pulumi.output('listener-shared'), 3000, 10),
+          admin: {
+            application: {
+              ...applicationAttachment(pulumi.output('listener-shared'), 3000, 20).application,
+              testTraffic: testTraffic ? { match: { methods: ['GET'] } } : undefined,
+            },
+          },
+        },
+      });
+      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validate).toHaveBeenCalledWith([
+        { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10, testTraffic: false },
+        { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20, testTraffic },
+      ]);
+    } finally {
+      validate.mockRestore();
+    }
+  },
+);
 
 test.each([
   { manageIngress: undefined, attached: false },

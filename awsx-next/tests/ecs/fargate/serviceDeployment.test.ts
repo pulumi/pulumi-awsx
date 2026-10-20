@@ -30,7 +30,15 @@ it('uses rolling when all strategy options are absent or undefined', () => {
 it.each([
   { settings: { blueGreen: { bakeTimeMinutes: 7 } }, expected: '27m' },
   { settings: { canary: { bakeTimeMinutes: 5 } }, expected: '35m' },
-  { settings: { canary: { bakeTimeMinutes: 5, canaryPercent: 100 } }, expected: '25m' },
+  { settings: { canary: { bakeTimeMinutes: 5, canaryPercent: 100 } }, expected: '35m' },
+  {
+    settings: { canary: { bakeTimeMinutes: 5, canaryPercent: 100, canaryBakeTimeMinutes: 60 } },
+    expected: '85m',
+  },
+  {
+    settings: { canary: { bakeTimeMinutes: 5, canaryPercent: 100, canaryBakeTimeMinutes: 0 } },
+    expected: '25m',
+  },
   {
     settings: { canary: { bakeTimeMinutes: 0, canaryPercent: 10, canaryBakeTimeMinutes: 0 } },
     expected: '20m',
@@ -45,7 +53,7 @@ it.each([
     expected: '25m',
   },
 ])(
-  'budgets traffic-shift waits without baking after the final shift: $expected',
+  'budgets canary waits and excludes the final linear step bake: $expected',
   ({ settings, expected }) => {
     expect(estimateDeploymentTimeout(resolveDeploymentStrategy(settings))).toBe(expected);
   },

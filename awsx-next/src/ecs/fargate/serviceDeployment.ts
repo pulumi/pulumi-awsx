@@ -239,10 +239,7 @@ export function estimateDeploymentTimeout(selected: ResolvedDeploymentStrategy):
     // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinearConfiguration.html
     minutes += (trafficShifts - 1) * (selected.config.stepBakeTimeMinutes ?? 6);
   } else if (selected.strategy === DeploymentStrategy.CANARY) {
-    trafficShifts = (selected.config.canaryPercent ?? 5) < 100 ? 2 : 1;
-    if (trafficShifts > 1) {
-      minutes += selected.config.canaryBakeTimeMinutes ?? 10;
-    }
+    minutes += selected.config.canaryBakeTimeMinutes ?? 10;
   }
 
   return `${minutes}m`;
