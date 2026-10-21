@@ -6,6 +6,23 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awsxNext from "@pulumi/awsx-next";
 
 const config = new pulumi.Config();
+const revision = config.get("revision") ?? "";
+if (revision && !/^v\d+$/.test(revision)) {
+  throw new Error("revision must be a version label such as v1 or v2.");
+}
+const strategy = config.get("deploymentStrategy") ?? "rolling";
+if (!["rolling", "blueGreen", "canary", "linear"].includes(strategy)) {
+  throw new Error(`Unknown deploymentStrategy: ${strategy}`);
+}
+// Keep waits short but observable. A revision change registers a new task definition.
+const deploymentStrategy =
+  strategy === "blueGreen"
+    ? { blueGreen: { bakeTimeMinutes: 0 } }
+    : strategy === "canary"
+      ? { canary: { bakeTimeMinutes: 0, canaryPercent: 50, canaryBakeTimeMinutes: 1 } }
+      : strategy === "linear"
+        ? { linear: { bakeTimeMinutes: 0, stepPercent: 50, stepBakeTimeMinutes: 1 } }
+        : { rolling: {} };
 const certificateArn = config.get("certificateArn");
 const hostname = config.get("hostname");
 const additionalCertificates =
@@ -88,6 +105,7 @@ for (const [name, arn] of Object.entries(additionalCertificates)) {
 
 const cluster = new aws.ecs.Cluster("cluster");
 const task = new awsxNext.FargateTaskDefinitionV2("task", {
+  family: config.get("taskDefinitionFamily"),
   cpuUnits: 256,
   memoryMiB: 512,
   containers: {
@@ -95,7 +113,9 @@ const task = new awsxNext.FargateTaskDefinitionV2("task", {
       image: "public.ecr.aws/docker/library/nginx:stable",
       portMappings: [{ containerPort: 3000 }, { containerPort: 3001 }],
       environment: {
-        NGINX_CONFIG: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8"),
+        NGINX_CONFIG: fs
+          .readFileSync(path.join(__dirname, "nginx.conf"), "utf8")
+          .replaceAll("__REVISION__", revision ? `-${revision}` : ""),
       },
       command: [
         "sh",
@@ -120,6 +140,7 @@ new awsxNext.FargateServiceV2(
     taskDefinition: task.taskDefinition.arn,
     vpcSubnetIds: vpc.publicSubnetIds,
     assignPublicIp: true,
+    deploymentStrategy,
     loadBalancerAttachments: {
       api: {
         application: {
@@ -127,6 +148,15 @@ new awsxNext.FargateServiceV2(
           listenerArn: listener.arn,
           priority: 10,
           match: { pathPatterns: { values: ["/api/*"] } },
+          testTraffic:
+            strategy === "rolling"
+              ? undefined
+              : {
+                  match: {
+                    pathPatterns: { values: ["/api/*"] },
+                    headers: [{ name: "X-Deployment-Test", values: ["true"] }],
+                  },
+                },
         },
       },
       admin: {

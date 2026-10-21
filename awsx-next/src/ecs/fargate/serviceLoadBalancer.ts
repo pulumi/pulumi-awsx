@@ -411,6 +411,8 @@ export function createApplicationServiceAttachment(
     },
   };
   const targetGroup = new aws.lb.TargetGroup(`${resourceName}-target-main`, targetGroupArgs, opts);
+  // TODO https://github.com/pulumi/pulumi-awsx/issues/2209: Guard progressive-to-rolling
+  // cleanup. ECS can still need the traffic-shift roles after the service update returns.
   const alternateTargetGroup = trafficShifting
     ? new aws.lb.TargetGroup(
         `${resourceName}-target-alt`,
