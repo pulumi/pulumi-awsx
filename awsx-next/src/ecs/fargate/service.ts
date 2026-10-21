@@ -15,6 +15,7 @@ import {
   resolveDeploymentStrategy,
   renderStrategySettings,
   estimateDeploymentTimeout,
+  createDeploymentLifecycleHooks,
 } from './serviceDeployment';
 
 export const fargateServiceStandaloneIdentity: ComponentIdentity = {
@@ -198,8 +199,10 @@ export interface FargateServiceV2Args {
    * Uses Pulumi duration syntax, for example "90m" or "2h". Overrides the AWS provider timeout for
    * both operations.
    *
-   * Default - The AWS provider's ECS service timeout for rolling updates. Progressive deployments
-   * use that baseline, currently 20 minutes, plus configured bake times.
+   * Default - The AWS provider's ECS service timeout, currently 20 minutes, plus configured
+   * progressive bake times and pause budgets. Hooks at the same stage run in parallel, so only the
+   * longest pause at each stage is counted. Recurring pauses are counted at every traffic shift.
+   * Lambda execution time is unknown. Override this timeout when additional time is needed.
    *
    * Set this explicitly when the service needs more time to stabilize. This only applies to the
    * Pulumi resource create/update timeout. If that timeout is reached the Pulumi deployment fails,
@@ -398,7 +401,10 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       });
     }
     const deploymentTimeout =
-      args.deploymentTimeout ?? (progressive ? estimateDeploymentTimeout(selected) : undefined);
+      args.deploymentTimeout ??
+      (progressive || selected.config.pauseHooks?.length
+        ? estimateDeploymentTimeout(selected)
+        : undefined);
     const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
 
     if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
@@ -438,7 +444,8 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     }));
 
     const loadBalancers: aws.types.input.ecs.ServiceLoadBalancer[] = [];
-    const readyDependencies: pulumi.Resource[] = [];
+    const hooks = createDeploymentLifecycleHooks(name, selected, this);
+    const readyDependencies: pulumi.Resource[] = [...hooks.readyDependencies];
     const ingressByPort = new Map<
       number,
       { attachmentName: string; sourceGroupId: pulumi.Input<string> }[]
@@ -562,6 +569,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         deploymentConfiguration: {
           strategy: selected.strategy,
           ...renderStrategySettings(selected),
+          lifecycleHooks: hooks.lifecycleHooks,
         },
         waitForSteadyState: true,
         tags: args.tags,

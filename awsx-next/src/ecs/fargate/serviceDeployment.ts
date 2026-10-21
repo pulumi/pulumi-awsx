@@ -8,6 +8,217 @@ export enum DeploymentStrategy {
   LINEAR = 'LINEAR',
 }
 
+/**
+ * Settings for a Lambda function that validates or controls a service deployment.
+ */
+export interface LambdaHookSettings {
+  /**
+   * ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function
+   * revision that handles the hook.
+   *
+   * The function must return a JSON object with a hookStatus of SUCCEEDED, FAILED, or IN_PROGRESS.
+   * If IN_PROGRESS is returned then ECS will invoke the hook again until either FAILED or SUCCEEDED
+   * are returned.
+   */
+  readonly functionArn: pulumi.Input<string>;
+
+  /**
+   * ARN of the IAM role ECS assumes to invoke this function. The role must trust ecs.amazonaws.com
+   * and allow lambda:InvokeFunction on functionArn, including any version or alias qualifier.
+   *
+   * If omitted, the service creates one shared invocation role for all Lambda hooks that omit this
+   * property, scoped to their function ARNs.
+   *
+   * Default - A shared invocation role is created when needed.
+   */
+  readonly invocationRoleArn?: pulumi.Input<string>;
+
+  /**
+   * Custom JSON-compatible configuration passed to the Lambda function as event.hookDetails. Values
+   * can include nested objects, arrays, numbers, booleans, null, and Pulumi outputs. The component
+   * resolves outputs and serializes the object as JSON for ECS.
+   *
+   * A function returning IN_PROGRESS can also return hookDetails to persist state between its
+   * invocations within the same deployment. That state is not shared with other hooks or later
+   * deployments. Pass secret identifiers rather than secret values and let the function retrieve
+   * secrets using its execution role.
+   *
+   * Default - No custom configuration is passed.
+   */
+  readonly hookDetails?: pulumi.Input<Record<string, pulumi.Input<any>>>;
+}
+
+/**
+ * Action ECS takes when a pause hook reaches its timeout without an external decision.
+ */
+export enum PauseTimeoutAction {
+  /**
+   * Rolls back the deployment to the previous service revision.
+   */
+  ROLLBACK = 'ROLLBACK',
+
+  /**
+   * Releases this pause hook. Other hooks at the same stage must still complete before the
+   * deployment proceeds.
+   */
+  CONTINUE = 'CONTINUE',
+}
+
+/**
+ * Settings for a deployment pause that waits for an external approval or validation workflow.
+ */
+export interface PauseHookSettings {
+  /**
+   * Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.
+   *
+   * Valid range: 1-20160 minutes (14 days).
+   *
+   * Default - AWS default of 1440 minutes (24 hours).
+   */
+  readonly timeoutMinutes?: number;
+
+  /**
+   * Action ECS takes when this pause hook times out. ROLLBACK reverts the deployment, CONTINUE
+   * releases this hook while leaving any other unfinished hooks at the stage in effect.
+   *
+   * Default - AWS default of PauseTimeoutAction.ROLLBACK.
+   */
+  readonly timeoutAction?: PauseTimeoutAction;
+}
+
+/**
+ * Stages that support Lambda hooks during blue/green, canary, and linear deployments.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html
+ */
+export enum ProgressiveLambdaLifecycleStage {
+  /**
+   * Reconciles the service before a deployment when more than one service revision is active.
+   */
+  RECONCILE_SERVICE = 'RECONCILE_SERVICE',
+
+  /**
+   * Runs before ECS starts tasks for the new service revision.
+   */
+  PRE_SCALE_UP = 'PRE_SCALE_UP',
+
+  /**
+   * Runs after tasks for the new service revision have started and become healthy, before they
+   * receive traffic.
+   */
+  POST_SCALE_UP = 'POST_SCALE_UP',
+
+  /**
+   * Runs while ECS shifts test traffic to the new service revision. This hook can also run during
+   * rollback, so the function must handle traffic moving back to the previous revision.
+   */
+  TEST_TRAFFIC_SHIFT = 'TEST_TRAFFIC_SHIFT',
+
+  /**
+   * Runs after the test traffic shift completes and the new service revision receives all test
+   * traffic. Use with a test route to validate the revision before production traffic shifts.
+   */
+  POST_TEST_TRAFFIC_SHIFT = 'POST_TEST_TRAFFIC_SHIFT',
+
+  /**
+   * Runs before production traffic shifts to the new service revision. For canary and linear
+   * deployments, runs before each traffic shift step.
+   */
+  PRE_PRODUCTION_TRAFFIC_SHIFT = 'PRE_PRODUCTION_TRAFFIC_SHIFT',
+
+  /**
+   * Runs while production traffic shifts to the new service revision, at each step for canary and
+   * linear deployments. This hook also runs during rollback; inspect the traffic weights to
+   * determine the direction of the shift.
+   */
+  PRODUCTION_TRAFFIC_SHIFT = 'PRODUCTION_TRAFFIC_SHIFT',
+
+  /**
+   * Runs after all production traffic has shifted to the new service revision.
+   */
+  POST_PRODUCTION_TRAFFIC_SHIFT = 'POST_PRODUCTION_TRAFFIC_SHIFT',
+}
+
+/**
+ * Stages that support pause hooks during blue/green, canary, and linear deployments.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html
+ */
+export enum ProgressivePauseLifecycleStage {
+  /**
+   * Pauses during service reconciliation when more than one service revision is active.
+   */
+  RECONCILE_SERVICE = 'RECONCILE_SERVICE',
+
+  /**
+   * Pauses before ECS starts tasks for the new service revision.
+   */
+  PRE_SCALE_UP = 'PRE_SCALE_UP',
+
+  /**
+   * Pauses after tasks for the new service revision have started and become healthy, before they
+   * receive traffic.
+   */
+  POST_SCALE_UP = 'POST_SCALE_UP',
+
+  /**
+   * Pauses after the test traffic shift completes and before production traffic shifts. Use with a
+   * test route to inspect or validate the new revision.
+   */
+  POST_TEST_TRAFFIC_SHIFT = 'POST_TEST_TRAFFIC_SHIFT',
+
+  /**
+   * Pauses before production traffic shifts to the new service revision. Canary and linear
+   * deployments pause before each traffic shift step, with a new hookId to continue each time.
+   */
+  PRE_PRODUCTION_TRAFFIC_SHIFT = 'PRE_PRODUCTION_TRAFFIC_SHIFT',
+
+  /**
+   * Pauses after all production traffic has shifted to the new service revision.
+   */
+  POST_PRODUCTION_TRAFFIC_SHIFT = 'POST_PRODUCTION_TRAFFIC_SHIFT',
+}
+
+/**
+ * Invokes a Lambda function at PRE_SCALE_UP before rolling replacement tasks start.
+ */
+export interface RollingLambdaHook extends LambdaHookSettings {}
+
+/**
+ * Pauses at PRE_SCALE_UP before rolling replacement tasks start.
+ */
+export interface RollingPauseHook extends PauseHookSettings {}
+
+/**
+ * Invokes a Lambda function at selected stages of a blue/green, canary, or linear deployment.
+ */
+export interface ProgressiveLambdaHook extends LambdaHookSettings {
+  /**
+   * Stages at which ECS invokes this function. Hooks at the same stage run in parallel, and all
+   * must complete before the deployment proceeds. Array order does not define execution order.
+   *
+   * PRE_PRODUCTION_TRAFFIC_SHIFT and PRODUCTION_TRAFFIC_SHIFT run at every traffic shift step for
+   * canary and linear deployments. ECS can also reinvoke a function that returns IN_PROGRESS.
+   */
+  readonly lifecycleStages: ProgressiveLambdaLifecycleStage[];
+}
+
+/**
+ * Pauses at selected stages of a blue/green, canary, or linear deployment.
+ */
+export interface ProgressivePauseHook extends PauseHookSettings {
+  /**
+   * Stages at which ECS waits for an external decision. Hooks at the same stage run in parallel.
+   * Each pause must be continued and each Lambda hook must succeed before the deployment proceeds.
+   * A pause can also be released by its timeout action. Array order does not define execution
+   * order.
+   *
+   * PRE_PRODUCTION_TRAFFIC_SHIFT pauses before every traffic shift step for canary and linear
+   * deployments, requiring a separate ContinueServiceDeployment call for each new hookId.
+   */
+  readonly lifecycleStages: ProgressivePauseLifecycleStage[];
+}
+
 export enum DeploymentFailureAction {
   /**
    * On failure restore the last completed deployment
@@ -21,6 +232,27 @@ export enum DeploymentFailureAction {
 }
 
 export interface RollingStrategy {
+  /**
+   * Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+   *
+   * Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+   *
+   * Default - No Lambda hooks.
+   */
+  readonly lambdaHooks?: RollingLambdaHook[];
+
+  /**
+   * Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+   * external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+   * hookId, and CONTINUE or ROLLBACK.
+   *
+   * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+   * performed.
+   *
+   * Default - No pause hooks.
+   */
+  readonly pauseHooks?: RollingPauseHook[];
+
   /**
    * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
    * breaker is always enabled.
@@ -37,6 +269,28 @@ export interface RollingStrategy {
  * Settings shared by blue/green, canary, and linear deployments.
  */
 export interface ProgressiveDeploymentSettings {
+  /**
+   * Lambda functions invoked at selected deployment stages.
+   *
+   * Lambda and pause hooks at the same stage run in parallel. All must complete before the
+   * deployment proceeds.
+   *
+   * Default - No Lambda hooks.
+   */
+  readonly lambdaHooks?: ProgressiveLambdaHook[];
+
+  /**
+   * Pauses at selected deployment stages for external approval or validation. To continue the
+   * deployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,
+   * the pause hookId, and CONTINUE or ROLLBACK.
+   *
+   * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+   * performed.
+   *
+   * Default - No pause hooks.
+   */
+  readonly pauseHooks?: ProgressivePauseHook[];
+
   /**
    * Number of minutes to keep the previous service revision running after all production traffic
    * has shifted to the new revision. This is separate from the canary observation period or the
@@ -136,6 +390,13 @@ export interface ServiceDeploymentStrategy {
   readonly canary?: CanaryStrategy;
 }
 
+interface CreatedDeploymentLifecycleHooks {
+  readonly lifecycleHooks:
+    | aws.types.input.ecs.ServiceDeploymentConfigurationLifecycleHook[]
+    | undefined;
+  readonly readyDependencies: pulumi.Resource[];
+}
+
 export type ResolvedDeploymentStrategy =
   | { strategy: DeploymentStrategy.ROLLING; config: RollingStrategy }
   | { strategy: DeploymentStrategy.BLUE_GREEN; config: BlueGreenStrategy }
@@ -220,7 +481,94 @@ export function renderStrategySettings(
 }
 
 /**
- * Adds configured traffic-shift bake times to the AWS provider's default service timeout.
+ * Renders lifecycle hooks and creates a shared invocation role for hooks without a supplied role.
+ *
+ * @param name The service name used for stable child resource names.
+ * @param selected The selected strategy and hook settings.
+ * @param parent The service that owns supporting resources and supplies the AWS provider.
+ * @returns Rendered hooks and IAM policy dependencies required before the service starts.
+ */
+export function createDeploymentLifecycleHooks(
+  name: string,
+  selected: ResolvedDeploymentStrategy,
+  parent: pulumi.Resource,
+): CreatedDeploymentLifecycleHooks {
+  const lambdaHooks =
+    selected.strategy === DeploymentStrategy.ROLLING
+      ? (selected.config.lambdaHooks ?? []).map((hook) =>
+          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
+        )
+      : (selected.config.lambdaHooks ?? []);
+  const pauseHooks =
+    selected.strategy === DeploymentStrategy.ROLLING
+      ? (selected.config.pauseHooks ?? []).map((hook) =>
+          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
+        )
+      : (selected.config.pauseHooks ?? []);
+  const functionsWithoutRoles = lambdaHooks
+    .filter((hook) => hook.invocationRoleArn === undefined)
+    .map((hook) => hook.functionArn);
+  const readyDependencies: pulumi.Resource[] = [];
+  let invocationRoleArn: pulumi.Input<string> | undefined;
+  if (functionsWithoutRoles.length > 0) {
+    const invocationRole = new aws.iam.Role(
+      `${name}-lambda-hook-invocation`,
+      {
+        assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsPrincipal),
+      },
+      { parent },
+    );
+    const invocationPolicy = new aws.iam.RolePolicy(
+      `${name}-lambda-hook-invoke-policy`,
+      {
+        role: invocationRole.name,
+        policy: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'lambda:InvokeFunction',
+              Resource: functionsWithoutRoles,
+            },
+          ],
+        },
+      },
+      { parent },
+    );
+    readyDependencies.push(invocationPolicy);
+    invocationRoleArn = invocationRole.arn;
+  }
+
+  const lifecycleHooks: aws.types.input.ecs.ServiceDeploymentConfigurationLifecycleHook[] = [
+    ...lambdaHooks.map((hook) => ({
+      roleArn: hook.invocationRoleArn ?? invocationRoleArn,
+      hookTargetArn: hook.functionArn,
+      targetType: 'AWS_LAMBDA',
+      lifecycleStages: hook.lifecycleStages,
+      hookDetails:
+        hook.hookDetails === undefined ? undefined : pulumi.jsonStringify(hook.hookDetails),
+    })),
+    ...pauseHooks.map((hook) => ({
+      targetType: 'PAUSE',
+      lifecycleStages: hook.lifecycleStages,
+      timeoutConfiguration:
+        hook.timeoutAction === undefined && hook.timeoutMinutes === undefined
+          ? undefined
+          : {
+              action: hook.timeoutAction,
+              timeoutInMinutes: hook.timeoutMinutes?.toString(),
+            },
+    })),
+  ];
+  return {
+    lifecycleHooks: lifecycleHooks.length > 0 ? lifecycleHooks : undefined,
+    readyDependencies,
+  };
+}
+
+/**
+ * Adds configured traffic-shift bake times and pauses to the provider's default service timeout.
+ * Lambda hook execution time is unknown. Use deploymentTimeout when extra time is needed.
  *
  * @param selected The selected strategy and settings.
  * @returns A Pulumi duration including the provider baseline and configured bake times.
@@ -240,6 +588,28 @@ export function estimateDeploymentTimeout(selected: ResolvedDeploymentStrategy):
     minutes += (trafficShifts - 1) * (selected.config.stepBakeTimeMinutes ?? 6);
   } else if (selected.strategy === DeploymentStrategy.CANARY) {
     minutes += selected.config.canaryBakeTimeMinutes ?? 10;
+    trafficShifts = (selected.config.canaryPercent ?? 5) < 100 ? 2 : 1;
+  }
+
+  const pauseMinutesByStage = new Map<string, number>();
+  const pauseHooks =
+    selected.strategy === DeploymentStrategy.ROLLING
+      ? (selected.config.pauseHooks ?? []).map((hook) =>
+          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
+        )
+      : (selected.config.pauseHooks ?? []);
+  for (const hook of pauseHooks) {
+    for (const stage of hook.lifecycleStages) {
+      // Hooks at the same stage run in parallel. The AWS default pause is 24 hours.
+      // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html
+      pauseMinutesByStage.set(
+        stage,
+        Math.max(pauseMinutesByStage.get(stage) ?? 0, hook.timeoutMinutes ?? 1440),
+      );
+    }
+  }
+  for (const [stage, pauseMinutes] of pauseMinutesByStage) {
+    minutes += pauseMinutes * (stage === 'PRE_PRODUCTION_TRAFFIC_SHIFT' ? trafficShifts : 1);
   }
 
   return `${minutes}m`;

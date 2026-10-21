@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import {
   DeploymentStrategy,
+  ProgressivePauseLifecycleStage,
   resolveDeploymentStrategy,
   estimateDeploymentTimeout,
 } from '../../../src/ecs/fargate/serviceDeployment';
@@ -17,6 +18,31 @@ it.each([0, 2.9, 101, NaN, Infinity])(
     expect(() =>
       resolveDeploymentStrategy({ linear: { bakeTimeMinutes: 1, stepPercent } }),
     ).toThrow(pulumi.InputPropertyError);
+  },
+);
+
+it.each([
+  { canaryPercent: 5, expected: '55m' },
+  { canaryPercent: 100, expected: '45m' },
+])(
+  'budgets recurring pauses separately from the canary bake at $canaryPercent percent',
+  ({ canaryPercent, expected }) => {
+    expect(
+      estimateDeploymentTimeout(
+        resolveDeploymentStrategy({
+          canary: {
+            bakeTimeMinutes: 5,
+            canaryPercent,
+            pauseHooks: [
+              {
+                timeoutMinutes: 10,
+                lifecycleStages: [ProgressivePauseLifecycleStage.PRE_PRODUCTION_TRAFFIC_SHIFT],
+              },
+            ],
+          },
+        }),
+      ),
+    ).toBe(expected);
   },
 );
 

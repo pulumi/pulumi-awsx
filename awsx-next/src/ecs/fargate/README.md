@@ -129,6 +129,56 @@ Rolling deployments keep the AWS provider's default service timeout. Progressive
 
 See the AWS [linear configuration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinearConfiguration.html) and [infrastructure role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AmazonECSInfrastructureRolePolicyForLoadBalancers.html) documentation. The deploying identity needs permission to pass the generated traffic-shift role to ECS.
 
+### Deployment lifecycle hooks
+
+Add `lambdaHooks` or `pauseHooks` inside the selected deployment strategy. Rolling hooks run at `PRE_SCALE_UP`. Progressive hooks specify their lifecycle stages.
+
+```ts
+deploymentStrategy: {
+  rolling: {
+    lambdaHooks: [{
+      functionArn: validationFunction.arn,
+      hookDetails: {
+        endpoint: applicationUrl,
+        suites: ['checkout', 'payments'],
+      },
+    }],
+    pauseHooks: [{
+      timeoutMinutes: 30,
+      timeoutAction: awsxNext.PauseTimeoutAction.ROLLBACK,
+    }],
+  },
+},
+```
+
+The Lambda function and any pause hooks at the same stage run in parallel. Every hook must
+complete before the deployment proceeds. A Lambda hook returns `hookStatus` of `SUCCEEDED`,
+`FAILED`, or `IN_PROGRESS`. ECS reinvokes functions that return `IN_PROGRESS`.
+
+By default, AWSX creates one invocation role shared by hooks without `invocationRoleArn`.
+Its policy allows `lambda:InvokeFunction` only on those hooks' function ARNs, preserving
+version and alias qualifiers. Supply `invocationRoleArn` to manage the role yourself.
+The deploying identity needs permission to pass the role to ECS. Supplied roles must trust
+`ecs.amazonaws.com` and allow invocation of their function.
+
+`hookDetails` supports nested objects and Pulumi Outputs. AWSX serializes the resolved map as JSON.
+Pass identifiers for secrets, not secret values, and let the function retrieve them using its
+own execution role.
+
+Pause hooks wait for an external workflow to call `ContinueServiceDeployment` with the hook ID.
+Without a configured timeout, ECS waits 1440 minutes and then rolls back. `CONTINUE` releases only
+that pause. Other hooks at the stage must still complete. For canary and linear deployments,
+`PRE_PRODUCTION_TRAFFIC_SHIFT` pauses before each traffic shift with a new hook ID.
+
+Pause timeouts are added to the service's timeout budget. Parallel pauses use the longest
+timeout per stage. Pauses at different stages are added, and recurring pre-production pauses
+are counted for each shift. The current 20-minute baseline and progressive bake budgets are
+unchanged. Lambda execution time is unknown, so set `deploymentTimeout` when more time is needed.
+Rolling deployments without pauses keep the provider's default timeout.
+
+See AWS documentation for [Lambda hooks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html)
+and [pause hooks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html).
+
 ### Single attachment
 
 A single attachment can express all traffic going to the backend service.
