@@ -6,23 +6,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awsxNext from "@pulumi/awsx-next";
 
 const config = new pulumi.Config();
-const revision = config.get("revision") ?? "";
-if (revision && !/^v\d+$/.test(revision)) {
-  throw new Error("revision must be a version label such as v1 or v2.");
-}
-const strategy = config.get("deploymentStrategy") ?? "rolling";
-if (!["rolling", "blueGreen", "canary", "linear"].includes(strategy)) {
-  throw new Error(`Unknown deploymentStrategy: ${strategy}`);
-}
-// Keep waits short but observable. A revision change registers a new task definition.
-const deploymentStrategy =
-  strategy === "blueGreen"
-    ? { blueGreen: { bakeTimeMinutes: 0 } }
-    : strategy === "canary"
-      ? { canary: { bakeTimeMinutes: 0, canaryPercent: 50, canaryBakeTimeMinutes: 1 } }
-      : strategy === "linear"
-        ? { linear: { bakeTimeMinutes: 0, stepPercent: 50, stepBakeTimeMinutes: 1 } }
-        : { rolling: {} };
 const certificateArn = config.get("certificateArn");
 const hostname = config.get("hostname");
 const additionalCertificates =
@@ -36,7 +19,7 @@ if (!certificateArn && Object.keys(additionalCertificates).length > 0) {
   throw new Error("Additional SNI certificates require a primary certificateArn.");
 }
 
-// Public task subnets avoid a NAT gateway for this acceptance test. Tasks receive public IPs,
+// Public task subnets avoid a NAT gateway for this example. Tasks receive public IPs,
 // but their service-owned group permits inbound traffic only from the ALB security group.
 const vpc = new awsx.ec2.Vpc("vpc", {
   cidrBlock: "10.0.0.0/16",
@@ -113,9 +96,7 @@ const task = new awsxNext.FargateTaskDefinitionV2("task", {
       image: "public.ecr.aws/docker/library/nginx:stable",
       portMappings: [{ containerPort: 3000 }, { containerPort: 3001 }],
       environment: {
-        NGINX_CONFIG: fs
-          .readFileSync(path.join(__dirname, "nginx.conf"), "utf8")
-          .replaceAll("__REVISION__", revision ? `-${revision}` : ""),
+        NGINX_CONFIG: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8"),
       },
       command: [
         "sh",
@@ -126,50 +107,35 @@ const task = new awsxNext.FargateTaskDefinitionV2("task", {
   },
 });
 
+export const url = pulumi.interpolate`${certificateArn ? "https" : "http"}://${hostname ?? alb.dnsName}`;
+
 // Each attachment owns a forwarding rule and target group. Both route to the same backend;
 // the service permits ALB traffic on the application and health-check ports.
-const backend = {
-  containerName: "app",
-  containerPort: 3000,
-  targetHealthCheck: { path: "/health", port: 3001 },
-};
-new awsxNext.FargateServiceV2(
-  "service",
-  {
-    clusterArn: cluster.arn,
-    taskDefinition: task.taskDefinition.arn,
-    vpcSubnetIds: vpc.publicSubnetIds,
-    assignPublicIp: true,
-    deploymentStrategy,
-    loadBalancerAttachments: {
-      api: {
-        application: {
-          ...backend,
-          listenerArn: listener.arn,
-          priority: 10,
-          match: { pathPatterns: { values: ["/api/*"] } },
-          testTraffic:
-            strategy === "rolling"
-              ? undefined
-              : {
-                  match: {
-                    pathPatterns: { values: ["/api/*"] },
-                    headers: [{ name: "X-Deployment-Test", values: ["true"] }],
-                  },
-                },
-        },
+new awsxNext.FargateServiceV2("service", {
+  clusterArn: cluster.arn,
+  taskDefinition: task.taskDefinition.arn,
+  vpcSubnetIds: vpc.publicSubnetIds,
+  assignPublicIp: true,
+  loadBalancerAttachments: {
+    api: {
+      application: {
+        containerName: "app",
+        containerPort: 3000,
+        targetHealthCheck: { path: "/health", port: 3001 },
+        listenerArn: listener.arn,
+        priority: 10,
+        match: { pathPatterns: { values: ["/api/*"] } },
       },
-      admin: {
-        application: {
-          ...backend,
-          listenerArn: listener.arn,
-          priority: 20,
-          match: { pathPatterns: { values: ["/admin/*"] } },
-        },
+    },
+    admin: {
+      application: {
+        containerName: "app",
+        containerPort: 3000,
+        targetHealthCheck: { path: "/health", port: 3001 },
+        listenerArn: listener.arn,
+        priority: 20,
+        match: { pathPatterns: { values: ["/admin/*"] } },
       },
     },
   },
-  { dependsOn: [vpc] },
-);
-
-export const url = pulumi.interpolate`${certificateArn ? "https" : "http"}://${hostname ?? alb.dnsName}`;
+});

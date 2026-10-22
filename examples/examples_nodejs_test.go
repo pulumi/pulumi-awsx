@@ -152,41 +152,73 @@ func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	pt.Preview(t, optpreview.ExpectNoChanges())
 }
 
-func TestAccEcsServiceProgressiveDeployments(t *testing.T) {
+func TestAccEcsServiceBlueGreenDeployment(t *testing.T) {
 	getEnvRegion(t)
-	for _, strategy := range []string{"blueGreen", "canary", "linear"} {
-		t.Run(strategy, func(t *testing.T) {
-			t.Parallel()
-			// Each strategy uses an independent stack.
-			pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
-			pt.SetConfig(t, "deploymentStrategy", strategy)
-			// ECS rejects concurrent revision registrations within the same family.
-			pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-%s-%d", strategy, time.Now().UnixNano()))
-			pt.SetConfig(t, "revision", "v1")
-			initial := pt.Up(t)
-			url := initial.Outputs["url"].Value.(string)
-			assertEcsServiceHTTP(t, url, "v1", true)
-			pt.Preview(t, optpreview.ExpectNoChanges())
+	t.Parallel()
+	pt := newExperimentalPackageTest(t, "service-blue-green-nodejs")
+	// ECS rejects concurrent revision registrations within the same family.
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-blueGreen-%d", time.Now().UnixNano()))
+	pt.SetConfig(t, "revision", "v1")
+	initial := pt.Up(t)
+	url := initial.Outputs["url"].Value.(string)
+	assertEcsServiceHTTP(t, url, "v1", true)
+	pt.Preview(t, optpreview.ExpectNoChanges())
 
-			// A real rollout must serve the new revision through both production and
-			// test routes. Inspect behavior, not the resources implementing it.
-			pt.SetConfig(t, "revision", "v2")
-			if strategy == "canary" {
-				upEcsCanaryObservingTraffic(t, pt, url)
-			} else {
-				pt.Up(t, optup.Refresh())
-			}
-			assertEcsServiceHTTP(t, url, "v2", true)
+	pt.SetConfig(t, "revision", "v2")
+	pt.Up(t, optup.Refresh())
+	assertEcsServiceHTTP(t, url, "v2", true)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+}
 
-			if strategy != "blueGreen" {
-				// Refresh before subsequent updates, as documented for ECS-managed routing.
-				pt.SetConfig(t, "revision", "v3")
-				pt.Up(t, optup.Refresh())
-				assertEcsServiceHTTP(t, url, "v3", true)
-			}
-			pt.Preview(t, optpreview.ExpectNoChanges())
-		})
-	}
+func TestAccEcsServiceCanaryDeployment(t *testing.T) {
+	getEnvRegion(t)
+	t.Parallel()
+	pt := newExperimentalPackageTest(t, "service-canary-nodejs")
+	// ECS rejects concurrent revision registrations within the same family.
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-canary-%d", time.Now().UnixNano()))
+	pt.SetConfig(t, "revision", "v1")
+	initial := pt.Up(t)
+	url := initial.Outputs["url"].Value.(string)
+	assertEcsServiceHTTP(t, url, "v1", true)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+
+	// Lambda hooks validate test-only and mixed production traffic at the ECS stage gates.
+	pt.SetConfig(t, "previousRevision", "v1")
+	pt.SetConfig(t, "revision", "v2")
+	updated := pt.Up(t, optup.Refresh())
+	assertEcsServiceHTTP(t, url, "v2", true)
+	assertEcsHookRan(t, updated.Outputs["hookLogGroup"].Value.(string), "v2")
+
+	// Refresh again to preserve ECS-managed routing on subsequent deployments.
+	pt.SetConfig(t, "previousRevision", "v2")
+	pt.SetConfig(t, "revision", "v3")
+	updated = pt.Up(t, optup.Refresh())
+	assertEcsServiceHTTP(t, url, "v3", true)
+	assertEcsHookRan(t, updated.Outputs["hookLogGroup"].Value.(string), "v3")
+	pt.Preview(t, optpreview.ExpectNoChanges())
+}
+
+func TestAccEcsServiceLinearDeployment(t *testing.T) {
+	getEnvRegion(t)
+	t.Parallel()
+	pt := newExperimentalPackageTest(t, "service-linear-nodejs")
+	// ECS rejects concurrent revision registrations within the same family.
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-linear-%d", time.Now().UnixNano()))
+	pt.SetConfig(t, "revision", "v1")
+	initial := pt.Up(t)
+	url := initial.Outputs["url"].Value.(string)
+	assertEcsServiceHTTP(t, url, "v1", true)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+
+	pt.SetConfig(t, "revision", "v2")
+	pt.Up(t, optup.Refresh())
+	assertEcsServiceHTTP(t, url, "v2", true)
+
+	// Refresh again to preserve ECS-managed routing on subsequent deployments.
+	pt.SetConfig(t, "revision", "v3")
+	pt.Up(t, optup.Refresh())
+	assertEcsServiceHTTP(t, url, "v3", true)
+	pt.Preview(t, optpreview.ExpectNoChanges())
 }
 
 func assertEcsServiceHTTP(t *testing.T, url, revision string, testRoute bool) {
@@ -216,64 +248,49 @@ func assertEcsServiceHTTP(t *testing.T, url, revision string, testRoute bool) {
 	}
 }
 
-// Run the raw Automation API update in one owned goroutine so the test can observe
-// live routing before Up completes. No testing.T assertions run in that goroutine.
-func upEcsCanaryObservingTraffic(t *testing.T, pt *pulumitest.PulumiTest, url string) {
+func TestAccEcsServiceRollingLifecycleHook(t *testing.T) {
+	getEnvRegion(t)
+	pt := newExperimentalPackageTest(t, "service-rolling-lifecycle-hook-nodejs")
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-hook-rolling-%d", time.Now().UnixNano()))
+	pt.SetConfig(t, "revision", "v1")
+	initial := pt.Up(t)
+	url := initial.Outputs["url"].Value.(string)
+	assertEcsServiceHTTP(t, url, "v1", false)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+
+	pt.SetConfig(t, "previousRevision", "v1")
+	pt.SetConfig(t, "revision", "v2")
+	updated := pt.Up(t)
+	assertEcsServiceHTTP(t, url, "v2", false)
+	assertEcsHookRan(t, updated.Outputs["hookLogGroup"].Value.(string), "v2")
+	pt.Preview(t, optpreview.ExpectNoChanges())
+}
+
+// Confirm validation was not silently skipped. The Lambda owns the stage assertions;
+// a FAILED response makes the provider fail the update, even after successful rollback.
+// Each stack owns its log group and revision labels distinguish successive deployments.
+func assertEcsHookRan(t *testing.T, logGroup, revision string) {
 	t.Helper()
-	ctx, cancel := context.WithTimeout(pt.Context(), 30*time.Minute)
+	logs := cloudwatchlogs.NewFromConfig(loadAwsDefaultConfig(t))
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
 	defer cancel()
-	done := make(chan error, 1)
-	go func() {
-		_, err := pt.CurrentStack().Up(ctx, optup.Refresh())
-		done <- err
-	}()
-	finished := false
-	defer func() {
-		cancel()
-		if !finished {
-			<-done // Join before the test harness starts stack cleanup.
-		}
-	}()
-	ticker := time.NewTicker(3 * time.Second)
-	defer ticker.Stop()
-	client := &http.Client{Timeout: 3 * time.Second}
-	observed := false
-	var diagnostic string
-	for {
-		select {
-		case err := <-done:
-			finished = true
-			require.NoError(t, err)
-			require.True(t, observed,
-				"never observed v2 test traffic while production still served both revisions: %s", diagnostic)
-			return
-		case <-ticker.C:
-			if observed {
-				continue
+	require.EventuallyWithT(t, func(c *assert.CollectT) {
+		pages := cloudwatchlogs.NewFilterLogEventsPaginator(logs, &cloudwatchlogs.FilterLogEventsInput{
+			LogGroupName: aws.String(logGroup),
+		})
+		for pages.HasMorePages() {
+			events, err := pages.NextPage(ctx)
+			if !assert.NoError(c, err) {
+				return
 			}
-			// Wait until test traffic reaches v2, then sample production requests.
-			// Seeing v1 after this request proves test traffic moved before full cutover.
-			status, body, err := ecsServiceHTTP(ctx, client, url+"/api/ping", true)
-			if err != nil || status != http.StatusOK || body != "api-ok-v2\n" {
-				diagnostic = fmt.Sprintf("test status=%d body=%q error=%v", status, body, err)
-				continue
-			}
-			oldSeen, newSeen := false, false
-			for range 20 {
-				status, body, err := ecsServiceHTTP(ctx, client, url+"/api/ping", false)
-				if err != nil || status != http.StatusOK {
-					continue
-				}
-				oldSeen = oldSeen || body == "api-ok-v1\n"
-				newSeen = newSeen || body == "api-ok-v2\n"
-				if oldSeen && newSeen {
-					break
+			for _, event := range events.Events {
+				if strings.Contains(aws.ToString(event.Message), "AWSX_HOOK_OK:"+revision+":") {
+					return
 				}
 			}
-			observed = oldSeen && newSeen
-			diagnostic = fmt.Sprintf("production old=%t new=%t", oldSeen, newSeen)
 		}
-	}
+		assert.Fail(c, "no successful validation hook invocation for "+revision)
+	}, 2*time.Minute, 3*time.Second)
 }
 
 func ecsServiceHTTP(ctx context.Context, client *http.Client, url string, testTraffic bool) (int, string, error) {

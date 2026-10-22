@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as awsNative from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 import {
   FargateCapacityProvider,
@@ -110,6 +111,7 @@ const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const constructions: pulumi.ResourceTransformationArgs[] = [];
 let provider: aws.Provider;
+const nativeRegions = new Map<string, string>();
 
 beforeAll(async () => {
   await pulumi.runtime.setMocks({
@@ -120,6 +122,13 @@ beforeAll(async () => {
     call(args) {
       calls.push(args);
       switch (args.token) {
+        case 'aws:index/getCallerIdentity:getCallerIdentity':
+        case 'aws-native:index:getAccountId':
+          return { accountId: '123456789012' };
+        case 'aws:index/getRegion:getRegion':
+          return { region: args.inputs.region ?? 'us-west-2' };
+        case 'aws-native:index:getRegion':
+          return { region: nativeRegions.get(args.provider!) ?? 'us-west-2' };
         case 'aws:ec2/getSubnet:getSubnet':
           return { ...args.inputs, vpcId: `vpc-for-${args.inputs.id}` };
         case 'aws:lb/getListener:getListener':
@@ -169,6 +178,17 @@ async function createService(
   name: string,
   overrides: Partial<FargateServiceV2Args> = {},
 ): Promise<{ component: FargateServiceV2; inputs: Record<string, any> }> {
+  const nativeProvider = overrides.loadBalancerAttachments
+    ? new awsNative.Provider(`${name}-native-provider`, {
+        region: (overrides.region ?? 'us-west-2') as awsNative.Region,
+      })
+    : undefined;
+  if (nativeProvider) {
+    nativeRegions.set(
+      `${await unwrap(nativeProvider.urn)}::${await unwrap(nativeProvider.id)}`,
+      overrides.region ?? 'us-west-2',
+    );
+  }
   const component = new FargateServiceV2(
     name,
     {
@@ -178,7 +198,7 @@ async function createService(
       ...overrides,
     },
     {
-      providers: { aws: provider },
+      providers: { aws: provider, ...(nativeProvider ? { 'aws-native': nativeProvider } : {}) },
       transformations: [
         (args): undefined => {
           constructions.push(args);
@@ -632,13 +652,12 @@ test('uses the selected region for subnet discovery and newly created children',
   const regionalResources = resources
     .filter((r) => r.type.startsWith('aws:'))
     .map(({ type, inputs }) => ({ type, region: inputs.region }));
-  expect(regionalResources).toHaveLength(6);
+  expect(regionalResources).toHaveLength(5);
   expect(regionalResources).toEqual(
     expect.arrayContaining(
       [
         'aws:ec2/securityGroup:SecurityGroup',
         'aws:ecs/service:Service',
-        'aws:lb/listenerRule:ListenerRule',
         'aws:lb/targetGroup:TargetGroup',
         'aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule',
         'aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule',

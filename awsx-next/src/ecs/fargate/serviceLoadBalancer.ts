@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as awsNative from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 
 import { DeploymentStrategy } from './serviceDeployment';
@@ -194,7 +195,9 @@ export interface ApplicationServiceLoadBalancer {
 
   /**
    * The ARN of the application listener to attach a production forwarding rule to. The listener's
-   * frontend access, certificates, and default action are not modified.
+   * frontend access, certificates, and default action are not modified. Forwarding rules use the
+   * inherited AWS Native provider, whose account and region must match the service's AWS account
+   * and effective region. Configure aws-native:region or pass a matching aws-native provider.
    */
   readonly listenerArn: pulumi.Input<string>;
 
@@ -423,9 +426,9 @@ export function createApplicationServiceAttachment(
         opts,
       )
     : undefined;
-  const targets: aws.types.input.lb.ListenerRuleActionForwardTargetGroup[] = [
-    { arn: targetGroup.arn, weight: trafficShifting ? 1 : undefined },
-    ...(alternateTargetGroup ? [{ arn: alternateTargetGroup.arn, weight: 0 }] : []),
+  const targets: awsNative.types.input.elasticloadbalancingv2.ListenerRuleTargetGroupTupleArgs[] = [
+    { targetGroupArn: targetGroup.arn, weight: 1 },
+    ...(alternateTargetGroup ? [{ targetGroupArn: alternateTargetGroup.arn, weight: 0 }] : []),
   ];
   const ports = [
     ...new Set([args.containerPort, args.targetHealthCheck?.port ?? args.containerPort]),
@@ -437,32 +440,46 @@ export function createApplicationServiceAttachment(
   // retains the current allocation from state.
   const ruleOpts = {
     ...opts,
-    ignoreChanges: trafficShifting ? ['actions[*].forward.targetGroups[*].weight'] : undefined,
+    ignoreChanges: trafficShifting
+      ? ['actions[*].forwardConfig.targetGroups[*].weight']
+      : undefined,
   };
+  // Native rules inherit their own provider. Validate its destination before either
+  // rule can register, including the service's per-resource AWS region override.
+  const routingProviderValidation = pulumi
+    .output({
+      awsAccount: aws.getCallerIdentityOutput({}, opts).accountId,
+      awsRegion: aws.getRegionOutput({ region: context.region }, opts).region,
+      nativeAccount: awsNative.getAccountIdOutput(opts).accountId,
+      nativeRegion: awsNative.getRegionOutput(opts).region,
+    })
+    .apply((destination) => validateRoutingProviders(destination, propertyPath));
   const validatedListenerArn = pulumi
-    .output({ arn: listener.arn, validation: context.listenerRuleValidation })
+    .output({
+      arn: listener.arn,
+      validation: context.listenerRuleValidation,
+      routingProviderValidation,
+    })
     .apply(({ arn }) => arn);
-  const productionRule = new aws.lb.ListenerRule(
+  const productionRule = new awsNative.elasticloadbalancingv2.ListenerRule(
     `${resourceName}-listener-rule`,
     {
-      region: context.region,
       listenerArn: validatedListenerArn,
       priority: args.priority,
       conditions,
-      actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+      actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
     },
     ruleOpts,
   );
   const testRule =
     testConditions.length > 0
-      ? new aws.lb.ListenerRule(
+      ? new awsNative.elasticloadbalancingv2.ListenerRule(
           `${resourceName}-listener-rule-test`,
           {
-            region: context.region,
             listenerArn: validatedListenerArn,
             priority: args.priority - 1,
             conditions: testConditions,
-            actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+            actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
           },
           ruleOpts,
         )
@@ -508,7 +525,7 @@ export function createApplicationServiceAttachment(
             {
               Effect: 'Allow',
               Action: 'elasticloadbalancing:ModifyRule',
-              Resource: [productionRule.arn, ...(testRule ? [testRule.arn] : [])],
+              Resource: [productionRule.ruleArn, ...(testRule ? [testRule.ruleArn] : [])],
             },
           ],
         },
@@ -518,8 +535,8 @@ export function createApplicationServiceAttachment(
     readyDependencies.push(policy);
     advancedConfiguration = {
       alternateTargetGroupArn: alternateTargetGroup.arn,
-      productionListenerRule: productionRule.arn,
-      testListenerRule: testRule?.arn,
+      productionListenerRule: productionRule.ruleArn,
+      testListenerRule: testRule?.ruleArn,
       roleArn: trafficShiftRole.arn,
     };
   }
@@ -534,6 +551,38 @@ export function createApplicationServiceAttachment(
     readyDependencies,
     requiredIngress,
   };
+}
+
+/**
+ * Verifies that AWS and AWS Native route to the same account and effective region.
+ *
+ * @param destination The destinations reported by the inherited providers.
+ * @param destination.awsAccount The AWS provider's account ID.
+ * @param destination.awsRegion The service's effective AWS region.
+ * @param destination.nativeAccount The AWS Native provider's account ID.
+ * @param destination.nativeRegion The AWS Native provider's region.
+ * @param propertyPath The attachment path used for diagnostics.
+ */
+export function validateRoutingProviders(
+  destination: {
+    awsAccount: string;
+    awsRegion: string;
+    nativeAccount: string;
+    nativeRegion: string;
+  },
+  propertyPath: string,
+): void {
+  const { awsAccount, awsRegion, nativeAccount, nativeRegion } = destination;
+  if (awsAccount !== nativeAccount || awsRegion !== nativeRegion) {
+    throw new pulumi.InputPropertyError({
+      propertyPath,
+      reason:
+        `Load-balancer rules require matching AWS and AWS Native accounts and regions. ` +
+        `The service uses account ${awsAccount} in ${awsRegion}, but AWS Native uses ` +
+        `account ${nativeAccount} in ${nativeRegion}. Configure the aws-native provider ` +
+        `to match the service's AWS account and effective region, including any region input.`,
+    });
+  }
 }
 
 interface NamedIngressSource {
@@ -656,21 +705,25 @@ function renderStringMatch(
 function renderConditions(
   match: ListenerConditions,
   propertyPath: string,
-): aws.types.input.lb.ListenerRuleCondition[] {
-  const conditions: aws.types.input.lb.ListenerRuleCondition[] = [];
+): awsNative.types.input.elasticloadbalancingv2.ListenerRuleRuleConditionArgs[] {
+  const conditions: awsNative.types.input.elasticloadbalancingv2.ListenerRuleRuleConditionArgs[] =
+    [];
   if (match.hostnames) {
     conditions.push({
-      hostHeader: renderStringMatch(match.hostnames, `${propertyPath}.hostnames`),
+      field: 'host-header',
+      hostHeaderConfig: renderStringMatch(match.hostnames, `${propertyPath}.hostnames`),
     });
   }
   if (match.pathPatterns) {
     conditions.push({
-      pathPattern: renderStringMatch(match.pathPatterns, `${propertyPath}.pathPatterns`),
+      field: 'path-pattern',
+      pathPatternConfig: renderStringMatch(match.pathPatterns, `${propertyPath}.pathPatterns`),
     });
   }
   for (const [index, header] of (match.headers ?? []).entries()) {
     conditions.push({
-      httpHeader: {
+      field: 'http-header',
+      httpHeaderConfig: {
         httpHeaderName: header.name,
         ...renderStringMatch(header, `${propertyPath}.headers[${index}]`),
       },
@@ -683,7 +736,10 @@ function renderConditions(
         reason: 'The method list must not be empty',
       });
     }
-    conditions.push({ httpRequestMethod: { values: match.methods } });
+    conditions.push({
+      field: 'http-request-method',
+      httpRequestMethodConfig: { values: match.methods },
+    });
   }
   if (match.queryStrings) {
     if (match.queryStrings.length === 0) {
@@ -692,7 +748,7 @@ function renderConditions(
         reason: 'The query-string list must not be empty',
       });
     }
-    conditions.push({ queryStrings: match.queryStrings });
+    conditions.push({ field: 'query-string', queryStringConfig: { values: match.queryStrings } });
   }
   return conditions;
 }

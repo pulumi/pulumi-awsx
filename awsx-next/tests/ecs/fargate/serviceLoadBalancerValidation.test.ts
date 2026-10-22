@@ -3,8 +3,43 @@ import {
   ApplicationProtocolVersion,
   validateListenerRulePriorities,
   validateTargetProtocolVersion,
+  validateRoutingProviders,
   resolveIngressSourceGroup,
 } from '../../../src/ecs/fargate/serviceLoadBalancer';
+
+it.each([
+  { nativeAccount: '999999999999', nativeRegion: 'us-east-2' },
+  { nativeAccount: '123456789012', nativeRegion: 'us-west-2' },
+  { nativeAccount: '999999999999', nativeRegion: 'us-west-2' },
+])('rejects a routing provider in $nativeAccount / $nativeRegion', (native) => {
+  expect(() =>
+    validateRoutingProviders(
+      { awsAccount: '123456789012', awsRegion: 'us-east-2', ...native },
+      'loadBalancerAttachments.app.application',
+    ),
+  ).toThrow(
+    expect.objectContaining({
+      propertyPath: 'loadBalancerAttachments.app.application',
+      message: expect.stringContaining(
+        `The service uses account 123456789012 in us-east-2, but AWS Native uses account ${native.nativeAccount} in ${native.nativeRegion}`,
+      ),
+    }),
+  );
+});
+
+it('allows separately configured providers with the same destination', () => {
+  expect(() =>
+    validateRoutingProviders(
+      {
+        awsAccount: '123456789012',
+        awsRegion: 'us-east-2',
+        nativeAccount: '123456789012',
+        nativeRegion: 'us-east-2',
+      },
+      'loadBalancerAttachments.app.application',
+    ),
+  ).not.toThrow();
+});
 
 it('reuses one source group when attachments request the same task port', () => {
   expect(
