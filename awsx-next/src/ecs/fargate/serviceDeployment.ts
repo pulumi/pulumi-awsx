@@ -481,6 +481,20 @@ export function renderStrategySettings(
 }
 
 /**
+ * Supplies the fixed lifecycle stage shared by rolling Lambda and pause hooks.
+ *
+ * @param hooks The configured rolling hooks.
+ * @returns Hooks with their ECS lifecycle stage.
+ */
+function withRollingLifecycleStage<T>(
+  hooks: T[] | undefined,
+): (T & { lifecycleStages: string[] })[] {
+  return (hooks ?? []).map((hook) =>
+    Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
+  );
+}
+
+/**
  * Renders lifecycle hooks and creates a shared invocation role for hooks without a supplied role.
  *
  * @param name The service name used for stable child resource names.
@@ -495,15 +509,11 @@ export function createDeploymentLifecycleHooks(
 ): CreatedDeploymentLifecycleHooks {
   const lambdaHooks =
     selected.strategy === DeploymentStrategy.ROLLING
-      ? (selected.config.lambdaHooks ?? []).map((hook) =>
-          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
-        )
+      ? withRollingLifecycleStage(selected.config.lambdaHooks)
       : (selected.config.lambdaHooks ?? []);
   const pauseHooks =
     selected.strategy === DeploymentStrategy.ROLLING
-      ? (selected.config.pauseHooks ?? []).map((hook) =>
-          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
-        )
+      ? withRollingLifecycleStage(selected.config.pauseHooks)
       : (selected.config.pauseHooks ?? []);
   const functionsWithoutRoles = lambdaHooks
     .filter((hook) => hook.invocationRoleArn === undefined)
@@ -594,9 +604,7 @@ export function estimateDeploymentTimeout(selected: ResolvedDeploymentStrategy):
   const pauseMinutesByStage = new Map<string, number>();
   const pauseHooks =
     selected.strategy === DeploymentStrategy.ROLLING
-      ? (selected.config.pauseHooks ?? []).map((hook) =>
-          Object.assign({}, hook, { lifecycleStages: ['PRE_SCALE_UP'] }),
-        )
+      ? withRollingLifecycleStage(selected.config.pauseHooks)
       : (selected.config.pauseHooks ?? []);
   for (const hook of pauseHooks) {
     for (const stage of hook.lifecycleStages) {

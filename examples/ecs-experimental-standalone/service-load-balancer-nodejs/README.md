@@ -34,3 +34,10 @@ go test -tags=nodejs -run '^TestAccEcsServiceWithLoadBalancer$' -timeout 30m
 The test checks both forwarding paths, the listener's unmatched response, and a
 clean preview. It uses HTTP and does not exercise optional TLS or IPv6. It creates
 billable resources and destroys its stack during cleanup.
+
+A separate negative test configures AWS Native in a different region and checks
+that preview reports the provider mismatch. It does not deploy infrastructure:
+
+```sh
+go test -tags=nodejs -run '^TestAccEcsServiceRejectsMismatchedProviderRegion$' -timeout 10m
+```

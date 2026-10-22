@@ -125,7 +125,7 @@ The test rule uses priority `49` in this example. Production priorities must be 
 
 ECS owns the forwarding weights after creation. The component ignores changes to those weights so Pulumi does not reset the current traffic allocation. Refresh the stack before subsequent updates to retain ECS's current allocation in state.
 
-Rolling deployments keep the AWS provider's default service timeout. Progressive deployments use that baseline, currently 20 minutes, plus the configured traffic-shift and final bake times. Set `deploymentTimeout` to override the create and update timeout when needed.
+Rolling deployments without pause hooks keep the AWS provider's default service timeout. Configured pauses add their timeout budgets to that baseline. Progressive deployments also add the configured traffic-shift and final bake times to the baseline, currently 20 minutes. Set `deploymentTimeout` to override the create and update timeout when needed.
 
 See the AWS [linear configuration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinearConfiguration.html) and [infrastructure role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AmazonECSInfrastructureRolePolicyForLoadBalancers.html) documentation. The deploying identity needs permission to pass the generated traffic-shift role to ECS.
 

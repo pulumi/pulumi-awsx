@@ -152,6 +152,22 @@ func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	pt.Preview(t, optpreview.ExpectNoChanges())
 }
 
+func TestAccEcsServiceRejectsMismatchedProviderRegion(t *testing.T) {
+	region := getEnvRegion(t)
+	nativeRegion := "us-east-1"
+	if nativeRegion == region {
+		nativeRegion = "us-west-2"
+	}
+	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
+	pt.SetConfig(t, "aws-native:region", nativeRegion)
+
+	// Preview exercises the real providers and component without deploying infrastructure.
+	_, err := pt.PreviewErr(t)
+	require.ErrorContains(t, err, "Load-balancer rules require matching AWS and AWS Native accounts and regions.")
+	require.ErrorContains(t, err, fmt.Sprintf("in %s, but AWS Native uses account", region))
+	require.ErrorContains(t, err, fmt.Sprintf("in %s. Configure the aws-native provider", nativeRegion))
+}
+
 func TestAccEcsServiceBlueGreenDeployment(t *testing.T) {
 	getEnvRegion(t)
 	t.Parallel()

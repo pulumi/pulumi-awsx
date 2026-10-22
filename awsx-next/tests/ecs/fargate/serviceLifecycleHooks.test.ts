@@ -236,6 +236,17 @@ it.each([PauseTimeoutAction.ROLLBACK, PauseTimeoutAction.CONTINUE])(
   },
 );
 
+it('renders an explicit pause timeout without requiring a timeout action', async () => {
+  const registered = await settle(create({ rolling: { pauseHooks: [{ timeoutMinutes: 30 }] } }));
+  expect(registered.inputs.deploymentConfiguration.lifecycleHooks).toEqual([
+    {
+      targetType: 'PAUSE',
+      lifecycleStages: ['PRE_SCALE_UP'],
+      timeoutConfiguration: { timeoutInMinutes: '30' },
+    },
+  ]);
+});
+
 it('preserves pause hooks when the Lambda hook list is empty and uses AWS timeout defaults', async () => {
   const service = create({ rolling: { lambdaHooks: [], pauseHooks: [{}] } });
   const registered = await settle(service);
@@ -481,8 +492,11 @@ it('does not create hooks or invocation roles when hydrating an existing compone
 });
 
 it('rejects conflicting strategies before creating supporting IAM resources', () => {
-  expect(() => create({ rolling: {}, canary: { bakeTimeMinutes: 5 } })).toThrow(
-    'Only one deployment strategy can be provided; received: rolling, canary',
-  );
+  expect(() =>
+    create({
+      rolling: { lambdaHooks: [{ functionArn: validationArn }] },
+      canary: { bakeTimeMinutes: 5 },
+    }),
+  ).toThrow('Only one deployment strategy can be provided; received: rolling, canary');
   expect(constructions.filter((args) => args.type.startsWith('aws:iam/'))).toHaveLength(0);
 });

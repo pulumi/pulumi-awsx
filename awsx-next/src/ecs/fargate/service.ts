@@ -321,10 +321,12 @@ export interface FargateServiceV2Args {
   readonly tags?: Record<string, pulumi.Input<string>>;
 
   /**
-   * Region where this resource will be managed. This region will be set on all child resources
-   * created in this component.
+   * Region where this service and its AWS child resources will be managed. Load-balancer forwarding
+   * rules use the inherited AWS Native provider, which must target the same account and this
+   * effective region. The component validates that both providers match; this input does not
+   * override the AWS Native provider's region.
    *
-   * Defaults to the Region set in the provider configuration.
+   * Defaults to the Region set in the AWS provider configuration.
    */
   readonly region?: string;
 }
