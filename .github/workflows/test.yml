@@ -59,7 +59,6 @@ jobs:
         private-key: ${{ steps.esc-secrets.outputs.PULUMI_PROVIDER_AUTOMATION_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
     - name: Checkout p/examples
-      if: matrix.testTarget == 'pulumiExamples'
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         repository: pulumi/examples
@@ -80,26 +79,31 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Download bin
       uses: ./.github/actions/download-provider
-    - name: Setup Go Cache
-      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
-      if: matrix.language == 'go' || contains(matrix.language, 'go')
-      with:
-        cache-dependency-path: |
-          provider/*.sum
-          upstream/*.sum
-          sdk/go/*.sum
-          sdk/*.sum
-          *.sum
-    - name: Download SDK
+    - name: Download nodejs SDK
       uses: ./.github/actions/download-sdk
       with:
-        language: ${{ matrix.language }}
+        language: nodejs
+    - name: Download python SDK
+      uses: ./.github/actions/download-sdk
+      with:
+        language: python
+    - name: Download dotnet SDK
+      uses: ./.github/actions/download-sdk
+      with:
+        language: dotnet
+    - name: Download go SDK
+      uses: ./.github/actions/download-sdk
+      with:
+        language: go
+    - name: Download java SDK
+      uses: ./.github/actions/download-sdk
+      with:
+        language: java
     - name: Restore makefile progress
-      run: make --touch provider schema build_${{ matrix.language }}
+      run: make --touch provider schema build_sdks
     - name: Update path
       run: echo "${{ github.workspace }}/bin" >> "$GITHUB_PATH"
     - name: Install Python deps
-      if: matrix.language == 'python'
       run: |-
         pip3 install virtualenv==20.0.23
         pip3 install pipenv
@@ -116,18 +120,18 @@ jobs:
         PULUMI_ACCESS_TOKEN: ${{ steps.generate_pulumi_token.outputs.pulumi-access-token }}
       with:
         environment: logins/pulumi-ci
-    - name: Install dependencies
-      run: make install_${{ matrix.language}}_sdk
+    - name: Install prebuilt SDKs
+      run: make install_sdks
+    - name: Generate test shards
+      run: |-
+        cd examples
+        go run github.com/pulumi/shard@861c9ce4aa851e98c19f8376892bf7e47238fa1b \
+            --total ${{ matrix.total-shards }} \
+            --index ${{ matrix.current-shard }} \
+            --output env >> "$GITHUB_ENV"
     - name: Run tests
-      if: matrix.testTarget == 'local'
-      run: make TESTTAGS=${{ matrix.language }} GOTESTARGS="-count=1 -cover -skip TestPulumiExamples" test
-      env:
-        ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
-        ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Run pulumi/examples tests
-      if: matrix.testTarget == 'pulumiExamples'
-      run: make TESTTAGS=${{ matrix.language }} GOTESTARGS="-count=1 -cover -run TestPulumiExamples" test
+      run: |
+        make GOTESTARGS="-test.run ${SHARD_TESTS} ${SHARD_PATHS}" test
       env:
         ALT_AWS_ACCESS_KEY_ID: ${{ steps.esc-secrets.outputs.ALT_AWS_ACCESS_KEY_ID }}
         ALT_AWS_SECRET_ACCESS_KEY: ${{ steps.esc-secrets.outputs.ALT_AWS_SECRET_ACCESS_KEY }}
@@ -135,10 +139,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language:
-        - nodejs
-        - python
-        - dotnet
-        - go
-        - java
-        testTarget: [local]
+        total-shards:
+          - 4
+        current-shard:
+          - 0
+          - 1
+          - 2
+          - 3
