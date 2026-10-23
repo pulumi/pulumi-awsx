@@ -15,62 +15,175 @@
 import * as pulumi from '@pulumi/pulumi';
 
 /**
- * The Active Directory authentication mode for an ECS credential specification.
+ * Domainless Active Directory authentication for a Linux container on Fargate.
+ *
+ * Specify exactly one of `key` or `config`. Fargate supports domainless gMSA with a CredSpec stored
+ * in S3; SSM-backed CredSpecs and domain-joined hosts are not supported.
+ *
+ * The component grants its execution role access to the object, the credentials secret referenced
+ * by the CredSpec, and their customer-managed KMS keys. It does not modify bucket or key policies.
+ *
+ * See [Fargate gMSA
+ * setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-linux-gmsa.html).
  */
-export enum CredentialSpecAuthenticationMode {
+export interface FargateCredentialSpec {
   /**
-   * Use a container instance joined to the Active Directory domain to retrieve gMSA credentials.
+   * ARN of the general-purpose S3 bucket containing the CredSpec.
    *
-   * For more information, see [gMSA
-   * prerequisites](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-prerequisites).
-   */
-  DOMAIN_JOINED = 'DomainJoined',
-  /**
-   * Use credentials referenced by the credential specification without joining the container
-   * instance to the domain.
-   *
-   * For more information, see [domainless gMSA
-   * setup](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html#windows-gmsa-domainless)
-   * and [gMSAs for Linux
-   * containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html).
-   */
-  DOMAINLESS = 'Domainless',
-}
-
-/**
- * An S3 object that contains an ECS credential specification.
- */
-export interface S3BucketCredentialSpec {
-  /**
-   * The ARN of a bucket that contains the credential specification file.
+   * The bucket remains user-managed. If its encryption configuration is created in the same update,
+   * ensure the component depends on that configuration.
    */
   readonly bucketArn: pulumi.Input<string>;
 
   /**
-   * The key of the credential specification file.
+   * Key of an existing CredSpec object. The component reads the JSON to discover its credentials
+   * secret and reads the object's actual KMS key, which can differ from the bucket default.
+   *
+   * The object remains user-managed. Ensure it exists before the component's lookup, using
+   * `dependsOn` when necessary. Changes to its contents are discovered on the next update.
+   *
+   * Default - Create an object from `config`.
    */
-  readonly key: pulumi.Input<string>;
+  readonly key?: pulumi.Input<string>;
+
+  /**
+   * Configuration used to generate a domainless CredSpec JSON object in the supplied bucket.
+   *
+   * The object uses the bucket's default encryption settings and a Pulumi auto-named key. Changing
+   * the configuration replaces the object with a new key and registers a new task definition
+   * revision. Removing this configuration deletes the component-managed object, not the bucket or
+   * secret.
+   *
+   * Default - Read the existing object identified by `key`.
+   */
+  readonly config?: FargateCredentialSpecConfig;
 }
 
 /**
- * A credential specification source for Active Directory authentication.
+ * Active Directory and gMSA metadata used to generate a Fargate credential specification.
  *
- * Exactly one of `s3Bucket` or `ssmParameterArn` must be specified. AWSX resolves the selected
- * resource to the ECS credential specification string.
+ * Obtain the domain SID and GUID from Active Directory and create the gMSA account before using
+ * this configuration. Network connectivity and DNS resolution to Active Directory remain the user's
+ * responsibility.
  */
-export interface CredentialSpec {
+export interface FargateCredentialSpecConfig {
   /**
-   * The Active Directory authentication mode.
+   * Security identifier (SID) of the Active Directory domain.
    */
-  readonly authenticationMode: CredentialSpecAuthenticationMode;
+  readonly domainSid: pulumi.Input<string>;
 
   /**
-   * An S3 object that contains the credential specification file.
+   * GUID of the Active Directory domain.
    */
-  readonly s3Bucket?: S3BucketCredentialSpec;
+  readonly domainGuid: pulumi.Input<string>;
 
   /**
-   * The ARN of an SSM parameter that contains the credential specification file.
+   * DNS name of the Active Directory domain, for example `example.com`.
    */
-  readonly ssmParameterArn?: pulumi.Input<string>;
+  readonly domainName: pulumi.Input<string>;
+
+  /**
+   * DNS name of the Active Directory forest root.
+   *
+   * Default - `domainName`.
+   */
+  readonly dnsTreeName?: pulumi.Input<string>;
+
+  /**
+   * NetBIOS name of the Active Directory domain, for example `EXAMPLE`.
+   */
+  readonly netBiosName: pulumi.Input<string>;
+
+  /**
+   * Name of the gMSA account, for example `WebApp01`.
+   */
+  readonly gmsaAccountName: pulumi.Input<string>;
+
+  /**
+   * ARN of the Secrets Manager secret containing `username`, `password`, and `domainName` for an
+   * Active Directory user allowed to retrieve the gMSA password. The secret remains user-managed;
+   * only its metadata is read to discover the encryption key.
+   */
+  readonly credentialsSecretArn: pulumi.Input<string>;
+}
+
+/**
+ * Render domainless CredSpec metadata in Microsoft's JSON format.
+ *
+ * @param config The domain and gMSA configuration.
+ * @param propertyPath The input path for validation errors.
+ * @returns The JSON document, without any secret values.
+ */
+export function renderCredentialSpecConfig(
+  config: FargateCredentialSpecConfig,
+  propertyPath: string,
+): pulumi.Output<string> {
+  return pulumi.output(config).apply((resolved) => {
+    for (const field of [
+      'domainSid',
+      'domainGuid',
+      'domainName',
+      'netBiosName',
+      'gmsaAccountName',
+      'credentialsSecretArn',
+    ] as const) {
+      if (typeof resolved[field] !== 'string' || !resolved[field].trim()) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: `${propertyPath}.${field}`,
+          reason: `${field} must be a non-empty string`,
+        });
+      }
+    }
+    return JSON.stringify({
+      CmsPlugins: ['ActiveDirectory'],
+      DomainJoinConfig: {
+        Sid: resolved.domainSid,
+        MachineAccountName: resolved.gmsaAccountName,
+        Guid: resolved.domainGuid,
+        DnsTreeName: resolved.dnsTreeName ?? resolved.domainName,
+        DnsName: resolved.domainName,
+        NetBiosName: resolved.netBiosName,
+      },
+      ActiveDirectoryConfig: {
+        GroupManagedServiceAccounts: [
+          { Name: resolved.gmsaAccountName, Scope: resolved.domainName },
+        ],
+        HostAccountConfig: {
+          PortableCcgVersion: '1',
+          // AWS documents that Linux ignores it so just using an example placeholder
+          // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/linux-gmsa.html
+          PluginGUID: '{859E1386-BDB4-49E8-85C7-3070B13920E1}',
+          PluginInput: { CredentialArn: resolved.credentialsSecretArn },
+        },
+      },
+    });
+  });
+}
+
+/**
+ * Extract the domainless credentials secret from an existing Fargate CredSpec.
+ *
+ * @param body The JSON document read from S3.
+ * @param propertyPath The existing-key input path for validation errors.
+ * @returns The credentials secret ARN.
+ */
+export function credentialsSecretArnFromSpec(body: string, propertyPath: string): string {
+  let spec;
+  try {
+    spec = JSON.parse(body);
+  } catch {
+    throw new pulumi.InputPropertyError({
+      propertyPath,
+      reason: 'The S3 credential specification must contain valid JSON',
+    });
+  }
+  const arn = spec?.ActiveDirectoryConfig?.HostAccountConfig?.PluginInput?.CredentialArn;
+  if (typeof arn !== 'string' || !arn.trim()) {
+    throw new pulumi.InputPropertyError({
+      propertyPath,
+      reason:
+        'The Fargate credential specification must reference a Secrets Manager secret at ActiveDirectoryConfig.HostAccountConfig.PluginInput.CredentialArn',
+    });
+  }
+  return arn;
 }

@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	ecrTypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
 	"github.com/pulumi/providertest/pulumitest"
@@ -82,6 +83,56 @@ func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
 		})
 
 	integration.ProgramTest(t, &test)
+}
+
+func TestAccEcsExperimentalStandalone(t *testing.T) {
+	pt := newExperimentalPackageTest(t, "nodejs")
+	result := pt.Up(t)
+
+	require.Equal(t, "task", result.Outputs["componentName"].Value)
+	require.NotEmptyf(t, result.Outputs["taskDefinitionArn"].Value, "taskDefinitionArn empty")
+	require.NotEmptyf(t, result.Outputs["executionRoleArn"].Value, "executionRoleArn empty")
+	require.NotEmptyf(t, result.Outputs["logGroupName"].Value, "logGroupName")
+
+	containerDefinitions, ok := result.Outputs["containerDefinitions"].Value.(string)
+	require.True(t, ok)
+	var definitions []map[string]any
+	require.NoError(t, json.Unmarshal([]byte(containerDefinitions), &definitions))
+	require.Len(t, definitions, 1)
+	// Exercise the plugin runtime: ES2022 class fields must not overwrite the
+	// nested remote container's hydrated output and serialize it as null.
+	require.NotNil(t, definitions[0], "remote container definition was serialized as null")
+	require.Equal(t, "app", definitions[0]["name"])
+	require.Equal(t, "public.ecr.aws/nginx/nginx:latest", definitions[0]["image"])
+	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, definitions[0]["environment"])
+}
+
+func TestAccEcsExperimentalPermissions(t *testing.T) {
+	pt := newExperimentalExampleTest(t, "ecs-experimental-permissions", "nodejs")
+	// The service waits for a stable running task. Failed image pulls, secret/environment-file loading,
+	// or application checks prevent the deployment from reaching steady state.
+	result := pt.Up(t)
+	logs := cloudwatchlogs.NewFromConfig(loadAwsDefaultConfig(t))
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
+	defer cancel()
+	require.EventuallyWithT(t, func(c *assert.CollectT) {
+		pages := cloudwatchlogs.NewFilterLogEventsPaginator(logs, &cloudwatchlogs.FilterLogEventsInput{
+			LogGroupName:  aws.String(result.Outputs["logGroupName"].Value.(string)),
+			FilterPattern: aws.String("\"AWSX_PERMISSION_OK:startup\""),
+		})
+		var messages []string
+		// CloudWatch can return an empty page with a next token even when matching events exist.
+		for pages.HasMorePages() {
+			events, err := pages.NextPage(ctx)
+			if !assert.NoError(c, err) {
+				return
+			}
+			for _, event := range events.Events {
+				messages = append(messages, aws.ToString(event.Message))
+			}
+		}
+		assert.Contains(c, messages, "AWSX_PERMISSION_OK:startup")
+	}, 2*time.Minute, 3*time.Second)
 }
 
 func TestAccEcsService(t *testing.T) {

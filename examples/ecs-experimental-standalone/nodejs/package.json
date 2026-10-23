@@ -1,0 +1,11 @@
+{
+  "name": "ecs-experimental-standalone-nodejs",
+  "private": true,
+  "dependencies": {
+    "@pulumi/aws": "7.43.0",
+    "@pulumi/pulumi": "3.261.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24"
+  }
+}
