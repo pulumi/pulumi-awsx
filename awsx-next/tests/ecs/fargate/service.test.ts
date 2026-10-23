@@ -8,6 +8,104 @@ import {
 import { ServiceLoadBalancer } from '../../../src/ecs/fargate/serviceLoadBalancer';
 import * as serviceLoadBalancer from '../../../src/ecs/fargate/serviceLoadBalancer';
 
+import {
+  DeploymentFailureAction,
+  ServiceDeploymentStrategy,
+} from '../../../src/ecs/fargate/serviceDeployment';
+
+test.each([
+  {
+    name: 'blue-green',
+    deploymentStrategy: { blueGreen: { bakeTimeMinutes: 5 } },
+    expected: { strategy: 'BLUE_GREEN', bakeTimeInMinutes: '5' },
+    timeout: '25m',
+  },
+  {
+    name: 'canary',
+    deploymentStrategy: {
+      canary: { bakeTimeMinutes: 5, canaryPercent: 20, canaryBakeTimeMinutes: 3 },
+    },
+    expected: {
+      strategy: 'CANARY',
+      bakeTimeInMinutes: '5',
+      canaryConfiguration: { canaryPercent: 20, canaryBakeTimeInMinutes: '3' },
+    },
+    timeout: '28m',
+  },
+  {
+    name: 'linear',
+    deploymentStrategy: { linear: { bakeTimeMinutes: 5, stepPercent: 50, stepBakeTimeMinutes: 2 } },
+    expected: {
+      strategy: 'LINEAR',
+      bakeTimeInMinutes: '5',
+      linearConfiguration: { stepPercent: 50, stepBakeTimeInMinutes: '2' },
+    },
+    timeout: '27m',
+  },
+])(
+  'wires $name deployment configuration and service readiness',
+  async ({ name, deploymentStrategy, expected, timeout }) => {
+    const { inputs } = await createService(name, {
+      deploymentStrategy: deploymentStrategy as ServiceDeploymentStrategy,
+      loadBalancerAttachments: { app: applicationAttachment('listener-public', 3000, 25) },
+    });
+    expect(inputs.deploymentConfiguration).toEqual(expected);
+    const binding = inputs.loadBalancers[0];
+    expect(binding.advancedConfiguration).toBeDefined();
+    const service = constructions.find((r) => r.type === 'aws:ecs/service:Service')!;
+    expect(service.opts.customTimeouts).toEqual({ create: timeout, update: timeout });
+    const dependencies = service.opts.dependsOn as pulumi.Resource[];
+    expect(await Promise.all(dependencies.map((r) => unwrap(r.urn)))).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(`::${name}-app-listener-rule`),
+        expect.stringContaining(`::${name}-app-traffic-shift-role-policy`),
+      ]),
+    );
+  },
+);
+
+test.each([undefined, {}, { rolling: {} }])(
+  'explicitly selects rolling while retaining the provider timeout for %j',
+  async (deploymentStrategy) => {
+    const { inputs } = await createService('rolling', { deploymentStrategy });
+    expect(inputs.deploymentConfiguration).toEqual({ strategy: 'ROLLING' });
+    expect(inputs.deploymentCircuitBreaker).toEqual({ enable: true, rollback: true });
+    expect(
+      constructions.find((r) => r.type === 'aws:ecs/service:Service')!.opts.customTimeouts,
+    ).toBeUndefined();
+  },
+);
+
+test.each(['canary', 'linear'] as const)(
+  'rejects %s without traffic-routing attachments before creating children',
+  (strategy) => {
+    expect(
+      () =>
+        new FargateServiceV2('missing-routing', {
+          clusterArn: 'cluster-arn',
+          taskDefinition: 'task-arn',
+          vpcSubnetIds: ['subnet-first'],
+          deploymentStrategy: { [strategy]: { bakeTimeMinutes: 5 } },
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'loadBalancerAttachments' }));
+    expect(resources.filter((resource) => resource.type.startsWith('aws:'))).toEqual([]);
+  },
+);
+
+test('honors explicit timeout and failure action for progressive deployments', async () => {
+  const { inputs } = await createService('override-progressive', {
+    deploymentStrategy: {
+      canary: { bakeTimeMinutes: 5, failureAction: DeploymentFailureAction.STOP },
+    },
+    deploymentTimeout: '2h',
+    loadBalancerAttachments: { app: applicationAttachment('listener-public', 3000, 25) },
+  });
+  expect(inputs.deploymentCircuitBreaker).toEqual({ enable: true, rollback: false });
+  expect(
+    constructions.find((r) => r.type === 'aws:ecs/service:Service')!.opts.customTimeouts,
+  ).toEqual({ create: '2h', update: '2h' });
+});
+
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const constructions: pulumi.ResourceTransformationArgs[] = [];
@@ -321,24 +419,33 @@ test('uses the application port for health-check ingress when targetHealthCheck 
   ]);
 });
 
-test('validates resolved listener priorities through the service', async () => {
-  const validate = jest.spyOn(serviceLoadBalancer, 'validateListenerRulePriorities');
-  try {
-    await createService('resolved-priorities', {
-      loadBalancerAttachments: {
-        api: applicationAttachment(pulumi.output('listener-shared'), 3000, 10),
-        admin: applicationAttachment(pulumi.output('listener-shared'), 3000, 20),
-      },
-    });
-    expect(validate).toHaveBeenCalledTimes(1);
-    expect(validate).toHaveBeenCalledWith([
-      { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10 },
-      { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20 },
-    ]);
-  } finally {
-    validate.mockRestore();
-  }
-});
+test.each([false, true])(
+  'validates resolved listener priorities with test traffic %s',
+  async (testTraffic) => {
+    const validate = jest.spyOn(serviceLoadBalancer, 'validateListenerRulePriorities');
+    try {
+      await createService('resolved-priorities', {
+        deploymentStrategy: testTraffic ? { canary: { bakeTimeMinutes: 5 } } : undefined,
+        loadBalancerAttachments: {
+          api: applicationAttachment(pulumi.output('listener-shared'), 3000, 10),
+          admin: {
+            application: {
+              ...applicationAttachment(pulumi.output('listener-shared'), 3000, 20).application,
+              testTraffic: testTraffic ? { match: { methods: ['GET'] } } : undefined,
+            },
+          },
+        },
+      });
+      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validate).toHaveBeenCalledWith([
+        { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10, testTraffic: false },
+        { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20, testTraffic },
+      ]);
+    } finally {
+      validate.mockRestore();
+    }
+  },
+);
 
 test.each([
   { manageIngress: undefined, attached: false },

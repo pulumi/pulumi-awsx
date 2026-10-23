@@ -93,6 +93,42 @@ Some things to keep in mind:
 - ALB condition limits, available listener-rule priorities, and ECS target-group limits still apply.
 - Rolling deployments create one target group per attachment rather than a pair. Rolling is the default when `deploymentStrategy` is omitted.
 
+### Configuring deployment strategies
+
+Omit `deploymentStrategy` for rolling updates, or select exactly one of `rolling`, `blueGreen`, `canary`, or `linear`. Progressive strategies share the service's deployment configuration across every attachment.
+
+```ts
+deploymentStrategy: {
+  linear: {
+    bakeTimeMinutes: 5,
+    stepPercent: 20,
+    stepBakeTimeMinutes: 3,
+  },
+},
+```
+
+To send validation requests to the new revision before production shifts, add `testTraffic` to the attachment's application configuration:
+
+```ts
+application: {
+  listenerArn: listener.arn,
+  priority: 50,
+  containerName: 'app',
+  containerPort: 80,
+  testTraffic: {
+    match: { headers: [{ name: 'X-Deployment-Test', values: ['true'] }] },
+  },
+},
+```
+
+The test rule uses priority `49` in this example. Production priorities must be greater than 1 when test traffic is configured. Both priorities must be available, including across other attachments on the listener. Test traffic requires a progressive strategy.
+
+ECS owns the forwarding weights after creation. The component ignores changes to those weights so Pulumi does not reset the current traffic allocation. Refresh the stack before subsequent updates to retain ECS's current allocation in state.
+
+Rolling deployments keep the AWS provider's default service timeout. Progressive deployments use that baseline, currently 20 minutes, plus the configured traffic-shift and final bake times. Set `deploymentTimeout` to override the create and update timeout when needed.
+
+See the AWS [linear configuration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LinearConfiguration.html) and [infrastructure role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AmazonECSInfrastructureRolePolicyForLoadBalancers.html) documentation. The deploying identity needs permission to pass the generated traffic-shift role to ECS.
+
 ### Single attachment
 
 A single attachment can express all traffic going to the backend service.

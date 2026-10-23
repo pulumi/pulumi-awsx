@@ -46,6 +46,19 @@ it('rejects two attachments using the same listener and priority', () => {
   );
 });
 
+it('checks test priorities against production rules on the same resolved listener', () => {
+  expect(() =>
+    validateListenerRulePriorities([
+      { attachmentName: 'first', listenerArn: 'listener', priority: 24 },
+      { attachmentName: 'second', listenerArn: 'listener', priority: 25, testTraffic: true },
+    ]),
+  ).toThrow(
+    expect.objectContaining({
+      propertyPath: 'loadBalancerAttachments.second.application.priority',
+    }),
+  );
+});
+
 it('allows different priorities on one listener and reusing a priority on another listener', () => {
   expect(() =>
     validateListenerRulePriorities([

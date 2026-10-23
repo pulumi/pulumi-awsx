@@ -152,6 +152,147 @@ func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	pt.Preview(t, optpreview.ExpectNoChanges())
 }
 
+func TestAccEcsServiceProgressiveDeployments(t *testing.T) {
+	getEnvRegion(t)
+	for _, strategy := range []string{"blueGreen", "canary", "linear"} {
+		t.Run(strategy, func(t *testing.T) {
+			t.Parallel()
+			// Each strategy uses an independent stack.
+			pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
+			pt.SetConfig(t, "deploymentStrategy", strategy)
+			// ECS rejects concurrent revision registrations within the same family.
+			pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-%s-%d", strategy, time.Now().UnixNano()))
+			pt.SetConfig(t, "revision", "v1")
+			initial := pt.Up(t)
+			url := initial.Outputs["url"].Value.(string)
+			assertEcsServiceHTTP(t, url, "v1", true)
+			pt.Preview(t, optpreview.ExpectNoChanges())
+
+			// A real rollout must serve the new revision through both production and
+			// test routes. Inspect behavior, not the resources implementing it.
+			pt.SetConfig(t, "revision", "v2")
+			if strategy == "canary" {
+				upEcsCanaryObservingTraffic(t, pt, url)
+			} else {
+				pt.Up(t, optup.Refresh())
+			}
+			assertEcsServiceHTTP(t, url, "v2", true)
+
+			if strategy != "blueGreen" {
+				// Refresh before subsequent updates, as documented for ECS-managed routing.
+				pt.SetConfig(t, "revision", "v3")
+				pt.Up(t, optup.Refresh())
+				assertEcsServiceHTTP(t, url, "v3", true)
+			}
+			pt.Preview(t, optpreview.ExpectNoChanges())
+		})
+	}
+}
+
+func assertEcsServiceHTTP(t *testing.T, url, revision string, testRoute bool) {
+	t.Helper()
+	client := &http.Client{Timeout: 5 * time.Second}
+	for _, route := range []struct {
+		path, body string
+		status     int
+	}{
+		{"/api/ping", "api-ok-" + revision + "\n", http.StatusOK},
+		{"/admin/ping", "admin-ok-" + revision + "\n", http.StatusOK},
+		{"/unmatched", "listener-default\n", http.StatusNotFound},
+	} {
+		require.EventuallyWithT(t, func(c *assert.CollectT) {
+			status, body, err := ecsServiceHTTP(t.Context(), client, url+route.path, false)
+			if assert.NoError(c, err) {
+				assert.Equal(c, route.status, status, route.path)
+				assert.Equal(c, route.body, body, route.path)
+			}
+		}, time.Minute, 3*time.Second)
+	}
+	if testRoute {
+		status, body, err := ecsServiceHTTP(t.Context(), client, url+"/api/ping", true)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, status)
+		require.Equal(t, "api-ok-"+revision+"\n", body)
+	}
+}
+
+// Run the raw Automation API update in one owned goroutine so the test can observe
+// live routing before Up completes. No testing.T assertions run in that goroutine.
+func upEcsCanaryObservingTraffic(t *testing.T, pt *pulumitest.PulumiTest, url string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(pt.Context(), 30*time.Minute)
+	defer cancel()
+	done := make(chan error, 1)
+	go func() {
+		_, err := pt.CurrentStack().Up(ctx, optup.Refresh())
+		done <- err
+	}()
+	finished := false
+	defer func() {
+		cancel()
+		if !finished {
+			<-done // Join before the test harness starts stack cleanup.
+		}
+	}()
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	client := &http.Client{Timeout: 3 * time.Second}
+	observed := false
+	var diagnostic string
+	for {
+		select {
+		case err := <-done:
+			finished = true
+			require.NoError(t, err)
+			require.True(t, observed,
+				"never observed v2 test traffic while production still served both revisions: %s", diagnostic)
+			return
+		case <-ticker.C:
+			if observed {
+				continue
+			}
+			// Wait until test traffic reaches v2, then sample production requests.
+			// Seeing v1 after this request proves test traffic moved before full cutover.
+			status, body, err := ecsServiceHTTP(ctx, client, url+"/api/ping", true)
+			if err != nil || status != http.StatusOK || body != "api-ok-v2\n" {
+				diagnostic = fmt.Sprintf("test status=%d body=%q error=%v", status, body, err)
+				continue
+			}
+			oldSeen, newSeen := false, false
+			for range 20 {
+				status, body, err := ecsServiceHTTP(ctx, client, url+"/api/ping", false)
+				if err != nil || status != http.StatusOK {
+					continue
+				}
+				oldSeen = oldSeen || body == "api-ok-v1\n"
+				newSeen = newSeen || body == "api-ok-v2\n"
+				if oldSeen && newSeen {
+					break
+				}
+			}
+			observed = oldSeen && newSeen
+			diagnostic = fmt.Sprintf("production old=%t new=%t", oldSeen, newSeen)
+		}
+	}
+}
+
+func ecsServiceHTTP(ctx context.Context, client *http.Client, url string, testTraffic bool) (int, string, error) {
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return 0, "", err
+	}
+	if testTraffic {
+		request.Header.Set("X-Deployment-Test", "true")
+	}
+	response, err := client.Do(request)
+	if err != nil {
+		return 0, "", err
+	}
+	defer response.Body.Close()
+	body, err := io.ReadAll(io.LimitReader(response.Body, 1024))
+	return response.StatusCode, string(body), err
+}
+
 func TestAccEcsExperimentalPermissions(t *testing.T) {
 	pt := newExperimentalExampleTest(t, "ecs-experimental-permissions", "nodejs")
 	// The service waits for a stable running task. Failed image pulls, secret/environment-file loading,

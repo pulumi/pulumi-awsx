@@ -1,6 +1,29 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
 
+import { DeploymentStrategy } from './serviceDeployment';
+
+export interface TestTraffic {
+  /**
+   * This is only applicable when using blue/green, canary, or linear deployments. When those
+   * deployment strategies are used you can provide these match conditions to route certain requests
+   * to the new version immediately.
+   *
+   * When a new version is deployed using blue/green, canary, or linear deployments ECS starts by
+   * first shifting 100% of traffic matching these conditions to the new version. Once that shift is
+   * complete ECS then begins the production traffic shift. Using this `testTraffic` configuration
+   * can allow you to accomplish things like:
+   *
+   * - Automated smoke tests before shifting production traffic
+   * - Manual inspection before shifting production traffic
+   * - Targeted checks during a canary/linear deployment.
+   *
+   * The test rule uses the priority immediately before the production rule. That priority must be
+   * available, and the production priority must be greater than 1.
+   */
+  readonly match: ListenerConditions;
+}
+
 export interface StringMatch {
   /**
    * AWS value matching, including supported wildcards. Conflicts with `regexValues`
@@ -214,6 +237,12 @@ export interface ApplicationServiceLoadBalancer {
    * Default - ApplicationProtocol.HTTP
    */
   readonly targetProtocol?: ApplicationProtocol;
+
+  /**
+   * Routing for validating a new revision before production traffic shifts. Requires blue/green,
+   * canary, or linear deployments. Omitted means no test route.
+   */
+  readonly testTraffic?: TestTraffic;
 }
 
 export interface ServiceLoadBalancer {
@@ -232,6 +261,10 @@ export interface ApplicationServiceAttachmentContext {
    * The service component that owns all attachment resources and lookups.
    */
   readonly parent: pulumi.Resource;
+  /**
+   * The deployment strategy selected by the service. Defaults to rolling updates.
+   */
+  readonly strategy?: DeploymentStrategy;
   /**
    * Region selected by the service, or the inherited provider region when omitted.
    */
@@ -291,6 +324,24 @@ export function createApplicationServiceAttachment(
     args.containerPort > 65535
   ) {
     fail('containerPort', 'The container port must be an integer between 1 and 65535');
+  }
+
+  const trafficShifting =
+    (context.strategy ?? DeploymentStrategy.ROLLING) !== DeploymentStrategy.ROLLING;
+  if (args.testTraffic && !trafficShifting) {
+    fail(
+      'testTraffic',
+      'Test traffic requires a blue/green, canary, or linear deployment strategy',
+    );
+  }
+  if (args.testTraffic && args.priority === 1) {
+    fail('priority', 'Test traffic requires a production priority greater than 1');
+  }
+  const testConditions = args.testTraffic
+    ? renderConditions(args.testTraffic.match, `${propertyPath}.testTraffic.match`)
+    : [];
+  if (args.testTraffic && testConditions.length === 0) {
+    fail('testTraffic.match', 'At least one condition is required for test traffic');
   }
 
   const healthCheck = args.targetHealthCheck;
@@ -360,8 +411,21 @@ export function createApplicationServiceAttachment(
     },
   };
   const targetGroup = new aws.lb.TargetGroup(`${resourceName}-target-main`, targetGroupArgs, opts);
+  // TODO https://github.com/pulumi/pulumi-awsx/issues/2209: Guard progressive-to-rolling
+  // cleanup. ECS can still need the traffic-shift roles after the service update returns.
+  const alternateTargetGroup = trafficShifting
+    ? new aws.lb.TargetGroup(
+        `${resourceName}-target-alt`,
+        {
+          ...targetGroupArgs,
+          tags: { Name: `${resourceName}-target-alt` },
+        },
+        opts,
+      )
+    : undefined;
   const targets: aws.types.input.lb.ListenerRuleActionForwardTargetGroup[] = [
-    { arn: targetGroup.arn },
+    { arn: targetGroup.arn, weight: trafficShifting ? 1 : undefined },
+    ...(alternateTargetGroup ? [{ arn: alternateTargetGroup.arn, weight: 0 }] : []),
   ];
   const ports = [
     ...new Set([args.containerPort, args.targetHealthCheck?.port ?? args.containerPort]),
@@ -369,27 +433,105 @@ export function createApplicationServiceAttachment(
   const sourceGroupId = loadBalancer.securityGroups.apply((groups) => groups[0]!);
   const requiredIngress = ports.map((port) => ({ sourceGroupId, port }));
 
+  // ECS owns traffic allocation after creation. Refresh before updates so ignoreChanges
+  // retains the current allocation from state.
+  const ruleOpts = {
+    ...opts,
+    ignoreChanges: trafficShifting ? ['actions[*].forward.targetGroups[*].weight'] : undefined,
+  };
+  const validatedListenerArn = pulumi
+    .output({ arn: listener.arn, validation: context.listenerRuleValidation })
+    .apply(({ arn }) => arn);
   const productionRule = new aws.lb.ListenerRule(
     `${resourceName}-listener-rule`,
     {
       region: context.region,
-      listenerArn: pulumi
-        .output({ arn: listener.arn, validation: context.listenerRuleValidation })
-        .apply(({ arn }) => arn),
+      listenerArn: validatedListenerArn,
       priority: args.priority,
       conditions,
       actions: [{ type: 'forward', forward: { targetGroups: targets } }],
     },
-    opts,
+    ruleOpts,
   );
+  const testRule =
+    testConditions.length > 0
+      ? new aws.lb.ListenerRule(
+          `${resourceName}-listener-rule-test`,
+          {
+            region: context.region,
+            listenerArn: validatedListenerArn,
+            priority: args.priority - 1,
+            conditions: testConditions,
+            actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+          },
+          ruleOpts,
+        )
+      : undefined;
+  const readyDependencies: pulumi.Resource[] = [productionRule, ...(testRule ? [testRule] : [])];
+  let trafficShiftRole: aws.iam.Role | undefined;
+  let advancedConfiguration:
+    | aws.types.input.ecs.ServiceLoadBalancerAdvancedConfiguration
+    | undefined;
+  if (alternateTargetGroup) {
+    trafficShiftRole = new aws.iam.Role(
+      `${resourceName}-traffic-shift-role`,
+      {
+        assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsPrincipal),
+      },
+      opts,
+    );
+    const policy = new aws.iam.RolePolicy(
+      `${resourceName}-traffic-shift-role-policy`,
+      {
+        role: trafficShiftRole.name,
+        policy: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: [
+                'elasticloadbalancing:DescribeListeners',
+                'elasticloadbalancing:DescribeRules',
+                'elasticloadbalancing:DescribeTargetGroups',
+                'elasticloadbalancing:DescribeTargetHealth',
+              ],
+              Resource: '*',
+            },
+            {
+              Effect: 'Allow',
+              Action: [
+                'elasticloadbalancing:RegisterTargets',
+                'elasticloadbalancing:DeregisterTargets',
+              ],
+              Resource: [targetGroup.arn, alternateTargetGroup.arn],
+            },
+            {
+              Effect: 'Allow',
+              Action: 'elasticloadbalancing:ModifyRule',
+              Resource: [productionRule.arn, ...(testRule ? [testRule.arn] : [])],
+            },
+          ],
+        },
+      },
+      opts,
+    );
+    readyDependencies.push(policy);
+    advancedConfiguration = {
+      alternateTargetGroupArn: alternateTargetGroup.arn,
+      productionListenerRule: productionRule.arn,
+      testListenerRule: testRule?.arn,
+      roleArn: trafficShiftRole.arn,
+    };
+  }
 
   return {
     serviceBinding: {
       containerName: args.containerName,
       containerPort: args.containerPort,
       targetGroupArn: targetGroup.arn,
+      advancedConfiguration,
     },
-    readyDependencies: [productionRule],
+    readyDependencies,
     requiredIngress,
   };
 }
@@ -425,6 +567,7 @@ export function resolveIngressSourceGroup(
 }
 
 interface ListenerRulePriority {
+  readonly testTraffic?: boolean;
   readonly attachmentName: string;
   readonly listenerArn: string;
   readonly priority: number;
@@ -437,7 +580,11 @@ interface ListenerRulePriority {
  */
 export function validateListenerRulePriorities(rules: readonly ListenerRulePriority[]): void {
   const prioritiesByListener = new Map<string, Map<number, string>>();
-  for (const { attachmentName, listenerArn, priority } of rules) {
+  const allRules = rules.flatMap((rule) => [
+    rule,
+    ...(rule.testTraffic ? [{ ...rule, priority: rule.priority - 1 }] : []),
+  ]);
+  for (const { attachmentName, listenerArn, priority } of allRules) {
     const priorities = prioritiesByListener.get(listenerArn) ?? new Map<number, string>();
     const owner = priorities.get(priority);
     if (owner !== undefined) {
