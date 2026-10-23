@@ -17,10 +17,20 @@ beforeAll(async () => {
         registrations.push(args);
         return {
           id: args.name,
-          state: { ...args.inputs, arn: args.name },
+          state: { ...args.inputs, arn: args.name, ruleArn: args.name },
         };
       },
       call(args) {
+        if (
+          args.token === 'aws:index/getCallerIdentity:getCallerIdentity' ||
+          args.token === 'aws-native:index:getAccountId'
+        )
+          return { accountId: '123456789012' };
+        if (
+          args.token === 'aws:index/getRegion:getRegion' ||
+          args.token === 'aws-native:index:getRegion'
+        )
+          return { region: 'us-west-2' };
         return args.token === 'aws:lb/getListener:getListener'
           ? { ...args.inputs, loadBalancerArn: 'alb', protocol: pulumi.runtime.unknownValue }
           : { ...args.inputs, vpcId: 'vpc', securityGroups: pulumi.runtime.unknownValue };
@@ -45,7 +55,8 @@ it('declares the target group and rule even when the listener protocol is unknow
     {
       transformations: [
         (args): undefined => {
-          if (args.type.startsWith('aws:')) children.push(args.resource);
+          if (args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
+            children.push(args.resource);
           return undefined;
         },
       ],
@@ -70,11 +81,11 @@ it('declares the target group and rule even when the listener protocol is unknow
   await Promise.all(children.map((child) => new Promise((done) => child.urn.apply(done))));
   expect(
     registrations
-      .filter((args) => args.type.startsWith('aws:'))
+      .filter((args) => args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
       .map(({ type, name }) => ({ type, name })),
   ).toEqual([
     { type: 'aws:lb/targetGroup:TargetGroup', name: 'service-app-target-main' },
-    { type: 'aws:lb/listenerRule:ListenerRule', name: 'service-app-listener-rule' },
+    { type: 'aws-native:elasticloadbalancingv2:ListenerRule', name: 'service-app-listener-rule' },
   ]);
 });
 
@@ -87,7 +98,8 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
     {
       transformations: [
         (args): undefined => {
-          if (args.type.startsWith('aws:')) children.push(args.resource);
+          if (args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
+            children.push(args.resource);
           return undefined;
         },
       ],
@@ -108,7 +120,11 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
   expect(children).toHaveLength(6);
   await Promise.all(children.map((child) => new Promise((done) => child.urn.apply(done))));
   expect(
-    new Set(registrations.filter((args) => args.type.startsWith('aws:')).map((args) => args.name)),
+    new Set(
+      registrations
+        .filter((args) => args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
+        .map((args) => args.name),
+    ),
   ).toEqual(
     new Set([
       'progressive-preview-app-target-main',
@@ -153,7 +169,8 @@ it('declares deduplicated service ingress synchronously when ALB source groups a
     {
       transformations: [
         (args): undefined => {
-          if (args.type.startsWith('aws:')) children.push(args.resource);
+          if (args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
+            children.push(args.resource);
           return undefined;
         },
       ],

@@ -15,6 +15,7 @@ import {
   resolveDeploymentStrategy,
   renderStrategySettings,
   estimateDeploymentTimeout,
+  createDeploymentLifecycleHooks,
 } from './serviceDeployment';
 
 export const fargateServiceStandaloneIdentity: ComponentIdentity = {
@@ -68,16 +69,17 @@ export interface FargateCapacityProviderStrategy {
 /**
  * The platform version on which to run your service.
  *
- * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform-fargate.html
  */
 export enum FargatePlatformVersion {
   /**
-   * The latest, recommended platform version.
+   * The latest, recommended platform version for the task's operating system. Currently 1.4.0 for
+   * Linux and 1.0.0 for Windows.
    */
   LATEST = 'LATEST',
 
   /**
-   * Version 1.4.0
+   * Linux platform version 1.4.0.
    *
    * Supports EFS endpoints, CAP_SYS_PTRACE Linux capability, network performance metrics in
    * CloudWatch Container Insights, consolidated 20 GB ephemeral volume.
@@ -85,32 +87,10 @@ export enum FargatePlatformVersion {
   VERSION1_4 = '1.4.0',
 
   /**
-   * Version 1.3.0
-   *
-   * Supports secrets, task recycling.
+   * Windows platform version 1.0.0. Platform version numbers for Windows and Linux are independent.
+   * Do not use this version for Linux tasks.
    */
-  VERSION1_3 = '1.3.0',
-
-  /**
-   * Version 1.2.0
-   *
-   * Supports private registries.
-   */
-  VERSION1_2 = '1.2.0',
-
-  /**
-   * Version 1.1.0
-   *
-   * Supports task metadata, health checks, service discovery.
-   */
-  VERSION1_1 = '1.1.0',
-
-  /**
-   * Initial release
-   *
-   * Based on Amazon Linux 2017.09.
-   */
-  VERSION1_0 = '1.0.0',
+  WINDOWS_VERSION1_0 = '1.0.0',
 }
 
 /**
@@ -198,8 +178,10 @@ export interface FargateServiceV2Args {
    * Uses Pulumi duration syntax, for example "90m" or "2h". Overrides the AWS provider timeout for
    * both operations.
    *
-   * Default - The AWS provider's ECS service timeout for rolling updates. Progressive deployments
-   * use that baseline, currently 20 minutes, plus configured bake times.
+   * Default - The AWS provider's ECS service timeout, currently 20 minutes, plus configured
+   * progressive bake times and pause budgets. Hooks at the same stage run in parallel, so only the
+   * longest pause at each stage is counted. Recurring pauses are counted at every traffic shift.
+   * Lambda execution time is unknown. Override this timeout when additional time is needed.
    *
    * Set this explicitly when the service needs more time to stabilize. This only applies to the
    * Pulumi resource create/update timeout. If that timeout is reached the Pulumi deployment fails,
@@ -318,10 +300,12 @@ export interface FargateServiceV2Args {
   readonly tags?: Record<string, pulumi.Input<string>>;
 
   /**
-   * Region where this resource will be managed. This region will be set on all child resources
-   * created in this component.
+   * Region where this service and its AWS child resources will be managed. Load-balancer forwarding
+   * rules use the inherited AWS Native provider, which must target the same account and this
+   * effective region. The component validates that both providers match; this input does not
+   * override the AWS Native provider's region.
    *
-   * Defaults to the Region set in the provider configuration.
+   * Defaults to the Region set in the AWS provider configuration.
    */
   readonly region?: string;
 }
@@ -398,7 +382,10 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       });
     }
     const deploymentTimeout =
-      args.deploymentTimeout ?? (progressive ? estimateDeploymentTimeout(selected) : undefined);
+      args.deploymentTimeout ??
+      (progressive || selected.config.pauseHooks?.length
+        ? estimateDeploymentTimeout(selected)
+        : undefined);
     const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
 
     if (args.capacityProviderStrategies && args.useClusterDefaultCapacityProviderStrategy) {
@@ -438,7 +425,8 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     }));
 
     const loadBalancers: aws.types.input.ecs.ServiceLoadBalancer[] = [];
-    const readyDependencies: pulumi.Resource[] = [];
+    const hooks = createDeploymentLifecycleHooks(name, selected, this);
+    const readyDependencies: pulumi.Resource[] = [...hooks.readyDependencies];
     const ingressByPort = new Map<
       number,
       { attachmentName: string; sourceGroupId: pulumi.Input<string> }[]
@@ -562,6 +550,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         deploymentConfiguration: {
           strategy: selected.strategy,
           ...renderStrategySettings(selected),
+          lifecycleHooks: hooks.lifecycleHooks,
         },
         waitForSteadyState: true,
         tags: args.tags,

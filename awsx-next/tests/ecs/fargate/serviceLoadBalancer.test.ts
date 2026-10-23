@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as awsNative from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 import {
   ApplicationProtocol,
@@ -17,6 +18,7 @@ const children: pulumi.Resource[] = [];
 const loadBalancerArn = 'arn:mock:load-balancer';
 const listenerArn = 'arn:mock:listener';
 let provider: aws.Provider;
+let nativeProvider: awsNative.Provider;
 let sequence = 0;
 
 beforeAll(async () => {
@@ -25,11 +27,21 @@ beforeAll(async () => {
       resources.push(args);
       return {
         id: `${args.name}_id`,
-        state: { ...args.inputs, arn: `arn:mock:${args.name}` },
+        state: { ...args.inputs, arn: `arn:mock:${args.name}`, ruleArn: `arn:mock:${args.name}` },
       };
     },
     call(args) {
       calls.push(args);
+      if (
+        args.token === 'aws:index/getCallerIdentity:getCallerIdentity' ||
+        args.token === 'aws-native:index:getAccountId'
+      )
+        return { accountId: '123456789012' };
+      if (
+        args.token === 'aws:index/getRegion:getRegion' ||
+        args.token === 'aws-native:index:getRegion'
+      )
+        return { region: 'us-east-2' };
       if (args.token === 'aws:lb/getListener:getListener') {
         return { ...args.inputs, loadBalancerArn, protocol: 'HTTPS', port: 443 };
       }
@@ -41,8 +53,9 @@ beforeAll(async () => {
       };
     },
   });
-  provider = new aws.Provider('attachment-provider', { region: 'us-west-2' });
-  await resolve(provider.urn);
+  provider = new aws.Provider('attachment-provider', { region: 'us-east-2' });
+  nativeProvider = new awsNative.Provider('native-attachment-provider', { region: 'us-east-2' });
+  await Promise.all([resolve(provider.urn), resolve(nativeProvider.urn)]);
 });
 
 beforeEach(() => {
@@ -73,11 +86,13 @@ function parent(): pulumi.ComponentResource {
     `service-${sequence++}`,
     {},
     {
-      providers: { aws: provider },
+      providers: { aws: provider, 'aws-native': nativeProvider },
       transformations: [
         (args): undefined => {
-          if (args.type.startsWith('aws:')) children.push(args.resource);
-          if (args.type === 'aws:lb/listenerRule:ListenerRule') ruleOptions.push(args.opts);
+          if (args.type.startsWith('aws:') || args.type.startsWith('aws-native:'))
+            children.push(args.resource);
+          if (args.type === 'aws-native:elasticloadbalancingv2:ListenerRule')
+            ruleOptions.push(args.opts);
           return undefined;
         },
       ],
@@ -140,36 +155,43 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
       tags: { Name: 'progressive-app-target-alt' },
     });
     const targets = [
-      { arn: 'arn:mock:progressive-app-target-main', weight: 1 },
-      { arn: 'arn:mock:progressive-app-target-alt', weight: 0 },
+      { targetGroupArn: 'arn:mock:progressive-app-target-main', weight: 1 },
+      { targetGroupArn: 'arn:mock:progressive-app-target-alt', weight: 0 },
     ];
     expect(
-      resources.filter((r) => r.type === 'aws:lb/listenerRule:ListenerRule').map((r) => r.inputs),
+      resources
+        .filter((r) => r.type === 'aws-native:elasticloadbalancingv2:ListenerRule')
+        .map((r) => r.inputs),
     ).toEqual([
       {
-        region: 'us-east-2',
         listenerArn,
         priority: 25,
-        conditions: [{ httpRequestMethod: { values: ['GET'] } }],
-        actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+        conditions: [
+          { field: 'http-request-method', httpRequestMethodConfig: { values: ['GET'] } },
+        ],
+        actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
       },
       {
-        region: 'us-east-2',
         listenerArn,
         priority: 24,
-        conditions: [{ httpHeader: { httpHeaderName: 'X-Test', values: ['true'] } }],
-        actions: [{ type: 'forward', forward: { targetGroups: targets } }],
+        conditions: [
+          {
+            field: 'http-header',
+            httpHeaderConfig: { httpHeaderName: 'X-Test', values: ['true'] },
+          },
+        ],
+        actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
       },
     ]);
     expect(binding.advancedConfiguration).toEqual({
-      alternateTargetGroupArn: targets[1]!.arn,
+      alternateTargetGroupArn: targets[1]!.targetGroupArn,
       productionListenerRule: 'arn:mock:progressive-app-listener-rule',
       testListenerRule: 'arn:mock:progressive-app-listener-rule-test',
       roleArn: 'arn:mock:progressive-app-traffic-shift-role',
     });
     expect(ruleOptions.map((opts) => opts.ignoreChanges)).toEqual([
-      ['actions[*].forward.targetGroups[*].weight'],
-      ['actions[*].forward.targetGroups[*].weight'],
+      ['actions[*].forwardConfig.targetGroups[*].weight'],
+      ['actions[*].forwardConfig.targetGroups[*].weight'],
     ]);
     const role = resources.filter((r) => r.type === 'aws:iam/role:Role');
     expect(role).toHaveLength(1);
@@ -200,7 +222,7 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
       {
         Effect: 'Allow',
         Action: ['elasticloadbalancing:RegisterTargets', 'elasticloadbalancing:DeregisterTargets'],
-        Resource: targets.map((target) => target.arn),
+        Resource: targets.map((target) => target.targetGroupArn),
       },
       {
         Effect: 'Allow',
@@ -231,7 +253,9 @@ it('creates progressive production routing without a test rule when test traffic
     strategy: DeploymentStrategy.BLUE_GREEN,
   });
   const binding = await settle(attachment);
-  expect(resources.filter((r) => r.type === 'aws:lb/listenerRule:ListenerRule')).toHaveLength(1);
+  expect(
+    resources.filter((r) => r.type === 'aws-native:elasticloadbalancingv2:ListenerRule'),
+  ).toHaveLength(1);
   expect(binding.advancedConfiguration!.testListenerRule).toBeUndefined();
   expect(attachment.readyDependencies).toHaveLength(2);
 });
@@ -303,12 +327,14 @@ it('creates only backend resources, keeping health-check and application ports i
   ]);
   expect(
     resources
-      .filter((resource) => resource.type.startsWith('aws:'))
+      .filter(
+        (resource) => resource.type.startsWith('aws:') || resource.type.startsWith('aws-native:'),
+      )
       .map(({ type, name, id }) => ({ type, name, id: id || undefined })),
   ).toEqual([
     { type: 'aws:lb/targetGroup:TargetGroup', name: 'service-public-target-main', id: undefined },
     {
-      type: 'aws:lb/listenerRule:ListenerRule',
+      type: 'aws-native:elasticloadbalancingv2:ListenerRule',
       name: 'service-public-listener-rule',
       id: undefined,
     },
@@ -334,12 +360,20 @@ it('creates only backend resources, keeping health-check and application ports i
     },
   });
   expect(
-    resources.find((resource) => resource.type === 'aws:lb/listenerRule:ListenerRule')!.inputs,
+    resources.find(
+      (resource) => resource.type === 'aws-native:elasticloadbalancingv2:ListenerRule',
+    )!.inputs,
   ).toEqual({
     listenerArn,
     priority: 25,
-    conditions: [{ httpRequestMethod: { values: ['GET'] } }],
-    actions: [{ type: 'forward', forward: { targetGroups: [{ arn: binding.targetGroupArn }] } }],
+    conditions: [{ field: 'http-request-method', httpRequestMethodConfig: { values: ['GET'] } }],
+    actions: [
+      {
+        type: 'forward',
+        order: 1,
+        forwardConfig: { targetGroups: [{ targetGroupArn: binding.targetGroupArn, weight: 1 }] },
+      },
+    ],
   });
   expect(
     await Promise.all(
@@ -404,12 +438,34 @@ it.each([undefined, 'us-east-2'])(
     expect(awsResources.map((resource) => resource.provider)).toEqual(
       awsResources.map(() => reference),
     );
+    const nativeReference = `${await resolve(nativeProvider.urn)}::${await resolve(nativeProvider.id)}`;
     expect(
-      calls.map(({ token, provider: callProvider, inputs }) => ({
-        token,
-        provider: callProvider,
-        inputs,
-      })),
+      resources
+        .filter((resource) => resource.type.startsWith('aws-native:'))
+        .map((resource) => resource.provider),
+    ).toEqual([nativeReference]);
+    expect(
+      calls
+        .filter(({ token }) => token.startsWith('aws-native:'))
+        .map(({ token, provider: callProvider }) => ({ token, provider: callProvider })),
+    ).toEqual([
+      { token: 'aws-native:index:getAccountId', provider: nativeReference },
+      { token: 'aws-native:index:getRegion', provider: nativeReference },
+    ]);
+    expect(
+      calls.find(({ token }) => token === 'aws:index/getCallerIdentity:getCallerIdentity'),
+    ).toEqual(expect.objectContaining({ provider: reference }));
+    expect(calls.find(({ token }) => token === 'aws:index/getRegion:getRegion')).toEqual(
+      expect.objectContaining({ provider: reference, inputs: region ? { region } : {} }),
+    );
+    expect(
+      calls
+        .filter(({ token }) => token.startsWith('aws:lb/'))
+        .map(({ token, provider: callProvider, inputs }) => ({
+          token,
+          provider: callProvider,
+          inputs,
+        })),
     ).toEqual([
       {
         token: 'aws:lb/getListener:getListener',
@@ -424,7 +480,7 @@ it.each([undefined, 'us-east-2'])(
     ]);
     expect(
       awsResources.filter((resource) => !resource.id).map((resource) => resource.inputs.region),
-    ).toEqual([region, region]);
+    ).toEqual([region]);
   },
 );
 
@@ -437,12 +493,20 @@ it('defaults omitted match to a catch-all path forwarding rule', async () => {
   );
   const binding = await settle(attachment);
   expect(
-    resources.find((resource) => resource.type === 'aws:lb/listenerRule:ListenerRule')!.inputs,
+    resources.find(
+      (resource) => resource.type === 'aws-native:elasticloadbalancingv2:ListenerRule',
+    )!.inputs,
   ).toEqual({
     listenerArn,
     priority: 25,
-    conditions: [{ pathPattern: { values: ['/*'] } }],
-    actions: [{ type: 'forward', forward: { targetGroups: [{ arn: binding.targetGroupArn }] } }],
+    conditions: [{ field: 'path-pattern', pathPatternConfig: { values: ['/*'] } }],
+    actions: [
+      {
+        type: 'forward',
+        order: 1,
+        forwardConfig: { targetGroups: [{ targetGroupArn: binding.targetGroupArn, weight: 1 }] },
+      },
+    ],
   });
 });
 
@@ -465,14 +529,18 @@ it('renders hostname/path alternatives and header, method, and query conditions 
   );
   await settle(attachment);
   expect(
-    resources.find((resource) => resource.type === 'aws:lb/listenerRule:ListenerRule')!.inputs
-      .conditions,
+    resources.find(
+      (resource) => resource.type === 'aws-native:elasticloadbalancingv2:ListenerRule',
+    )!.inputs.conditions,
   ).toEqual([
-    { hostHeader: { regexValues: ['^api\\.example\\.com$'] } },
-    { pathPattern: { values: ['/api/*', '/admin/*'] } },
-    { httpHeader: { httpHeaderName: 'X-Environment', values: ['staging', 'production'] } },
-    { httpRequestMethod: { values: ['GET', 'POST'] } },
-    { queryStrings: [{ key: 'version', value: '2' }] },
+    { field: 'host-header', hostHeaderConfig: { regexValues: ['^api\\.example\\.com$'] } },
+    { field: 'path-pattern', pathPatternConfig: { values: ['/api/*', '/admin/*'] } },
+    {
+      field: 'http-header',
+      httpHeaderConfig: { httpHeaderName: 'X-Environment', values: ['staging', 'production'] },
+    },
+    { field: 'http-request-method', httpRequestMethodConfig: { values: ['GET', 'POST'] } },
+    { field: 'query-string', queryStringConfig: { values: [{ key: 'version', value: '2' }] } },
   ]);
 });
 
@@ -500,7 +568,7 @@ it('gives attachments to the same backend stable, distinct resource names', asyn
     'arn:mock:service-internal-target-main',
   ]);
   const rules = resources.filter(
-    (resource) => resource.type === 'aws:lb/listenerRule:ListenerRule',
+    (resource) => resource.type === 'aws-native:elasticloadbalancingv2:ListenerRule',
   );
   expect(rules).toHaveLength(2);
   expect(new Set(rules.map((resource) => resource.name))).toEqual(
@@ -576,5 +644,9 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
       propertyPath: `loadBalancerAttachments.invalid.application.${property}`,
     }),
   );
-  expect(resources.filter((resource) => resource.type.startsWith('aws:'))).toEqual([]);
+  expect(
+    resources.filter(
+      (resource) => resource.type.startsWith('aws:') || resource.type.startsWith('aws-native:'),
+    ),
+  ).toEqual([]);
 });

@@ -53,6 +53,7 @@ func newExperimentalExampleTest(t *testing.T, example, language string) *pulumit
 		opttest.SkipInstall(),
 	)
 	pt.SetConfig(t, "aws:region", region)
+	pt.SetConfig(t, "aws-native:region", region)
 
 	packagePath, err := filepath.Abs(filepath.Join(cwd, "..", "awsx-next"))
 	require.NoError(t, err)

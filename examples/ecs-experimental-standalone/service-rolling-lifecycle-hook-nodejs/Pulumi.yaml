@@ -1,0 +1,6 @@
+name: ecs-experimental-service-rolling-lifecycle-hook
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+description: Fargate rolling with a lifecycle hook deployment with a caller-owned ALB

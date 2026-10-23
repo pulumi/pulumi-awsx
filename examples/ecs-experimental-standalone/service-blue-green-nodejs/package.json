@@ -1,0 +1,16 @@
+{
+  "name": "ecs-experimental-service-blue-green",
+  "private": true,
+  "dependencies": {
+    "@pulumi/aws": "7.48.0",
+    "@pulumi/awsx": "^3.11.0",
+    "@pulumi/awsx-next": "file:sdks/pulumi-awsx-next",
+    "@pulumi/pulumi": "3.261.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24"
+  },
+  "allowScripts": {
+    "file:sdks/pulumi-awsx-next": true
+  }
+}
