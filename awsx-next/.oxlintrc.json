@@ -12,6 +12,7 @@
     }
   ],
   "rules": {
+    "no-new": "off",
     "no-underscore-dangle": ["warn", { "allow": ["_logGroup"] }],
     "jsdoc-js/require-jsdoc": [
       "error",

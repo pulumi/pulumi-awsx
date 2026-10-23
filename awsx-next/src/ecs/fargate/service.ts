@@ -1,6 +1,12 @@
 import * as pulumi from '@pulumi/pulumi';
 import { ComponentIdentity } from '../../componentIdentity';
 import * as aws from '@pulumi/aws';
+import {
+  createApplicationServiceAttachment,
+  validateListenerRulePriorities,
+  resolveIngressSourceGroup,
+  ServiceLoadBalancer,
+} from './serviceLoadBalancer';
 
 export const fargateServiceStandaloneIdentity: ComponentIdentity = {
   type: 'awsx-next:index:FargateServiceV2',
@@ -148,6 +154,21 @@ export interface FargateServiceV2Args {
   readonly vpcSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
 
   /**
+   * Attach a load balancer to a specific container running in the service.
+   *
+   * - Use one attachment when a single rule can express all routing to a backend, including multiple
+   *   hostnames or path patterns.
+   * - Use multiple attachments for different containers or ports, separate listeners or
+   *   public/private load balancers, or hostname/path pairings that must be evaluated
+   *   independently.
+   *
+   * Each attachment creates its own target group and forwarding rule.
+   *
+   * Default - The ECS service is not attached to a load balancer
+   */
+  readonly loadBalancerAttachments?: Record<string, ServiceLoadBalancer>;
+
+  /**
    * Specifies whether the task's elastic network interface receives a public IP address.
    *
    * If true, each task will receive a public IP address.
@@ -212,15 +233,30 @@ export interface FargateServiceV2Args {
   readonly deploymentMaximumPercent?: number;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, a
-   * new security group is created and this component manages its ingress and egress rules.
+   * Security groups to attach to the service's tasks, in order. If provided, the list must not be
+   * empty.
    *
-   * If you provide your own security groups, those groups must permit application and health-check
-   * traffic from the load balancers.
+   * When manageIngress is true (the default), AWSX adds standalone application and health-check
+   * ingress rules to ONLY the first supplied group.
    *
-   * Default - A new security group is created.
+   * Set manageIngress to false to manage ingress yourself or if you are using inline ingress rules.
+   *
+   * Default - AWSX creates one group with standalone IPv4 allow-all egress.
    */
   readonly securityGroupIds?: pulumi.Input<string>[];
+
+  /**
+   * When manageIngress is true, awsx will automatically add ingress rules to the service security
+   * group allowing ingress from any attached load balancers.
+   *
+   * Set this to false in order to manage the ingress rules yourself
+   *
+   * Without load-balancer attachments, AWSX can still create a group when securityGroupIds is
+   * omitted. Its standalone IPv4 allow-all egress is unaffected by this setting.
+   *
+   * Default - true.
+   */
+  readonly manageIngress?: boolean;
 
   /**
    * The platform version on which to run your service.
@@ -281,9 +317,17 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
   public readonly service!: aws.ecs.Service;
 
   /**
-   * Security groups attached to the service. Do not add standalone rules to an AWSX-managed group,
-   * because they will conflict with inline rules. Provide your own groups when custom rule
-   * management is required.
+   * Security groups attached to the service, preserving the order of securityGroupIds when
+   * supplied. Automatic ingress rules are added ONLY to the first group, unless manageIngress is
+   * false. Supplied-group egress is never modified.
+   *
+   * You can add non-duplicate standalone rules that are not required for initial service readiness.
+   * Do not use this output for rules needed to make load-balancer targets healthy: the remote
+   * component waits for steady state before returning its outputs. For manual ingress, supply your
+   * own groups and create required rules from their original references before this service.
+   *
+   * Do not combine automatic ingress with inline or exclusive ingress management. AWSX-created
+   * groups also have standalone IPv4 allow-all egress.
    */
   public readonly securityGroups!: aws.ec2.SecurityGroup[];
   constructor(
@@ -301,6 +345,26 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     super(identity.type, name, inputs, pulumi.mergeOptions(opts, { aliases: identity.aliases }));
     if (opts.urn) {
       return;
+    }
+
+    if (args.securityGroupIds?.length === 0) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: 'securityGroupIds',
+        reason:
+          'securityGroupIds must contain at least one security group when provided. Omit it to create a security group automatically.',
+      });
+    }
+
+    if (
+      args.manageIngress === false &&
+      Object.keys(args.loadBalancerAttachments ?? {}).length > 0 &&
+      !args.securityGroupIds?.length
+    ) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: 'securityGroupIds',
+        reason:
+          'When loadBalancerAttachments are provided and manageIngress is `false` you must provide at least one security group in securityGroupIds',
+      });
     }
 
     const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
@@ -341,6 +405,47 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       weight: providerStrategy.weight ?? 1,
     }));
 
+    const loadBalancers: aws.types.input.ecs.ServiceLoadBalancer[] = [];
+    const readyDependencies: pulumi.Resource[] = [];
+    const ingressByPort = new Map<
+      number,
+      { attachmentName: string; sourceGroupId: pulumi.Input<string> }[]
+    >();
+    const attachmentEntries = Object.entries(args.loadBalancerAttachments ?? {});
+    // Listener IDs may be Outputs. Validate collisions after resolution, but declare every
+    // attachment synchronously and gate its forwarding rule on this shared validation.
+    const listenerRuleValidation = pulumi
+      .all(attachmentEntries.map(([, attachment]) => attachment.application.listenerArn))
+      .apply((arns) => {
+        const rules = attachmentEntries.map(([attachmentName, attachment], index) => ({
+          attachmentName,
+          listenerArn: arns[index]!,
+          priority: attachment.application.priority,
+        }));
+        validateListenerRulePriorities(rules);
+      });
+    for (const [attachmentName, attachmentArgs] of attachmentEntries) {
+      const attachment = createApplicationServiceAttachment(
+        name,
+        attachmentName,
+        attachmentArgs.application,
+        {
+          parent: this,
+          region: args.region,
+          listenerRuleValidation,
+        },
+      );
+      if (args.manageIngress !== false) {
+        for (const { port, sourceGroupId } of attachment.requiredIngress) {
+          const sources = ingressByPort.get(port) ?? [];
+          sources.push({ attachmentName, sourceGroupId });
+          ingressByPort.set(port, sources);
+        }
+      }
+      loadBalancers.push(attachment.serviceBinding);
+      readyDependencies.push(...attachment.readyDependencies);
+    }
+
     if (args.securityGroupIds) {
       this.securityGroups = args.securityGroupIds.flatMap((id, idx) => {
         const importId = args.region ? pulumi.interpolate`${id}@${args.region}` : id;
@@ -354,20 +459,50 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         {
           vpcId,
           region: args.region,
-          // By default AWS always creates an egress all rule when a security group is created.
-          // The Terraform provider removes that egress-all rule and make you add it yourself
-          egress: [
-            {
-              protocol: '-1',
-              cidrBlocks: ['0.0.0.0/0'],
-              fromPort: 0,
-              toPort: 0,
-            },
-          ],
         },
         { parent: this },
       );
       this.securityGroups = [securityGroup];
+      readyDependencies.push(
+        new aws.vpc.SecurityGroupEgressRule(
+          `${name}-egress`,
+          {
+            region: args.region,
+            securityGroupId: securityGroup.id,
+            ipProtocol: '-1',
+            cidrIpv4: '0.0.0.0/0',
+          },
+          { parent: this },
+        ),
+      );
+    }
+
+    // Ports and rule identities are known during construction. Resolve and validate source IDs
+    // only as rule inputs, so rules remain visible even when ALB metadata is unknown in preview.
+    for (const [port, sources] of ingressByPort) {
+      const sourceGroupId = pulumi.all(sources.map((source) => source.sourceGroupId)).apply((ids) =>
+        resolveIngressSourceGroup(
+          port,
+          sources.map((source, index) => ({
+            attachmentName: source.attachmentName,
+            sourceGroupId: ids[index]!,
+          })),
+        ),
+      );
+      readyDependencies.push(
+        new aws.vpc.SecurityGroupIngressRule(
+          `${name}-ingress-${port}`,
+          {
+            region: args.region,
+            securityGroupId: this.securityGroups[0]!.id,
+            referencedSecurityGroupId: sourceGroupId,
+            ipProtocol: 'tcp',
+            fromPort: port,
+            toPort: port,
+          },
+          { parent: this },
+        ),
+      );
     }
 
     this.service = new aws.ecs.Service(
@@ -393,6 +528,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
           securityGroups: this.securityGroups.flatMap((sg) => sg.id),
         },
         platformVersion: args.platformVersion,
+        loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
         // TODO: these are the remaining configs
         // deploymentController,
         // deploymentConfiguration,
@@ -405,6 +541,7 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
       },
       {
         parent: this,
+        dependsOn: readyDependencies,
         customTimeouts:
           args.deploymentTimeout !== undefined
             ? { create: args.deploymentTimeout, update: args.deploymentTimeout }
