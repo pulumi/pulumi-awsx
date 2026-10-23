@@ -69,16 +69,17 @@ export interface FargateCapacityProviderStrategy {
 /**
  * The platform version on which to run your service.
  *
- * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform-fargate.html
  */
 export enum FargatePlatformVersion {
   /**
-   * The latest, recommended platform version.
+   * The latest, recommended platform version for the task's operating system. Currently 1.4.0 for
+   * Linux and 1.0.0 for Windows.
    */
   LATEST = 'LATEST',
 
   /**
-   * Version 1.4.0
+   * Linux platform version 1.4.0.
    *
    * Supports EFS endpoints, CAP_SYS_PTRACE Linux capability, network performance metrics in
    * CloudWatch Container Insights, consolidated 20 GB ephemeral volume.
@@ -86,32 +87,10 @@ export enum FargatePlatformVersion {
   VERSION1_4 = '1.4.0',
 
   /**
-   * Version 1.3.0
-   *
-   * Supports secrets, task recycling.
+   * Windows platform version 1.0.0. Platform version numbers for Windows and Linux are independent.
+   * Do not use this version for Linux tasks.
    */
-  VERSION1_3 = '1.3.0',
-
-  /**
-   * Version 1.2.0
-   *
-   * Supports private registries.
-   */
-  VERSION1_2 = '1.2.0',
-
-  /**
-   * Version 1.1.0
-   *
-   * Supports task metadata, health checks, service discovery.
-   */
-  VERSION1_1 = '1.1.0',
-
-  /**
-   * Initial release
-   *
-   * Based on Amazon Linux 2017.09.
-   */
-  VERSION1_0 = '1.0.0',
+  WINDOWS_VERSION1_0 = '1.0.0',
 }
 
 /**
