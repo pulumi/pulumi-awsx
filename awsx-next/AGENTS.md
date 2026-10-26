@@ -20,9 +20,9 @@ Node.js library. Users consume SDKs generated from its inferred schema.
   SDK defects. Check the generated schema and its `$ref` links first.
 
 Validate with `pulumi package get-schema ./awsx-next` from the repository root.
-`npm --prefix awsx-next run test:plugin` validates schema inference and guards the
-scalar task identity outputs and AWSX health-check shape. For export changes, compare the actual
-schemas, including descriptions, enum members, required fields, and references.
+`npm --prefix awsx-next run test:plugin` is a schema-inference smoke check. For
+export changes, compare the actual schemas, including descriptions, enum members,
+required fields, and references.
 
 The public entrypoint exports `FargateTaskDefinitionV2` and `FargateServiceV2`.
 Task definitions use AWS Native's structured container inputs internally. Keep

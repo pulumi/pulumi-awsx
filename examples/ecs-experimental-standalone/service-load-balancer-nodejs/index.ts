@@ -87,25 +87,28 @@ for (const [name, arn] of Object.entries(additionalCertificates)) {
 }
 
 const cluster = new aws.ecs.Cluster("cluster");
-const task = new awsxNext.FargateTaskDefinitionV2("task", {
-  family: config.get("taskDefinitionFamily"),
-  cpuUnits: 256,
-  memoryMiB: 512,
-  containers: {
-    app: {
-      image: "public.ecr.aws/docker/library/nginx:stable",
-      portMappings: [{ containerPort: 3000 }, { containerPort: 3001 }],
-      environment: {
-        NGINX_CONFIG: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8"),
+// The mismatch preview supplies an ARN to isolate the service provider check.
+const taskDefinitionArn =
+  config.get("taskDefinitionArn") ??
+  new awsxNext.FargateTaskDefinitionV2("task", {
+    family: config.get("taskDefinitionFamily"),
+    cpuUnits: 256,
+    memoryMiB: 512,
+    containers: {
+      app: {
+        image: "public.ecr.aws/docker/library/nginx:stable",
+        portMappings: [{ containerPort: 3000 }, { containerPort: 3001 }],
+        environment: {
+          NGINX_CONFIG: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8"),
+        },
+        command: [
+          "sh",
+          "-c",
+          'printf "%s" "$NGINX_CONFIG" > /etc/nginx/nginx.conf && exec nginx -g "daemon off;"',
+        ],
       },
-      command: [
-        "sh",
-        "-c",
-        'printf "%s" "$NGINX_CONFIG" > /etc/nginx/nginx.conf && exec nginx -g "daemon off;"',
-      ],
     },
-  },
-});
+  }).taskDefinitionArn;
 
 export const url = pulumi.interpolate`${certificateArn ? "https" : "http"}://${hostname ?? alb.dnsName}`;
 
@@ -113,7 +116,7 @@ export const url = pulumi.interpolate`${certificateArn ? "https" : "http"}://${h
 // the service permits ALB traffic on the application and health-check ports.
 new awsxNext.FargateServiceV2("service", {
   clusterArn: cluster.arn,
-  taskDefinition: task.taskDefinitionArn,
+  taskDefinition: taskDefinitionArn,
   vpcSubnetIds: vpc.publicSubnetIds,
   assignPublicIp: true,
   loadBalancerAttachments: {
