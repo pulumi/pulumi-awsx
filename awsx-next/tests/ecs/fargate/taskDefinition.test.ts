@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as aws from '@pulumi/aws';
+import * as native from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 import { AwsLogDriverMode, FargateTaskDefinitionV2 } from '../../../src/ecs';
 import {
@@ -25,6 +26,7 @@ import {
   OperatingSystemFamily,
   renderPortMappings,
   fargateTaskDefinitionAwsxIdentity,
+  validateTaskProviders,
 } from '../../../src/ecs/fargate/taskDefinition';
 import {
   PortMappingAppProtocol,
@@ -34,6 +36,7 @@ import {
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
 const providerRegion = 'us-west-2';
+let nativeProviderRegion = providerRegion;
 const accountId = '123456789012';
 const credentialsSecretArn = `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:ad-credentials`;
 const credentialConfig: FargateCredentialSpecConfig = {
@@ -99,6 +102,28 @@ function splitRegionalId(id: string): { id: string; region: string } {
   return { id: id.slice(0, separator), region: id.slice(separator + 1) };
 }
 
+/**
+ * Resolves a region from an explicit provider reference, or the configured default.
+ *
+ * @param reference The provider reference recorded by Pulumi mocks.
+ * @param providerPackage The provider package whose configuration to inspect.
+ * @param defaultRegion The default provider's region.
+ * @returns The selected provider's configured region.
+ */
+function mockProviderRegion(
+  reference: string | undefined,
+  providerPackage: string,
+  defaultRegion: string,
+): string {
+  const name = reference?.split('::')[3];
+  return (
+    resources.find(
+      (resource) =>
+        resource.type === `pulumi:providers:${providerPackage}` && resource.name === name,
+    )?.inputs.region ?? defaultRegion
+  );
+}
+
 beforeAll(async () => {
   await pulumi.runtime.setMocks({
     newResource(args) {
@@ -146,15 +171,9 @@ beforeAll(async () => {
             : '';
           break;
         }
-        case 'aws:ecs/taskDefinition:TaskDefinition':
-          state.arn = `arn:aws:ecs:${args.inputs.region ?? providerRegion}:${accountId}:task-definition/${args.name}`;
+        case 'aws-native:ecs:TaskDefinition':
+          state.taskDefinitionArn = `arn:aws:ecs:${mockProviderRegion(args.provider, 'aws-native', nativeProviderRegion)}:${accountId}:task-definition/${args.inputs.family}:7`;
           break;
-        case 'awsx:experimental/ecs:ContainerDefinition':
-        case 'awsx-next:index:ContainerDefinition': {
-          const { definition: _definition, ...container } = args.inputs;
-          state.definition = container;
-          break;
-        }
         default:
           state.arn = state.arn ?? `arn:aws:mock:::${args.name}`;
           state.name = state.name ?? args.name;
@@ -168,6 +187,11 @@ beforeAll(async () => {
     call(args) {
       calls.push(args);
       switch (args.token) {
+        case 'aws:index/getCallerIdentity:getCallerIdentity':
+        case 'aws-native:index:getAccountId':
+          return { accountId };
+        case 'aws-native:index:getRegion':
+          return { region: mockProviderRegion(args.provider, 'aws-native', nativeProviderRegion) };
         case 'aws:index/arnParse:arnParse':
           return parseArn(args.inputs.arn);
         case 'aws:index/getRegion:getRegion':
@@ -175,8 +199,8 @@ beforeAll(async () => {
             description: 'US West (Oregon)',
             endpoint: 'ec2.us-west-2.amazonaws.com',
             id: providerRegion,
-            name: providerRegion,
-            region: providerRegion,
+            name: args.inputs.region ?? mockProviderRegion(args.provider, 'aws', providerRegion),
+            region: args.inputs.region ?? mockProviderRegion(args.provider, 'aws', providerRegion),
           };
         case 'aws:s3/getBucket:getBucket':
           return {
@@ -214,6 +238,7 @@ beforeEach(() => {
   resources.length = 0;
   calls.length = 0;
   existingObjects.clear();
+  nativeProviderRegion = providerRegion;
 });
 
 /**
@@ -244,26 +269,25 @@ function resourcesOfType(type: string): pulumi.runtime.MockResourceArgs[] {
  */
 function taskDefinitionResource(name: string): pulumi.runtime.MockResourceArgs | undefined {
   return resources.find(
-    (resource) =>
-      resource.type === 'aws:ecs/taskDefinition:TaskDefinition' && resource.name === name,
+    (resource) => resource.type === 'aws-native:ecs:TaskDefinition' && resource.name === name,
   );
 }
 
 /**
- * Resolves a task and returns its serialized container definitions.
+ * Resolves a task and returns its structured Native container inputs.
  *
  * @param task The task to resolve.
  * @param resourceName The task definition child name.
- * @returns The serialized container definitions.
+ * @returns The structured container definitions.
  */
 async function resolveContainers(
   task: FargateTaskDefinitionV2,
   resourceName: string,
 ): Promise<Array<Record<string, any>>> {
-  await unwrap(task.taskDefinition.arn);
+  await unwrap(task.taskDefinitionArn);
   const resource = taskDefinitionResource(resourceName);
   expect(resource).toBeDefined();
-  return JSON.parse(resource!.inputs.containerDefinitions);
+  return resource!.inputs.containerDefinitions;
 }
 
 /**
@@ -280,6 +304,50 @@ function executionRolePolicy(name: string): Record<string, any> {
 }
 
 describe('Fargate container rendering', () => {
+  test.each([
+    { nativeAccount: '999999999999', nativeRegion: providerRegion },
+    { nativeAccount: accountId, nativeRegion: 'eu-west-1' },
+  ])('rejects mismatched Native destinations %j', (nativeDestination) => {
+    expect(() =>
+      validateTaskProviders({
+        awsAccount: accountId,
+        awsRegion: providerRegion,
+        ...nativeDestination,
+      }),
+    ).toThrow('require matching AWS and AWS Native accounts and regions');
+  });
+
+  test('keeps secret environment values secret on the Native resource', async () => {
+    let child: native.ecs.TaskDefinition | undefined;
+    // Capture the internal child in the local implementation under test, without exposing
+    // Native resource types in the component's public schema.
+    new FargateTaskDefinitionV2(
+      'secret-environment',
+      {
+        containers: { app: { image: 'nginx', environment: { TOKEN: pulumi.secret('token') } } },
+      },
+      {
+        transformations: [
+          (args): undefined => {
+            if (native.ecs.TaskDefinition.isInstance(args.resource)) child = args.resource;
+            return undefined;
+          },
+        ],
+      },
+    );
+    const containers = await unwrap(child!.containerDefinitions);
+    expect(await pulumi.isSecret(child!.containerDefinitions)).toBe(true);
+    expect(containers?.[0]?.environment).toEqual([{ name: 'TOKEN', value: 'token' }]);
+  });
+
+  test('validates AWSX container options before rendering Native inputs', () => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('invalid-health', {
+          containers: { app: { image: 'nginx', healthCheck: { command: ['invalid'] } } },
+        }),
+    ).toThrow('must start with CMD or CMD-SHELL');
+  });
   test('renders exact port mapping fields', () => {
     expect(
       renderPortMappings([
@@ -329,6 +397,7 @@ describe('Fargate container rendering', () => {
 
 describe('Fargate credential specifications', () => {
   test('creates exact domainless JSON with bucket encryption and Output-valued inputs', async () => {
+    nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('generated-credential-provider', { region: 'us-east-1' });
     const task = new FargateTaskDefinitionV2(
       'generated-credentials',
@@ -365,10 +434,13 @@ describe('Fargate credential specifications', () => {
     expect(object.inputs.kmsKeyId).toBeUndefined();
     expect(object.inputs.bucketKeyEnabled).toBeUndefined();
     expect(JSON.parse(object.inputs.content)).toEqual(existingCredSpec);
-    const providerRef = taskDefinitionResource('generated-credentials')!.provider;
-    expect(providerRef).toBeDefined();
-    expect(object.provider).toBe(providerRef);
-    expect(new Set(calls.map((call) => call.provider))).toEqual(new Set([providerRef]));
+    const providerRef = object.provider;
+    expect(providerRef).toContain('generated-credential-provider');
+    expect(
+      new Set(
+        calls.filter(({ token }) => !token.startsWith('aws-native:')).map((call) => call.provider),
+      ),
+    ).toEqual(new Set([providerRef]));
     expect(containers[0]!.credentialSpecs).toEqual([
       'credentialspecdomainless:arn:aws:s3:::regional-kms-credential-bucket/generated-credentials-app-credential-spec-autonamed',
     ]);
@@ -408,6 +480,7 @@ describe('Fargate credential specifications', () => {
       body: JSON.stringify(body),
       kmsKeyId: 'alias/object-key',
     });
+    nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('credential-provider', { region: 'us-east-1' });
     const task = new FargateTaskDefinitionV2(
       'existing-credentials',
@@ -478,9 +551,13 @@ describe('Fargate credential specifications', () => {
         Resource: `arn:aws:kms:eu-central-1:${accountId}:key/customer-key`,
       },
     ]);
-    const providerRef = taskDefinitionResource('existing-credentials')!.provider;
+    const providerRef = resourcesOfType('aws:secretsmanager/secret:Secret')[0]!.provider;
     expect(providerRef).toBeDefined();
-    expect(new Set(calls.map((call) => call.provider))).toEqual(new Set([providerRef]));
+    expect(
+      new Set(
+        calls.filter(({ token }) => !token.startsWith('aws-native:')).map((call) => call.provider),
+      ),
+    ).toEqual(new Set([providerRef]));
     expect(
       new Set(resourcesOfType('aws:secretsmanager/secret:Secret').map((r) => r.provider)),
     ).toEqual(new Set([providerRef]));
@@ -496,7 +573,7 @@ describe('Fargate credential specifications', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     const object = resourcesOfType('aws:s3/bucketObjectv2:BucketObjectv2')[0]!;
     expect(object.inputs.serverSideEncryption).toBeUndefined();
     expect(object.inputs.bucketKeyEnabled).toBeUndefined();
@@ -593,11 +670,11 @@ describe('FargateTaskDefinitionV2', () => {
       containers: { app: { image: 'nginx' } },
     });
 
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     expect(
       taskDefinitionResource(`storage-${ephemeralStorageGiB}`)!.inputs.ephemeralStorage,
     ).toEqual({
-      sizeInGib: ephemeralStorageGiB,
+      sizeInGiB: ephemeralStorageGiB,
     });
   });
 
@@ -618,7 +695,7 @@ describe('FargateTaskDefinitionV2', () => {
       },
     });
 
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     const resource = taskDefinitionResource('explicit')!;
     expect(resource.inputs.cpu).toBe('2048');
     expect(resource.inputs.memory).toBe('8192');
@@ -632,7 +709,7 @@ describe('FargateTaskDefinitionV2', () => {
     const task = new FargateTaskDefinitionV2('roles', {
       containers: { app: { image: 'nginx' } },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
     expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
@@ -651,7 +728,7 @@ describe('FargateTaskDefinitionV2', () => {
       taskRoleArn: `arn:aws:iam::${accountId}:role/application/task`,
       containers: { app: { image: 'nginx' } },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
     expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
@@ -672,7 +749,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     const secrets = resourcesOfType('aws:secretsmanager/secret:Secret');
     expect(secrets).toHaveLength(2);
     expect(new Set(secrets.map(({ name }) => name))).toEqual(
@@ -825,6 +902,7 @@ describe('FargateTaskDefinitionV2', () => {
 
   test('uses the secret ARN region for a Secrets Manager read', async () => {
     const secretRegion = 'us-east-1';
+    nativeProviderRegion = secretRegion;
     const task = new FargateTaskDefinitionV2('secret-region', {
       region: secretRegion,
       containers: {
@@ -840,7 +918,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     const secrets = resourcesOfType('aws:secretsmanager/secret:Secret');
     expect(secrets).toHaveLength(1);
@@ -866,7 +944,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(resourcesOfType('aws:ssm/parameter:Parameter')[0]!.id).toBe(
       '/team/application/config@us-east-1',
@@ -877,6 +955,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('uses the inherited provider region for imports when the task selects another region', async () => {
+    nativeProviderRegion = 'us-east-2';
     const task = new FargateTaskDefinitionV2('selected-region-imports', {
       region: 'us-east-2',
       containers: {
@@ -896,11 +975,15 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(resourcesOfType('aws:ssm/parameter:Parameter')[0]!.id).toBe('/team/config@us-east-2');
     expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!.id).toBe('/team/logs@us-east-2');
-    expect(calls.filter(({ token }) => token === 'aws:index/getRegion:getRegion')).toHaveLength(1);
+    expect(
+      calls
+        .filter(({ token }) => token === 'aws:index/getRegion:getRegion')
+        .map(({ inputs }) => inputs.region),
+    ).toEqual(expect.arrayContaining([undefined, 'us-east-2']));
   });
 
   test('uses plain same-region import IDs', async () => {
@@ -922,7 +1005,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(resourcesOfType('aws:ssm/parameter:Parameter')[0]!.id).toBe('/team/application/config');
     expect(resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!.id).toBe('/service/application');
@@ -1014,6 +1097,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('shares one default log group and renders exact log options', async () => {
+    nativeProviderRegion = 'us-east-2';
     const task = new FargateTaskDefinitionV2('logging', {
       region: 'us-east-2',
       containers: {
@@ -1075,7 +1159,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(
       resourcesOfType('aws:cloudwatch/logGroup:LogGroup').map(({ name, id }) => ({ name, id })),
@@ -1091,7 +1175,7 @@ describe('FargateTaskDefinitionV2', () => {
     const task = new FargateTaskDefinitionV2('image-reference', {
       containers: { app: { image: `${accountId}.dkr.ecr.us-east-1.amazonaws.com/${reference}` } },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     expect(executionRolePolicy('image-reference').Statement).toEqual([
       { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
       {
@@ -1111,7 +1195,7 @@ describe('FargateTaskDefinitionV2', () => {
     ]);
   });
 
-  test('uses the AWSX identity for nested containers in the AWSX provider', async () => {
+  test('renders directly into Native without nested container resources', async () => {
     const task = new FargateTaskDefinitionV2(
       'awsx-identity',
       {
@@ -1137,8 +1221,9 @@ describe('FargateTaskDefinitionV2', () => {
     ]);
     expect(
       resourcesOfType('awsx:experimental/ecs:ContainerDefinition').map(({ name }) => name),
-    ).toEqual(['awsx-identity-app']);
+    ).toEqual([]);
     expect(resourcesOfType('awsx-next:index:ContainerDefinition')).toEqual([]);
+    expect(resourcesOfType('aws:ecs/taskDefinition:TaskDefinition')).toEqual([]);
   });
 
   test('sizes Windows tasks using Windows configurations', async () => {
@@ -1146,7 +1231,7 @@ describe('FargateTaskDefinitionV2', () => {
       runtimePlatform: { operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2022_CORE },
       containers: { app: { image: 'windows-image' } },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     expect(taskDefinitionResource('windows-default')!.inputs).toMatchObject({
       cpu: '1024',
       memory: '2048',
@@ -1197,7 +1282,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
     expect(executionRolePolicy('ssm-kms').Statement).toEqual([
       { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
       {
@@ -1229,7 +1314,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(executionRolePolicy('ecr-policy')).toEqual({
       Version: '2012-10-17',
@@ -1272,7 +1357,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(executionRolePolicy('s3-policy').Statement).toEqual([
       { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
@@ -1323,7 +1408,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(executionRolePolicy('service-policy').Statement).toEqual([
       { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
@@ -1360,7 +1445,7 @@ describe('FargateTaskDefinitionV2', () => {
         },
       },
     });
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     expect(executionRolePolicy('kms-policy').Statement).toEqual([
       { Effect: 'Allow', Action: 'ecr:GetAuthorizationToken', Resource: '*' },
@@ -1388,6 +1473,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('propagates component region and provider to children and invokes', async () => {
+    nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('selected-provider', { region: 'us-east-1' });
     const task = new FargateTaskDefinitionV2(
       'provider-flow',
@@ -1405,18 +1491,26 @@ describe('FargateTaskDefinitionV2', () => {
           },
         },
       },
-      { provider },
+      { providers: [provider, new native.Provider('selected-native', { region: 'us-east-2' })] },
     );
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     const taskDefinition = taskDefinitionResource('provider-flow')!;
     const logGroup = resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!;
     const parameter = resourcesOfType('aws:ssm/parameter:Parameter')[0]!;
-    expect(taskDefinition.inputs.region).toBe('us-east-2');
+    expect(taskDefinition.inputs.region).toBeUndefined();
+    expect(taskDefinition.provider).toContain('selected-native');
     expect(logGroup.inputs.region).toBe('us-east-2');
-    expect(taskDefinition.provider).toBeDefined();
-    expect(logGroup.provider).toBe(taskDefinition.provider);
-    expect(parameter.provider).toBe(taskDefinition.provider);
+    expect(logGroup.provider).toContain('selected-provider');
+    expect(
+      new Set(
+        calls
+          .filter(({ token }) => token.startsWith('aws-native:'))
+          .map(({ provider: ref }) => ref),
+      ),
+    ).toEqual(new Set([taskDefinition.provider]));
+    expect(logGroup.provider).not.toBe(taskDefinition.provider);
+    expect(parameter.provider).toBe(logGroup.provider);
     const regionalCalls = calls.filter(({ token }) =>
       ['aws:index/arnParse:arnParse', 'aws:index/getRegion:getRegion'].includes(token),
     );
@@ -1424,11 +1518,11 @@ describe('FargateTaskDefinitionV2', () => {
       new Set(['aws:index/arnParse:arnParse', 'aws:index/getRegion:getRegion']),
     );
     expect(new Set(regionalCalls.map(({ provider: invokeProvider }) => invokeProvider))).toEqual(
-      new Set([taskDefinition.provider]),
+      new Set([logGroup.provider]),
     );
   });
 
-  test('inherits an explicit provider when region is omitted', async () => {
+  test('inherits both explicit providers when region is omitted', async () => {
     const provider = new aws.Provider('provider-default-region', { region: 'us-east-1' });
     const task = new FargateTaskDefinitionV2(
       'provider-default',
@@ -1440,34 +1534,55 @@ describe('FargateTaskDefinitionV2', () => {
           },
         },
       },
-      { provider },
+      { providers: [provider, new native.Provider('default-native', { region: 'us-east-1' })] },
     );
-    await unwrap(task.taskDefinition.arn);
+    await unwrap(task.taskDefinitionArn);
 
     const taskDefinition = taskDefinitionResource('provider-default')!;
     const logGroup = resourcesOfType('aws:cloudwatch/logGroup:LogGroup')[0]!;
     expect(taskDefinition.inputs.region).toBeUndefined();
+    expect(taskDefinition.provider).toContain('default-native');
+    expect(mockProviderRegion(taskDefinition.provider, 'aws-native', '')).toBe('us-east-1');
     expect(logGroup.inputs.region).toBeUndefined();
-    expect(logGroup.provider).toBe(taskDefinition.provider);
+    expect(logGroup.provider).toContain('provider-default-region');
+    expect(logGroup.provider).not.toBe(taskDefinition.provider);
   });
 
-  test('exposes all component outputs', async () => {
-    const task = new FargateTaskDefinitionV2('outputs', {
-      region: 'us-east-2',
-      containers: {
-        app: {
-          image: 'nginx',
-          logging: { cloudwatch: { streamPrefix: 'app' } },
+  test('exposes the registered task identity rather than the original family input', async () => {
+    nativeProviderRegion = 'us-east-2';
+    const task = new FargateTaskDefinitionV2(
+      'outputs',
+      {
+        region: 'us-east-2',
+        family: 'requested-family',
+        containers: {
+          app: {
+            image: 'nginx',
+            logging: { cloudwatch: { streamPrefix: 'app' } },
+          },
         },
       },
-    });
-    await unwrap(task.taskDefinition.arn);
+      {
+        transformations: [
+          (args): pulumi.ResourceTransformationResult | undefined =>
+            args.type === 'aws-native:ecs:TaskDefinition'
+              ? { props: { ...args.props, family: 'registered-family' }, opts: args.opts }
+              : undefined,
+        ],
+      },
+    );
+    await unwrap(task.taskDefinitionArn);
 
     expect(task.name).toBe('outputs');
     expect(task.region).toBe('us-east-2');
     expect(task.executionRole).toBeDefined();
     expect(task.taskRole).toBeDefined();
-    expect(task.taskDefinition).toBeDefined();
+    expect(await unwrap(task.taskDefinitionArn)).toBe(
+      `arn:aws:ecs:us-east-2:${accountId}:task-definition/registered-family:7`,
+    );
+    expect(await unwrap(task.family)).toBe('registered-family');
+    expect(await unwrap(task.revision)).toBe(7);
+    expect(task).not.toHaveProperty('taskDefinition');
     expect(task.logGroup).toBeDefined();
   });
 });

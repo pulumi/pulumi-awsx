@@ -1,5 +1,8 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
+import * as native from '@pulumi/aws-native';
+import type { ecs } from '@pulumi/aws-native/types/input';
+import { validateContainerOptions } from './validateContainerOptions';
 import type { input } from '@pulumi/aws/types';
 import type { EnvironmentFile, Secret, SecretsManagerSecret } from '../base/containerDefinition';
 import type {
@@ -8,35 +11,22 @@ import type {
   FargatePortMapping,
 } from './containerDefinition';
 import {
-  ContainerDefinitionArgs,
-  LogConfigurationLogDriver,
-  type ContainerDefinitionEnvironmentFile,
-  type ContainerDefinitionSecret,
-  type LogConfiguration,
-  type PortMapping,
-  PortMappingAppProtocol,
-  PortMappingProtocol,
-} from '../containerDefinitionArgs';
-import {
   type FargateCredentialSpec,
   renderCredentialSpecConfig,
   credentialsSecretArnFromSpec,
 } from '../credentialSpec';
 import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
 import { ComponentIdentity } from '../../componentIdentity';
-import {
-  ContainerDefinition,
-  containerDefinitionStandaloneIdentity,
-  containerDefinitionAwsxIdentity,
-} from '../containerDefinition';
 import { Arn, ArnFormat } from '../arn';
 
 export interface CommonTaskdefinitionOptions {
   /**
-   * Region where this resource will be
-   * [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints).
+   * Region where this task and its supporting resources will be managed.
    *
-   * Default - Region set in the provider configuration.
+   * The AWS Native provider must use this region and the same account as the AWS provider. This
+   * input does not override the AWS Native provider configuration.
+   *
+   * Default - Region set in the AWS provider configuration.
    */
   readonly region?: string;
   /**
@@ -230,9 +220,19 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   public readonly executionRole!: aws.iam.Role;
 
   /**
-   * The task definition resource
+   * The ARN of the registered task-definition revision. Pass this to an ECS service or task.
    */
-  public readonly taskDefinition!: aws.ecs.TaskDefinition;
+  public readonly taskDefinitionArn!: pulumi.Output<string>;
+
+  /**
+   * The family of the registered task definition.
+   */
+  public readonly family!: pulumi.Output<string>;
+
+  /**
+   * The revision number assigned by ECS to the registered task definition.
+   */
+  public readonly revision!: pulumi.Output<number>;
 
   /**
    * The shared CloudWatch Logs log group created by the component for containers using CloudWatch
@@ -245,7 +245,6 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
   public readonly region?: string;
   private providerRegion?: pulumi.Output<string>;
-  private readonly containerIdentity!: ComponentIdentity;
 
   constructor(
     name: string,
@@ -263,7 +262,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       ? {
           taskRole: undefined,
           executionRole: undefined,
-          taskDefinition: undefined,
+          taskDefinitionArn: undefined,
+          family: undefined,
+          revision: undefined,
           logGroup: undefined,
           region: undefined,
           name: undefined,
@@ -280,10 +281,6 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     if (opts.urn) {
       return;
     }
-    this.containerIdentity =
-      identity.type === fargateTaskDefinitionAwsxIdentity.type
-        ? containerDefinitionAwsxIdentity
-        : containerDefinitionStandaloneIdentity;
     this.region = args.region;
 
     this.name = name;
@@ -359,65 +356,63 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
     const executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[] = [];
     const ecrRepositories: pulumi.Output<string | undefined>[] = [];
-    const containerDefinitionsApi: pulumi.Output<ContainerDefinitionArgs>[] = containerEntries.map(
-      ([containerName, container]) => {
-        for (const property of ['startTimeoutSeconds', 'stopTimeoutSeconds'] as const) {
-          const value = container[property];
-          if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 120)) {
-            throw new pulumi.InputPropertyError({
-              propertyPath: `containers.${containerName}.${property}`,
-              reason: `${property} must be an integer between 2 and 120; got ${value}`,
-            });
-          }
-        }
-
-        const ecrRepo = this.renderEcrPullStatementResource(container.image);
-        ecrRepositories.push(ecrRepo);
-        if (
-          container.credentialSpec &&
-          args.runtimePlatform?.operatingSystemFamily?.startsWith('WINDOWS')
-        ) {
+    const containerDefinitionsApi = containerEntries.map(([containerName, container]) => {
+      validateContainerOptions(container, `containers.${containerName}`);
+      for (const property of ['startTimeoutSeconds', 'stopTimeoutSeconds'] as const) {
+        const value = container[property];
+        if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 120)) {
           throw new pulumi.InputPropertyError({
-            propertyPath: `containers.${containerName}.credentialSpec`,
-            reason:
-              'gMSA credential specifications are supported only for Linux containers on Fargate',
+            propertyPath: `containers.${containerName}.${property}`,
+            reason: `${property} must be an integer between 2 and 120; got ${value}`,
           });
         }
-        const credentialSpec = container.credentialSpec
-          ? this.renderCredentialSpec(container.credentialSpec, containerName, opts.dependsOn)
-          : undefined;
-        const environmentFiles = container.environmentFiles?.map((file, i) =>
-          this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
-        );
-        const secrets = this.renderSecrets(containerName, container.secrets);
-        if (container.logging?.disabled && container.logging.cloudwatch !== undefined) {
-          throw new pulumi.InputPropertyError({
-            propertyPath: `containers.${containerName}.logging`,
-            reason: 'Only one of disabled: true or cloudwatch can be provided',
-          });
-        }
-        const logs = container.logging?.disabled
-          ? undefined
-          : this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch ?? {});
+      }
 
-        executionRoleStatements.push(
-          ...(credentialSpec?.executionRoleStatements ?? []),
-          ...(environmentFiles?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
-          ...(secrets?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
-          ...(logs?.executionRoleStatements ?? []),
-        );
+      const ecrRepo = this.renderEcrPullStatementResource(container.image);
+      ecrRepositories.push(ecrRepo);
+      if (
+        container.credentialSpec &&
+        args.runtimePlatform?.operatingSystemFamily?.startsWith('WINDOWS')
+      ) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: `containers.${containerName}.credentialSpec`,
+          reason:
+            'gMSA credential specifications are supported only for Linux containers on Fargate',
+        });
+      }
+      const credentialSpec = container.credentialSpec
+        ? this.renderCredentialSpec(container.credentialSpec, containerName, opts.dependsOn)
+        : undefined;
+      const environmentFiles = container.environmentFiles?.map((file, i) =>
+        this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
+      );
+      const secrets = this.renderSecrets(containerName, container.secrets);
+      if (container.logging?.disabled && container.logging.cloudwatch !== undefined) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: `containers.${containerName}.logging`,
+          reason: 'Only one of disabled: true or cloudwatch can be provided',
+        });
+      }
+      const logs = container.logging?.disabled
+        ? undefined
+        : this.renderCloudWatchLogDriver(containerName, container.logging?.cloudwatch ?? {});
 
-        const c = this.toContainerDefinition(
-          containerName,
-          container,
-          credentialSpec ? [credentialSpec.value] : undefined,
-          environmentFiles?.map((rendered) => rendered.value),
-          secrets?.map((rendered) => rendered.value),
-          logs?.value,
-        );
-        return c.definition;
-      },
-    );
+      executionRoleStatements.push(
+        ...(credentialSpec?.executionRoleStatements ?? []),
+        ...(environmentFiles?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
+        ...(secrets?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
+        ...(logs?.executionRoleStatements ?? []),
+      );
+
+      return this.toContainerDefinition(
+        containerName,
+        container,
+        credentialSpec ? [credentialSpec.value] : undefined,
+        environmentFiles?.map((rendered) => rendered.value),
+        secrets?.map((rendered) => rendered.value),
+        logs?.value,
+      );
+    });
 
     const rolePolicy = new aws.iam.RolePolicy(
       `${name}-execution-role-policy`,
@@ -428,15 +423,29 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       { parent: this },
     );
 
-    this.taskDefinition = new aws.ecs.TaskDefinition(
+    // Native regions belong to providers. Preserve inherited credentials and check the
+    // destination before registration. Gate a scalar so unknown images do not hide the
+    // entire structured container array from preview transforms.
+    const validatedFamily = pulumi
+      .output({
+        awsAccount: aws.getCallerIdentityOutput({}, { parent: this }).accountId,
+        awsRegion: aws.getRegionOutput({ region: args.region }, { parent: this }).region,
+        nativeAccount: native.getAccountIdOutput({ parent: this }).accountId,
+        nativeRegion: native.getRegionOutput({ parent: this }).region,
+      })
+      .apply((destination) => {
+        validateTaskProviders(destination);
+        return family;
+      });
+
+    const taskDefinition = new native.ecs.TaskDefinition(
       name,
       {
-        containerDefinitions: pulumi.jsonStringify(containerDefinitionsApi),
-        family,
+        containerDefinitions: containerDefinitionsApi,
+        family: validatedFamily,
         cpu: `${cpu}`,
         memory: `${memory}`,
         requiresCompatibilities: ['FARGATE'],
-        region: args.region,
         executionRoleArn: this.executionRole.arn,
         taskRoleArn: this.taskRole.arn,
         networkMode: 'awsvpc',
@@ -444,7 +453,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         ephemeralStorage:
           args.ephemeralStorageGiB !== undefined
             ? {
-                sizeInGib: args.ephemeralStorageGiB,
+                sizeInGiB: args.ephemeralStorageGiB,
               }
             : undefined,
       },
@@ -454,10 +463,25 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       },
     );
 
+    this.taskDefinitionArn = taskDefinition.taskDefinitionArn;
+    // Native exposes the revision-qualified ARN rather than a separate revision output.
+    // Read the registered identity instead of copying inputs that transforms can change.
+    const taskIdentity = this.taskDefinitionArn.apply((arn) => {
+      const separator = arn.lastIndexOf(':');
+      return {
+        family: arn.slice(arn.lastIndexOf('/') + 1, separator),
+        revision: Number(arn.slice(separator + 1)),
+      };
+    });
+    this.family = taskIdentity.apply((value) => value.family);
+    this.revision = taskIdentity.apply((value) => value.revision);
+
     this.registerOutputs({
       executionRole: this.executionRole,
       taskRole: this.taskRole,
-      taskDefinition: this.taskDefinition,
+      taskDefinitionArn: this.taskDefinitionArn,
+      family: this.family,
+      revision: this.revision,
       logGroup: this.logGroup,
       name: this.name,
       region: this.region,
@@ -727,12 +751,12 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   private renderSecrets(
     containerName: string,
     secrets?: Record<string, Secret>,
-  ): Rendered<ContainerDefinitionSecret>[] | undefined {
+  ): Rendered<ecs.TaskDefinitionSecretArgs>[] | undefined {
     if (!secrets) {
       return;
     }
     const propertyPath = `containers.${containerName}.secrets`;
-    const renderedSecrets: Rendered<ContainerDefinitionSecret>[] = [];
+    const renderedSecrets: Rendered<ecs.TaskDefinitionSecretArgs>[] = [];
     for (const [name, secret] of Object.entries(secrets)) {
       if (secret.secretsManager && secret.ssmParameterArn) {
         throw new pulumi.InputPropertyError({
@@ -778,7 +802,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     containerName: string,
     name: string,
     source: SecretsManagerSecret,
-  ): Rendered<ContainerDefinitionSecret> {
+  ): Rendered<ecs.TaskDefinitionSecretArgs> {
     const propertyPath = `containers.${containerName}.secrets.${name}.secretsManager.secretArn`;
     const secretRegion = Arn.split(source.secretArn, ArnFormat.COLON_RESOURCE_NAME, this).apply(
       (parts) => {
@@ -835,7 +859,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     containerName: string,
     name: string,
     parameterArn: pulumi.Input<string>,
-  ): Rendered<ContainerDefinitionSecret> {
+  ): Rendered<ecs.TaskDefinitionSecretArgs> {
     const parameter = aws.ssm.Parameter.get(
       `${this.name}-${containerName}-secret-${name}-param`,
       parameterNameFromArn(parameterArn, this.getProviderRegion(), this),
@@ -902,7 +926,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   private renderEnvironmentFile(
     propertyPath: string,
     file: EnvironmentFile,
-  ): Rendered<ContainerDefinitionEnvironmentFile> {
+  ): Rendered<ecs.TaskDefinitionEnvironmentFileArgs> {
     const key = pulumi.output(file.key).apply((resolvedKey) => {
       if (!resolvedKey.endsWith('.env')) {
         throw new pulumi.InputPropertyError({
@@ -914,7 +938,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     });
     const objectArn = pulumi.interpolate`${file.bucketArn}/${key}`;
     return {
-      value: objectArn.apply((value): ContainerDefinitionEnvironmentFile => ({
+      value: objectArn.apply((value): ecs.TaskDefinitionEnvironmentFileArgs => ({
         value,
         type: 's3',
       })),
@@ -943,7 +967,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   private renderCloudWatchLogDriver(
     containerName: string,
     driver?: FargateAwsLogsLogDriver,
-  ): Rendered<LogConfiguration> | undefined {
+  ): Rendered<ecs.TaskDefinitionLogConfigurationArgs> | undefined {
     if (!driver) {
       return;
     }
@@ -985,8 +1009,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
           multilinePattern,
           mode,
           maxBufferSize,
-        ]): LogConfiguration => ({
-          logDriver: LogConfigurationLogDriver.AWSLOGS,
+        ]): ecs.TaskDefinitionLogConfigurationArgs => ({
+          logDriver: 'awslogs',
           options: removeEmpty({
             'awslogs-group': logGroupName,
             'awslogs-region': awsRegion,
@@ -1012,7 +1036,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   }
 
   /**
-   * Converts higher-level container options to the Amazon ECS API shape.
+   * Converts higher-level container options to the AWS Native task-definition input shape.
    *
    * @param containerName The name of the container
    * @param options Parameters for configuring the container definition.
@@ -1029,92 +1053,98 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       'credentialSpec' | 'environmentFiles' | 'secrets' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
-    environmentFiles?: pulumi.Output<ContainerDefinitionEnvironmentFile>[],
-    secrets?: pulumi.Output<ContainerDefinitionSecret>[],
-    logConfiguration?: pulumi.Output<LogConfiguration>,
-  ): ContainerDefinition {
-    return new ContainerDefinition(
-      `${this.name}-${containerName}`,
-      {
-        credentialSpecs,
-        logConfiguration,
-        secrets,
-        environmentFiles,
-        command: options.command,
-        cpu: options.cpuUnits,
-        memory: options.memoryMiB,
-        memoryReservation: options.memoryReservationMiB,
-        portMappings: renderPortMappings(options.portMappings),
-        essential: options.essential ?? true,
-        // TODO: this requires more design
-        // restartPolicy: options.restartPolicy,
-        entryPoint: options.entryPoint,
-        // TODO: this requires more design
-        // mountPoints: options.mountPoints,
-        volumesFrom: options.volumesFrom,
-        linuxParameters: options.linuxParameters,
-        startTimeout: options.startTimeoutSeconds,
-        stopTimeout: options.stopTimeoutSeconds,
-        versionConsistency: options.versionConsistency,
-        user: options.user,
-        workingDirectory: options.workingDirectory,
-        readonlyRootFilesystem: options.readonlyRootFilesystem,
-        interactive: options.interactive,
-        pseudoTerminal: options.pseudoTerminal,
-        dockerLabels: options.dockerLabels,
-        ulimits: options.ulimits,
-        healthCheck: options.healthCheck
-          ? {
-              command: options.healthCheck.command,
-              interval: options.healthCheck.intervalSeconds,
-              retries: options.healthCheck.retries,
-              startPeriod: options.healthCheck.startPeriodSeconds,
-              timeout: options.healthCheck.timeoutSeconds,
-            }
-          : undefined,
-        systemControls: options.systemControls,
-        // TODO: this requires more design
-        // firelensConfiguration: options.firelensConfiguration,
-        image: options.image,
-        name: containerName,
-        dependsOn: options.dependsOn,
-        environment: options.environment
-          ? Object.entries(options.environment).map(([name, value]) => ({ name, value }))
-          : undefined,
-      },
-      { parent: this },
-      this.containerIdentity,
-      true,
-    );
+    environmentFiles?: pulumi.Output<ecs.TaskDefinitionEnvironmentFileArgs>[],
+    secrets?: pulumi.Output<ecs.TaskDefinitionSecretArgs>[],
+    logConfiguration?: pulumi.Output<ecs.TaskDefinitionLogConfigurationArgs>,
+  ): ecs.TaskDefinitionContainerDefinitionArgs {
+    return {
+      credentialSpecs,
+      logConfiguration,
+      secrets,
+      environmentFiles,
+      command: options.command,
+      cpu: options.cpuUnits,
+      memory: options.memoryMiB,
+      memoryReservation: options.memoryReservationMiB,
+      portMappings: renderPortMappings(options.portMappings),
+      essential: options.essential ?? true,
+      // TODO: this requires more design
+      // restartPolicy: options.restartPolicy,
+      entryPoint: options.entryPoint,
+      // TODO: this requires more design
+      // mountPoints: options.mountPoints,
+      volumesFrom: options.volumesFrom,
+      linuxParameters: options.linuxParameters,
+      startTimeout: options.startTimeoutSeconds,
+      stopTimeout: options.stopTimeoutSeconds,
+      versionConsistency: options.versionConsistency,
+      user: options.user,
+      workingDirectory: options.workingDirectory,
+      readonlyRootFilesystem: options.readonlyRootFilesystem,
+      interactive: options.interactive,
+      pseudoTerminal: options.pseudoTerminal,
+      dockerLabels: options.dockerLabels,
+      ulimits: options.ulimits,
+      healthCheck: options.healthCheck
+        ? {
+            command: options.healthCheck.command,
+            interval: options.healthCheck.intervalSeconds,
+            retries: options.healthCheck.retries,
+            startPeriod: options.healthCheck.startPeriodSeconds,
+            timeout: options.healthCheck.timeoutSeconds,
+          }
+        : undefined,
+      systemControls: options.systemControls,
+      // TODO: this requires more design
+      // firelensConfiguration: options.firelensConfiguration,
+      image: options.image,
+      name: containerName,
+      dependsOn: options.dependsOn,
+      environment: options.environment
+        ? Object.entries(options.environment).map(([name, value]) => ({ name, value }))
+        : undefined,
+    };
   }
 }
+/**
+ * Checks the destination of the task and its supporting AWS Classic resources.
+ *
+ * @param destination The account and region selected by each provider.
+ * @param destination.awsAccount The AWS Classic account.
+ * @param destination.awsRegion The effective task region.
+ * @param destination.nativeAccount The AWS Native account.
+ * @param destination.nativeRegion The AWS Native region.
+ */
+export function validateTaskProviders(destination: {
+  awsAccount: string;
+  awsRegion: string;
+  nativeAccount: string;
+  nativeRegion: string;
+}): void {
+  const { awsAccount, awsRegion, nativeAccount, nativeRegion } = destination;
+  if (awsAccount !== nativeAccount || awsRegion !== nativeRegion) {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'region',
+      reason: `Task definitions require matching AWS and AWS Native accounts and regions. AWS uses account ${awsAccount} in ${awsRegion}, but AWS Native uses account ${nativeAccount} in ${nativeRegion}. Configure the aws-native provider to match the task's AWS account and effective region, including any region input.`,
+    });
+  }
+}
+
 /**
  * Converts high-level Fargate port mappings to the ECS API shape.
  *
  * @param mappings The port mappings to render.
  * @returns The rendered port mappings, or undefined when none are configured.
  */
-export function renderPortMappings(mappings?: FargatePortMapping[]): PortMapping[] | undefined {
-  return mappings?.map((mapping): PortMapping => {
+export function renderPortMappings(
+  mappings?: FargatePortMapping[],
+): ecs.TaskDefinitionPortMappingArgs[] | undefined {
+  return mappings?.map((mapping): ecs.TaskDefinitionPortMappingArgs => {
     return {
       ...mapping,
       containerPortRange: mapping.containerPortRange
         ? `${mapping.containerPortRange.start}-${mapping.containerPortRange.end}`
         : undefined,
-      appProtocol:
-        mapping.appProtocol === undefined
-          ? undefined
-          : mapping.appProtocol === 'http'
-            ? PortMappingAppProtocol.HTTP
-            : mapping.appProtocol === 'http2'
-              ? PortMappingAppProtocol.HTTP2
-              : PortMappingAppProtocol.GRPC,
-      protocol:
-        mapping.protocol === undefined
-          ? undefined
-          : mapping.protocol === 'tcp'
-            ? PortMappingProtocol.TCP
-            : PortMappingProtocol.UDP,
     };
   });
 }

@@ -1,9 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 
-// NOTE:
-// ContainerDefinitionCommonProperties includes properties from the API level ContainerDefinitionArgs.
-// you would normally just create a common interface and extend that in both places, but we want the
-// ability to evolve this public API separately from the low level API types
+// Keep AWSX-facing configuration independent of Native's generated resource inputs.
+// AWSX owns the supported properties, abstractions, documentation, and defaults.
 
 /**
  * The condition that a dependent container must satisfy before this container starts.

@@ -108,7 +108,7 @@ new awsxNext.FargateServiceV2(
   "service",
   {
     clusterArn: cluster.arn,
-    taskDefinition: task.taskDefinition.arn,
+    taskDefinition: task.taskDefinitionArn,
     vpcSubnetIds: vpc.publicSubnetIds,
     assignPublicIp: true,
     deploymentStrategy: {

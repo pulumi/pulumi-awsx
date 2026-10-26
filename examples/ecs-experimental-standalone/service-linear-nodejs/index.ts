@@ -85,7 +85,7 @@ export const url = pulumi.interpolate`http://${alb.dnsName}`;
 // the service permits ALB traffic on the application and health-check ports.
 new awsxNext.FargateServiceV2("service", {
   clusterArn: cluster.arn,
-  taskDefinition: task.taskDefinition.arn,
+  taskDefinition: task.taskDefinitionArn,
   vpcSubnetIds: vpc.publicSubnetIds,
   assignPublicIp: true,
   deploymentStrategy: {
