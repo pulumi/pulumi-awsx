@@ -25,10 +25,12 @@ pulumi config set aws-native:region us-west-2
 pulumi up
 ```
 
-AWS credentials must be available to both providers. The service uses AWS Native
-for its forwarding rules and checks that both providers target the same account
-and effective region. Frontend networking and the listener belong to the program;
-the service manages backend routing and task-side ingress.
+AWS credentials must be available to both providers. Task definitions and service
+forwarding rules use AWS Native. Both components check that the providers target
+the same account and effective region. The standalone `nodejs` task example also
+uses an engine transform to edit a container on `aws-native:ecs:TaskDefinition`.
+Frontend networking and the listener belong to the program. The service manages
+backend routing and task-side ingress.
 
 Each deployment creates billable AWS resources. Run `pulumi destroy` when finished.
 

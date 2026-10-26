@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -93,20 +93,19 @@ func TestAccEcsExperimentalStandalone(t *testing.T) {
 
 	require.Equal(t, "task", result.Outputs["componentName"].Value)
 	require.NotEmptyf(t, result.Outputs["taskDefinitionArn"].Value, "taskDefinitionArn empty")
+	require.Equal(t, "task", result.Outputs["family"].Value)
+	require.Positive(t, result.Outputs["revision"].Value)
 	require.NotEmptyf(t, result.Outputs["executionRoleArn"].Value, "executionRoleArn empty")
 	require.NotEmptyf(t, result.Outputs["logGroupName"].Value, "logGroupName")
 
-	containerDefinitions, ok := result.Outputs["containerDefinitions"].Value.(string)
+	definitions, ok := result.Outputs["containerDefinitions"].Value.([]any)
 	require.True(t, ok)
-	var definitions []map[string]any
-	require.NoError(t, json.Unmarshal([]byte(containerDefinitions), &definitions))
 	require.Len(t, definitions, 1)
-	// Exercise the plugin runtime: ES2022 class fields must not overwrite the
-	// nested remote container's hydrated output and serialize it as null.
-	require.NotNil(t, definitions[0], "remote container definition was serialized as null")
-	require.Equal(t, "app", definitions[0]["name"])
-	require.Equal(t, "public.ecr.aws/nginx/nginx:latest", definitions[0]["image"])
-	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, definitions[0]["environment"])
+	container, ok := definitions[0].(map[string]any)
+	require.True(t, ok)
+	require.Equal(t, "app", container["name"])
+	require.Equal(t, "public.ecr.aws/nginx/nginx:latest", container["image"])
+	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, container["environment"])
 }
 
 func TestAccEcsServiceWithLoadBalancer(t *testing.T) {

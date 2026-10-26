@@ -20,13 +20,16 @@ Node.js library. Users consume SDKs generated from its inferred schema.
   SDK defects. Check the generated schema and its `$ref` links first.
 
 Validate with `pulumi package get-schema ./awsx-next` from the repository root.
-`npm --prefix awsx-next run test:plugin` validates schema inference but does not
-assert that a particular type is present. For export changes, compare the actual
+`npm --prefix awsx-next run test:plugin` validates schema inference and guards the
+scalar task identity outputs and AWSX health-check shape. For export changes, compare the actual
 schemas, including descriptions, enum members, required fields, and references.
 
-Verified with the current toolchain: replacing the wildcard entrypoint with
-exports of `ContainerDefinition`, `FargateTaskDefinitionV2`, and `FargateServiceV2`
-produced an identical schema with 3 components and 69 types. The referenced
-`DeploymentFailureAction` enum is included without an entrypoint re-export;
-the internal `DeploymentStrategy` enum is not a component input or output and
-is not required in the schema.
+The public entrypoint exports `FargateTaskDefinitionV2` and `FargateServiceV2`.
+Task definitions use AWS Native's structured container inputs internally. Keep
+AWSX user-facing container types independent and do not add a parallel raw ECS
+API model or a container component solely for transforms. The task's Native
+resource is the low-level transform boundary.
+
+The referenced `DeploymentFailureAction` enum is included without an entrypoint
+re-export. The internal `DeploymentStrategy` enum is not a component input or
+output and is not required in the schema.

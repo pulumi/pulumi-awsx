@@ -21,6 +21,6 @@ return await Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         ["componentName"] = task.Name,
-        ["taskDefinitionArn"] = task.TaskDefinition.Apply(value => value.Arn),
+        ["taskDefinitionArn"] = task.TaskDefinitionArn,
     };
 });

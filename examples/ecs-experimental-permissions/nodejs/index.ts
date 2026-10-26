@@ -78,7 +78,7 @@ const task = new awsxNext.FargateTaskDefinitionV2(
 
 new aws.ecs.Service("startup", {
   cluster: cluster.arn,
-  taskDefinition: task.taskDefinition.arn,
+  taskDefinition: task.taskDefinitionArn,
   desiredCount: 1,
   launchType: "FARGATE",
   platformVersion: "1.4.0",

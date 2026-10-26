@@ -36,7 +36,7 @@ const listener = new aws.lb.Listener('listener', {
 const cluster = new aws.ecs.Cluster('cluster');
 const serviceArgs = {
   clusterArn: cluster.arn,
-  taskDefinition: task.taskDefinition.arn,
+  taskDefinition: task.taskDefinitionArn,
   vpcSubnetIds: vpc.privateSubnetIds,
   deploymentStrategy: {
     canary: {
@@ -341,7 +341,7 @@ You can use separate attachments when different containers or ports in a single 
 ```ts
 new awsxNext.FargateServiceV2('service', {
   ...serviceArgs,
-  taskDefinition: uiApiTask.taskDefinition.arn,
+  taskDefinition: uiApiTask.taskDefinitionArn,
 
   loadBalancerAttachments: {
     ui: {

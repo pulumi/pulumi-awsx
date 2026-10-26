@@ -14,4 +14,4 @@ task = awsx_next.FargateTaskDefinitionV2(
 )
 
 pulumi.export("componentName", task.name)
-pulumi.export("taskDefinitionArn", task.task_definition.arn)
+pulumi.export("taskDefinitionArn", task.task_definition_arn)
