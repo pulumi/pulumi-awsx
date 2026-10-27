@@ -1,17 +1,23 @@
 lockfile_version: '1'
-generated_at: '2026-10-23T05:14:30.564124+00:00'
-apm_version: 0.26.0
+generated_at: '2026-10-27T15:58:07.416847+00:00'
+apm_version: 0.35.0
 dependencies:
 - repo_url: pulumi-labs/provider-agent-skills
   name: pulumi-provider-core
   host: github.com
-  resolved_commit: 6095d481901654555826a4bb16a5012ac9af536b
-  resolved_ref: v0.3.0
+  resolved_commit: 3f45b8c15c7d2c9acf006f3d3f3ca593a6e79d32
+  resolved_ref: v0.4.0
   version: 0.1.0
   virtual_path: packages/core
   is_virtual: true
   package_type: skill_bundle
   deployed_files:
+  - .agents/skills/adopt-provider-agent-skills
+  - .agents/skills/adopt-provider-agent-skills/SKILL.md
+  - .agents/skills/adopt-provider-agent-skills/assets/agent-guidance.md
+  - .agents/skills/adopt-provider-agent-skills/assets/apm.yml
+  - .agents/skills/adopt-provider-agent-skills/assets/gitignore.txt
+  - .agents/skills/adopt-provider-agent-skills/assets/mise.toml
   - .agents/skills/stage-pulumi-provider-repro
   - .agents/skills/stage-pulumi-provider-repro/SKILL.md
   - .agents/skills/stage-pulumi-provider-repro/agents/openai.yaml
@@ -24,6 +30,12 @@ dependencies:
   - .agents/skills/triage-provider-issue/references/helper-switches.md
   - .agents/skills/triage-provider-issue/references/provider-families.md
   - .agents/skills/triage-provider-issue/references/workaround-investigation.md
+  - .claude/skills/adopt-provider-agent-skills
+  - .claude/skills/adopt-provider-agent-skills/SKILL.md
+  - .claude/skills/adopt-provider-agent-skills/assets/agent-guidance.md
+  - .claude/skills/adopt-provider-agent-skills/assets/apm.yml
+  - .claude/skills/adopt-provider-agent-skills/assets/gitignore.txt
+  - .claude/skills/adopt-provider-agent-skills/assets/mise.toml
   - .claude/skills/stage-pulumi-provider-repro
   - .claude/skills/stage-pulumi-provider-repro/SKILL.md
   - .claude/skills/stage-pulumi-provider-repro/agents/openai.yaml
@@ -37,6 +49,11 @@ dependencies:
   - .claude/skills/triage-provider-issue/references/provider-families.md
   - .claude/skills/triage-provider-issue/references/workaround-investigation.md
   deployed_file_hashes:
+    .agents/skills/adopt-provider-agent-skills/SKILL.md: sha256:c0cbb2afa25779431d73a0cf494fb4790cbfc561af45a8770de57468c2827cc5
+    .agents/skills/adopt-provider-agent-skills/assets/agent-guidance.md: sha256:c4e5c7fdb75c4e1b425212cedb2d3c9f6da4ac014e045ae50afaa32c201722c9
+    .agents/skills/adopt-provider-agent-skills/assets/apm.yml: sha256:93a14452c1102b0f6b1ab93dfaaff34a888a1637d0b0b14694474aa534e0ef10
+    .agents/skills/adopt-provider-agent-skills/assets/gitignore.txt: sha256:97ceca52cd11c3804e72a3dd71bc8aa8d8de1f9ae72d88eab60a23ff1fc334f4
+    .agents/skills/adopt-provider-agent-skills/assets/mise.toml: sha256:1d474dd48670f67027cde3e0f88e316aed328699cced20d53991de069ab69757
     .agents/skills/stage-pulumi-provider-repro/SKILL.md: sha256:c7c360d6fd2b233aa46a1aa3b76faaf203e9a7ab78db32a7afe38da4eecf94ac
     .agents/skills/stage-pulumi-provider-repro/agents/openai.yaml: sha256:4337ec0decb104f99be7438f63a3f21ec23bee5f2c1ebb7bc22ee3233d8b8717
     .agents/skills/stage-pulumi-provider-repro/references/repro-shape.md: sha256:7b9f674da3fef893eafa0b9a66d1e54c319a8b5d3988e81e457ad10a05560bbf
@@ -47,6 +64,11 @@ dependencies:
     .agents/skills/triage-provider-issue/references/helper-switches.md: sha256:8f878eb7cd240b233d59e0f1f0fb4881bf7f5e27c216dc8ca28436f1e1751071
     .agents/skills/triage-provider-issue/references/provider-families.md: sha256:88fa42888a37f5f24c5400979c01e2ad92a10a25cfe4c41f5b5596eb20c341d5
     .agents/skills/triage-provider-issue/references/workaround-investigation.md: sha256:6c05795586b00c78c69102d975a8c726e2f9e4fc8476dee4f4a21002d1c99930
+    .claude/skills/adopt-provider-agent-skills/SKILL.md: sha256:c0cbb2afa25779431d73a0cf494fb4790cbfc561af45a8770de57468c2827cc5
+    .claude/skills/adopt-provider-agent-skills/assets/agent-guidance.md: sha256:c4e5c7fdb75c4e1b425212cedb2d3c9f6da4ac014e045ae50afaa32c201722c9
+    .claude/skills/adopt-provider-agent-skills/assets/apm.yml: sha256:93a14452c1102b0f6b1ab93dfaaff34a888a1637d0b0b14694474aa534e0ef10
+    .claude/skills/adopt-provider-agent-skills/assets/gitignore.txt: sha256:97ceca52cd11c3804e72a3dd71bc8aa8d8de1f9ae72d88eab60a23ff1fc334f4
+    .claude/skills/adopt-provider-agent-skills/assets/mise.toml: sha256:1d474dd48670f67027cde3e0f88e316aed328699cced20d53991de069ab69757
     .claude/skills/stage-pulumi-provider-repro/SKILL.md: sha256:c7c360d6fd2b233aa46a1aa3b76faaf203e9a7ab78db32a7afe38da4eecf94ac
     .claude/skills/stage-pulumi-provider-repro/agents/openai.yaml: sha256:4337ec0decb104f99be7438f63a3f21ec23bee5f2c1ebb7bc22ee3233d8b8717
     .claude/skills/stage-pulumi-provider-repro/references/repro-shape.md: sha256:7b9f674da3fef893eafa0b9a66d1e54c319a8b5d3988e81e457ad10a05560bbf
@@ -57,9 +79,63 @@ dependencies:
     .claude/skills/triage-provider-issue/references/helper-switches.md: sha256:8f878eb7cd240b233d59e0f1f0fb4881bf7f5e27c216dc8ca28436f1e1751071
     .claude/skills/triage-provider-issue/references/provider-families.md: sha256:88fa42888a37f5f24c5400979c01e2ad92a10a25cfe4c41f5b5596eb20c341d5
     .claude/skills/triage-provider-issue/references/workaround-investigation.md: sha256:6c05795586b00c78c69102d975a8c726e2f9e4fc8476dee4f4a21002d1c99930
-  content_hash: sha256:515f7e734a5de80af307518b1b3546d8db551db23559723c774d4061cc4388a8
+  content_hash: sha256:b8433086452401822a3ce179a1f3add9af732ebe4602793d5af32294f01c4ec8
   declared_license: Apache-2.0
 deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:c0cbb2afa25779431d73a0cf494fb4790cbfc561af45a8770de57468c2827cc5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills/assets/agent-guidance.md
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:c4e5c7fdb75c4e1b425212cedb2d3c9f6da4ac014e045ae50afaa32c201722c9
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills/assets/apm.yml
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:93a14452c1102b0f6b1ab93dfaaff34a888a1637d0b0b14694474aa534e0ef10
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills/assets/gitignore.txt
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:97ceca52cd11c3804e72a3dd71bc8aa8d8de1f9ae72d88eab60a23ff1fc334f4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/adopt-provider-agent-skills/assets/mise.toml
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:1d474dd48670f67027cde3e0f88e316aed328699cced20d53991de069ab69757
 - kind: project-relative
   target: claude
   value: .claude/skills/stage-pulumi-provider-repro
@@ -168,6 +244,60 @@ deployments:
   - pulumi-labs/provider-agent-skills/packages/core
   active_owner: pulumi-labs/provider-agent-skills/packages/core
   content_hash: sha256:6c05795586b00c78c69102d975a8c726e2f9e4fc8476dee4f4a21002d1c99930
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:c0cbb2afa25779431d73a0cf494fb4790cbfc561af45a8770de57468c2827cc5
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills/assets/agent-guidance.md
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:c4e5c7fdb75c4e1b425212cedb2d3c9f6da4ac014e045ae50afaa32c201722c9
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills/assets/apm.yml
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:93a14452c1102b0f6b1ab93dfaaff34a888a1637d0b0b14694474aa534e0ef10
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills/assets/gitignore.txt
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:97ceca52cd11c3804e72a3dd71bc8aa8d8de1f9ae72d88eab60a23ff1fc334f4
+- kind: project-relative
+  target: codex
+  value: .agents/skills/adopt-provider-agent-skills/assets/mise.toml
+  runtime: null
+  scope: project
+  owners:
+  - pulumi-labs/provider-agent-skills/packages/core
+  active_owner: pulumi-labs/provider-agent-skills/packages/core
+  content_hash: sha256:1d474dd48670f67027cde3e0f88e316aed328699cced20d53991de069ab69757
 - kind: project-relative
   target: codex
   value: .agents/skills/stage-pulumi-provider-repro
