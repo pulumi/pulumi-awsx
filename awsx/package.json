@@ -46,7 +46,7 @@
     "@types/netmask": "^2.0.5",
     "@types/node": "^24",
     "@typescript/native": "npm:typescript@7.0.2",
-    "@yao-pkg/pkg": "6.22.0",
+    "@yao-pkg/pkg": "6.24.0",
     "babel-jest": "^30.5.1",
     "fast-check": "^3.13.2",
     "install-peers-cli": "^2.2.0",
