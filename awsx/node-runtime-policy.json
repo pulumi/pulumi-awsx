@@ -1,5 +1,5 @@
 {
-  "packagedNodeVersion": "24.18.1",
+  "packagedNodeVersion": "24.22.1",
   "warningNodeMajor": 26,
   "reviewedAt": "2026-09-18",
   "source": "https://github.com/nodejs/node/blob/7a3437d9986c4a591084520537720adeb493e6f9/BUILDING.md",
