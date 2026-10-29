@@ -1,3 +1,0 @@
-name: ts-lb-with-subnetIds
-runtime: nodejs
-description: Minimal LoadBalancer Typescript component test

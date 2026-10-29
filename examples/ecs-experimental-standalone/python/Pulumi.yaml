@@ -1,3 +1,0 @@
-name: ecs-experimental-standalone-python
-runtime: python
-description: Standalone AWSX Experimental Python SDK preview test

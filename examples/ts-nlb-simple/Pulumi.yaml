@@ -1,3 +1,0 @@
-name: ts-nlb-simple
-runtime: nodejs
-description: Minimal Network LoadBalancer Typescript component test
