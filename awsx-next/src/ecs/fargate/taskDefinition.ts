@@ -330,6 +330,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       this.executionRole = new aws.iam.Role(
         `${name}-execution-role`,
         {
+          // Retained secret policies must not prevent this role from being deleted.
+          forceDetachPolicies: true,
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
           ),

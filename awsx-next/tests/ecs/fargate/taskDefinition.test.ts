@@ -389,6 +389,11 @@ describe('Fargate container rendering', () => {
       ({ name }) => name === 'secret-environment-app-TOKEN-environment-policy',
     )!;
     expect(policy.inputs.role).toBe('secret-environment-execution-role');
+    expect(
+      resourcesOfType('aws:iam/role:Role').find(
+        ({ name }) => name === 'secret-environment-execution-role',
+      )!.inputs.forceDetachPolicies,
+    ).toBe(true);
     expect(JSON.parse(policy.inputs.policy)).toEqual({
       Version: '2012-10-17',
       Statement: [
@@ -786,10 +791,12 @@ describe('FargateTaskDefinitionV2', () => {
     await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
-    expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'roles-execution-role', id: '' },
-      { name: 'roles-task-role', id: '' },
-    ]);
+    expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
+      new Set([
+        { name: 'roles-execution-role', id: '' },
+        { name: 'roles-task-role', id: '' },
+      ]),
+    );
     expect(taskDefinitionResource('roles')!.inputs).toMatchObject({
       executionRoleArn: `arn:aws:iam::${accountId}:role/roles-execution-role`,
       taskRoleArn: `arn:aws:iam::${accountId}:role/roles-task-role`,
@@ -805,10 +812,12 @@ describe('FargateTaskDefinitionV2', () => {
     await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
-    expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'imported-roles-execution-role', id: 'execution' },
-      { name: 'imported-roles-task-role', id: 'task' },
-    ]);
+    expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
+      new Set([
+        { name: 'imported-roles-execution-role', id: 'execution' },
+        { name: 'imported-roles-task-role', id: 'task' },
+      ]),
+    );
   });
 
   test('keeps credential-secret and environment-secret children distinct', async () => {
