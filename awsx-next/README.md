@@ -42,6 +42,41 @@ pulumi package add ../path/to/pulumi-awsx/awsx-next
 Pulumi loads `index.ts`, discovers its exported `ComponentResource` classes, and generates an SDK
 for the consumer's language.
 
+## Container environment
+
+Use one map for values and references to existing secret storage:
+
+```ts
+const config = new pulumi.Config();
+const task = new FargateTaskDefinitionV2('app', {
+  containers: {
+    app: {
+      image: 'my-image',
+      environment: {
+        LOG_LEVEL: { value: 'info' },
+        API_TOKEN: { value: config.requireSecret('apiToken') },
+        SHARED_TOKEN: { ssmParameterArn: parameter.arn },
+        DATABASE_PASSWORD: {
+          secretsManager: { secretArn: databaseSecret.arn, jsonKey: 'password' },
+        },
+      },
+    },
+  },
+});
+```
+
+Each entry must specify exactly one source. Ordinary values go directly into the task
+configuration. Pulumi secret-marked values get AWSX-managed Secrets Manager storage and
+an exact version reference. Changing a managed value creates a task-definition revision,
+triggering deployment for services using `task.taskDefinitionArn`.
+
+AWSX retains managed secrets, versions and their scoped execution-role policies when
+variables are removed, so older task definitions using that role can still retrieve them.
+Retained resources leave Pulumi management, require manual cleanup and continue to incur
+charges. AWS can garbage-collect old unlabeled versions after its version limit is exceeded.
+Retention is not an indefinite rollback archive. User-supplied storage is not modified or
+retained, and changes to its value alone do not trigger deployment.
+
 ## Authoring constraints
 
 - Export public components from `index.ts`.
