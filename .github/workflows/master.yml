@@ -58,7 +58,7 @@ jobs:
       version: ${{ needs.prerequisites.outputs.version }}
       languages: '["nodejs","python","dotnet","go","java"]'
       runs-on: pulumi-ubuntu-8core
-      mise-version: 2026.3.7
+      mise-version: 2026.10.21
       checkout-submodules: 'false'
 
   post_build:
