@@ -172,8 +172,8 @@ github.com/pulumi/pulumi-aws/sdk/v7 v7.52.1 h1:MmIXmx8MMW94SBWTXa740TggwiFnwHnEp
 github.com/pulumi/pulumi-aws/sdk/v7 v7.52.1/go.mod h1:i/v1E17u10311HIEeIhYXVPrNxGWPMhCB8pOixU8/Qs=
 github.com/pulumi/pulumi-awsx/sdk/v3 v3.12.0 h1:R+pqNU+aFhRwVBIYy2evxupoSd0UKJm01rdjXZ+gS9c=
 github.com/pulumi/pulumi-awsx/sdk/v3 v3.12.0/go.mod h1:izCGsD172CdFQaCfwNkVp7/+8rp+lTGV+UYQHfgHltg=
-github.com/pulumi/pulumi-cloud-sdk/go v1.20260918.0 h1:uq7VYDSrWGfQZbyUKr9emUbqRy1RsSnaFQ67mlcLBWU=
-github.com/pulumi/pulumi-cloud-sdk/go v1.20260918.0/go.mod h1:NPA79X6Wmyr5zNKd+N+RiVJN8duwIrRmIaed8HCL9EM=
+github.com/pulumi/pulumi-cloud-sdk/go v1.20261028.1310 h1:v+x4x+lGFXtxD4KUUaw0341YT1jn2/G1Fv9xhWwN2h8=
+github.com/pulumi/pulumi-cloud-sdk/go v1.20261028.1310/go.mod h1:NPA79X6Wmyr5zNKd+N+RiVJN8duwIrRmIaed8HCL9EM=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.22 h1:CC/bpL3NHv0Hcw71mRju3HMGgqn1iyB6y3cnGe2Q45I=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.22/go.mod h1:rWyNO5asSqvmDD9yi6ZoSF3PO93nwdYcqujoxWtSGwI=
 github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 h1:mc9IbrRi1pWSg9HWEFT6EcQ274WnZ97nyP2pmUEvSp4=
