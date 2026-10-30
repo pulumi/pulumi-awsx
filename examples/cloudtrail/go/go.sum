@@ -176,8 +176,8 @@ github.com/pulumi/pulumi-cloud-sdk/go v1.20261029.1408 h1:BoDtD0hkJq0L8TDLgJEKnr
 github.com/pulumi/pulumi-cloud-sdk/go v1.20261029.1408/go.mod h1:NPA79X6Wmyr5zNKd+N+RiVJN8duwIrRmIaed8HCL9EM=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.23 h1:/ZZWeNjhjubDUA48e0YTg9k9Yjq7m6EtyMsXGd1FPOo=
 github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.23/go.mod h1:hBIf6X2RovqXhnpbVD8vetBvLpvfJRLp/IIVxYuhyEw=
-github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 h1:mc9IbrRi1pWSg9HWEFT6EcQ274WnZ97nyP2pmUEvSp4=
-github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2/go.mod h1:gPNbbz+ywFqnRRQMDxQQbMp4nXJIk43QBUj0N+xWXbw=
+github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8 h1:rik9L2SIpsoDenY51MkogR6GWgu/0Sy/XmyQmKWNUqU=
+github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8/go.mod h1:eph7BPNPkEIIK882/Ll4dbeHl5wZEc/UvTcUW0CK1UY=
 github.com/pulumi/pulumi/sdk/v3 v3.272.0 h1:MoJElH3Y/VwV1tfTVNCh2BJuc3HxB7OPmvvYzaDe89c=
 github.com/pulumi/pulumi/sdk/v3 v3.272.0/go.mod h1:i10HR5xF3FMeMNYcinudY1asWhVge4tz75gJU/9yd4A=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=

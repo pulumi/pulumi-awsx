@@ -76,7 +76,7 @@ require (
 	github.com/pulumi/pulumi-aws/sdk/v7 v7.52.1 // indirect
 	github.com/pulumi/pulumi-cloud-sdk/go v1.20261029.1408 // indirect
 	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.23 // indirect
-	github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 // indirect
+	github.com/pulumi/pulumi-docker/sdk/v4 v4.5.8 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1 // indirect
