@@ -155,6 +155,10 @@ beforeAll(async () => {
           state.kmsKeyId = arn.includes('customer-key') ? 'alias/customer-key' : undefined;
           break;
         }
+        case 'aws:secretsmanager/secretVersion:SecretVersion': {
+          state.versionId = `${args.name}-version`;
+          break;
+        }
         case 'aws:cloudwatch/logGroup:LogGroup': {
           const imported = splitRegionalId(args.id || args.inputs.name || args.name);
           state.name = imported.id;
@@ -317,27 +321,102 @@ describe('Fargate container rendering', () => {
     ).toThrow('require matching AWS and AWS Native accounts and regions');
   });
 
-  test('keeps secret environment values secret on the Native resource', async () => {
-    let child: native.ecs.TaskDefinition | undefined;
-    // Capture the internal child in the local implementation under test, without exposing
-    // Native resource types in the component's public schema.
-    new FargateTaskDefinitionV2(
+  test('stores secret-marked values and keeps only references on the Native task', async () => {
+    let version: aws.secretsmanager.SecretVersion | undefined;
+    const retained: pulumi.ResourceTransformationArgs[] = [];
+    const task = new FargateTaskDefinitionV2(
       'secret-environment',
       {
-        containers: { app: { image: 'nginx', environment: { TOKEN: pulumi.secret('token') } } },
+        containers: {
+          app: {
+            image: 'nginx',
+            environment: {
+              MODE: { value: 'production' },
+              EMPTY: { value: '' },
+              TOKEN: { value: pulumi.secret('token').apply((value) => `${value}-derived`) },
+            },
+          },
+        },
       },
       {
         transformations: [
           (args): undefined => {
-            if (native.ecs.TaskDefinition.isInstance(args.resource)) child = args.resource;
+            if (args.opts.retainOnDelete) retained.push(args);
+            if (aws.secretsmanager.SecretVersion.isInstance(args.resource)) {
+              version = args.resource;
+            }
             return undefined;
           },
         ],
       },
     );
-    const containers = await unwrap(child!.containerDefinitions);
-    expect(await pulumi.isSecret(child!.containerDefinitions)).toBe(true);
-    expect(containers?.[0]?.environment).toEqual([{ name: 'TOKEN', value: 'token' }]);
+    const containers = await resolveContainers(task, 'secret-environment');
+    expect(containers[0]!.environment).toEqual([
+      { name: 'MODE', value: 'production' },
+      { name: 'EMPTY', value: '' },
+    ]);
+    expect(containers[0]!.secrets).toEqual([
+      {
+        name: 'TOKEN',
+        valueFrom: `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:test:::secret-environment-app-TOKEN-environment-version`,
+      },
+    ]);
+    expect(JSON.stringify(taskDefinitionResource('secret-environment')!.inputs)).not.toContain(
+      'token-derived',
+    );
+    expect(await pulumi.isSecret(version!.secretString)).toBe(true);
+    expect(await unwrap(version!.secretString)).toBe('token-derived');
+    expect(resourcesOfType('aws:secretsmanager/secret:Secret')).toHaveLength(1);
+    expect(resourcesOfType('aws:secretsmanager/secretVersion:SecretVersion')).toHaveLength(1);
+    expect(retained.map(({ type, name, opts }) => ({ type, name, parent: opts.parent }))).toEqual([
+      {
+        type: 'aws:secretsmanager/secret:Secret',
+        name: 'secret-environment-app-TOKEN-environment',
+        parent: task,
+      },
+      {
+        type: 'aws:secretsmanager/secretVersion:SecretVersion',
+        name: 'secret-environment-app-TOKEN-environment',
+        parent: task,
+      },
+      {
+        type: 'aws:iam/rolePolicy:RolePolicy',
+        name: 'secret-environment-app-TOKEN-environment-policy',
+        parent: task,
+      },
+    ]);
+    const policy = resourcesOfType('aws:iam/rolePolicy:RolePolicy').find(
+      ({ name }) => name === 'secret-environment-app-TOKEN-environment-policy',
+    )!;
+    expect(policy.inputs.role).toBe('secret-environment-execution-role');
+    expect(
+      resourcesOfType('aws:iam/role:Role').find(
+        ({ name }) => name === 'secret-environment-execution-role',
+      )!.inputs.forceDetachPolicies,
+    ).toBe(true);
+    expect(JSON.parse(policy.inputs.policy)).toEqual({
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'secretsmanager:GetSecretValue',
+          Resource: `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:test`,
+        },
+      ],
+    });
+  });
+
+  test.each([
+    {},
+    { value: 'plain', ssmParameterArn: 'arn:aws:ssm:us-west-2:123456789012:parameter/app' },
+    { value: '', secretsManager: { secretArn: credentialsSecretArn } },
+  ])('rejects missing or conflicting environment sources %j', (source) => {
+    expect(
+      () =>
+        new FargateTaskDefinitionV2('invalid-environment', {
+          containers: { app: { image: 'nginx', environment: { TOKEN: source } } },
+        }),
+    ).toThrow('Specify exactly one of value, ssmParameterArn or secretsManager');
   });
 
   test('validates AWSX container options before rendering Native inputs', () => {
@@ -640,8 +719,8 @@ describe('FargateTaskDefinitionV2', () => {
         app: {
           image: 'nginx',
           environment: {
-            API_URL: pulumi.output('https://api.example.com'),
-            MODE: 'production',
+            API_URL: { value: pulumi.output('https://api.example.com') },
+            MODE: { value: 'production' },
           },
         },
       },
@@ -712,10 +791,12 @@ describe('FargateTaskDefinitionV2', () => {
     await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
-    expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'roles-execution-role', id: '' },
-      { name: 'roles-task-role', id: '' },
-    ]);
+    expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
+      new Set([
+        { name: 'roles-execution-role', id: '' },
+        { name: 'roles-task-role', id: '' },
+      ]),
+    );
     expect(taskDefinitionResource('roles')!.inputs).toMatchObject({
       executionRoleArn: `arn:aws:iam::${accountId}:role/roles-execution-role`,
       taskRoleArn: `arn:aws:iam::${accountId}:role/roles-task-role`,
@@ -731,10 +812,12 @@ describe('FargateTaskDefinitionV2', () => {
     await unwrap(task.taskDefinitionArn);
 
     const roles = resourcesOfType('aws:iam/role:Role');
-    expect(roles.map(({ name, id }) => ({ name, id }))).toEqual([
-      { name: 'imported-roles-execution-role', id: 'execution' },
-      { name: 'imported-roles-task-role', id: 'task' },
-    ]);
+    expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
+      new Set([
+        { name: 'imported-roles-execution-role', id: 'execution' },
+        { name: 'imported-roles-task-role', id: 'task' },
+      ]),
+    );
   });
 
   test('keeps credential-secret and environment-secret children distinct', async () => {
@@ -743,7 +826,7 @@ describe('FargateTaskDefinitionV2', () => {
         app: {
           image: 'nginx',
           credentialSpec: { bucketArn: 'arn:aws:s3:::credential-bucket', key: 'spec.json' },
-          secrets: {
+          environment: {
             'credential-spec': { secretsManager: { secretArn: credentialsSecretArn } },
           },
         },
@@ -784,7 +867,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             DATABASE_PASSWORD: {
               secretsManager: { secretArn, ...source },
             },
@@ -844,7 +927,7 @@ describe('FargateTaskDefinitionV2', () => {
           containers: {
             app: {
               image: 'nginx',
-              secrets: {
+              environment: {
                 CONFIG: {
                   secretsManager: {
                     secretArn: `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:config`,
@@ -855,7 +938,7 @@ describe('FargateTaskDefinitionV2', () => {
             },
           },
         }),
-    ).toThrow('Only one secret source can be set');
+    ).toThrow('Specify exactly one of value, ssmParameterArn or secretsManager');
   });
 
   test('rejects conflicting multiline log options', () => {
@@ -885,7 +968,7 @@ describe('FargateTaskDefinitionV2', () => {
           containers: {
             app: {
               image: 'nginx',
-              secrets: {
+              environment: {
                 DATABASE_PASSWORD: {
                   secretsManager: {
                     secretArn: `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:app`,
@@ -908,7 +991,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             DATABASE_PASSWORD: {
               secretsManager: {
                 secretArn: `arn:aws:secretsmanager:${secretRegion}:${accountId}:secret:application`,
@@ -930,7 +1013,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CONFIG: {
               ssmParameterArn: `arn:aws:ssm:us-east-1:${accountId}:parameter/team/application/config`,
             },
@@ -961,7 +1044,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CONFIG: {
               ssmParameterArn: `arn:aws:ssm:us-east-2:${accountId}:parameter/team/config`,
             },
@@ -991,7 +1074,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CONFIG: {
               ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/team/application/config`,
             },
@@ -1274,7 +1357,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CONFIG: {
               ssmParameterArn: `arn:aws:ssm:us-east-2:${accountId}:parameter/customer-key`,
             },
@@ -1399,7 +1482,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CONFIG: {
               ssmParameterArn: `arn:aws:ssm:${providerRegion}:${accountId}:parameter/application`,
             },
@@ -1430,7 +1513,7 @@ describe('FargateTaskDefinitionV2', () => {
       containers: {
         app: {
           image: 'nginx',
-          secrets: {
+          environment: {
             CUSTOMER: {
               secretsManager: {
                 secretArn: `arn:aws:secretsmanager:us-east-1:${accountId}:secret:customer-key`,
@@ -1483,10 +1566,11 @@ describe('FargateTaskDefinitionV2', () => {
           app: {
             image: 'nginx',
             logging: { cloudwatch: { streamPrefix: 'app' } },
-            secrets: {
+            environment: {
               CONFIG: {
                 ssmParameterArn: `arn:aws:ssm:us-east-2:${accountId}:parameter/application`,
               },
+              TOKEN: { value: pulumi.secret('regional-token') },
             },
           },
         },
@@ -1511,6 +1595,15 @@ describe('FargateTaskDefinitionV2', () => {
     ).toEqual(new Set([taskDefinition.provider]));
     expect(logGroup.provider).not.toBe(taskDefinition.provider);
     expect(parameter.provider).toBe(logGroup.provider);
+    for (const type of [
+      'aws:secretsmanager/secret:Secret',
+      'aws:secretsmanager/secretVersion:SecretVersion',
+    ]) {
+      const managed = resourcesOfType(type);
+      expect(managed).toHaveLength(1);
+      expect(managed[0]!.inputs.region).toBe('us-east-2');
+      expect(managed[0]!.provider).toBe(logGroup.provider);
+    }
     const regionalCalls = calls.filter(({ token }) =>
       ['aws:index/arnParse:arnParse', 'aws:index/getRegion:getRegion'].includes(token),
     );

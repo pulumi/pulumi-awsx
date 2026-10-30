@@ -57,8 +57,9 @@ const task = new awsxNext.FargateTaskDefinitionV2(
     containers: {
       app: {
         image: image.imageUri,
-        environment: { SUCCESS_MARKER: "AWSX_PERMISSION_OK:startup" },
-        secrets: {
+        environment: {
+          SUCCESS_MARKER: { value: "AWSX_PERMISSION_OK:startup" },
+          MANAGED_SECRET_VALUE: { value: pulumi.secret("managed-secret-injection-ok") },
           SECRETS_MANAGER_VALUE: { secretsManager: { secretArn: secret.arn, jsonKey: "value" } },
           PINNED_SECRET_VALUE: {
             secretsManager: {
@@ -73,7 +74,18 @@ const task = new awsxNext.FargateTaskDefinitionV2(
       },
     },
   },
-  { dependsOn: [version, environmentFile] },
+  {
+    dependsOn: [version, environmentFile],
+    // Production defaults retain managed secrets for rollback. This test must clean them up.
+    transforms: [
+      (args) => {
+        if (args.name.startsWith("startup-app-MANAGED_SECRET_VALUE-environment")) {
+          return { props: args.props, opts: { ...args.opts, retainOnDelete: false } };
+        }
+        return undefined;
+      },
+    ],
+  },
 );
 
 new aws.ecs.Service("startup", {

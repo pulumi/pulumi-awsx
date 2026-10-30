@@ -99,7 +99,7 @@ const taskDefinitionArn =
         image: "public.ecr.aws/docker/library/nginx:stable",
         portMappings: [{ containerPort: 3000 }, { containerPort: 3001 }],
         environment: {
-          NGINX_CONFIG: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8"),
+          NGINX_CONFIG: { value: fs.readFileSync(path.join(__dirname, "nginx.conf"), "utf8") },
         },
         command: [
           "sh",

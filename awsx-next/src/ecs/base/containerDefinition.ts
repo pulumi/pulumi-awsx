@@ -440,12 +440,27 @@ export interface SecretsManagerSecret {
 }
 
 /**
- * A secret environment-variable source.
+ * A container environment variable. Supply exactly one source.
  */
-export interface Secret {
+export interface EnvironmentVariable {
   /**
-   * A Secrets Manager secret to pass as an environment variable. Use this or `ssmParameterArn`, not
-   * both.
+   * The value passed to the container.
+   *
+   * Pulumi secret-marked values are stored in an AWSX-created Secrets Manager secret and referenced
+   * by version ID. Changing the value registers a new task-definition revision and deploys services
+   * consuming that revision.
+   *
+   * AWSX retains managed secrets, versions and retrieval permissions when this entry is removed.
+   * Retained resources require manual cleanup and continue to incur charges. AWS may
+   * garbage-collect old unlabeled versions after its version limit is exceeded.
+   *
+   * Default - Use the explicit SSM or Secrets Manager source instead.
+   */
+  readonly value?: pulumi.Input<string>;
+
+  /**
+   * An existing Secrets Manager secret. Cannot be combined with `value` or `ssmParameterArn`. AWSX
+   * grants retrieval permissions but does not modify or retain the supplied secret.
    *
    * For more information, see [Secrets Manager environment
    * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
@@ -453,8 +468,9 @@ export interface Secret {
   readonly secretsManager?: SecretsManagerSecret;
 
   /**
-   * An ARN of the SSM Parameter Store parameter to pass as an environment variable. Use this or
-   * `secretsManager`, not both.
+   * An existing SSM Parameter Store parameter ARN. Cannot be combined with `value` or
+   * `secretsManager`. AWSX grants retrieval permissions but does not modify or retain the
+   * parameter.
    *
    * For more information, see [SSM Parameter Store environment
    * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
@@ -472,17 +488,15 @@ export interface ContainerDefinitionOptionsBase {
   readonly image: pulumi.Input<string>;
 
   /**
-   * Environment variables passed to the container.
+   * Environment variables keyed by name, including ordinary values, Pulumi secret-marked values,
+   * and references to existing SSM parameters or Secrets Manager secrets.
+   *
+   * Default - No environment variables.
    */
-  readonly environment?: Record<string, pulumi.Input<string>>;
+  readonly environment?: Record<string, EnvironmentVariable>;
 
   /**
    * Environment files passed to the container.
    */
   readonly environmentFiles?: EnvironmentFile[];
-
-  /**
-   * Secret environment variables passed to the container.
-   */
-  readonly secrets?: Record<string, Secret>;
 }

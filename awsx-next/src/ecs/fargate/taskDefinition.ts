@@ -4,7 +4,11 @@ import * as native from '@pulumi/aws-native';
 import type { ecs } from '@pulumi/aws-native/types/input';
 import { validateContainerOptions } from './validateContainerOptions';
 import type { input } from '@pulumi/aws/types';
-import type { EnvironmentFile, Secret, SecretsManagerSecret } from '../base/containerDefinition';
+import type {
+  EnvironmentFile,
+  EnvironmentVariable,
+  SecretsManagerSecret,
+} from '../base/containerDefinition';
 import type {
   FargateAwsLogsLogDriver,
   FargateContainerDefinitionOptions,
@@ -45,7 +49,8 @@ export interface CommonTaskdefinitionOptions {
    * etc.
    *
    * The component will automatically attach IAM policies granting access based on the container
-   * definitions.
+   * definitions. Policies for AWSX-managed environment secrets are retained when a variable is
+   * removed, preserving access for older task definitions using this role.
    *
    * Default - An execution role will be automatically created for you
    */
@@ -325,6 +330,8 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       this.executionRole = new aws.iam.Role(
         `${name}-execution-role`,
         {
+          // Retained secret policies must not prevent this role from being deleted.
+          forceDetachPolicies: true,
           assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
           ),
@@ -386,7 +393,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       const environmentFiles = container.environmentFiles?.map((file, i) =>
         this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
       );
-      const secrets = this.renderSecrets(containerName, container.secrets);
+      const environment = this.renderEnvironment(containerName, container.environment);
       if (container.logging?.disabled && container.logging.cloudwatch !== undefined) {
         throw new pulumi.InputPropertyError({
           propertyPath: `containers.${containerName}.logging`,
@@ -400,7 +407,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       executionRoleStatements.push(
         ...(credentialSpec?.executionRoleStatements ?? []),
         ...(environmentFiles?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
-        ...(secrets?.flatMap((rendered) => rendered.executionRoleStatements) ?? []),
+        ...(environment?.executionRoleStatements ?? []),
         ...(logs?.executionRoleStatements ?? []),
       );
 
@@ -409,8 +416,9 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
         container,
         credentialSpec ? [credentialSpec.value] : undefined,
         environmentFiles?.map((rendered) => rendered.value),
-        secrets?.map((rendered) => rendered.value),
+        environment?.secrets,
         logs?.value,
+        environment?.values,
       );
     });
 
@@ -742,52 +750,131 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   }
 
   /**
-   * Renders the secrets configured for a container.
+   * Splits the unified environment into direct values and ECS secret references.
    *
-   * @param containerName The name of the container the secrets are associated with
-   * @param secrets The secrets to render.
-   * @returns The rendered secrets, or undefined when none are configured.
+   * @param containerName The container using these variables.
+   * @param environment The environment map.
+   * @returns Rendered values, secret references and external-source permissions.
    */
-  private renderSecrets(
+  private renderEnvironment(
     containerName: string,
-    secrets?: Record<string, Secret>,
-  ): Rendered<ecs.TaskDefinitionSecretArgs>[] | undefined {
-    if (!secrets) {
+    environment?: Record<string, EnvironmentVariable>,
+  ):
+    | {
+        values: pulumi.Output<ecs.TaskDefinitionKeyValuePairArgs[]>;
+        secrets: pulumi.Output<ecs.TaskDefinitionSecretArgs[]>;
+        executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[];
+      }
+    | undefined {
+    if (!environment) {
       return;
     }
-    const propertyPath = `containers.${containerName}.secrets`;
-    const renderedSecrets: Rendered<ecs.TaskDefinitionSecretArgs>[] = [];
-    for (const [name, secret] of Object.entries(secrets)) {
-      if (secret.secretsManager && secret.ssmParameterArn) {
+    const values: pulumi.Output<ecs.TaskDefinitionKeyValuePairArgs | undefined>[] = [];
+    const secrets: pulumi.Output<ecs.TaskDefinitionSecretArgs | undefined>[] = [];
+    const executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[] = [];
+    for (const [name, source] of Object.entries(environment)) {
+      const propertyPath = `containers.${containerName}.environment.${name}`;
+      if (
+        [source.value, source.ssmParameterArn, source.secretsManager].filter(
+          (value) => value !== undefined,
+        ).length !== 1
+      ) {
         throw new pulumi.InputPropertyError({
-          propertyPath: `${propertyPath}.${name}`,
-          reason: 'Only one secret source can be set',
+          propertyPath,
+          reason: 'Specify exactly one of value, ssmParameterArn or secretsManager',
         });
       }
-
-      if (!secret.secretsManager && !secret.ssmParameterArn) {
+      if (
+        source.secretsManager?.versionId !== undefined &&
+        source.secretsManager?.versionStage !== undefined
+      ) {
         throw new pulumi.InputPropertyError({
-          propertyPath: `${propertyPath}.${name}`,
-          reason: 'A secret source is required',
-        });
-      }
-
-      if (secret.secretsManager?.versionId && secret.secretsManager?.versionStage) {
-        throw new pulumi.InputPropertyError({
-          propertyPath: `${propertyPath}.${name}.secretsManager`,
+          propertyPath: `${propertyPath}.secretsManager`,
           reason: 'versionStage and versionId cannot be used together',
         });
       }
-      if (secret.secretsManager) {
-        renderedSecrets.push(
-          this.renderSecretsManagerSecret(containerName, name, secret.secretsManager),
+
+      if (source.value !== undefined) {
+        const value = pulumi.output(source.value);
+        // Inspect secrecy metadata without resolving the value in an apply. This also
+        // declares storage when the secret value is unknown during preview.
+        const classified = pulumi.isSecret(value).then(
+          (
+            isSecret,
+          ): {
+            environment?: ecs.TaskDefinitionKeyValuePairArgs;
+            secret?: pulumi.Output<ecs.TaskDefinitionSecretArgs>;
+          } =>
+            isSecret
+              ? { secret: this.renderManagedEnvironmentSecret(containerName, name, value) }
+              : { environment: { name, value } },
         );
-      }
-      if (secret.ssmParameterArn) {
-        renderedSecrets.push(this.renderSsmSecret(containerName, name, secret.ssmParameterArn));
+        values.push(pulumi.output(classified.then((entry) => entry.environment)));
+        secrets.push(pulumi.output(classified.then((entry) => entry.secret)));
+      } else {
+        const rendered = source.secretsManager
+          ? this.renderSecretsManagerSecret(containerName, name, source.secretsManager)
+          : this.renderSsmSecret(containerName, name, source.ssmParameterArn!);
+        secrets.push(rendered.value);
+        executionRoleStatements.push(...rendered.executionRoleStatements);
       }
     }
-    return renderedSecrets;
+    return {
+      values: pulumi.all(values).apply((entries) => entries.filter((entry) => entry !== undefined)),
+      secrets: pulumi
+        .all(secrets)
+        .apply((entries) => entries.filter((entry) => entry !== undefined)),
+      executionRoleStatements,
+    };
+  }
+
+  /**
+   * Stores a Pulumi secret and pins ECS to the resulting Secrets Manager version.
+   *
+   * @param containerName The container using the value.
+   * @param name The environment variable name.
+   * @param value The secret-marked value.
+   * @returns The version-pinned ECS reference, ordered after retrieval permissions.
+   */
+  private renderManagedEnvironmentSecret(
+    containerName: string,
+    name: string,
+    value: pulumi.Output<string>,
+  ): pulumi.Output<ecs.TaskDefinitionSecretArgs> {
+    const resourceName = `${this.name}-${containerName}-${name}-environment`;
+    const opts = { parent: this, retainOnDelete: true };
+    const secret = new aws.secretsmanager.Secret(resourceName, { region: this.region }, opts);
+    const version = new aws.secretsmanager.SecretVersion(
+      resourceName,
+      {
+        region: this.region,
+        secretId: secret.arn,
+        secretString: value,
+      },
+      opts,
+    );
+    // Keep permissions with retained storage. Removing a variable must not revoke
+    // access needed by older task definitions using the same execution role.
+    const policy = new aws.iam.RolePolicy(
+      `${resourceName}-policy`,
+      {
+        role: this.executionRole.name,
+        policy: pulumi.jsonStringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'secretsmanager:GetSecretValue',
+              Resource: secret.arn,
+            },
+          ],
+        }),
+      },
+      opts,
+    );
+    return pulumi
+      .all([secret.arn, version.versionId, policy.id])
+      .apply(([arn, versionId]) => ({ name, valueFrom: `${arn}:::${versionId}` }));
   }
 
   /**
@@ -803,7 +890,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     name: string,
     source: SecretsManagerSecret,
   ): Rendered<ecs.TaskDefinitionSecretArgs> {
-    const propertyPath = `containers.${containerName}.secrets.${name}.secretsManager.secretArn`;
+    const propertyPath = `containers.${containerName}.environment.${name}.secretsManager.secretArn`;
     const secretRegion = Arn.split(source.secretArn, ArnFormat.COLON_RESOURCE_NAME, this).apply(
       (parts) => {
         if (!parts.region) {
@@ -1044,18 +1131,20 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
    * @param environmentFiles The rendered environment files.
    * @param secrets The rendered secrets.
    * @param logConfiguration The rendered log configuration.
+   * @param environment The rendered direct environment values.
    * @returns The container definition.
    */
   private toContainerDefinition(
     containerName: string,
     options: Omit<
       FargateContainerDefinitionOptions,
-      'credentialSpec' | 'environmentFiles' | 'secrets' | 'logging'
+      'credentialSpec' | 'environmentFiles' | 'environment' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
     environmentFiles?: pulumi.Output<ecs.TaskDefinitionEnvironmentFileArgs>[],
-    secrets?: pulumi.Output<ecs.TaskDefinitionSecretArgs>[],
+    secrets?: pulumi.Output<ecs.TaskDefinitionSecretArgs[]>,
     logConfiguration?: pulumi.Output<ecs.TaskDefinitionLogConfigurationArgs>,
+    environment?: pulumi.Output<ecs.TaskDefinitionKeyValuePairArgs[]>,
   ): ecs.TaskDefinitionContainerDefinitionArgs {
     return {
       credentialSpecs,
@@ -1100,9 +1189,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       image: options.image,
       name: containerName,
       dependsOn: options.dependsOn,
-      environment: options.environment
-        ? Object.entries(options.environment).map(([name, value]) => ({ name, value }))
-        : undefined,
+      environment,
     };
   }
 }
