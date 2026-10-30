@@ -93,6 +93,38 @@ test.each(['canary', 'linear'] as const)(
   },
 );
 
+test.each([undefined, 0, 120, 2147483647])(
+  'preserves service health-check grace %s independently of deployment timeout',
+  async (healthCheckGracePeriodSeconds) => {
+    const { inputs } = await createService(`startup-grace-${healthCheckGracePeriodSeconds}`, {
+      healthCheckGracePeriodSeconds,
+      deploymentTimeout: '2h',
+      loadBalancerAttachments: { app: applicationAttachment('listener-public', 3000, 25) },
+    });
+    expect(inputs.healthCheckGracePeriodSeconds).toBe(healthCheckGracePeriodSeconds);
+    expect(
+      constructions.find((r) => r.type === 'aws:ecs/service:Service')!.opts.customTimeouts,
+    ).toEqual({ create: '2h', update: '2h' });
+  },
+);
+
+test.each([-1, 0.5, 2147483648, NaN, Infinity])(
+  'rejects invalid health-check grace %s before creating children',
+  (healthCheckGracePeriodSeconds) => {
+    expect(
+      () =>
+        new FargateServiceV2('invalid-startup-grace', {
+          clusterArn: 'cluster',
+          taskDefinition: 'task',
+          vpcSubnetIds: ['subnet'],
+          healthCheckGracePeriodSeconds,
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'healthCheckGracePeriodSeconds' }));
+    expect(resources.filter((r) => r.type.startsWith('aws:'))).toEqual([]);
+    expect(calls).toEqual([]);
+  },
+);
+
 test('honors explicit timeout and failure action for progressive deployments', async () => {
   const { inputs } = await createService('override-progressive', {
     deploymentStrategy: {

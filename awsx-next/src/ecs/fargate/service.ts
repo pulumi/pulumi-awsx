@@ -190,6 +190,17 @@ export interface FargateServiceV2Args {
   readonly deploymentTimeout?: string;
 
   /**
+   * Seconds ECS ignores failing health checks for newly started tasks, allowing the application
+   * time to start. This does not change the target group's health checks or Pulumi's deployment
+   * timeout.
+   *
+   * Must be an integer from 0 through 2147483647.
+   *
+   * Default - Unset, using the AWS default of 0 seconds.
+   */
+  readonly healthCheckGracePeriodSeconds?: number;
+
+  /**
    * A list of Capacity Provider strategies used to place a service.
    *
    * Default - No capacity providers are used
@@ -346,6 +357,18 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
     super(identity.type, name, inputs, pulumi.mergeOptions(opts, { aliases: identity.aliases }));
     if (opts.urn) {
       return;
+    }
+
+    if (
+      args.healthCheckGracePeriodSeconds !== undefined &&
+      (!Number.isInteger(args.healthCheckGracePeriodSeconds) ||
+        args.healthCheckGracePeriodSeconds < 0 ||
+        args.healthCheckGracePeriodSeconds > 2147483647)
+    ) {
+      throw new pulumi.InputPropertyError({
+        propertyPath: 'healthCheckGracePeriodSeconds',
+        reason: 'healthCheckGracePeriodSeconds must be an integer from 0 through 2147483647.',
+      });
     }
 
     if (args.securityGroupIds?.length === 0) {
@@ -562,9 +585,9 @@ export class FargateServiceV2 extends pulumi.ComponentResource {
         },
         platformVersion: args.platformVersion,
         loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
+        healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
         // TODO: these are the remaining configs
         // deploymentController,
-        // healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
         // alarms,
         // serviceConnectConfiguration,
         // serviceRegistries,
