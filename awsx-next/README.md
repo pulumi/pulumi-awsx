@@ -42,6 +42,37 @@ pulumi package add ../path/to/pulumi-awsx/awsx-next
 Pulumi loads `index.ts`, discovers its exported `ComponentResource` classes, and generates an SDK
 for the consumer's language.
 
+## Managed Instances task definitions
+
+`EC2TaskDefinitionV2` registers Linux tasks for ECS Managed Instances using `awsvpc` networking:
+
+```ts
+const task = new EC2TaskDefinitionV2('worker', {
+  containers: {
+    worker: {
+      image: 'my-worker-image',
+      cpuUnits: 300,
+      memoryReservationMiB: 700,
+    },
+  },
+});
+```
+
+Task-wide CPU and memory limits are optional and are not rounded to Fargate task sizes.
+Without a task memory limit, each container needs a memory limit or reservation.
+Set `cpuArchitecture` for single-architecture images. Otherwise, every container image must
+support the architectures that the capacity provider may select.
+
+The component shares Fargate's roles, scoped execution permissions, logging, and secret
+handling. Pass `taskDefinitionArn` to an ECS service or standalone task. This component does
+not create a cluster, capacity provider, service, or network resources. Traditional EC2
+compatibility, Windows, host networking, volumes, and placement controls are outside this API.
+
+Both task-definition components use the shared port-mapping, Linux, and logging types.
+The experimental Fargate `versionConsistency` enum input has been replaced by
+`versionConsistencyEnabled`, defaulting to `true`. Execution-prefixed leaf types have been
+replaced by shared types such as `AwsvpcPortMapping` and `LinuxParameters`.
+
 ## Container environment
 
 Use one map for values and references to existing secret storage:

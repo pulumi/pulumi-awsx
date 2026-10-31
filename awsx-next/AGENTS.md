@@ -24,7 +24,8 @@ Validate with `pulumi package get-schema ./awsx-next` from the repository root.
 export changes, compare the actual schemas, including descriptions, enum members,
 required fields, and references.
 
-The public entrypoint exports `FargateTaskDefinitionV2` and `FargateServiceV2`.
+The public entrypoint exports `FargateTaskDefinitionV2`, `EC2TaskDefinitionV2`,
+and `FargateServiceV2`.
 Task definitions use AWS Native's structured container inputs internally. Keep
 AWSX user-facing container types independent and do not add a parallel raw ECS
 API model or a container component solely for transforms. The task's Native
