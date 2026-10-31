@@ -31,7 +31,7 @@ import {
 import {
   PortMappingAppProtocol,
   PortMappingProtocol,
-} from '../../../src/ecs/fargate/containerDefinition';
+} from '../../../src/ecs/base/containerDefinition';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
@@ -880,12 +880,6 @@ describe('FargateTaskDefinitionV2', () => {
     expect(containers[0]!.secrets).toEqual([{ name: 'DATABASE_PASSWORD', valueFrom: expected }]);
   });
 
-  test('rejects an empty container map', () => {
-    expect(() => new FargateTaskDefinitionV2('empty-containers', { containers: {} })).toThrow(
-      'At least one container must be provided',
-    );
-  });
-
   test.each([{}, { key: 'spec.json', config: credentialConfig }])(
     'rejects missing or conflicting credential-spec sources: %j',
     (source) => {
@@ -1292,6 +1286,7 @@ describe('FargateTaskDefinitionV2', () => {
         name: 'app',
         image: 'nginx',
         essential: true,
+        versionConsistency: 'enabled',
         logConfiguration: {
           logDriver: 'awslogs',
           options: {

@@ -1,4 +1,5 @@
-import { validateContainerOptions } from '../../../src/ecs/fargate/validateContainerOptions';
+import { validateContainerOptions } from '../../../src/ecs/base/validateContainerOptions';
+import { validateFargateContainerOptions } from '../../../src/ecs/fargate/validateContainerOptions';
 import type { FargateContainerDefinitionOptions } from '../../../src/ecs/fargate/containerDefinition';
 
 // These invariants used to live on the removed raw ContainerDefinition resource.
@@ -43,6 +44,28 @@ describe('AWSX container validation', () => {
     expect(() =>
       validateContainerOptions({ image: 'nginx', ...options }, 'containers.app'),
     ).toThrow(expect.objectContaining({ propertyPath: `containers.app.${property}` }));
+  });
+
+  test('rejects host capabilities on Fargate but permits SYS_PTRACE', () => {
+    expect(() =>
+      validateFargateContainerOptions(
+        { image: 'nginx', linuxParameters: { capabilities: { add: ['NET_ADMIN'] } } },
+        'containers.app',
+      ),
+    ).toThrow(
+      expect.objectContaining({
+        propertyPath: 'containers.app.linuxParameters.capabilities.add[0]',
+      }),
+    );
+    expect(() =>
+      validateFargateContainerOptions(
+        {
+          image: 'nginx',
+          linuxParameters: { capabilities: { add: ['SYS_PTRACE'], drop: ['NET_RAW'] } },
+        },
+        'containers.app',
+      ),
+    ).not.toThrow();
   });
 
   test('accepts valid health, memory, and port boundaries', () => {
