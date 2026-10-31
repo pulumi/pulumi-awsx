@@ -74,7 +74,7 @@ require (
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/pulumi-aws/sdk/v7 v7.52.1 // indirect
-	github.com/pulumi/pulumi-cloud-sdk/go v1.20261029.1408 // indirect
+	github.com/pulumi/pulumi-cloud-sdk/go v1.20261030.1400 // indirect
 	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.23 // indirect
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
