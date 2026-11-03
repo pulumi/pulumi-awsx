@@ -159,9 +159,9 @@ func TestAccEcsServiceRejectsMismatchedProviderRegion(t *testing.T) {
 	}
 	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
 	pt.SetConfig(t, "aws-native:region", nativeRegion)
-	// Bypass the task component so its own provider check cannot pre-empt the service check.
-	// This ARN is never looked up or deployed because the test only previews.
-	pt.SetConfig(t, "taskDefinitionArn", fmt.Sprintf("arn:aws:ecs:%s:123456789012:task-definition/preview-only:1", region))
+	// Use a raw AWS task definition so its ARN stays unknown during preview. This bypasses the
+	// task component's provider check without triggering Service's lookup of a fabricated ARN.
+	pt.SetConfig(t, "useRawTaskDefinition", "true")
 
 	// Preview exercises the real providers and component without deploying infrastructure.
 	_, err := pt.PreviewErr(t)

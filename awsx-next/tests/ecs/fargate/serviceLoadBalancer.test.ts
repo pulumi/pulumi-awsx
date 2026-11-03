@@ -7,9 +7,9 @@ import {
   ApplicationServiceLoadBalancer,
   CreatedApplicationServiceAttachment,
   createApplicationServiceAttachment,
-} from '../../../src/ecs/fargate/serviceLoadBalancer';
+} from '../../../src/ecs/serviceLoadBalancer';
 
-import { DeploymentStrategy } from '../../../src/ecs/fargate/serviceDeployment';
+import { DeploymentStrategy } from '../../../src/ecs/serviceDeployment';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const ruleOptions: pulumi.ResourceOptions[] = [];

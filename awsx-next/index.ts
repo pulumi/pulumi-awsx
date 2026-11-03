@@ -1,2 +1,2 @@
 export { TaskDefinition } from './src/ecs';
-export { FargateServiceV2 } from './src/ecs/fargate/service';
+export { Service } from './src/ecs/service';

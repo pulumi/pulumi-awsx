@@ -1,5 +1,5 @@
 import * as pulumi from '@pulumi/pulumi';
-import * as aws from '@pulumi/aws';
+import type { ecs } from '@pulumi/aws/types/output';
 
 /**
  * Allocation of service tasks to a capacity provider.
@@ -41,24 +41,16 @@ export interface FargateServiceCapacity {
    * Default - Not selected.
    */
   readonly spot?: CapacityAllocation;
-
-  /**
-   * TODO: Reasses this placement, i'm not sure this belongs here Assign public IPv4 addresses to
-   * task ENIs. Only available with explicit Fargate selection.
-   *
-   * Default - false.
-   */
-  readonly assignPublicIp?: boolean;
 }
 
 /**
- * One existing Managed Instances provider in a service's capacity strategy.
+ * One existing Managed Instances or ASG-backed provider in a service's capacity strategy.
  */
 export interface ServiceCapacityProvider extends CapacityAllocation {
   /**
-   * ARN of an existing Managed Instances capacity provider in this service's cluster. AWSX reads it
-   * without modifying capacity or cluster associations. The provider must be usable in the cluster,
-   * with host networking that supports image pulls, secrets, and logs.
+   * ARN of an existing Managed Instances or ASG-backed capacity provider associated with this
+   * cluster. The provider must be usable in the cluster, with host networking that supports image
+   * pulls, secrets, and logs.
    */
   readonly capacityProviderArn: pulumi.Input<string>;
 }
@@ -80,16 +72,6 @@ export interface ServiceCapacity {
    * Default - Not explicitly selected.
    */
   readonly providers?: ServiceCapacityProvider[];
-
-  /**
-   * Uses the cluster's default capacity provider strategy.
-   *
-   * Cannot be combined with `fargate` or `providers. When neither option is provided, the service
-   * uses the `FARGATE` launch type.
-   *
-   * Default - false
-   */
-  readonly useClusterDefaultCapacityProviderStrategy?: boolean;
 }
 
 // Internal resolved strategy model, separate from the public policy shapes.
@@ -102,6 +84,7 @@ export interface ResolvedCapacityProvider {
 export interface ResolvedServiceCapacity {
   launchType?: string;
   strategies?: ResolvedCapacityProvider[];
+  providerFamily?: 'EC2' | 'MANAGED_INSTANCES';
 }
 
 /**
@@ -111,13 +94,8 @@ export interface ResolvedServiceCapacity {
  */
 export function validateServiceCapacity(capacity?: ServiceCapacity): void {
   if (capacity === undefined) return;
-  const choices = [
-    capacity.fargate,
-    capacity.providers,
-    capacity.useClusterDefaultCapacityProviderStrategy,
-  ];
-  if (choices.filter((choice) => choice !== undefined).length !== 1) {
-    throw capacityError('Select exactly one of fargate, providers, or clusterDefault.');
+  if (capacity.fargate !== undefined && capacity.providers !== undefined) {
+    throw capacityError('Select at most one of fargate or providers.');
   }
   if (capacity.providers !== undefined) {
     validateAllocations(capacity.providers, 'capacity.providers');
@@ -172,21 +150,15 @@ function validateAllocations(allocations: CapacityAllocation[], path: string): v
 }
 
 /**
- * Resolves automatic or explicit cluster-default selection without changing cluster policy.
+ * Resolves the cluster default or falls back to Fargate without changing cluster policy.
  *
  * @param defaults The strategy read from the cluster.
- * @param requireDefault Whether the user explicitly requires a cluster default.
  * @returns The concrete strategy or Fargate launch type.
  */
 export function resolveClusterCapacity(
   defaults: ResolvedCapacityProvider[] | undefined,
-  requireDefault: boolean,
 ): ResolvedServiceCapacity {
   if (defaults?.length) return { strategies: defaults };
-  if (requireDefault)
-    throw capacityError(
-      'The cluster has no default capacity-provider strategy. Configure one or explicitly select capacity.fargate or capacity.managedInstances.',
-    );
   return { launchType: 'FARGATE' };
 }
 
@@ -196,14 +168,25 @@ export function resolveClusterCapacity(
  * @param capacity The resolved service policy.
  * @param compatibilities Compatibility declarations from the task definition.
  * @param networkMode The task's network mode.
- * @param managedInstances Whether Managed Instances was explicitly selected and validated.
+ * @param settings Top-level service settings that require Fargate.
+ * @param settings.assignPublicIp Whether to assign public task IPs.
+ * @param settings.operatingSystemFamily The task operating system, defaulting to Linux.
  */
 export function validateTaskCapacity(
   capacity: ResolvedServiceCapacity,
   compatibilities: string[],
   networkMode: string,
-  managedInstances: boolean,
+  settings: {
+    assignPublicIp?: boolean;
+    operatingSystemFamily?: string;
+  } = {},
 ): void {
+  if (settings.operatingSystemFamily && settings.operatingSystemFamily !== 'LINUX') {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'taskDefinitionArn',
+      reason: 'Service supports only Linux task definitions.',
+    });
+  }
   if (networkMode !== 'awsvpc') {
     throw new pulumi.InputPropertyError({
       propertyPath: 'taskDefinitionArn',
@@ -223,18 +206,26 @@ export function validateTaskCapacity(
       'The cluster default mixes Fargate and custom capacity providers, which ECS does not support.',
     );
   }
+  if (!fargate && settings.assignPublicIp === true) {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'assignPublicIp',
+      reason: 'assignPublicIp is supported only with Fargate capacity.',
+    });
+  }
+  const requiredCompatibility = fargate ? 'FARGATE' : capacity.providerFamily;
   if (
-    (fargate && !compatibilities.includes('FARGATE')) ||
-    (managedInstances && !compatibilities.includes('MANAGED_INSTANCES'))
+    requiredCompatibility &&
+    !(requiredCompatibility === 'EC2' && compatibilities.length === 0) &&
+    !compatibilities.includes(requiredCompatibility)
   ) {
     throw new pulumi.InputPropertyError({
       propertyPath: 'taskDefinitionArn',
-      reason: `The selected capacity requires a task definition registered with ${fargate ? 'FARGATE' : 'MANAGED_INSTANCES'} compatibility. Select compatible capacity or use a compatible task definition.`,
+      reason: `The selected capacity requires a task definition registered with ${requiredCompatibility} compatibility. Select compatible capacity or use a compatible task definition.`,
     });
   }
   if (
     !fargate &&
-    !managedInstances &&
+    !capacity.providerFamily &&
     compatibilities.length &&
     !compatibilities.some((value) => ['EC2', 'MANAGED_INSTANCES'].includes(value))
   ) {
@@ -257,41 +248,51 @@ function capacityError(reason: string): pulumi.InputPropertyError {
 }
 
 /**
- * Checks that selected providers are unique Managed Instances providers in the service cluster.
+ * Validates provider family, cluster association, and uniqueness.
  *
  * @param clusterArn The selected service cluster.
+ * @param clusterName The cluster name parsed from its ARN.
  * @param providers Resolved metadata for each explicit provider.
+ * @param associatedProviders Provider names associated with the cluster, required for ASG
+ *   providers.
+ * @returns The common provider family.
  */
-export function validateManagedInstancesProviders(
+export function validateCapacityProviders(
   clusterArn: string,
+  clusterName: string,
   providers: {
     name: string;
     cluster?: string;
-    managedInstances?: aws.types.input.ecs.CapacityProviderManagedInstancesProvider;
-    autoScaling?: aws.types.input.ecs.CapacityProviderAutoScalingGroupProvider;
+    managedInstances?: ecs.CapacityProviderManagedInstancesProvider;
+    autoScaling?: ecs.CapacityProviderAutoScalingGroupProvider;
   }[],
-): void {
-  // TODO: Use ARN
-  const clusterName = clusterArn.slice(clusterArn.lastIndexOf('/') + 1);
+  associatedProviders: string[] = [],
+): 'EC2' | 'MANAGED_INSTANCES' {
   const names = new Set<string>();
+  let family: 'EC2' | 'MANAGED_INSTANCES' | undefined;
   providers.forEach((provider, index) => {
-    if (
-      !provider.managedInstances ||
-      !provider.autoScaling ||
-      (provider.cluster !== clusterArn && provider.cluster !== clusterName)
-    ) {
+    if (Boolean(provider.managedInstances) === Boolean(provider.autoScaling)) {
+      throw capacityError('Select Managed Instances or ASG-backed capacity providers.');
+    }
+    const currentFamily = provider.managedInstances ? 'MANAGED_INSTANCES' : 'EC2';
+    const associated = provider.managedInstances
+      ? provider.cluster === clusterArn || provider.cluster === clusterName
+      : associatedProviders.includes(provider.name);
+    if (!associated) {
       throw new pulumi.InputPropertyError({
         propertyPath: `capacity.providers[${index}].capacityProviderArn`,
-        reason:
-          "Select an ECS Managed Instances or AutoScalingGroup capacity provider belonging to this service's cluster.",
+        reason: "Select a capacity provider associated with this service's cluster.",
       });
     }
+    if (family && family !== currentFamily) {
+      throw capacityError('Managed Instances and ASG-backed providers cannot share a strategy.');
+    }
+    family = currentFamily;
     if (names.has(provider.name)) {
-      throw new pulumi.InputPropertyError({
-        propertyPath: 'capacity.providers',
-        reason: 'Each capacity provider may appear only once.',
-      });
+      throw capacityError('Each capacity provider may appear only once.');
     }
     names.add(provider.name);
   });
+  if (!family) throw capacityError('Select at least one capacity provider.');
+  return family;
 }

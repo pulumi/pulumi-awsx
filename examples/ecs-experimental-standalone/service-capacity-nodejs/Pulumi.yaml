@@ -1,0 +1,3 @@
+name: ecs-experimental-service-capacity
+runtime: nodejs
+description: Unified ECS Service on EC2 or Managed Instances with explicit and inherited capacity

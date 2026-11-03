@@ -2,7 +2,7 @@
 
 ## Load Balancer Scenarios
 
-The `FargateServiceV2` component is designed to be used in combination with Load Balancers and progressive deployments. There are several resources that will be mentioned in this guide.
+The `Service` component is designed to be used in combination with Load Balancers and progressive deployments. There are several resources that will be mentioned in this guide.
 
 - **Load Balancer**: The Load Balancer that distributes incoming traffic across (potentially) multiple targets
 - **Listener**: A process that checks for connection requests using the protocol and port that you configure. The listener receives a request and evaluates it against each rule in priority order.
@@ -36,7 +36,7 @@ const listener = new aws.lb.Listener('listener', {
 const cluster = new aws.ecs.Cluster('cluster');
 const serviceArgs = {
   clusterArn: cluster.arn,
-  taskDefinition: task.taskDefinitionArn,
+  taskDefinitionArn: task.taskDefinitionArn,
   vpcSubnetIds: vpc.privateSubnetIds,
   deploymentStrategy: {
     canary: {
@@ -191,7 +191,7 @@ For example, an application that serves `/users`, `/orders`, and `/admin` throug
 that matches on hostname and let the backend application handle the URL paths.
 
 ```ts
-new awsxNext.FargateServiceV2('service', {
+new awsxNext.Service('service', {
   ...serviceArgs,
   loadBalancerAttachments: {
     app: {
@@ -232,7 +232,7 @@ You can use separate attachments when the same container and port needs more tha
 - External and internal clients reach the same application through different load balancers
 
 ```ts
-new awsxNext.FargateServiceV2('service', {
+new awsxNext.Service('service', {
   ...serviceArgs,
   loadBalancerAttachments: {
     api: {
@@ -298,7 +298,7 @@ const publicIngress = new aws.vpc.SecurityGroupIngressRule('task-public', {
   fromPort: 80,
   toPort: 80,
 });
-new awsxNext.FargateServiceV2(
+new awsxNext.Service(
   'service',
   {
     ...serviceArgs,
@@ -339,9 +339,9 @@ You can use separate attachments when different containers or ports in a single 
 - One container serves multiple load-balanced ports
 
 ```ts
-new awsxNext.FargateServiceV2('service', {
+new awsxNext.Service('service', {
   ...serviceArgs,
-  taskDefinition: uiApiTask.taskDefinitionArn,
+  taskDefinitionArn: uiApiTask.taskDefinitionArn,
 
   loadBalancerAttachments: {
     ui: {

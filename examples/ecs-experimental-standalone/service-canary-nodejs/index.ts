@@ -106,11 +106,11 @@ const invokePolicy = new aws.iam.RolePolicy("deployment-validation-invoke", {
 
 // Each attachment owns a forwarding rule and target group. Both route to the same backend;
 // the service permits ALB traffic on the application and health-check ports.
-new awsxNext.FargateServiceV2(
+new awsxNext.Service(
   "service",
   {
     clusterArn: cluster.arn,
-    taskDefinition: task.taskDefinitionArn,
+    taskDefinitionArn: task.taskDefinitionArn,
     vpcSubnetIds: vpc.publicSubnetIds,
     assignPublicIp: true,
     deploymentStrategy: {

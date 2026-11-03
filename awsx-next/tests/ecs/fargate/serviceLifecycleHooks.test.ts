@@ -1,13 +1,15 @@
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
+import { getMonitor } from '@pulumi/pulumi/runtime/settings';
+import type { MockMonitor } from '@pulumi/pulumi/runtime/mocks';
 import {
   DeploymentFailureAction,
   PauseTimeoutAction,
   ProgressiveLambdaLifecycleStage,
   ProgressivePauseLifecycleStage,
   ServiceDeploymentStrategy,
-} from '../../../src/ecs/fargate/serviceDeployment';
-import { FargateServiceV2 } from '../../../src/ecs/fargate/service';
+} from '../../../src/ecs/serviceDeployment';
+import { Service } from '../../../src/ecs/service';
 
 const registrations: pulumi.runtime.MockResourceArgs[] = [];
 const constructions: pulumi.ResourceTransformationArgs[] = [];
@@ -31,6 +33,13 @@ beforeAll(async () => {
       };
     },
     call(args) {
+      if (args.token === 'aws:ecs/getTaskDefinition:getTaskDefinition') {
+        return {
+          arn: args.inputs.taskDefinition,
+          requiresCompatibilities: ['FARGATE'],
+          networkMode: 'awsvpc',
+        };
+      }
       if (args.token === 'aws:lb/getListener:getListener') {
         return { ...args.inputs, loadBalancerArn: 'arn:mock:alb', protocol: 'HTTP' };
       }
@@ -66,12 +75,13 @@ function resolve<T>(value: pulumi.Output<T>): Promise<T> {
 function create(
   deploymentStrategy?: ServiceDeploymentStrategy,
   deploymentTimeout?: string,
-): FargateServiceV2 {
-  return new FargateServiceV2(
+): Service {
+  return new Service(
     `service-${sequence++}`,
     {
-      clusterArn: 'arn:mock:cluster',
-      taskDefinition: 'arn:mock:task',
+      clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+      capacity: { fargate: {} },
+      taskDefinitionArn: 'arn:mock:task',
       vpcSubnetIds: ['subnet-private'],
       securityGroupIds: ['sg-service'],
       deploymentStrategy,
@@ -109,8 +119,8 @@ function create(
  * @param service The constructed component.
  * @returns The ECS service registration.
  */
-async function settle(service: FargateServiceV2): Promise<pulumi.runtime.MockResourceArgs> {
-  await resolve(service.service.deploymentConfiguration);
+async function settle(service: Service): Promise<pulumi.runtime.MockResourceArgs> {
+  await resolve(service.serviceArn);
   await Promise.all(constructions.map((args) => resolve(args.resource.urn)));
   return registrations.find((args) => args.type === 'aws:ecs/service:Service')!;
 }
@@ -483,9 +493,15 @@ it('does not create hooks or invocation roles when hydrating an existing compone
   const original = create({ rolling: { lambdaHooks: [{ functionArn: validationArn }] } });
   await settle(original);
   const urn = await resolve(original.urn);
+  // The mock monitor stores registerOutputs as a protobuf Struct, but getResource expects a
+  // plain object. Normalize that fixture state before exercising real reference hydration.
+  await new Promise<void>((done) => setImmediate(done));
+  const monitor = getMonitor() as unknown as MockMonitor;
+  const registered = monitor.getRegisteredResources().get(urn)!;
+  if (registered.state.toJavaScript) registered.state = registered.state.toJavaScript();
   registrations.length = 0;
   constructions.length = 0;
-  const service = new FargateServiceV2('hydrated', undefined!, { urn });
+  const service = new Service('hydrated', undefined!, { urn });
   await resolve(service.urn);
   expect(constructions).toHaveLength(0);
   expect(registrations.filter((args) => args.type.startsWith('aws:'))).toHaveLength(0);

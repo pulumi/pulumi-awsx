@@ -10,8 +10,17 @@ Start with the basic ALB example, then choose the rollout behavior you need.
 | [Canary with validation](service-canary-nodejs/)                 | Staged traffic and Lambda validation with an explicit invocation role   | `TestAccEcsServiceCanaryDeployment`     |
 | [Linear](service-linear-nodejs/)                                 | Traffic shifts in equal increments                                      | `TestAccEcsServiceLinearDeployment`     |
 | [Rolling lifecycle hook](service-rolling-lifecycle-hook-nodejs/) | Pre-scale-up hook with a service-generated invocation role              | `TestAccEcsServiceRollingLifecycleHook` |
+| [Custom capacity](service-capacity-nodejs/) | Explicit and inherited provider selection, with running-task verification | `TestAccEcsServiceManagedInstances`, `TestAccEcsServiceEC2` |
 
-The `nodejs`, `python`, `go`, and `dotnet` directories demonstrate experimental task-definition components without deploying a service.
+The `nodejs`, `python`, `go`, and `dotnet` directories demonstrate the unified
+`TaskDefinition` component without deploying a service. The service programs use
+`Service` and pass the task revision through `taskDefinitionArn`.
+
+These examples create clusters without default capacity strategies, so omitting
+`capacity` exercises the Fargate launch-type fallback. All service tasks use Linux
+and Fargate platform 1.4.0. The [capacity example](service-capacity-nodejs/) covers explicit provider selection
+and inherited cluster defaults on EC2 and Managed Instances. It verifies actual
+running-task placement without duplicating the ALB and deployment-strategy tests.
 
 ## Running a service example
 
@@ -41,6 +50,10 @@ From `examples/`, with AWS credentials and `AWS_REGION` configured:
 ```sh
 go test -tags=nodejs -run '^(TestAccEcsServiceWithLoadBalancer|TestAccEcsServiceBlueGreenDeployment|TestAccEcsServiceCanaryDeployment|TestAccEcsServiceLinearDeployment|TestAccEcsServiceRollingLifecycleHook)$' -timeout 120m
 ```
+
+The progressive scenarios and cleanup can exceed a one-hour AWS credential session.
+When using short-lived credentials, run each test separately with fresh credentials
+rather than wrapping the entire suite in one credential session.
 
 The same five scenarios run as before, now against separate programs. Blue/green
 updates from v1 to v2. Canary and linear also update to v3. The rolling-hook

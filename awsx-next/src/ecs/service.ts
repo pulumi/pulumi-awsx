@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import { ComponentIdentity } from '../componentIdentity';
 import * as aws from '@pulumi/aws';
+import { Arn, ArnFormat } from './arn';
 import {
   createApplicationServiceAttachment,
   validateListenerRulePriorities,
@@ -20,7 +21,8 @@ import {
 import {
   resolveClusterCapacity,
   ServiceCapacity,
-  validateManagedInstancesProviders,
+  validateCapacityProviders,
+  ResolvedServiceCapacity,
   validateServiceCapacity,
   validateTaskCapacity,
 } from './serviceCapacity';
@@ -29,17 +31,6 @@ export const fargateServiceStandaloneIdentity: ComponentIdentity = {
   type: 'awsx-next:index:Service',
   aliases: [],
 };
-
-// Internal resolved strategy model, separate from the public policy shapes.
-export interface ResolvedCapacityProvider {
-  capacityProvider: string;
-  base?: number;
-  weight?: number;
-}
-export interface ResolvedServiceCapacity {
-  launchType?: string;
-  strategies?: ResolvedCapacityProvider[];
-}
 
 /**
  * Fargate capacity provider used to run the service's tasks.
@@ -82,33 +73,6 @@ export interface FargateCapacityProviderStrategy {
    * Default - 1
    */
   readonly weight?: number;
-}
-
-/**
- * The platform version on which to run your service.
- *
- * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform-fargate.html
- */
-export enum FargatePlatformVersion {
-  /**
-   * The latest, recommended platform version for the task's operating system. Currently 1.4.0 for
-   * Linux and 1.0.0 for Windows.
-   */
-  LATEST = 'LATEST',
-
-  /**
-   * Linux platform version 1.4.0.
-   *
-   * Supports EFS endpoints, CAP_SYS_PTRACE Linux capability, network performance metrics in
-   * CloudWatch Container Insights, consolidated 20 GB ephemeral volume.
-   */
-  VERSION1_4 = '1.4.0',
-
-  /**
-   * Windows platform version 1.0.0. Platform version numbers for Windows and Linux are independent.
-   * Do not use this version for Linux tasks.
-   */
-  WINDOWS_VERSION1_0 = '1.0.0',
 }
 
 /**
@@ -161,9 +125,18 @@ export interface ServiceArgs {
   readonly vpcSubnetIds: pulumi.Input<pulumi.Input<string>[]>;
 
   /**
-   * TODO:
+   * Select Fargate or existing capacity providers. When omitted, adopt a nonempty cluster default
+   * and otherwise use Fargate.
    */
   readonly capacity?: ServiceCapacity;
+
+  /**
+   * Force a new task deployment on service updates. Enable when changing capacity-provider
+   * strategies, as required by the AWS provider. Other service updates can also roll tasks.
+   *
+   * Default - Unset.
+   */
+  readonly forceNewDeployment?: boolean;
 
   /**
    * The deployment strategy to use for the Service.
@@ -190,7 +163,7 @@ export interface ServiceArgs {
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
    *
-   * If true, each task will receive a public IP address.
+   * If true, each task will receive a public IP address. Supported only on Fargate.
    *
    * Default - false
    */
@@ -273,18 +246,6 @@ export interface ServiceArgs {
   readonly manageIngress?: boolean;
 
   /**
-   * The platform version on which to run your service.
-   *
-   * If one is not specified, the LATEST platform version is used by default. For more information,
-   * see [AWS Fargate Platform
-   * Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
-   * in the Amazon Elastic Container Service Developer Guide.
-   *
-   * Default - Latest
-   */
-  readonly platformVersion?: FargatePlatformVersion;
-
-  /**
    * Whether to use Availability Zone rebalancing for the service.
    *
    * If enabled, `deploymentMaximumPercent` must be greater than 100.
@@ -327,10 +288,14 @@ export interface ServiceArgs {
 
 export class Service extends pulumi.ComponentResource {
   /**
-   * The underlying ECS service resource. Use its outputs to inspect the service ARN, name, and
-   * deployment configuration.
+   * ARN of the ECS service, available after it reaches steady state.
    */
-  public readonly service!: aws.ecs.Service;
+  public readonly serviceArn!: pulumi.Output<string>;
+
+  /**
+   * Name of the ECS service within its cluster.
+   */
+  public readonly serviceName!: pulumi.Output<string>;
 
   /**
    * Security groups attached to the service, preserving the order of securityGroupIds when
@@ -357,28 +322,14 @@ export class Service extends pulumi.ComponentResource {
   ) {
     // Resource references supply a URN without the original args. Declare outputs for hydration
     // and skip child construction, as their references are restored by the runtime.
-    const inputs = opts.urn ? { service: undefined, securityGroups: undefined } : args;
+    const inputs = opts.urn
+      ? { serviceArn: undefined, serviceName: undefined, securityGroups: undefined }
+      : args;
     super(identity.type, name, inputs, pulumi.mergeOptions(opts, { aliases: identity.aliases }));
     if (opts.urn) {
       return;
     }
     validateServiceCapacity(args.capacity);
-    const capacity = this.resolveCapacity(name, args, opts.dependsOn);
-    const task = aws.ecs.getTaskDefinitionOutput(
-      { taskDefinition: args.taskDefinitionArn, region: args.region },
-      { parent: this, dependsOn: opts.dependsOn },
-    );
-    // Validation gates the ECS service inputs. Every child is declared outside applies, including
-    // when task, cluster, and capacity identifiers are unknown during preview.
-    const taskDefinitionArn = pulumi.all([capacity, task]).apply(([selected, definition]) => {
-      validateTaskCapacity(
-        selected,
-        definition.requiresCompatibilities,
-        definition.networkMode,
-        args.capacity?.providers !== undefined,
-      );
-      return definition.arn;
-    });
 
     if (
       args.healthCheckGracePeriodSeconds !== undefined &&
@@ -430,6 +381,21 @@ export class Service extends pulumi.ComponentResource {
       (progressive || selected.config.pauseHooks?.length
         ? estimateDeploymentTimeout(selected)
         : undefined);
+    const capacity = this.resolveCapacity(name, args, opts.dependsOn);
+    const task = aws.ecs.getTaskDefinitionOutput(
+      { taskDefinition: args.taskDefinitionArn, region: args.region },
+      { parent: this, dependsOn: opts.dependsOn },
+    );
+    // Validation gates the ECS service inputs. Every child is declared outside applies, including
+    // when task, cluster, and capacity identifiers are unknown during preview.
+    const taskDefinitionArn = pulumi.all([capacity, task]).apply(([placement, definition]) => {
+      validateTaskCapacity(placement, definition.requiresCompatibilities, definition.networkMode, {
+        assignPublicIp: args.assignPublicIp,
+        operatingSystemFamily: definition.runtimePlatforms?.[0]?.operatingSystemFamily,
+      });
+      return definition.arn;
+    });
+
     const vpcId = this.getVpcFromSubnets(args.vpcSubnetIds, args.region);
 
     if (args.region) {
@@ -547,10 +513,11 @@ export class Service extends pulumi.ComponentResource {
       );
     }
 
-    this.service = new aws.ecs.Service(
+    const service = new aws.ecs.Service(
       name,
       {
         desiredCount: args.desiredCount ?? 1,
+        forceNewDeployment: args.forceNewDeployment,
         region: args.region,
         launchType: capacity.apply((s) => s.launchType),
         availabilityZoneRebalancing: args.availabilityZoneRebalancing,
@@ -580,7 +547,14 @@ export class Service extends pulumi.ComponentResource {
           subnets: args.vpcSubnetIds,
           securityGroups: this.securityGroups.flatMap((sg) => sg.id),
         },
-        platformVersion: args.platformVersion,
+        platformVersion: capacity.apply((placement) =>
+          placement.launchType === 'FARGATE' ||
+          placement.strategies?.some((entry) =>
+            ['FARGATE', 'FARGATE_SPOT'].includes(entry.capacityProvider),
+          )
+            ? '1.4.0'
+            : undefined,
+        ),
         loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
         healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
         // TODO: these are the remaining configs
@@ -601,8 +575,11 @@ export class Service extends pulumi.ComponentResource {
       },
     );
 
+    this.serviceArn = service.arn;
+    this.serviceName = service.name;
     this.registerOutputs({
-      service: this.service,
+      serviceArn: this.serviceArn,
+      serviceName: this.serviceName,
       securityGroups: this.securityGroups,
     });
   }
@@ -632,6 +609,23 @@ export class Service extends pulumi.ComponentResource {
       return pulumi.output(strategies.length ? { strategies } : { launchType: 'FARGATE' });
     }
 
+    const clusterName = Arn.split(args.clusterArn, ArnFormat.SLASH_RESOURCE_NAME, this).apply(
+      (parsed) => {
+        if (
+          parsed.service !== 'ecs' ||
+          parsed.resource !== 'cluster' ||
+          !parsed.resourceName ||
+          parsed.resourceName.includes('/')
+        ) {
+          throw new pulumi.InputPropertyError({
+            propertyPath: 'clusterArn',
+            reason: 'Provide the ARN of an ECS cluster, not its name.',
+          });
+        }
+        return parsed.resourceName;
+      },
+    );
+
     if (args.capacity?.providers) {
       const allocations = args.capacity.providers;
       const providers = allocations.map((allocation, index) => {
@@ -651,22 +645,47 @@ export class Service extends pulumi.ComponentResource {
           autoScaling: provider.autoScalingGroupProvider,
         };
       });
+      const clusterId = args.region
+        ? pulumi.interpolate`${clusterName}@${args.region}`
+        : clusterName;
+      const clusterCapacity = aws.ecs.ClusterCapacityProviders.get(
+        `${name}-cluster-capacity`,
+        clusterId,
+        undefined,
+        { parent: this, dependsOn },
+      );
       return pulumi
-        .output({ clusterArn: args.clusterArn, providers })
-        .apply(({ clusterArn, providers: resolved }) => {
-          validateManagedInstancesProviders(clusterArn, resolved);
-          const strategies = resolved.map((provider, index) => ({
-            capacityProvider: provider.name,
-            base: allocations[index]!.base,
-            weight: allocations[index]!.weight ?? 1,
-          }));
-          return { strategies };
-        });
+        .output({
+          clusterArn: args.clusterArn,
+          clusterName,
+          providers,
+          associatedProviders: clusterCapacity.capacityProviders,
+        })
+        .apply(
+          ({
+            clusterArn,
+            clusterName: resolvedClusterName,
+            providers: resolved,
+            associatedProviders,
+          }) => {
+            const providerFamily = validateCapacityProviders(
+              clusterArn,
+              resolvedClusterName,
+              resolved,
+              associatedProviders,
+            );
+            const strategies = resolved.map((provider, index) => ({
+              capacityProvider: provider.name,
+              base: allocations[index]!.base,
+              weight: allocations[index]!.weight ?? 1,
+            }));
+            return { strategies, providerFamily };
+          },
+        );
     }
 
     // getCluster does not expose the default strategy. Read the cluster-capacity-provider state
     // instead, using the cluster name as its documented import ID.
-    const clusterName = pulumi.output(args.clusterArn).apply(clusterNameFromArn);
     const id = args.region ? pulumi.interpolate`${clusterName}@${args.region}` : clusterName;
     const clusterCapacity = aws.ecs.ClusterCapacityProviders.get(
       `${name}-cluster-capacity`,
@@ -674,12 +693,51 @@ export class Service extends pulumi.ComponentResource {
       undefined,
       { parent: this, dependsOn },
     );
-    return clusterCapacity.defaultCapacityProviderStrategies.apply((defaults) =>
-      resolveClusterCapacity(
-        defaults,
-        args.capacity?.useClusterDefaultCapacityProviderStrategy ?? false,
-      ),
-    );
+    return clusterCapacity.defaultCapacityProviderStrategies.apply(async (defaults) => {
+      const capacity = resolveClusterCapacity(defaults);
+      const customProviders =
+        capacity.strategies?.filter(
+          (entry) => !['FARGATE', 'FARGATE_SPOT'].includes(entry.capacityProvider),
+        ) ?? [];
+      if (!customProviders.length) return capacity;
+      if (customProviders.length !== capacity.strategies!.length) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: 'capacity',
+          reason: 'The cluster default mixes Fargate and custom capacity providers.',
+        });
+      }
+      // The inherited strategy length is only known after the cluster read. Invokes, unlike
+      // resource declarations, can safely resolve that dynamic list without hiding children.
+      const families = await Promise.all(
+        customProviders.map(async (entry) => {
+          const provider = await aws.cloudcontrol.getResource(
+            {
+              typeName: 'AWS::ECS::CapacityProvider',
+              identifier: entry.capacityProvider,
+              region: args.region,
+            },
+            { parent: this },
+          );
+          const properties = JSON.parse(provider.properties);
+          const managed = properties.ManagedInstancesProvider != null;
+          const autoScaling = properties.AutoScalingGroupProvider != null;
+          if (managed === autoScaling) {
+            throw new pulumi.InputPropertyError({
+              propertyPath: 'capacity',
+              reason: 'Expected a Managed Instances or ASG-backed capacity provider.',
+            });
+          }
+          return managed ? ('MANAGED_INSTANCES' as const) : ('EC2' as const);
+        }),
+      );
+      if (new Set(families).size !== 1) {
+        throw new pulumi.InputPropertyError({
+          propertyPath: 'capacity',
+          reason: 'Managed Instances and ASG-backed providers cannot share a strategy.',
+        });
+      }
+      return { ...capacity, providerFamily: families[0]! };
+    });
   }
 
   /**
@@ -707,21 +765,4 @@ export class Service extends pulumi.ComponentResource {
     const subnet = aws.ec2.getSubnetOutput({ id: firstSubnetId, region }, { parent: this });
     return subnet.vpcId;
   }
-}
-
-/**
- * Derives a cluster read ID while preserving the unknown-until-created ARN dependency.
- *
- * @param arn The cluster ARN.
- * @returns The cluster name.
- */
-function clusterNameFromArn(arn: string): string {
-  const match = /^arn:[^:]+:ecs:[^:]+:[^:]+:cluster\/([^/]+)$/.exec(arn);
-  if (!match) {
-    throw new pulumi.InputPropertyError({
-      propertyPath: 'clusterArn',
-      reason: 'Provide the ARN of an ECS cluster, not its name.',
-    });
-  }
-  return match[1]!;
 }

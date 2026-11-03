@@ -87,9 +87,24 @@ for (const [name, arn] of Object.entries(additionalCertificates)) {
 }
 
 const cluster = new aws.ecs.Cluster("cluster");
-// The mismatch preview supplies an ARN to isolate the service provider check.
+// The mismatch preview uses the AWS provider directly to bypass the task component's
+// AWS Native provider check. Its ARN stays unknown in preview, so Service does not try
+// to read a fabricated task-definition ARN before validating the routing providers.
+const rawTask = config.getBoolean("useRawTaskDefinition")
+  ? new aws.ecs.TaskDefinition("preview-task", {
+      family: "awsx-service-provider-preview",
+      networkMode: "awsvpc",
+      requiresCompatibilities: ["FARGATE"],
+      cpu: "256",
+      memory: "512",
+      containerDefinitions: JSON.stringify([
+        { name: "app", image: "public.ecr.aws/docker/library/nginx:stable" },
+      ]),
+    })
+  : undefined;
 const taskDefinitionArn =
   config.get("taskDefinitionArn") ??
+  rawTask?.arn ??
   new awsxNext.TaskDefinition("task", {
     family: config.get("taskDefinitionFamily"),
     cpuUnits: 256,
@@ -114,9 +129,9 @@ export const url = pulumi.interpolate`${certificateArn ? "https" : "http"}://${h
 
 // Each attachment owns a forwarding rule and target group. Both route to the same backend;
 // the service permits ALB traffic on the application and health-check ports.
-new awsxNext.FargateServiceV2("service", {
+new awsxNext.Service("service", {
   clusterArn: cluster.arn,
-  taskDefinition: taskDefinitionArn,
+  taskDefinitionArn,
   vpcSubnetIds: vpc.publicSubnetIds,
   assignPublicIp: true,
   loadBalancerAttachments: {
