@@ -15,23 +15,20 @@
 import * as aws from '@pulumi/aws';
 import * as native from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
-import { AwsLogDriverMode, FargateTaskDefinitionV2 } from '../../../src/ecs';
+import { AwsLogDriverMode, TaskDefinition } from '../../src/ecs';
 import {
   credentialsSecretArnFromSpec,
   renderCredentialSpecConfig,
   type FargateCredentialSpecConfig,
-} from '../../../src/ecs/credentialSpec';
+} from '../../src/ecs/credentialSpec';
 import {
   CpuArchitecture,
-  OperatingSystemFamily,
+  TaskCompatibility,
   renderPortMappings,
   fargateTaskDefinitionAwsxIdentity,
   validateTaskProviders,
-} from '../../../src/ecs/fargate/taskDefinition';
-import {
-  PortMappingAppProtocol,
-  PortMappingProtocol,
-} from '../../../src/ecs/fargate/containerDefinition';
+} from '../../src/ecs/taskDefinition';
+import { PortMappingAppProtocol, PortMappingProtocol } from '../../src/ecs/containerDefinition';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const calls: pulumi.runtime.MockCallArgs[] = [];
@@ -285,7 +282,7 @@ function taskDefinitionResource(name: string): pulumi.runtime.MockResourceArgs |
  * @returns The structured container definitions.
  */
 async function resolveContainers(
-  task: FargateTaskDefinitionV2,
+  task: TaskDefinition,
   resourceName: string,
 ): Promise<Array<Record<string, any>>> {
   await unwrap(task.taskDefinitionArn);
@@ -307,7 +304,7 @@ function executionRolePolicy(name: string): Record<string, any> {
   return JSON.parse(policy!.inputs.policy);
 }
 
-describe('Fargate container rendering', () => {
+describe('ECS container rendering', () => {
   test.each([
     { nativeAccount: '999999999999', nativeRegion: providerRegion },
     { nativeAccount: accountId, nativeRegion: 'eu-west-1' },
@@ -324,7 +321,7 @@ describe('Fargate container rendering', () => {
   test('stores secret-marked values and keeps only references on the Native task', async () => {
     let version: aws.secretsmanager.SecretVersion | undefined;
     const retained: pulumi.ResourceTransformationArgs[] = [];
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'secret-environment',
       {
         containers: {
@@ -413,7 +410,7 @@ describe('Fargate container rendering', () => {
   ])('rejects missing or conflicting environment sources %j', (source) => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('invalid-environment', {
+        new TaskDefinition('invalid-environment', {
           containers: { app: { image: 'nginx', environment: { TOKEN: source } } },
         }),
     ).toThrow('Specify exactly one of value, ssmParameterArn or secretsManager');
@@ -422,7 +419,7 @@ describe('Fargate container rendering', () => {
   test('validates AWSX container options before rendering Native inputs', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('invalid-health', {
+        new TaskDefinition('invalid-health', {
           containers: { app: { image: 'nginx', healthCheck: { command: ['invalid'] } } },
         }),
     ).toThrow('must start with CMD or CMD-SHELL');
@@ -462,7 +459,7 @@ describe('Fargate container rendering', () => {
   ])('rejects invalid port range $start-$end', ({ start, end }) => {
     expect(
       () =>
-        new FargateTaskDefinitionV2(`ports-${start}-${end}`, {
+        new TaskDefinition(`ports-${start}-${end}`, {
           containers: {
             app: {
               image: 'nginx',
@@ -478,7 +475,7 @@ describe('Fargate credential specifications', () => {
   test('creates exact domainless JSON with bucket encryption and Output-valued inputs', async () => {
     nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('generated-credential-provider', { region: 'us-east-1' });
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'generated-credentials',
       {
         region: 'us-east-2',
@@ -561,7 +558,7 @@ describe('Fargate credential specifications', () => {
     });
     nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('credential-provider', { region: 'us-east-1' });
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'existing-credentials',
       {
         region: 'us-east-2',
@@ -644,7 +641,7 @@ describe('Fargate credential specifications', () => {
   });
 
   test('uses SSE-S3 defaults without adding a KMS grant or creating a bucket', async () => {
-    const task = new FargateTaskDefinitionV2('sse-s3-credentials', {
+    const task = new TaskDefinition('sse-s3-credentials', {
       containers: {
         app: {
           image: 'nginx',
@@ -688,9 +685,295 @@ describe('Fargate credential specifications', () => {
   );
 });
 
-describe('FargateTaskDefinitionV2', () => {
+describe('task compatibility', () => {
+  test.each([
+    { compatibilities: [TaskCompatibility.FARGATE] },
+    { compatibilities: [TaskCompatibility.FARGATE, TaskCompatibility.MANAGED_INSTANCES] },
+    { compatibilities: [TaskCompatibility.EC2, TaskCompatibility.FARGATE] },
+    {
+      compatibilities: [
+        TaskCompatibility.MANAGED_INSTANCES,
+        TaskCompatibility.FARGATE,
+        TaskCompatibility.EC2,
+      ],
+    },
+  ])('applies Fargate sizing to %j', async ({ compatibilities }) => {
+    const task = new TaskDefinition('portable', {
+      compatibilities,
+      containers: { app: { image: 'nginx', cpuUnits: 300, memoryMiB: 700 } },
+    });
+    await unwrap(task.taskDefinitionArn);
+    expect(taskDefinitionResource('portable')!.inputs).toMatchObject({
+      requiresCompatibilities: compatibilities,
+      networkMode: 'awsvpc',
+      cpu: '512',
+      memory: '1024',
+    });
+  });
+
+  test('does not round an explicit task size when Fargate is included', () => {
+    expect(
+      () =>
+        new TaskDefinition('invalid-portable-size', {
+          compatibilities: [TaskCompatibility.MANAGED_INSTANCES, TaskCompatibility.FARGATE],
+          cpuUnits: 300,
+          memoryMiB: 700,
+          containers: { app: { image: 'nginx', memoryReservationMiB: 128 } },
+        }),
+    ).toThrow('Invalid cpu and memory configuration');
+  });
+
+  test('rejects an empty compatibility selection', () => {
+    expect(
+      () =>
+        new TaskDefinition('no-compatibilities', {
+          compatibilities: [],
+          containers: { app: { image: 'nginx' } },
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'compatibilities' }));
+  });
+
+  describe.each([
+    { compatibilities: [TaskCompatibility.EC2] },
+    { compatibilities: [TaskCompatibility.MANAGED_INSTANCES] },
+    { compatibilities: [TaskCompatibility.EC2, TaskCompatibility.MANAGED_INSTANCES] },
+  ])('non-Fargate task %j', ({ compatibilities }) => {
+    test.each([
+      { cpuUnits: undefined, memoryMiB: undefined, cpu: undefined, memory: undefined },
+      { cpuUnits: 300, memoryMiB: 700, cpu: '300', memory: '700' },
+      { cpuUnits: 300, memoryMiB: undefined, cpu: '300', memory: undefined },
+      { cpuUnits: undefined, memoryMiB: 700, cpu: undefined, memory: '700' },
+    ])('preserves explicit and omitted task limits %j', async (size) => {
+      const task = new TaskDefinition('non-fargate-size', {
+        compatibilities,
+        cpuUnits: size.cpuUnits,
+        memoryMiB: size.memoryMiB,
+        containers: {
+          app: { image: 'nginx', cpuUnits: 100, memoryReservationMiB: 128 },
+          sidecar: { image: 'busybox', memoryMiB: 64 },
+        },
+      });
+      const containers = await resolveContainers(task, 'non-fargate-size');
+      const inputs = taskDefinitionResource('non-fargate-size')!.inputs;
+      expect(inputs.requiresCompatibilities).toEqual(compatibilities);
+      expect(inputs.networkMode).toBe('awsvpc');
+      expect(inputs.cpu).toBe(size.cpu);
+      expect(inputs.memory).toBe(size.memory);
+      expect(inputs.runtimePlatform).toBeUndefined();
+      expect(inputs.ephemeralStorage).toBeUndefined();
+      expect(containers[0]).toMatchObject({ cpu: 100, memoryReservation: 128 });
+      expect(containers[1]).toMatchObject({ memory: 64 });
+    });
+
+    test('renders GPU reservations, privileges, and broader Linux capabilities', async () => {
+      const task = new TaskDefinition('accelerated', {
+        compatibilities,
+        containers: {
+          app: {
+            image: 'gpu-image',
+            memoryReservationMiB: 128,
+            gpuCount: 2,
+            privileged: true,
+            linuxParameters: { capabilities: { add: ['SYS_ADMIN'] }, initProcessEnabled: true },
+          },
+          sidecar: { image: 'busybox', memoryMiB: 64 },
+        },
+      });
+      const containers = await resolveContainers(task, 'accelerated');
+      expect(containers[0]).toMatchObject({
+        resourceRequirements: [{ type: 'GPU', value: '2' }],
+        privileged: true,
+        linuxParameters: { capabilities: { add: ['SYS_ADMIN'] }, initProcessEnabled: true },
+      });
+      expect(containers[1]!.resourceRequirements).toBeUndefined();
+      expect(containers[1]!.privileged).toBeUndefined();
+    });
+  });
+
+  describe.each([
+    { compatibilities: undefined },
+    { compatibilities: [TaskCompatibility.FARGATE] },
+    { compatibilities: [TaskCompatibility.MANAGED_INSTANCES, TaskCompatibility.FARGATE] },
+    { compatibilities: [TaskCompatibility.FARGATE, TaskCompatibility.EC2] },
+  ])('Fargate restrictions %j', ({ compatibilities }) => {
+    test.each([
+      { options: { gpuCount: 1 }, property: 'gpuCount' },
+      { options: { privileged: true }, property: 'privileged' },
+      {
+        options: { linuxParameters: { capabilities: { add: ['SYS_ADMIN'] } } },
+        property: 'linuxParameters.capabilities.add[0]',
+      },
+    ])('rejects $property', ({ options, property }) => {
+      expect(
+        () =>
+          new TaskDefinition('unsupported-fargate-feature', {
+            compatibilities,
+            containers: { app: { image: 'nginx', ...options } },
+          }),
+      ).toThrow(expect.objectContaining({ propertyPath: `containers.app.${property}` }));
+    });
+  });
+
+  test('renders SYS_PTRACE and init-process settings on Fargate', async () => {
+    const task = new TaskDefinition('fargate-capabilities', {
+      containers: {
+        app: {
+          image: 'nginx',
+          linuxParameters: { capabilities: { add: ['SYS_PTRACE'] }, initProcessEnabled: true },
+        },
+      },
+    });
+    const containers = await resolveContainers(task, 'fargate-capabilities');
+    expect(containers[0]!.linuxParameters).toEqual({
+      capabilities: { add: ['SYS_PTRACE'] },
+      initProcessEnabled: true,
+    });
+  });
+
+  test.each([
+    { compatibilities: [TaskCompatibility.EC2] },
+    { compatibilities: [TaskCompatibility.MANAGED_INSTANCES] },
+    { compatibilities: [TaskCompatibility.EC2, TaskCompatibility.MANAGED_INSTANCES] },
+    { compatibilities: [TaskCompatibility.FARGATE, TaskCompatibility.EC2] },
+    { compatibilities: [TaskCompatibility.FARGATE, TaskCompatibility.MANAGED_INSTANCES] },
+    {
+      compatibilities: [
+        TaskCompatibility.FARGATE,
+        TaskCompatibility.MANAGED_INSTANCES,
+        TaskCompatibility.EC2,
+      ],
+    },
+  ])('rejects Fargate-only integrations for %j', ({ compatibilities }) => {
+    expect(
+      () =>
+        new TaskDefinition('unsupported-storage', {
+          compatibilities,
+          ephemeralStorageGiB: 21,
+          containers: { app: { image: 'nginx', memoryMiB: 128 } },
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'ephemeralStorageGiB' }));
+    expect(
+      () =>
+        new TaskDefinition('unsupported-credentials', {
+          compatibilities,
+          containers: {
+            app: {
+              image: 'nginx',
+              memoryMiB: 128,
+              credentialSpec: { bucketArn: 'arn:aws:s3:::credentials', key: 'spec.json' },
+            },
+          },
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'containers.app.credentialSpec' }));
+  });
+
+  test.each([
+    { compatibilities: [TaskCompatibility.MANAGED_INSTANCES], start: 600, stop: 86400 },
+    { compatibilities: [TaskCompatibility.EC2], start: 120, stop: 172800 },
+    {
+      compatibilities: [TaskCompatibility.EC2, TaskCompatibility.MANAGED_INSTANCES],
+      start: 120,
+      stop: 86400,
+    },
+  ])('preserves longer supported timeouts for %j', async ({ compatibilities, start, stop }) => {
+    const task = new TaskDefinition('long-timeouts', {
+      compatibilities,
+      containers: {
+        app: {
+          image: 'nginx',
+          memoryMiB: 128,
+          startTimeoutSeconds: start,
+          stopTimeoutSeconds: stop,
+        },
+      },
+    });
+    const containers = await resolveContainers(task, 'long-timeouts');
+    expect(containers[0]).toMatchObject({ startTimeout: start, stopTimeout: stop });
+  });
+
+  test.each([
+    {
+      compatibilities: [TaskCompatibility.MANAGED_INSTANCES],
+      options: { startTimeoutSeconds: 601 },
+      property: 'startTimeoutSeconds',
+    },
+    {
+      compatibilities: [TaskCompatibility.MANAGED_INSTANCES],
+      options: { stopTimeoutSeconds: 86401 },
+      property: 'stopTimeoutSeconds',
+    },
+    {
+      compatibilities: [TaskCompatibility.EC2, TaskCompatibility.MANAGED_INSTANCES],
+      options: { startTimeoutSeconds: 121 },
+      property: 'startTimeoutSeconds',
+    },
+    {
+      compatibilities: [TaskCompatibility.EC2, TaskCompatibility.MANAGED_INSTANCES],
+      options: { stopTimeoutSeconds: 86401 },
+      property: 'stopTimeoutSeconds',
+    },
+    {
+      compatibilities: [TaskCompatibility.MANAGED_INSTANCES, TaskCompatibility.FARGATE],
+      options: { startTimeoutSeconds: 121 },
+      property: 'startTimeoutSeconds',
+    },
+    {
+      compatibilities: [TaskCompatibility.MANAGED_INSTANCES, TaskCompatibility.FARGATE],
+      options: { stopTimeoutSeconds: 121 },
+      property: 'stopTimeoutSeconds',
+    },
+  ])('enforces the tightest timeout restriction %j', ({ compatibilities, options, property }) => {
+    expect(
+      () =>
+        new TaskDefinition('unsupported-timeout', {
+          compatibilities,
+          containers: { app: { image: 'nginx', memoryMiB: 128, ...options } },
+        }),
+    ).toThrow(expect.objectContaining({ propertyPath: `containers.app.${property}` }));
+  });
+
+  test.each([
+    { compatibilities: [TaskCompatibility.FARGATE], cpuArchitecture: CpuArchitecture.ARM64 },
+    { compatibilities: [TaskCompatibility.EC2], cpuArchitecture: CpuArchitecture.X86_64 },
+    {
+      compatibilities: [TaskCompatibility.MANAGED_INSTANCES],
+      cpuArchitecture: CpuArchitecture.ARM64,
+    },
+  ])('renders explicit Linux architecture for %j', async ({ compatibilities, cpuArchitecture }) => {
+    const task = new TaskDefinition('architecture', {
+      compatibilities,
+      cpuArchitecture,
+      containers: { app: { image: 'multi-arch-image', memoryMiB: 128 } },
+    });
+    await unwrap(task.taskDefinitionArn);
+    expect(taskDefinitionResource('architecture')!.inputs.runtimePlatform).toEqual({
+      cpuArchitecture,
+      operatingSystemFamily: 'LINUX',
+    });
+  });
+
+  test('renders default, enabled, and disabled image version consistency', async () => {
+    const task = new TaskDefinition('version-consistency', {
+      containers: {
+        omitted: { image: 'nginx' },
+        enabled: { image: 'nginx', versionConsistencyEnabled: true },
+        disabled: { image: 'nginx', versionConsistencyEnabled: false },
+      },
+    });
+    const containers = await resolveContainers(task, 'version-consistency');
+    expect(
+      containers.map(({ name, versionConsistency }) => ({ name, versionConsistency })),
+    ).toEqual([
+      { name: 'omitted', versionConsistency: 'enabled' },
+      { name: 'enabled', versionConsistency: 'enabled' },
+      { name: 'disabled', versionConsistency: 'disabled' },
+    ]);
+  });
+});
+
+describe('TaskDefinition', () => {
   test('uses map keys as container names and derives task resources', async () => {
-    const task = new FargateTaskDefinitionV2('derived', {
+    const task = new TaskDefinition('derived', {
       containers: {
         app: {
           image: 'nginx',
@@ -709,12 +992,15 @@ describe('FargateTaskDefinitionV2', () => {
     const resource = taskDefinitionResource('derived')!;
     expect(resource.inputs.cpu).toBe('512');
     expect(resource.inputs.memory).toBe('1024');
+    expect(resource.inputs.requiresCompatibilities).toEqual(['FARGATE']);
+    expect(resource.inputs.networkMode).toBe('awsvpc');
+    expect(resource.inputs.runtimePlatform).toBeUndefined();
     expect(containers.map((container) => container.name)).toEqual(['app', 'sidecar']);
     expect(containers.map((container) => container.image)).toEqual(['nginx', 'busybox']);
   });
 
   test('resolves Pulumi outputs used as environment values', async () => {
-    const task = new FargateTaskDefinitionV2('environment', {
+    const task = new TaskDefinition('environment', {
       containers: {
         app: {
           image: 'nginx',
@@ -736,7 +1022,7 @@ describe('FargateTaskDefinitionV2', () => {
   test.each([20, 201, 0, 21.5])('rejects invalid ephemeral storage %s', (ephemeralStorageGiB) => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('invalid-storage', {
+        new TaskDefinition('invalid-storage', {
           ephemeralStorageGiB,
           containers: { app: { image: 'nginx' } },
         }),
@@ -744,7 +1030,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test.each([21, 200])('accepts ephemeral storage boundary %s', async (ephemeralStorageGiB) => {
-    const task = new FargateTaskDefinitionV2(`storage-${ephemeralStorageGiB}`, {
+    const task = new TaskDefinition(`storage-${ephemeralStorageGiB}`, {
       ephemeralStorageGiB,
       containers: { app: { image: 'nginx' } },
     });
@@ -758,13 +1044,10 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('preserves an explicit valid task configuration and runtime platform', async () => {
-    const task = new FargateTaskDefinitionV2('explicit', {
+    const task = new TaskDefinition('explicit', {
       cpuUnits: 2048,
       memoryMiB: 8192,
-      runtimePlatform: {
-        cpuArchitecture: CpuArchitecture.ARM64,
-        operatingSystemFamily: OperatingSystemFamily.LINUX,
-      },
+      cpuArchitecture: CpuArchitecture.ARM64,
       containers: {
         app: {
           image: 'nginx',
@@ -785,7 +1068,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('creates default roles with stable names', async () => {
-    const task = new FargateTaskDefinitionV2('roles', {
+    const task = new TaskDefinition('roles', {
       containers: { app: { image: 'nginx' } },
     });
     await unwrap(task.taskDefinitionArn);
@@ -804,7 +1087,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('reads supplied roles without creating replacement roles', async () => {
-    const task = new FargateTaskDefinitionV2('imported-roles', {
+    const task = new TaskDefinition('imported-roles', {
       executionRoleArn: `arn:aws:iam::${accountId}:role/service-role/execution`,
       taskRoleArn: `arn:aws:iam::${accountId}:role/application/task`,
       containers: { app: { image: 'nginx' } },
@@ -821,7 +1104,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('keeps credential-secret and environment-secret children distinct', async () => {
-    const task = new FargateTaskDefinitionV2('identity', {
+    const task = new TaskDefinition('identity', {
       containers: {
         app: {
           image: 'nginx',
@@ -863,7 +1146,7 @@ describe('FargateTaskDefinitionV2', () => {
     },
   ])('renders Secrets Manager selector $suffix', async ({ suffix, source, expected }) => {
     const secretArn = `arn:aws:secretsmanager:${providerRegion}:${accountId}:secret:application`;
-    const task = new FargateTaskDefinitionV2(`secret-${suffix}`, {
+    const task = new TaskDefinition(`secret-${suffix}`, {
       containers: {
         app: {
           image: 'nginx',
@@ -881,7 +1164,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('rejects an empty container map', () => {
-    expect(() => new FargateTaskDefinitionV2('empty-containers', { containers: {} })).toThrow(
+    expect(() => new TaskDefinition('empty-containers', { containers: {} })).toThrow(
       'At least one container must be provided',
     );
   });
@@ -891,7 +1174,7 @@ describe('FargateTaskDefinitionV2', () => {
     (source) => {
       expect(
         () =>
-          new FargateTaskDefinitionV2('conflicting-credentials', {
+          new TaskDefinition('conflicting-credentials', {
             containers: {
               app: {
                 image: 'nginx',
@@ -903,27 +1186,10 @@ describe('FargateTaskDefinitionV2', () => {
     },
   );
 
-  test('rejects credential specs for Windows Fargate tasks', () => {
-    expect(
-      () =>
-        new FargateTaskDefinitionV2('windows-credentials', {
-          runtimePlatform: {
-            operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2022_CORE,
-          },
-          containers: {
-            app: {
-              image: 'windows',
-              credentialSpec: { bucketArn: 'arn:aws:s3:::credentials', key: 'spec.json' },
-            },
-          },
-        }),
-    ).toThrow('supported only for Linux containers on Fargate');
-  });
-
   test('rejects conflicting secret sources', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('conflicting-secrets', {
+        new TaskDefinition('conflicting-secrets', {
           containers: {
             app: {
               image: 'nginx',
@@ -944,7 +1210,7 @@ describe('FargateTaskDefinitionV2', () => {
   test('rejects conflicting multiline log options', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('conflicting-logs', {
+        new TaskDefinition('conflicting-logs', {
           containers: {
             app: {
               image: 'nginx',
@@ -964,7 +1230,7 @@ describe('FargateTaskDefinitionV2', () => {
   test('rejects simultaneous Secrets Manager version selectors', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('invalid-secret-version', {
+        new TaskDefinition('invalid-secret-version', {
           containers: {
             app: {
               image: 'nginx',
@@ -986,7 +1252,7 @@ describe('FargateTaskDefinitionV2', () => {
   test('uses the secret ARN region for a Secrets Manager read', async () => {
     const secretRegion = 'us-east-1';
     nativeProviderRegion = secretRegion;
-    const task = new FargateTaskDefinitionV2('secret-region', {
+    const task = new TaskDefinition('secret-region', {
       region: secretRegion,
       containers: {
         app: {
@@ -1009,7 +1275,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('uses exact regional import IDs for SSM parameters and log groups', async () => {
-    const task = new FargateTaskDefinitionV2('regional-imports', {
+    const task = new TaskDefinition('regional-imports', {
       containers: {
         app: {
           image: 'nginx',
@@ -1039,7 +1305,7 @@ describe('FargateTaskDefinitionV2', () => {
 
   test('uses the inherited provider region for imports when the task selects another region', async () => {
     nativeProviderRegion = 'us-east-2';
-    const task = new FargateTaskDefinitionV2('selected-region-imports', {
+    const task = new TaskDefinition('selected-region-imports', {
       region: 'us-east-2',
       containers: {
         app: {
@@ -1070,7 +1336,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('uses plain same-region import IDs', async () => {
-    const task = new FargateTaskDefinitionV2('same-region-imports', {
+    const task = new TaskDefinition('same-region-imports', {
       containers: {
         app: {
           image: 'nginx',
@@ -1095,7 +1361,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('enables CloudWatch by default with one shared group and scoped permissions', async () => {
-    const task = new FargateTaskDefinitionV2('default-logging', {
+    const task = new TaskDefinition('default-logging', {
       containers: {
         app: { image: 'nginx' },
         sidecar: { image: 'busybox', logging: { cloudwatch: {} } },
@@ -1134,7 +1400,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('omits logging resources and permissions when every container opts out', async () => {
-    const task = new FargateTaskDefinitionV2('disabled-logging', {
+    const task = new TaskDefinition('disabled-logging', {
       containers: { app: { image: 'nginx', logging: { disabled: true } } },
     });
     const containers = await resolveContainers(task, 'disabled-logging');
@@ -1147,7 +1413,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('allows individual containers to opt out while others use default logging', async () => {
-    const task = new FargateTaskDefinitionV2('mixed-logging', {
+    const task = new TaskDefinition('mixed-logging', {
       containers: {
         app: { image: 'nginx', logging: { disabled: false } },
         sidecar: { image: 'busybox', logging: { disabled: true } },
@@ -1173,7 +1439,7 @@ describe('FargateTaskDefinitionV2', () => {
   test('rejects CloudWatch settings combined with disabled logging', () => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('conflicting-logging', {
+        new TaskDefinition('conflicting-logging', {
           containers: { app: { image: 'nginx', logging: { disabled: true, cloudwatch: {} } } },
         }),
     ).toThrow('Only one of disabled: true or cloudwatch can be provided');
@@ -1181,7 +1447,7 @@ describe('FargateTaskDefinitionV2', () => {
 
   test('shares one default log group and renders exact log options', async () => {
     nativeProviderRegion = 'us-east-2';
-    const task = new FargateTaskDefinitionV2('logging', {
+    const task = new TaskDefinition('logging', {
       region: 'us-east-2',
       containers: {
         app: {
@@ -1229,7 +1495,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('does not create a default log group when an ARN is supplied', async () => {
-    const task = new FargateTaskDefinitionV2('existing-log-group', {
+    const task = new TaskDefinition('existing-log-group', {
       containers: {
         app: {
           image: 'nginx',
@@ -1255,7 +1521,7 @@ describe('FargateTaskDefinitionV2', () => {
     `team/my.repo:tag@sha256:${'a'.repeat(64)}`,
     `team/repo@sha256:${'b'.repeat(64)}`,
   ])('grants pull access for ECR image %s', async (reference) => {
-    const task = new FargateTaskDefinitionV2('image-reference', {
+    const task = new TaskDefinition('image-reference', {
       containers: { app: { image: `${accountId}.dkr.ecr.us-east-1.amazonaws.com/${reference}` } },
     });
     await unwrap(task.taskDefinitionArn);
@@ -1279,7 +1545,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('renders directly into Native without nested container resources', async () => {
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'awsx-identity',
       {
         containers: { app: { image: 'nginx' } },
@@ -1292,6 +1558,7 @@ describe('FargateTaskDefinitionV2', () => {
         name: 'app',
         image: 'nginx',
         essential: true,
+        versionConsistency: 'enabled',
         logConfiguration: {
           logDriver: 'awslogs',
           options: {
@@ -1309,22 +1576,10 @@ describe('FargateTaskDefinitionV2', () => {
     expect(resourcesOfType('aws:ecs/taskDefinition:TaskDefinition')).toEqual([]);
   });
 
-  test('sizes Windows tasks using Windows configurations', async () => {
-    const task = new FargateTaskDefinitionV2('windows-default', {
-      runtimePlatform: { operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2022_CORE },
-      containers: { app: { image: 'windows-image' } },
-    });
-    await unwrap(task.taskDefinitionArn);
-    expect(taskDefinitionResource('windows-default')!.inputs).toMatchObject({
-      cpu: '1024',
-      memory: '2048',
-    });
-  });
-
   test.each(['startTimeoutSeconds', 'stopTimeoutSeconds'] as const)(
     'preserves %s boundaries',
     async (property) => {
-      const task = new FargateTaskDefinitionV2(`timeout-${property}`, {
+      const task = new TaskDefinition(`timeout-${property}`, {
         containers: {
           minimum: { image: 'nginx', [property]: 2 },
           maximum: { image: 'nginx', [property]: 120 },
@@ -1346,14 +1601,14 @@ describe('FargateTaskDefinitionV2', () => {
   ])('rejects %s=%s at the Fargate boundary', (property, value) => {
     expect(
       () =>
-        new FargateTaskDefinitionV2('invalid-timeout', {
+        new TaskDefinition('invalid-timeout', {
           containers: { app: { image: 'nginx', [property]: value } },
         }),
     ).toThrow(`${property} must be an integer between 2 and 120; got ${value}`);
   });
 
   test('adds KMS decrypt for a customer-managed SSM parameter key in its region', async () => {
-    const task = new FargateTaskDefinitionV2('ssm-kms', {
+    const task = new TaskDefinition('ssm-kms', {
       containers: {
         app: {
           image: 'nginx',
@@ -1390,7 +1645,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('renders the exact base and ECR execution policy', async () => {
-    const task = new FargateTaskDefinitionV2('ecr-policy', {
+    const task = new TaskDefinition('ecr-policy', {
       containers: {
         app: {
           image: `${accountId}.dkr.ecr.us-east-1.amazonaws.com/team/application:latest`,
@@ -1426,7 +1681,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('renders exact S3 environment and credential policy statements', async () => {
-    const task = new FargateTaskDefinitionV2('s3-policy', {
+    const task = new TaskDefinition('s3-policy', {
       containers: {
         app: {
           image: 'nginx',
@@ -1478,7 +1733,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('renders exact SSM and CloudWatch Logs policy statements', async () => {
-    const task = new FargateTaskDefinitionV2('service-policy', {
+    const task = new TaskDefinition('service-policy', {
       containers: {
         app: {
           image: 'nginx',
@@ -1509,7 +1764,7 @@ describe('FargateTaskDefinitionV2', () => {
   });
 
   test('adds KMS decrypt only for a customer-managed secret key', async () => {
-    const task = new FargateTaskDefinitionV2('kms-policy', {
+    const task = new TaskDefinition('kms-policy', {
       containers: {
         app: {
           image: 'nginx',
@@ -1558,7 +1813,7 @@ describe('FargateTaskDefinitionV2', () => {
   test('propagates component region and provider to children and invokes', async () => {
     nativeProviderRegion = 'us-east-2';
     const provider = new aws.Provider('selected-provider', { region: 'us-east-1' });
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'provider-flow',
       {
         region: 'us-east-2',
@@ -1617,7 +1872,7 @@ describe('FargateTaskDefinitionV2', () => {
 
   test('inherits both explicit providers when region is omitted', async () => {
     const provider = new aws.Provider('provider-default-region', { region: 'us-east-1' });
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'provider-default',
       {
         containers: {
@@ -1643,7 +1898,7 @@ describe('FargateTaskDefinitionV2', () => {
 
   test('exposes the registered task identity rather than the original family input', async () => {
     nativeProviderRegion = 'us-east-2';
-    const task = new FargateTaskDefinitionV2(
+    const task = new TaskDefinition(
       'outputs',
       {
         region: 'us-east-2',

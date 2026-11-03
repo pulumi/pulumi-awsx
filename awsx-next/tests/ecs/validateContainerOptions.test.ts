@@ -1,9 +1,9 @@
-import { validateContainerOptions } from '../../../src/ecs/fargate/validateContainerOptions';
-import type { FargateContainerDefinitionOptions } from '../../../src/ecs/fargate/containerDefinition';
+import { validateContainerOptions } from '../../src/ecs/validateContainerOptions';
+import type { ContainerDefinitionOptions } from '../../src/ecs/containerDefinition';
 
 // These invariants used to live on the removed raw ContainerDefinition resource.
 describe('AWSX container validation', () => {
-  test.each<[Partial<FargateContainerDefinitionOptions>, string]>([
+  test.each<[Partial<ContainerDefinitionOptions>, string]>([
     [{ memoryMiB: 128, memoryReservationMiB: 128 }, 'memoryMiB'],
     [{ healthCheck: { command: [] } }, 'healthCheck.command'],
     [{ healthCheck: { command: ['curl'] } }, 'healthCheck.command'],

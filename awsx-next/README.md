@@ -48,7 +48,7 @@ Use one map for values and references to existing secret storage:
 
 ```ts
 const config = new pulumi.Config();
-const task = new FargateTaskDefinitionV2('app', {
+const task = new TaskDefinition('app', {
   containers: {
     app: {
       image: 'my-image',

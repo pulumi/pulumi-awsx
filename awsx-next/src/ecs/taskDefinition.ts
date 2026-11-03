@@ -5,25 +5,59 @@ import type { ecs } from '@pulumi/aws-native/types/input';
 import { validateContainerOptions } from './validateContainerOptions';
 import type { input } from '@pulumi/aws/types';
 import type {
+  AwsLogsLogDriver,
+  AwsvpcPortMapping,
+  ContainerDefinitionOptions,
   EnvironmentFile,
   EnvironmentVariable,
   SecretsManagerSecret,
-} from '../base/containerDefinition';
-import type {
-  FargateAwsLogsLogDriver,
-  FargateContainerDefinitionOptions,
-  FargatePortMapping,
 } from './containerDefinition';
 import {
   type FargateCredentialSpec,
   renderCredentialSpecConfig,
   credentialsSecretArnFromSpec,
-} from '../credentialSpec';
-import { resolveFargateTaskMemoryAndCpu } from './memoryAndCpu';
-import { ComponentIdentity } from '../../componentIdentity';
-import { Arn, ArnFormat } from '../arn';
+} from './credentialSpec';
+import { resolveFargateTaskMemoryAndCpu } from './fargate/memoryAndCpu';
+import { ComponentIdentity } from '../componentIdentity';
+import { Arn, ArnFormat } from './arn';
 
-export interface CommonTaskdefinitionOptions {
+/**
+ * The CPU architecture of the task. This must match the platform your docker image is built for
+ */
+export enum CpuArchitecture {
+  X86_64 = 'X86_64',
+  ARM64 = 'ARM64',
+}
+
+/**
+ * Compute environments this task definition must remain compatible with. Service capacity selection
+ * is configured independently.
+ */
+export enum TaskCompatibility {
+  FARGATE = 'FARGATE',
+  MANAGED_INSTANCES = 'MANAGED_INSTANCES',
+  EC2 = 'EC2',
+}
+
+export interface TaskDefinitionArgs {
+  /**
+   * Containers in the task, keyed by container name.
+   *
+   * AWSX uses each map key as the corresponding ECS container name.
+   */
+  containers: Record<string, ContainerDefinitionOptions>;
+
+  /**
+   * Compute environments this task definition must support. When multiple environments are
+   * selected, the task must satisfy every selected environment's restrictions. Including Fargate
+   * enables automatic task sizing using valid Fargate CPU and memory configurations.
+   *
+   * This does not select where tasks run. Configure capacity separately on the service.
+   *
+   * Default - FARGATE.
+   */
+  readonly compatibilities?: TaskCompatibility[];
+
   /**
    * Region where this task and its supporting resources will be managed.
    *
@@ -33,6 +67,7 @@ export interface CommonTaskdefinitionOptions {
    * Default - Region set in the AWS provider configuration.
    */
   readonly region?: string;
+
   /**
    * The name of a family that this task definition is registered to. A family groups multiple
    * versions of a task definition.
@@ -63,46 +98,7 @@ export interface CommonTaskdefinitionOptions {
    * Default - A task role is automatically created for you.
    */
   readonly taskRoleArn?: pulumi.Input<string>;
-}
 
-/**
- * The CPU architecture of the task. This must match the platform your docker image is built for
- */
-export enum CpuArchitecture {
-  X86_64 = 'X86_64',
-  ARM64 = 'ARM64',
-}
-
-/**
- * The operating system family for the task
- */
-export enum OperatingSystemFamily {
-  LINUX = 'LINUX',
-  WINDOWS_SERVER_2025_FULL = 'WINDOWS_SERVER_2025_FULL',
-  WINDOWS_SERVER_2025_CORE = 'WINDOWS_SERVER_2025_CORE',
-  WINDOWS_SERVER_2022_FULL = 'WINDOWS_SERVER_2022_FULL',
-  WINDOWS_SERVER_2022_CORE = 'WINDOWS_SERVER_2022_CORE',
-  WINDOWS_SERVER_2019_FULL = 'WINDOWS_SERVER_2019_FULL',
-  WINDOWS_SERVER_2019_CORE = 'WINDOWS_SERVER_2019_CORE',
-}
-
-export interface RuntimePlatform {
-  /**
-   * The CpuArchitecture for Fargate Runtime Platform.
-   *
-   * Default - AWS default of X86_64.
-   */
-  readonly cpuArchitecture?: CpuArchitecture;
-
-  /**
-   * The operating system for Fargate Runtime Platform.
-   *
-   * @default - AWS default of LINUX.
-   */
-  readonly operatingSystemFamily?: OperatingSystemFamily;
-}
-
-export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions {
   /**
    * The number of cpu units used by the task. For tasks using the Fargate launch type, this field
    * is required and you must use one of the following values, which determines your range of valid
@@ -129,17 +125,11 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    *
    * 32768 (32 vCPU) - Available memory values: 61440 (60 GB), 122880 (120 GB), 249856 (244 GB)
    *
-   * The 256 and 512 CPU values support Linux tasks only. The 8192, 16384, and 32768 CPU values
-   * require Linux platform version 1.4.0 or later. The other CPU values support Linux and Windows
-   * tasks.
-   *
-   * For Windows tasks, the task-level CPU value is not enforced at runtime. It is still required to
-   * select the task size.
-   *
-   * Default - A CPU value will be automatically selected based on the container-level CPU and
-   * memory requirements
+   * Default - Select a valid task size from container requirements when Fargate is included,
+   * otherwise leave the task-wide limit unset.
    */
   readonly cpuUnits?: number;
+
   /**
    * The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this
    * field is required and must be valid for the selected CPU value:
@@ -160,40 +150,29 @@ export interface FargateTaskDefinitionV2Args extends CommonTaskdefinitionOptions
    *
    * 32768 CPU units - 61440 (60 GB), 122880 (120 GB), or 249856 (244 GB)
    *
-   * The 256 and 512 CPU values support Linux tasks only. The 8192, 16384, and 32768 CPU values
-   * require Linux platform version 1.4.0 or later. The other CPU values support Linux and Windows
-   * tasks.
+   * For EC2 and Managed Instances, task-level memory is optional and is not automatically
+   * calculated. When omitted, every container must specify memoryMiB or memoryReservationMiB
    *
-   * For Windows tasks, the task-level memory value is not enforced at runtime. It is still required
-   * to select the task size.
-   *
-   * Default - A memory value will be automatically selected based on the container-level CPU and
-   * memory requirements
+   * Default - Select a valid task size when Fargate is included, otherwise leave unset.
    */
   readonly memoryMiB?: number;
 
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
    *
-   * Only supported in Fargate platform version 1.4.0 or later.
+   * Requires Fargate-only compatibility
    *
-   * Default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   * Default - AWS default of 20GiB ephemeral storage.
    */
   readonly ephemeralStorageGiB?: number;
 
   /**
-   * Containers in the task, keyed by container name.
+   * The CpuArchitecture of the task.
    *
-   * AWSX uses each map key as the corresponding ECS container name.
+   * Default - AWS default of X86_64 for Fargate. EC2 and Managed Instances default is based on the
+   * selected capacity provider on the service.
    */
-  containers: Record<string, FargateContainerDefinitionOptions>;
-
-  /**
-   * The operating system that your task definitions are running on.
-   *
-   * Default - AWS default of X86_64 Linux
-   */
-  runtimePlatform?: RuntimePlatform;
+  readonly cpuArchitecture?: CpuArchitecture;
 }
 
 type ResolvedPolicyStatement = pulumi.Unwrap<input.iam.PolicyStatement>;
@@ -204,16 +183,16 @@ interface Rendered<T> {
 }
 
 export const fargateTaskDefinitionStandaloneIdentity: ComponentIdentity = {
-  type: 'awsx-next:index:FargateTaskDefinitionV2',
+  type: 'awsx-next:index:TaskDefinition',
   aliases: [],
 };
 
 export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
-  type: 'awsx:experimental/ecs:FargateTaskDefinitionV2',
+  type: 'awsx:experimental/ecs:TaskDefinition',
   aliases: [],
 };
 
-export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
+export class TaskDefinition extends pulumi.ComponentResource {
   /**
    * The Task Role of the task
    */
@@ -253,7 +232,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
   constructor(
     name: string,
-    args: FargateTaskDefinitionV2Args,
+    args: TaskDefinitionArgs,
     opts: pulumi.ComponentResourceOptions = {},
     /**
      * @internal
@@ -289,32 +268,100 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
     this.region = args.region;
 
     this.name = name;
-    const containerEntries = Object.entries(args.containers);
-    if (containerEntries.length === 0) {
+
+    const compatibilities = [...new Set(args.compatibilities ?? [TaskCompatibility.FARGATE])];
+    if (
+      !compatibilities.length ||
+      compatibilities.some((value) => !Object.values(TaskCompatibility).includes(value))
+    ) {
+      throw inputError(
+        'compatibilities',
+        'Select at least one of FARGATE, MANAGED_INSTANCES, or EC2.',
+      );
+    }
+    const fargate = compatibilities.includes(TaskCompatibility.FARGATE);
+    const managedInstances = compatibilities.includes(TaskCompatibility.MANAGED_INSTANCES);
+    const ec2 = compatibilities.includes(TaskCompatibility.EC2);
+    const containers = Object.entries(args.containers);
+    if (containers.length === 0) {
       throw new pulumi.InputPropertyError({
         reason: 'At least one container must be provided',
         propertyPath: 'containers',
       });
     }
 
-    if (
-      args.ephemeralStorageGiB !== undefined &&
-      (!Number.isInteger(args.ephemeralStorageGiB) ||
+    if (args.ephemeralStorageGiB !== undefined) {
+      if (!fargate || compatibilities.length !== 1) {
+        throw inputError(
+          'ephemeralStorageGiB',
+          'Task ephemeral storage is supported only with FARGATE-only compatibility. Host storage is configured on the capacity provider.',
+        );
+      }
+      if (
+        !Number.isInteger(args.ephemeralStorageGiB) ||
         args.ephemeralStorageGiB < 21 ||
-        args.ephemeralStorageGiB > 200)
-    ) {
-      throw new pulumi.InputPropertyError({
-        propertyPath: 'ephemeralStorageGiB',
-        reason: 'ephemeralStorageGiB must be an integer between 21 and 200',
-      });
+        args.ephemeralStorageGiB > 200
+      ) {
+        throw inputError(
+          'ephemeralStorageGiB',
+          'ephemeralStorageGiB must be an integer between 21 and 200',
+        );
+      }
+    }
+    for (const [containerName, container] of containers) {
+      const path = `containers.${containerName}`;
+      if (fargate) {
+        if (container.gpuCount !== undefined) {
+          throw inputError(
+            `${path}.gpuCount`,
+            'GPU reservations are not supported with FARGATE compatibility. Remove FARGATE from compatibilities or remove gpuCount.',
+          );
+        }
+        if (container.privileged) {
+          throw inputError(
+            `${path}.privileged`,
+            'Privileged containers are not supported with FARGATE compatibility. Remove FARGATE from compatibilities or disable privileged.',
+          );
+        }
+        validateFargateContainerOptions(container, path);
+      }
+
+      if (container.credentialSpec && (!fargate || compatibilities.length !== 1)) {
+        throw inputError(
+          `${path}.credentialSpec`,
+          'The credentialSpec integration currently supports only Linux tasks with FARGATE-only compatibility.',
+        );
+      }
+
+      for (const [property, maximum] of [
+        ['startTimeoutSeconds', fargate || ec2 ? 120 : 600],
+        ['stopTimeoutSeconds', fargate ? 120 : managedInstances ? 86400 : undefined],
+      ] as const) {
+        const value = container[property];
+        const minimum = fargate ? 2 : 0;
+        if (
+          value !== undefined &&
+          (!Number.isInteger(value) ||
+            value < minimum ||
+            (maximum !== undefined && value > maximum))
+        ) {
+          throw inputError(
+            `${path}.${property}`,
+            `${property} must be an integer ${maximum === undefined ? `at least ${minimum}` : `between ${minimum} and ${maximum}`}; got ${value}. The limit applies to every selected compatibility`,
+          );
+        }
+      }
     }
 
-    const { cpu, memory } = resolveFargateTaskMemoryAndCpu(
-      containerEntries.map(([, container]) => container),
-      args.cpuUnits,
-      args.memoryMiB,
-      args.runtimePlatform?.operatingSystemFamily,
-    );
+    // Including Fargate opts into its task-size contract. Missing limits are calculated from
+    // containers, but explicit values are never rounded or silently made portable.
+    const { cpu, memory } = fargate
+      ? resolveFargateTaskMemoryAndCpu(
+          containers.map(([, container]) => container),
+          args.cpuUnits,
+          args.memoryMiB,
+        )
+      : { cpu: args.cpuUnits, memory: args.memoryMiB };
 
     const family = args.family ?? name;
     if (args.executionRoleArn) {
@@ -363,30 +410,11 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
 
     const executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[] = [];
     const ecrRepositories: pulumi.Output<string | undefined>[] = [];
-    const containerDefinitionsApi = containerEntries.map(([containerName, container]) => {
+    const containerDefinitionsApi = containers.map(([containerName, container]) => {
       validateContainerOptions(container, `containers.${containerName}`);
-      for (const property of ['startTimeoutSeconds', 'stopTimeoutSeconds'] as const) {
-        const value = container[property];
-        if (value !== undefined && (!Number.isInteger(value) || value < 2 || value > 120)) {
-          throw new pulumi.InputPropertyError({
-            propertyPath: `containers.${containerName}.${property}`,
-            reason: `${property} must be an integer between 2 and 120; got ${value}`,
-          });
-        }
-      }
-
       const ecrRepo = this.renderEcrPullStatementResource(container.image);
       ecrRepositories.push(ecrRepo);
-      if (
-        container.credentialSpec &&
-        args.runtimePlatform?.operatingSystemFamily?.startsWith('WINDOWS')
-      ) {
-        throw new pulumi.InputPropertyError({
-          propertyPath: `containers.${containerName}.credentialSpec`,
-          reason:
-            'gMSA credential specifications are supported only for Linux containers on Fargate',
-        });
-      }
+
       const credentialSpec = container.credentialSpec
         ? this.renderCredentialSpec(container.credentialSpec, containerName, opts.dependsOn)
         : undefined;
@@ -451,13 +479,18 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       {
         containerDefinitions: containerDefinitionsApi,
         family: validatedFamily,
-        cpu: `${cpu}`,
-        memory: `${memory}`,
-        requiresCompatibilities: ['FARGATE'],
+        cpu: cpu !== undefined ? `${cpu}` : undefined,
+        memory: memory !== undefined ? `${memory}` : undefined,
+        requiresCompatibilities: compatibilities,
         executionRoleArn: this.executionRole.arn,
         taskRoleArn: this.taskRole.arn,
         networkMode: 'awsvpc',
-        runtimePlatform: args.runtimePlatform,
+        runtimePlatform: args.cpuArchitecture
+          ? {
+              cpuArchitecture: args.cpuArchitecture,
+              operatingSystemFamily: 'LINUX',
+            }
+          : undefined,
         ephemeralStorage:
           args.ephemeralStorageGiB !== undefined
             ? {
@@ -1053,7 +1086,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
    */
   private renderCloudWatchLogDriver(
     containerName: string,
-    driver?: FargateAwsLogsLogDriver,
+    driver?: AwsLogsLogDriver,
   ): Rendered<ecs.TaskDefinitionLogConfigurationArgs> | undefined {
     if (!driver) {
       return;
@@ -1137,7 +1170,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
   private toContainerDefinition(
     containerName: string,
     options: Omit<
-      FargateContainerDefinitionOptions,
+      ContainerDefinitionOptions,
       'credentialSpec' | 'environmentFiles' | 'environment' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
@@ -1153,6 +1186,11 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       environmentFiles,
       command: options.command,
       cpu: options.cpuUnits,
+      privileged: options.privileged,
+      resourceRequirements:
+        options.gpuCount !== undefined
+          ? [{ type: 'GPU', value: `${options.gpuCount}` }]
+          : undefined,
       memory: options.memoryMiB,
       memoryReservation: options.memoryReservationMiB,
       portMappings: renderPortMappings(options.portMappings),
@@ -1166,7 +1204,7 @@ export class FargateTaskDefinitionV2 extends pulumi.ComponentResource {
       linuxParameters: options.linuxParameters,
       startTimeout: options.startTimeoutSeconds,
       stopTimeout: options.stopTimeoutSeconds,
-      versionConsistency: options.versionConsistency,
+      versionConsistency: options.versionConsistencyEnabled === false ? 'disabled' : 'enabled',
       user: options.user,
       workingDirectory: options.workingDirectory,
       readonlyRootFilesystem: options.readonlyRootFilesystem,
@@ -1224,7 +1262,7 @@ export function validateTaskProviders(destination: {
  * @returns The rendered port mappings, or undefined when none are configured.
  */
 export function renderPortMappings(
-  mappings?: FargatePortMapping[],
+  mappings?: AwsvpcPortMapping[],
 ): ecs.TaskDefinitionPortMappingArgs[] | undefined {
   return mappings?.map((mapping): ecs.TaskDefinitionPortMappingArgs => {
     return {
@@ -1331,4 +1369,35 @@ function logGroupNameFromArn(
     }
     return name;
   });
+}
+
+/**
+ * Validates restrictions specific to Fargate containers.
+ *
+ * @param options The container configuration.
+ * @param path The input property path.
+ */
+export function validateFargateContainerOptions(
+  options: ContainerDefinitionOptions,
+  path: string,
+): void {
+  options.linuxParameters?.capabilities?.add?.forEach((capability, index) => {
+    if (capability !== 'SYS_PTRACE') {
+      throw new pulumi.InputPropertyError({
+        propertyPath: `${path}.linuxParameters.capabilities.add[${index}]`,
+        reason: 'Fargate supports adding only the SYS_PTRACE Linux capability',
+      });
+    }
+  });
+}
+
+/**
+ * Creates a validation error against a public input.
+ *
+ * @param propertyPath The public property path.
+ * @param reason The actionable diagnostic.
+ * @returns The input error.
+ */
+function inputError(propertyPath: string, reason: string): pulumi.InputPropertyError {
+  return new pulumi.InputPropertyError({ propertyPath, reason });
 }
