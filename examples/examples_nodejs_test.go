@@ -108,6 +108,24 @@ func TestAccEcsExperimentalStandalone(t *testing.T) {
 	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, container["environment"])
 }
 
+func TestAccEcsServiceManagedInstances(t *testing.T) {
+	testEcsServiceCapacity(t, "managedInstances")
+}
+
+func TestAccEcsServiceEC2(t *testing.T) {
+	testEcsServiceCapacity(t, "ec2")
+}
+
+func testEcsServiceCapacity(t *testing.T, capacityType string) {
+	t.Helper()
+	getEnvRegion(t)
+	pt := newExperimentalPackageTest(t, "service-capacity-nodejs")
+	pt.SetConfig(t, "capacityType", capacityType)
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-capacity-%s-%d", capacityType, time.Now().UnixNano()))
+	pt.Up(t)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+}
+
 func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	// Check before constructing a Pulumi test, so an unconfigured local run creates no stack.
 	getEnvRegion(t)

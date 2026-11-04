@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import * as awsNative from "@pulumi/aws-native";
 import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 import * as awsxNext from "@pulumi/awsx-next";
@@ -36,7 +37,7 @@ const instancePolicy = new aws.iam.RolePolicyAttachment("instance", {
 });
 const profile = new aws.iam.InstanceProfile("hosts", { role: instanceRole.name });
 
-let provider: aws.ecs.CapacityProvider;
+let provider: { name: pulumi.Output<string>; arn: pulumi.Output<string> };
 if (managed) {
   const infrastructureRole = new aws.iam.Role("infrastructure", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ Service: "ecs.amazonaws.com" }),
@@ -45,21 +46,27 @@ if (managed) {
     role: infrastructureRole.name,
     policyArn: pulumi.interpolate`arn:${partition}:iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances`,
   });
-  provider = new aws.ecs.CapacityProvider("managed", {
-    cluster: cluster.name,
+  const managedProvider = new awsNative.ecs.CapacityProvider("managed", {
+    clusterName: cluster.name,
     managedInstancesProvider: {
       infrastructureRoleArn: infrastructureRole.arn,
       instanceLaunchTemplate: {
         ec2InstanceProfileArn: profile.arn,
         networkConfiguration: { subnets: vpc.privateSubnetIds, securityGroups: [hostGroup.id] },
         instanceRequirements: {
-          vcpuCount: { min: 2, max: 2 },
-          memoryMib: { min: 8192, max: 8192 },
-          allowedInstanceTypes: ["m6i.large", "m7i.large", "m6a.large", "m7a.large"],
+          vCpuCount: { min: 2, max: 2 },
+          memoryMiB: { min: 2048, max: 2048 },
+          allowedInstanceTypes: ["t3.small"],
+          burstablePerformance: "included",
         },
       },
     },
   }, { dependsOn: [instancePolicy, infrastructurePolicy] });
+  // CloudFormation exposes the provider name, while Service accepts its ARN.
+  provider = {
+    name: managedProvider.id,
+    arn: pulumi.interpolate`arn:${partition}:ecs:${aws.getRegionOutput().region}:${aws.getCallerIdentityOutput().accountId}:capacity-provider/${managedProvider.id}`,
+  };
 } else {
   const image = aws.ssm.getParameterOutput({
     name: "/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id",
@@ -107,27 +114,30 @@ const task = new awsxNext.TaskDefinition("worker", {
     },
   },
 });
-// The acceptance test bootstraps Managed Instances capacity first and waits for ACTIVE.
-// The AWS provider can return from creation before ECS accepts a default strategy for it.
-const services: awsxNext.Service[] = [];
-if (config.getBoolean("deployServices") ?? true) {
-  const association = new aws.ecs.ClusterCapacityProviders("capacity", {
-    clusterName: cluster.name,
-    capacityProviders: [provider.name],
-    defaultCapacityProviderStrategies: [{ capacityProvider: provider.name, weight: 1 }],
-  });
-  const common = {
-    clusterArn: cluster.arn,
-    taskDefinitionArn: task.taskDefinitionArn,
-    vpcSubnetIds: vpc.privateSubnetIds,
-    deploymentTimeout: "30m",
-  };
-  services.push(new awsxNext.Service("explicit", {
+const association = managed
+  ? new awsNative.ecs.ClusterCapacityProviderAssociations("capacity", {
+      cluster: cluster.name,
+      capacityProviders: [provider.name],
+      defaultCapacityProviderStrategy: [{ capacityProvider: provider.name, weight: 1 }],
+    })
+  : new aws.ecs.ClusterCapacityProviders("capacity", {
+      clusterName: cluster.name,
+      capacityProviders: [provider.name],
+      defaultCapacityProviderStrategies: [{ capacityProvider: provider.name, weight: 1 }],
+    });
+const common = {
+  clusterArn: cluster.arn,
+  taskDefinitionArn: task.taskDefinitionArn,
+  vpcSubnetIds: vpc.privateSubnetIds,
+  deploymentTimeout: "30m",
+};
+const services = [
+  new awsxNext.Service("explicit", {
     ...common,
     capacity: { providers: [{ capacityProviderArn: provider.arn }] },
-  }, { dependsOn: [association] }));
-  services.push(new awsxNext.Service("inherited", common, { dependsOn: [association] }));
-}
+  }, { dependsOn: [association] }),
+  new awsxNext.Service("inherited", common, { dependsOn: [association] }),
+];
 
 export const clusterArn = cluster.arn;
 export const providerName = provider.name;

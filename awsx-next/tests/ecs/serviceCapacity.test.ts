@@ -87,6 +87,26 @@ describe('capacity provider selection', () => {
     ).toThrow('MANAGED_INSTANCES');
   });
 
+  test.each(['bridge', 'host'])('rejects %s networking for EC2 tasks', (networkMode) => {
+    expect(() => validateTaskCapacity({ providerFamily: 'EC2' }, ['EC2'], networkMode)).toThrow(
+      expect.objectContaining({
+        propertyPath: 'taskDefinitionArn',
+        message:
+          'Service requires an awsvpc task definition. Host and bridge networking are not supported.',
+      }),
+    );
+  });
+
+  test('rejects a Fargate-only task placed on inherited custom capacity', () => {
+    expect(() =>
+      validateTaskCapacity(
+        { providerFamily: 'EC2', strategies: [{ capacityProvider: 'asg', weight: 1 }] },
+        ['FARGATE'],
+        'awsvpc',
+      ),
+    ).toThrow('registered with EC2');
+  });
+
   test('rejects Windows tasks even when they use awsvpc and declare Fargate compatibility', () => {
     expect(() =>
       validateTaskCapacity({ launchType: 'FARGATE' }, ['FARGATE'], 'awsvpc', {
@@ -118,6 +138,65 @@ describe('cluster defaults', () => {
     expect(() =>
       validateServiceCapacity({ fargate: {}, providers: [{ capacityProviderArn: 'provider' }] }),
     ).toThrow('at most one');
+  });
+
+  test.each([
+    { name: 'empty selection', allocations: [], reason: 'Select 1 through 20 capacity providers.' },
+    {
+      name: 'too many providers',
+      allocations: Array.from({ length: 21 }, () => ({})),
+      reason: 'Select 1 through 20 capacity providers.',
+    },
+    {
+      name: 'multiple baselines',
+      allocations: [{ base: 1 }, { base: 2 }],
+      reason: 'Only one provider may have a positive base.',
+    },
+    {
+      name: 'no weighted provider',
+      allocations: [{ base: 2, weight: 0 }, { weight: 0 }],
+      reason: 'At least one provider must have a positive weight.',
+    },
+    {
+      name: 'negative weight',
+      allocations: [{ weight: -1 }],
+      reason: 'weight must be an integer from 0 through 1000.',
+    },
+    {
+      name: 'weight above AWS limit',
+      allocations: [{ weight: 1001 }],
+      reason: 'weight must be an integer from 0 through 1000.',
+    },
+    {
+      name: 'fractional baseline',
+      allocations: [{ base: 0.5 }],
+      reason: 'base must be an integer from 0 through 100000.',
+    },
+    {
+      name: 'baseline above AWS limit',
+      allocations: [{ base: 100001 }],
+      reason: 'base must be an integer from 0 through 100000.',
+    },
+  ])('rejects provider allocation: $name', ({ allocations, reason }) => {
+    expect(() =>
+      validateServiceCapacity({
+        providers: allocations.map((allocation, index) => ({
+          ...allocation,
+          capacityProviderArn: `provider-${index}`,
+        })),
+      }),
+    ).toThrow(expect.objectContaining({ propertyPath: 'capacity.providers', message: reason }));
+  });
+
+  test('reports the Fargate policy path for conflicting baselines', () => {
+    expect(() =>
+      validateServiceCapacity({ fargate: { onDemand: { base: 2 }, spot: { base: 1 } } }),
+    ).toThrow(
+      expect.objectContaining({
+        propertyPath: 'capacity.fargate',
+        message: 'Only one provider may have a positive base.',
+      }),
+    );
   });
 
   test('adopts defaults automatically and falls back when absent or empty', () => {

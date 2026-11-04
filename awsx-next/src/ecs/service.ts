@@ -27,53 +27,10 @@ import {
   validateTaskCapacity,
 } from './serviceCapacity';
 
-export const fargateServiceStandaloneIdentity: ComponentIdentity = {
+export const serviceStandaloneIdentity: ComponentIdentity = {
   type: 'awsx-next:index:Service',
   aliases: [],
 };
-
-/**
- * Fargate capacity provider used to run the service's tasks.
- */
-export enum FargateCapacityProvider {
-  /**
-   * Runs tasks on standard Fargate capacity.
-   */
-  FARGATE = 'FARGATE',
-
-  /**
-   * Runs tasks on Fargate Spot capacity. Use for workloads that tolerate interruptions.
-   */
-  FARGATE_SPOT = 'FARGATE_SPOT',
-}
-
-/**
- * A Capacity Provider strategy to use for the service.
- */
-export interface FargateCapacityProviderStrategy {
-  /**
-   * The name of the capacity provider.
-   */
-  readonly capacityProvider: FargateCapacityProvider;
-
-  /**
-   * The base value designates how many tasks, at a minimum, to run on the specified capacity
-   * provider. Only one capacity provider in a capacity provider strategy can have a base defined.
-   * If no value is specified, the default value of 0 is used.
-   *
-   * Default - AWS value of 0
-   */
-  readonly base?: number;
-
-  /**
-   * The weight value designates the relative percentage of the total number of tasks launched that
-   * should use the specified capacity provider. The weight value is taken into consideration after
-   * the base value, if defined, is satisfied.
-   *
-   * Default - 1
-   */
-  readonly weight?: number;
-}
 
 /**
  * Indicates whether to use Availability Zone rebalancing for an ECS service.
@@ -318,7 +275,7 @@ export class Service extends pulumi.ComponentResource {
     /**
      * @internal
      */
-    identity: ComponentIdentity = fargateServiceStandaloneIdentity,
+    identity: ComponentIdentity = serviceStandaloneIdentity,
   ) {
     // Resource references supply a URN without the original args. Declare outputs for hydration
     // and skip child construction, as their references are restored by the runtime.
