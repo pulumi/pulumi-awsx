@@ -504,14 +504,6 @@ export class Service extends pulumi.ComponentResource {
           subnets: args.vpcSubnetIds,
           securityGroups: this.securityGroups.flatMap((sg) => sg.id),
         },
-        platformVersion: capacity.apply((placement) =>
-          placement.launchType === 'FARGATE' ||
-          placement.strategies?.some((entry) =>
-            ['FARGATE', 'FARGATE_SPOT'].includes(entry.capacityProvider),
-          )
-            ? '1.4.0'
-            : undefined,
-        ),
         loadBalancers: loadBalancers.length > 0 ? loadBalancers : undefined,
         healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
         // TODO: these are the remaining configs

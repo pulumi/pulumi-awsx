@@ -17,8 +17,8 @@ The `nodejs`, `python`, `go`, and `dotnet` directories demonstrate the unified
 `Service` and pass the task revision through `taskDefinitionArn`.
 
 These examples create clusters without default capacity strategies, so omitting
-`capacity` exercises the Fargate launch-type fallback. All service tasks use Linux
-and Fargate platform 1.4.0. The [capacity example](service-capacity-nodejs/) covers explicit provider selection
+`capacity` exercises the Fargate launch-type fallback. All service tasks use Linux.
+Fargate platform selection uses the ECS default. The [capacity example](service-capacity-nodejs/) covers explicit provider selection
 and inherited cluster defaults on EC2 and Managed Instances. It verifies a
 single-update deployment and a no-change preview without
 duplicating strategy-wiring unit tests or the ALB and deployment-strategy tests.

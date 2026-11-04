@@ -509,12 +509,12 @@ test.each([
   }
 });
 
-test('pins Fargate to Linux platform version 1.4.0', async () => {
-  const { component, inputs } = await createService('pinned-platform');
-  expect(inputs.platformVersion).toBe('1.4.0');
-  expect(await unwrap(component.serviceName)).toBe('pinned-platform');
+test('leaves the Fargate platform version to ECS and exposes scalar service outputs', async () => {
+  const { component, inputs } = await createService('default-platform');
+  expect(inputs.platformVersion).toBeUndefined();
+  expect(await unwrap(component.serviceName)).toBe('default-platform');
   expect(await unwrap(component.serviceArn)).toBe(
-    'arn:aws:ecs:us-west-2:123456789012:service/test/pinned-platform',
+    'arn:aws:ecs:us-west-2:123456789012:service/test/default-platform',
   );
   expect(Object.prototype.hasOwnProperty.call(component, 'service')).toBe(false);
 });
