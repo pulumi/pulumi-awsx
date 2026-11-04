@@ -5,13 +5,13 @@ using Pulumi.AwsxNext.Inputs;
 
 return await Deployment.RunAsync(() =>
 {
-    var task = new FargateTaskDefinitionV2("task", new FargateTaskDefinitionV2Args
+    var task = new TaskDefinition("task", new TaskDefinitionArgs
     {
         CpuUnits = 256,
         MemoryMiB = 512,
         Containers =
         {
-            ["app"] = new FargateContainerDefinitionOptionsArgs
+            ["app"] = new ContainerDefinitionOptionsArgs
             {
                 Image = "public.ecr.aws/nginx/nginx:latest",
             },

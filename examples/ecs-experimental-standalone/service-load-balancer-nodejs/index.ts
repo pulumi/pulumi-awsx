@@ -90,7 +90,7 @@ const cluster = new aws.ecs.Cluster("cluster");
 // The mismatch preview supplies an ARN to isolate the service provider check.
 const taskDefinitionArn =
   config.get("taskDefinitionArn") ??
-  new awsxNext.FargateTaskDefinitionV2("task", {
+  new awsxNext.TaskDefinition("task", {
     family: config.get("taskDefinitionFamily"),
     cpuUnits: 256,
     memoryMiB: 512,

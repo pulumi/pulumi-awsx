@@ -62,7 +62,7 @@ const listener = new aws.lb.Listener("listener", {
   ],
 });
 const cluster = new aws.ecs.Cluster("cluster");
-const task = new awsxNext.FargateTaskDefinitionV2("task", {
+const task = new awsxNext.TaskDefinition("task", {
   family: config.get("taskDefinitionFamily"),
   cpuUnits: 256,
   memoryMiB: 512,

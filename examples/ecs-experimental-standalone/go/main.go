@@ -7,10 +7,10 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		task, err := awsxnext.NewFargateTaskDefinitionV2(ctx, "task", &awsxnext.FargateTaskDefinitionV2Args{
+		task, err := awsxnext.NewTaskDefinition(ctx, "task", &awsxnext.TaskDefinitionArgs{
 			CpuUnits:  pulumi.Float64Ref(256),
 			MemoryMiB: pulumi.Float64Ref(512),
-			Containers: map[string]awsxnext.FargateContainerDefinitionOptionsArgs{
+			Containers: map[string]awsxnext.ContainerDefinitionOptionsArgs{
 				"app": {Image: pulumi.String("public.ecr.aws/nginx/nginx:latest")},
 			},
 		})

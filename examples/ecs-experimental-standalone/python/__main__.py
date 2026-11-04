@@ -2,10 +2,10 @@ import pulumi
 import pulumi_awsx_next as awsx_next
 
 
-task = awsx_next.FargateTaskDefinitionV2(
+task = awsx_next.TaskDefinition(
     "task",
     containers={
-        "app": awsx_next.FargateContainerDefinitionOptionsArgs(
+        "app": awsx_next.ContainerDefinitionOptionsArgs(
             image="public.ecr.aws/nginx/nginx:latest"
         )
     },
