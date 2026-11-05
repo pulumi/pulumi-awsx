@@ -13,10 +13,10 @@
 // limitations under the License.
 import * as pulumi from '@pulumi/pulumi';
 import { InputPropertyErrorDetails } from '@pulumi/pulumi';
-import { FargateContainerDefinitionProperties } from './containerDefinition';
+import type { ContainerDefinitionOptions } from '../containerDefinition';
 
 export type FargateContainerMemoryAndCpu = Pick<
-  FargateContainerDefinitionProperties,
+  ContainerDefinitionOptions,
   'cpuUnits' | 'memoryMiB' | 'memoryReservationMiB'
 >;
 
@@ -155,18 +155,14 @@ function findFargateTaskConfiguration(
  * @param containers The containers whose resource requirements must be satisfied.
  * @param cpu The optional explicit number of CPU units for the task.
  * @param memory The optional explicit amount of task memory in MiB.
- * @param operatingSystemFamily The task operating system, defaulting to Linux.
  * @returns A valid task-level CPU and memory configuration.
  */
 export function resolveFargateTaskMemoryAndCpu(
   containers: FargateContainerMemoryAndCpu[],
   cpu?: number,
   memory?: number,
-  operatingSystemFamily = 'LINUX',
 ): FargateTaskMemoryAndCpu {
-  const configurations = operatingSystemFamily.startsWith('WINDOWS_')
-    ? validFargateTaskConfigurations.filter((config) => config.cpu >= 1024 && config.cpu <= 4096)
-    : validFargateTaskConfigurations;
+  const configurations = validFargateTaskConfigurations;
   const required = getRequiredFargateTaskResources(containers);
   const errors: InputPropertyErrorDetails[] = [];
 

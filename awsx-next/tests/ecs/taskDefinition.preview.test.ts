@@ -1,5 +1,5 @@
 import * as pulumi from '@pulumi/pulumi';
-import { FargateTaskDefinitionV2 } from '../../../src/ecs/fargate/taskDefinition';
+import { TaskDefinition } from '../../src/ecs/taskDefinition';
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 
@@ -44,7 +44,7 @@ beforeAll(async () => {
 
 test('declares version-pinned storage for an unknown secret during preview', async () => {
   const options: pulumi.ResourceTransformationArgs[] = [];
-  const task = new FargateTaskDefinitionV2(
+  const task = new TaskDefinition(
     'preview-secret',
     {
       containers: {
@@ -96,7 +96,7 @@ test('declares version-pinned storage for an unknown secret during preview', asy
 });
 
 test('keeps container names and known properties structured when an image is unknown', async () => {
-  const task = new FargateTaskDefinitionV2('preview-task', {
+  const task = new TaskDefinition('preview-task', {
     containers: {
       app: {
         image: pulumi.output(pulumi.runtime.unknownValue),
@@ -111,8 +111,14 @@ test('keeps container names and known properties structured when an image is unk
     ({ type, name }) => type === 'aws-native:ecs:TaskDefinition' && name === 'preview-task',
   );
   expect(taskResource?.inputs.containerDefinitions).toEqual([
-    { name: 'app', essential: true, readonlyRootFilesystem: true, image: expect.anything() },
-    { name: 'sidecar', essential: true, image: 'busybox' },
+    {
+      name: 'app',
+      essential: true,
+      readonlyRootFilesystem: true,
+      image: expect.anything(),
+      versionConsistency: 'enabled',
+    },
+    { name: 'sidecar', essential: true, image: 'busybox', versionConsistency: 'enabled' },
   ]);
   expect(pulumi.isUnknown(taskResource?.inputs.containerDefinitions[0].image)).toBe(true);
 });

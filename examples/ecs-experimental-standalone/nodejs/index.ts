@@ -2,7 +2,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as awsxNext from "@pulumi/awsx-next";
 
-const task = new awsxNext.FargateTaskDefinitionV2("task", {
+const task = new awsxNext.TaskDefinition("task", {
   cpuUnits: 256,
   memoryMiB: 512,
   containers: {

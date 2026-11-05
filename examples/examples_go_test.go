@@ -23,7 +23,7 @@ import (
 func TestAccEcsExperimentalStandaloneGo(t *testing.T) {
 	// Standalone Go acceptance coverage is tracked with the component feature:
 	// https://github.com/pulumi/pulumi-awsx/issues/2181
-	t.Skip("pulumi package add currently generates a missing FargateContainerDefinitionOptionsArgs Go type")
+	t.Skip("pulumi package add currently generates a missing ContainerDefinitionOptionsArgs Go type")
 	pt := newExperimentalPackageTest(t, "go")
 	pt.Preview(t)
 }
