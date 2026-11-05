@@ -2,9 +2,9 @@ import * as pulumi from '@pulumi/pulumi';
 import {
   ApplicationProtocolVersion,
   createApplicationServiceAttachment,
-} from '../../../src/ecs/fargate/serviceLoadBalancer';
-import { FargateServiceV2 } from '../../../src/ecs/fargate/service';
-import { DeploymentStrategy } from '../../../src/ecs/fargate/serviceDeployment';
+} from '../../../src/ecs/serviceLoadBalancer';
+import { Service } from '../../../src/ecs/service';
+import { DeploymentStrategy } from '../../../src/ecs/serviceDeployment';
 
 // Pulumi's mock runtime is shared within a test file. Keep preview mode and unknown
 // outputs isolated from the deployment-mode mocks in serviceLoadBalancer.test.ts.
@@ -21,6 +21,13 @@ beforeAll(async () => {
         };
       },
       call(args) {
+        if (args.token === 'aws:ecs/getTaskDefinition:getTaskDefinition') {
+          return {
+            arn: args.inputs.taskDefinition,
+            requiresCompatibilities: ['FARGATE'],
+            networkMode: 'awsvpc',
+          };
+        }
         if (
           args.token === 'aws:index/getCallerIdentity:getCallerIdentity' ||
           args.token === 'aws-native:index:getAccountId'
@@ -139,11 +146,12 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
 
 it('declares deduplicated service ingress synchronously when ALB source groups are unknown', async () => {
   const children: pulumi.Resource[] = [];
-  new FargateServiceV2(
+  new Service(
     'preview',
     {
-      clusterArn: 'cluster',
-      taskDefinition: 'task',
+      clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+      capacity: { fargate: {} },
+      taskDefinitionArn: 'task',
       vpcSubnetIds: ['subnet'],
       loadBalancerAttachments: {
         api: {

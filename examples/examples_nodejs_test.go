@@ -108,6 +108,24 @@ func TestAccEcsExperimentalStandalone(t *testing.T) {
 	require.Equal(t, []any{map[string]any{"name": "TRANSFORMED", "value": "true"}}, container["environment"])
 }
 
+func TestAccEcsServiceManagedInstances(t *testing.T) {
+	testEcsServiceCapacity(t, "managedInstances")
+}
+
+func TestAccEcsServiceEC2(t *testing.T) {
+	testEcsServiceCapacity(t, "ec2")
+}
+
+func testEcsServiceCapacity(t *testing.T, capacityType string) {
+	t.Helper()
+	getEnvRegion(t)
+	pt := newExperimentalPackageTest(t, "service-capacity-nodejs")
+	pt.SetConfig(t, "capacityType", capacityType)
+	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-capacity-%s-%d", capacityType, time.Now().UnixNano()))
+	pt.Up(t)
+	pt.Preview(t, optpreview.ExpectNoChanges())
+}
+
 func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	// Check before constructing a Pulumi test, so an unconfigured local run creates no stack.
 	getEnvRegion(t)
@@ -159,9 +177,9 @@ func TestAccEcsServiceRejectsMismatchedProviderRegion(t *testing.T) {
 	}
 	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
 	pt.SetConfig(t, "aws-native:region", nativeRegion)
-	// Bypass the task component so its own provider check cannot pre-empt the service check.
-	// This ARN is never looked up or deployed because the test only previews.
-	pt.SetConfig(t, "taskDefinitionArn", fmt.Sprintf("arn:aws:ecs:%s:123456789012:task-definition/preview-only:1", region))
+	// Use a raw AWS task definition so its ARN stays unknown during preview. This bypasses the
+	// task component's provider check without triggering Service's lookup of a fabricated ARN.
+	pt.SetConfig(t, "useRawTaskDefinition", "true")
 
 	// Preview exercises the real providers and component without deploying infrastructure.
 	_, err := pt.PreviewErr(t)

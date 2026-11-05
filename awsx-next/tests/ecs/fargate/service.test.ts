@@ -1,18 +1,15 @@
 import * as aws from '@pulumi/aws';
 import * as awsNative from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
-import {
-  FargateCapacityProvider,
-  FargateServiceV2,
-  FargateServiceV2Args,
-} from '../../../src/ecs/fargate/service';
-import { ServiceLoadBalancer } from '../../../src/ecs/fargate/serviceLoadBalancer';
-import * as serviceLoadBalancer from '../../../src/ecs/fargate/serviceLoadBalancer';
+import { Service, ServiceArgs } from '../../../src/ecs/service';
+import { ServiceLoadBalancer } from '../../../src/ecs/serviceLoadBalancer';
+import * as serviceLoadBalancer from '../../../src/ecs/serviceLoadBalancer';
+import * as serviceCapacity from '../../../src/ecs/serviceCapacity';
 
 import {
   DeploymentFailureAction,
   ServiceDeploymentStrategy,
-} from '../../../src/ecs/fargate/serviceDeployment';
+} from '../../../src/ecs/serviceDeployment';
 
 test.each([
   {
@@ -82,9 +79,9 @@ test.each(['canary', 'linear'] as const)(
   (strategy) => {
     expect(
       () =>
-        new FargateServiceV2('missing-routing', {
+        new Service('missing-routing', {
           clusterArn: 'cluster-arn',
-          taskDefinition: 'task-arn',
+          taskDefinitionArn: 'task-arn',
           vpcSubnetIds: ['subnet-first'],
           deploymentStrategy: { [strategy]: { bakeTimeMinutes: 5 } },
         }),
@@ -113,9 +110,9 @@ test.each([-1, 0.5, 2147483648, NaN, Infinity])(
   (healthCheckGracePeriodSeconds) => {
     expect(
       () =>
-        new FargateServiceV2('invalid-startup-grace', {
+        new Service('invalid-startup-grace', {
           clusterArn: 'cluster',
-          taskDefinition: 'task',
+          taskDefinitionArn: 'task',
           vpcSubnetIds: ['subnet'],
           healthCheckGracePeriodSeconds,
         }),
@@ -144,16 +141,48 @@ const calls: pulumi.runtime.MockCallArgs[] = [];
 const constructions: pulumi.ResourceTransformationArgs[] = [];
 let provider: aws.Provider;
 const nativeRegions = new Map<string, string>();
+let clusterDefaults: { capacityProvider: string; weight: number }[] = [];
+let taskCompatibilities = ['FARGATE'];
+let providerProperties: Record<string, string> = {};
+let capacityProviders: Record<string, Record<string, any>> = {};
 
 beforeAll(async () => {
   await pulumi.runtime.setMocks({
     newResource(args) {
       resources.push(args);
-      return { id: args.id || `${args.name}-id`, state: args.inputs };
+      const state =
+        args.type === 'aws:ecs/clusterCapacityProviders:ClusterCapacityProviders'
+          ? {
+              ...args.inputs,
+              defaultCapacityProviderStrategies: clusterDefaults,
+              capacityProviders: Object.values(capacityProviders).map((metadata) => metadata.name),
+            }
+          : args.type === 'aws:ecs/capacityProvider:CapacityProvider'
+            ? capacityProviders[args.id!.split('@')[0]!]
+            : args.type === 'aws:ecs/service:Service'
+              ? {
+                  ...args.inputs,
+                  arn: `arn:aws:ecs:us-west-2:123456789012:service/test/${args.name}`,
+                  name: args.name,
+                }
+              : args.inputs;
+      return { id: args.id || `${args.name}-id`, state };
     },
     call(args) {
       calls.push(args);
       switch (args.token) {
+        case 'aws:index/arnParse:arnParse': {
+          const [, partition, service, region, accountId, ...resource] = args.inputs.arn.split(':');
+          return { partition, service, region, accountId, resource: resource.join(':') };
+        }
+        case 'aws:ecs/getTaskDefinition:getTaskDefinition':
+          return {
+            arn: args.inputs.taskDefinition,
+            requiresCompatibilities: taskCompatibilities,
+            networkMode: 'awsvpc',
+          };
+        case 'aws:cloudcontrol/getResource:getResource':
+          return { ...args.inputs, properties: providerProperties[args.inputs.identifier] };
         case 'aws:index/getCallerIdentity:getCallerIdentity':
         case 'aws-native:index:getAccountId':
           return { accountId: '123456789012' };
@@ -187,6 +216,10 @@ beforeEach(() => {
   resources.length = 0;
   calls.length = 0;
   constructions.length = 0;
+  clusterDefaults = [];
+  taskCompatibilities = ['FARGATE'];
+  providerProperties = {};
+  capacityProviders = {};
 });
 
 /**
@@ -208,8 +241,8 @@ function unwrap<T>(output: pulumi.Output<T>): Promise<T> {
  */
 async function createService(
   name: string,
-  overrides: Partial<FargateServiceV2Args> = {},
-): Promise<{ component: FargateServiceV2; inputs: Record<string, any> }> {
+  overrides: Partial<ServiceArgs> = {},
+): Promise<{ component: Service; inputs: Record<string, any> }> {
   const nativeProvider = overrides.loadBalancerAttachments
     ? new awsNative.Provider(`${name}-native-provider`, {
         region: (overrides.region ?? 'us-west-2') as awsNative.Region,
@@ -221,11 +254,11 @@ async function createService(
       overrides.region ?? 'us-west-2',
     );
   }
-  const component = new FargateServiceV2(
+  const component = new Service(
     name,
     {
-      clusterArn: 'cluster-arn',
-      taskDefinition: 'task-arn',
+      clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+      taskDefinitionArn: 'task-arn',
       vpcSubnetIds: pulumi.output([pulumi.output('subnet-first'), 'subnet-second']),
       ...overrides,
     },
@@ -239,7 +272,7 @@ async function createService(
       ],
     },
   );
-  await unwrap(component.service.urn);
+  await unwrap(component.serviceArn);
   await Promise.all(constructions.map(({ resource }) => unwrap(resource.urn)));
   const service = resources.find((r) => r.type === 'aws:ecs/service:Service')!;
   return { component, inputs: service.inputs };
@@ -276,53 +309,249 @@ test.each([
   {
     name: 'explicit-capacity',
     settings: {
-      capacityProviderStrategies: [{ capacityProvider: FargateCapacityProvider.FARGATE_SPOT }],
+      capacity: { fargate: { spot: {} } },
     },
     launchType: undefined,
     strategy: [{ capacityProvider: 'FARGATE_SPOT', weight: 1 }],
   },
   {
     name: 'cluster-default',
-    settings: { useClusterDefaultCapacityProviderStrategy: true },
+    settings: {},
     launchType: undefined,
-    strategy: undefined,
+    strategy: [{ capacityProvider: 'FARGATE', weight: 1 }],
   },
 ])('selects placement mode: $name', async ({ name, settings, launchType, strategy }) => {
+  if (name === 'cluster-default') clusterDefaults = [{ capacityProvider: 'FARGATE', weight: 1 }];
   const { inputs } = await createService(name, settings);
   expect(inputs.launchType).toBe(launchType);
   expect(inputs.capacityProviderStrategies).toEqual(strategy);
 });
 
+test.each([
+  { family: 'EC2', properties: { AutoScalingGroupProvider: { AutoScalingGroupArn: 'asg-arn' } } },
+  {
+    family: 'MANAGED_INSTANCES',
+    properties: { ManagedInstancesProvider: { InfrastructureRoleArn: 'role-arn' } },
+  },
+])(
+  'resolves inherited $family providers with the selected region and provider',
+  async ({ family, properties }) => {
+    const validate = jest.spyOn(serviceCapacity, 'validateTaskCapacity');
+    taskCompatibilities = [family];
+    clusterDefaults = [
+      { capacityProvider: 'custom-a', weight: 1 },
+      { capacityProvider: 'custom-b', weight: 3 },
+    ];
+    providerProperties = {
+      'custom-a': JSON.stringify(properties),
+      'custom-b': JSON.stringify(properties),
+    };
+    const { inputs } = await createService(`inherited-${family}`, { region: 'eu-west-1' });
+    expect(validate).toHaveBeenCalledWith(
+      expect.objectContaining({ providerFamily: family }),
+      [family],
+      'awsvpc',
+      expect.any(Object),
+    );
+    validate.mockRestore();
+    expect(inputs.capacityProviderStrategies).toEqual(clusterDefaults);
+    expect(inputs.launchType).toBeUndefined();
+    expect(inputs.platformVersion).toBeUndefined();
+    const reads = calls.filter((call) => call.token === 'aws:cloudcontrol/getResource:getResource');
+    expect(reads.map((call) => call.inputs)).toEqual([
+      { typeName: 'AWS::ECS::CapacityProvider', identifier: 'custom-a', region: 'eu-west-1' },
+      { typeName: 'AWS::ECS::CapacityProvider', identifier: 'custom-b', region: 'eu-west-1' },
+    ]);
+    expect(reads.every((call) => call.provider?.includes('service-provider'))).toBe(true);
+  },
+);
+
+test.each(['EC2', 'MANAGED_INSTANCES'] as const)(
+  'resolves explicit %s providers and regional read identities',
+  async (family) => {
+    const name = `explicit-${family}`;
+    const providerArns = {
+      baseline: 'arn:aws:ecs:eu-west-1:123456789012:capacity-provider/baseline',
+      burst: 'arn:aws:ecs:eu-west-1:123456789012:capacity-provider/burst',
+    };
+    taskCompatibilities = [family];
+    capacityProviders = Object.fromEntries(
+      Object.entries(providerArns).map(([suffix, arn]) => [
+        arn,
+        {
+          name: suffix,
+          ...(family === 'EC2'
+            ? { autoScalingGroupProvider: { autoScalingGroupArn: `asg-${suffix}` } }
+            : { cluster: 'test', managedInstancesProvider: { infrastructureRoleArn: 'role' } }),
+        },
+      ]),
+    );
+    const validate = jest.spyOn(serviceCapacity, 'validateTaskCapacity');
+    try {
+      const { inputs } = await createService(name, {
+        region: 'eu-west-1',
+        capacity: {
+          providers: [
+            { capacityProviderArn: pulumi.output(providerArns.baseline), base: 2, weight: 0 },
+            { capacityProviderArn: providerArns.burst },
+          ],
+        },
+      });
+      const strategies = [
+        { capacityProvider: 'baseline', base: 2, weight: 0 },
+        { capacityProvider: 'burst', weight: 1 },
+      ];
+      expect(inputs.capacityProviderStrategies).toEqual(strategies);
+      expect(inputs.launchType).toBeUndefined();
+      expect(inputs.platformVersion).toBeUndefined();
+      expect(validate).toHaveBeenCalledWith(
+        {
+          strategies: [{ ...strategies[0] }, { ...strategies[1], base: undefined }],
+          providerFamily: family,
+        },
+        [family],
+        'awsvpc',
+        expect.any(Object),
+      );
+      expect(
+        resources
+          .filter((resource) =>
+            [
+              'aws:ecs/capacityProvider:CapacityProvider',
+              'aws:ecs/clusterCapacityProviders:ClusterCapacityProviders',
+            ].includes(resource.type),
+          )
+          .map((resource) => ({ type: resource.type, name: resource.name, id: resource.id })),
+      ).toEqual([
+        {
+          type: 'aws:ecs/capacityProvider:CapacityProvider',
+          name: `${name}-capacity-provider-0`,
+          id: `${providerArns.baseline}@eu-west-1`,
+        },
+        {
+          type: 'aws:ecs/capacityProvider:CapacityProvider',
+          name: `${name}-capacity-provider-1`,
+          id: `${providerArns.burst}@eu-west-1`,
+        },
+        {
+          type: 'aws:ecs/clusterCapacityProviders:ClusterCapacityProviders',
+          name: `${name}-cluster-capacity`,
+          id: 'test@eu-west-1',
+        },
+      ]);
+      expect(
+        calls.filter((call) => call.token === 'aws:cloudcontrol/getResource:getResource'),
+      ).toEqual([]);
+    } finally {
+      validate.mockRestore();
+    }
+  },
+);
+
+test.each([
+  {
+    name: 'mixed-fargate-custom',
+    defaults: ['FARGATE', 'custom'],
+    properties: {},
+    reason: 'The cluster default mixes Fargate and custom capacity providers.',
+  },
+  {
+    name: 'mixed-custom-families',
+    defaults: ['asg', 'managed'],
+    properties: {
+      asg: JSON.stringify({ AutoScalingGroupProvider: {} }),
+      managed: JSON.stringify({ ManagedInstancesProvider: {} }),
+    },
+    reason: 'Managed Instances and ASG-backed providers cannot share a strategy.',
+  },
+  {
+    name: 'missing-provider-family',
+    defaults: ['custom'],
+    properties: { custom: JSON.stringify({}) },
+    reason: 'Expected a Managed Instances or ASG-backed capacity provider.',
+  },
+  {
+    name: 'ambiguous-provider-family',
+    defaults: ['custom'],
+    properties: {
+      custom: JSON.stringify({ AutoScalingGroupProvider: {}, ManagedInstancesProvider: {} }),
+    },
+    reason: 'Expected a Managed Instances or ASG-backed capacity provider.',
+  },
+])('rejects inherited capacity: $name', async ({ name, defaults, properties, reason }) => {
+  // Start with a healthy component, then exercise its capacity resolver in isolation so an
+  // expected failure does not leave failed ECS resource registrations in the shared runtime.
+  const { component } = await createService(name);
+  clusterDefaults = defaults.map((capacityProvider) => ({ capacityProvider, weight: 1 }));
+  providerProperties = properties as Record<string, string>;
+  const capacity = component['resolveCapacity'](
+    `${name}-invalid`,
+    {
+      clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+      taskDefinitionArn: 'task-arn',
+      vpcSubnetIds: ['subnet-first'],
+    },
+    undefined,
+  );
+  // Output rejection also rejects its metadata promises. Observe all three to avoid
+  // unhandled rejections while asserting the actual resolver error.
+  const output = capacity as unknown as {
+    promise(): Promise<unknown>;
+    isKnown: Promise<boolean>;
+    isSecret: Promise<boolean>;
+  };
+  const results = await Promise.allSettled([output.promise(), output.isKnown, output.isSecret]);
+  for (const result of results) {
+    expect(result).toEqual({
+      status: 'rejected',
+      reason: expect.objectContaining({ propertyPath: 'capacity', message: reason }),
+    });
+  }
+});
+
+test('leaves the Fargate platform version to ECS and exposes scalar service outputs', async () => {
+  const { component, inputs } = await createService('default-platform');
+  expect(inputs.platformVersion).toBeUndefined();
+  expect(await unwrap(component.serviceName)).toBe('default-platform');
+  expect(await unwrap(component.serviceArn)).toBe(
+    'arn:aws:ecs:us-west-2:123456789012:service/test/default-platform',
+  );
+  expect(Object.prototype.hasOwnProperty.call(component, 'service')).toBe(false);
+});
+
+test.each([undefined, false, true])(
+  'forwards forceNewDeployment=%s without enabling it by default',
+  async (forceNewDeployment) => {
+    const { inputs } = await createService(`deployment-${forceNewDeployment}`, {
+      forceNewDeployment,
+    });
+    expect(inputs.forceNewDeployment).toBe(forceNewDeployment);
+  },
+);
+
 test('defaults omitted capacity weights without replacing zero or an explicit weight', async () => {
   const { inputs } = await createService('weights', {
-    capacityProviderStrategies: [
-      { capacityProvider: FargateCapacityProvider.FARGATE, base: 1 },
-      { capacityProvider: FargateCapacityProvider.FARGATE_SPOT, weight: 0 },
-      { capacityProvider: FargateCapacityProvider.FARGATE_SPOT, weight: 3 },
-    ],
+    capacity: { fargate: { onDemand: { base: 1 }, spot: { weight: 0 } } },
   });
   expect(inputs.capacityProviderStrategies).toEqual([
     { capacityProvider: 'FARGATE', base: 1, weight: 1 },
     { capacityProvider: 'FARGATE_SPOT', weight: 0 },
-    { capacityProvider: 'FARGATE_SPOT', weight: 3 },
   ]);
 });
 
 test('rejects conflicting capacity-provider choices', () => {
   expect(
     () =>
-      new FargateServiceV2('invalid-capacity', {
+      new Service('invalid-capacity', {
         clusterArn: 'cluster',
-        taskDefinition: 'task',
+        taskDefinitionArn: 'task',
         vpcSubnetIds: ['subnet'],
-        useClusterDefaultCapacityProviderStrategy: true,
-        capacityProviderStrategies: [{ capacityProvider: FargateCapacityProvider.FARGATE }],
+        capacity: { providers: [{ capacityProviderArn: 'provider' }], fargate: {} },
       }),
   ).toThrow(
     new pulumi.InputPropertyError({
-      propertyPath: 'capacityProviderStrategies',
-      reason:
-        'Only one of `capacityProviderStrategies` or `useClusterDefaultCapacityProviderStrategy` can be provided.',
+      propertyPath: 'capacity',
+      reason: 'Select at most one of fargate or providers.',
     }),
   );
 });
@@ -507,9 +736,9 @@ test.each([
 ])('rejects empty securityGroupIds before creating children: %j', ({ manageIngress, attached }) => {
   expect(
     () =>
-      new FargateServiceV2(`empty-groups-${manageIngress}-${attached}`, {
+      new Service(`empty-groups-${manageIngress}-${attached}`, {
         clusterArn: 'cluster',
-        taskDefinition: 'task',
+        taskDefinitionArn: 'task',
         vpcSubnetIds: ['subnet'],
         securityGroupIds: [],
         manageIngress,
@@ -560,17 +789,14 @@ test.each([undefined, []])(
   (securityGroupIds) => {
     expect(
       () =>
-        new FargateServiceV2(
-          `invalid-manual-${securityGroupIds === undefined ? 'omitted' : 'empty'}`,
-          {
-            clusterArn: 'cluster',
-            taskDefinition: 'task',
-            vpcSubnetIds: ['subnet'],
-            manageIngress: false,
-            securityGroupIds,
-            loadBalancerAttachments: { app: applicationAttachment('listener-shared', 3000, 10) },
-          },
-        ),
+        new Service(`invalid-manual-${securityGroupIds === undefined ? 'omitted' : 'empty'}`, {
+          clusterArn: 'cluster',
+          taskDefinitionArn: 'task',
+          vpcSubnetIds: ['subnet'],
+          manageIngress: false,
+          securityGroupIds,
+          loadBalancerAttachments: { app: applicationAttachment('listener-shared', 3000, 10) },
+        }),
     ).toThrow();
     expect(resources.filter((r) => r.type.startsWith('aws:'))).toHaveLength(0);
     expect(calls).toEqual([]);
@@ -682,9 +908,13 @@ test('uses the selected region for subnet discovery and newly created children',
     region: 'eu-west-1',
   });
   const regionalResources = resources
-    .filter((r) => r.type.startsWith('aws:'))
+    .filter((r) => r.type.startsWith('aws:') && !r.id)
     .map(({ type, inputs }) => ({ type, region: inputs.region }));
   expect(regionalResources).toHaveLength(5);
+  expect(
+    resources.find((r) => r.type === 'aws:ecs/clusterCapacityProviders:ClusterCapacityProviders')!
+      .id,
+  ).toBe('test@eu-west-1');
   expect(regionalResources).toEqual(
     expect.arrayContaining(
       [
@@ -727,11 +957,13 @@ test('rehydrates a reference without constructor args or new children', async ()
   const urn = await unwrap(original.urn);
   resources.length = 0;
   calls.length = 0;
-  const component = new FargateServiceV2('hydrated', undefined as unknown as FargateServiceV2Args, {
+  const component = new Service('hydrated', undefined as unknown as ServiceArgs, {
     urn,
   });
   expect(await unwrap(component.urn)).toBe(urn);
-  expect(Object.prototype.hasOwnProperty.call(component, 'service')).toBe(true);
+  expect(Object.prototype.hasOwnProperty.call(component, 'serviceArn')).toBe(true);
+  expect(Object.prototype.hasOwnProperty.call(component, 'serviceName')).toBe(true);
+  expect(Object.prototype.hasOwnProperty.call(component, 'service')).toBe(false);
   expect(Object.prototype.hasOwnProperty.call(component, 'securityGroups')).toBe(true);
   expect(resources).toEqual([]);
   expect(calls).toEqual([]);

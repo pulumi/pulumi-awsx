@@ -4,7 +4,7 @@ import {
   ProgressivePauseLifecycleStage,
   resolveDeploymentStrategy,
   estimateDeploymentTimeout,
-} from '../../../src/ecs/fargate/serviceDeployment';
+} from '../../../src/ecs/serviceDeployment';
 
 it('rejects multiple strategies instead of picking one silently', () => {
   expect(() => resolveDeploymentStrategy({ rolling: {}, canary: { bakeTimeMinutes: 5 } })).toThrow(

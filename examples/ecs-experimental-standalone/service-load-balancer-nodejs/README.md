@@ -36,9 +36,10 @@ clean preview. It uses HTTP and does not exercise optional TLS or IPv6. It creat
 billable resources and destroys its stack during cleanup.
 
 A separate negative test configures AWS Native in a different region and checks
-that preview reports the provider mismatch. It supplies a placeholder
-`taskDefinitionArn`, which skips task creation and isolates the service's provider
-check from the task component's own check. It does not deploy infrastructure:
+that preview reports the provider mismatch. It sets `useRawTaskDefinition` to preview
+an AWS task definition directly, bypassing the task component's own provider check.
+The task ARN stays unknown during preview, avoiding a lookup of a nonexistent task.
+It does not deploy infrastructure:
 
 ```sh
 go test -tags=nodejs -run '^TestAccEcsServiceRejectsMismatchedProviderRegion$' -timeout 10m

@@ -5,7 +5,7 @@ import {
   validateTargetProtocolVersion,
   validateRoutingProviders,
   resolveIngressSourceGroup,
-} from '../../../src/ecs/fargate/serviceLoadBalancer';
+} from '../../../src/ecs/serviceLoadBalancer';
 
 it.each([
   { nativeAccount: '999999999999', nativeRegion: 'us-east-2' },
