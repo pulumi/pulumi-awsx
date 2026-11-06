@@ -4,7 +4,7 @@ go 1.26.10
 
 require (
 	github.com/pulumi/pulumi-awsx/sdk/v3 v3.12.0
-	github.com/pulumi/pulumi/sdk/v3 v3.272.0
+	github.com/pulumi/pulumi/sdk/v3 v3.274.0
 )
 
 require (
@@ -73,7 +73,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
-	github.com/pulumi/pulumi-aws/sdk/v7 v7.53.0 // indirect
+	github.com/pulumi/pulumi-aws/sdk/v7 v7.54.0 // indirect
 	github.com/pulumi/pulumi-cloud-sdk/go v1.20261105.0 // indirect
 	github.com/pulumi/pulumi-docker-build/sdk/go/dockerbuild v0.0.23 // indirect
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2 // indirect
