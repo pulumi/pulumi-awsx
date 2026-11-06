@@ -98,6 +98,8 @@ new awsxNext.Service("service", {
   assignPublicIp: true,
   deploymentStrategy: {
     rolling: {
+      // Keep the original deployment failure visible instead of attempting rollback.
+      failureAction: awsxNext.DeploymentFailureAction.STOP,
       lambdaHooks: [
         {
           functionArn: validationFunction.arn,

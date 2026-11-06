@@ -21,9 +21,12 @@ interface HookResult {
   hookDetails?: ValidationDetails;
 }
 
-export const validationLogGroup = new aws.cloudwatch.LogGroup("deployment-validation", {
-  retentionInDays: 1,
-});
+// Preserve hook evidence after test cleanup. Events still expire after one day.
+export const validationLogGroup = new aws.cloudwatch.LogGroup(
+  "deployment-validation",
+  { retentionInDays: 1 },
+  { retainOnDelete: true },
+);
 // Preflight validation only needs CloudWatch Logs permissions. Keep the Lambda
 // execution role separate from the ECS invocation role created by the service.
 const executionRole = new aws.iam.Role("deployment-validation-execution", {

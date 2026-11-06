@@ -143,6 +143,21 @@ export interface ServiceArgs {
   readonly deploymentTimeout?: string;
 
   /**
+   * When this is `true` the Pulumi operation will wait until the service reaches a steady state. If
+   * you are using progressive deployment strategies then this will be the entire length of that
+   * deployment.
+   *
+   * Set this to `false` to disable waiting for the service to reach a steady state. In this case
+   * you will need a separate process to monitor the service deployment. Pulumi will return a
+   * successful status before the deployment completes
+   *
+   * @see https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html
+   *
+   * Default - `true`.
+   */
+  readonly waitForSteadyState?: pulumi.Input<boolean | undefined>;
+
+  /**
    * Seconds ECS ignores failing health checks for newly started tasks, allowing the application
    * time to start. This does not change the target group's health checks or Pulumi's deployment
    * timeout.
@@ -245,7 +260,7 @@ export interface ServiceArgs {
 
 export class Service extends pulumi.ComponentResource {
   /**
-   * ARN of the ECS service, available after it reaches steady state.
+   * ARN of the ECS service
    */
   public readonly serviceArn!: pulumi.Output<string>;
 
@@ -261,8 +276,8 @@ export class Service extends pulumi.ComponentResource {
    *
    * You can add non-duplicate standalone rules that are not required for initial service readiness.
    * Do not use this output for rules needed to make load-balancer targets healthy: the remote
-   * component waits for steady state before returning its outputs. For manual ingress, supply your
-   * own groups and create required rules from their original references before this service.
+   * component can wait for steady state before returning its outputs. For manual ingress, supply
+   * your own groups and create required rules from their original references before this service.
    *
    * Do not combine automatic ingress with inline or exclusive ingress management. AWSX-created
    * groups also have standalone IPv4 allow-all egress.
@@ -496,7 +511,7 @@ export class Service extends pulumi.ComponentResource {
           ...renderStrategySettings(selected),
           lifecycleHooks: hooks.lifecycleHooks,
         },
-        waitForSteadyState: true,
+        waitForSteadyState: pulumi.output(args.waitForSteadyState).apply((value) => value ?? true),
         tags: args.tags,
         cluster: args.clusterArn,
         networkConfiguration: {
