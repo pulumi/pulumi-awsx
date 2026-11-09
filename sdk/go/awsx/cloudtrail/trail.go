@@ -65,6 +65,8 @@ type trailArgs struct {
 	KmsKeyId *string `pulumi:"kmsKeyId"`
 	// Name of the trail.
 	Name *string `pulumi:"name"`
+	// Whether CloudTrail logs events it generates when delivering log files to the trail's destinations, such as Amazon S3 and CloudWatch Logs. Set to `false` to suppress these events. See [Recursive logging](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-trail-recursive-logging.html) for details. If not specified, defaults to `true`.
+	RecursiveLogging *bool `pulumi:"recursiveLogging"`
 	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
 	Region *string `pulumi:"region"`
 	// S3 bucket designated for publishing log files.
@@ -101,6 +103,8 @@ type TrailArgs struct {
 	KmsKeyId pulumi.StringPtrInput
 	// Name of the trail.
 	Name pulumi.StringPtrInput
+	// Whether CloudTrail logs events it generates when delivering log files to the trail's destinations, such as Amazon S3 and CloudWatch Logs. Set to `false` to suppress these events. See [Recursive logging](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-trail-recursive-logging.html) for details. If not specified, defaults to `true`.
+	RecursiveLogging pulumi.BoolPtrInput
 	// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
 	Region pulumi.StringPtrInput
 	// S3 bucket designated for publishing log files.
