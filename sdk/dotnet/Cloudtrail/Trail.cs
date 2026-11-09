@@ -143,6 +143,12 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? Name { get; set; }
 
         /// <summary>
+        /// Whether CloudTrail logs events it generates when delivering log files to the trail's destinations, such as Amazon S3 and CloudWatch Logs. Set to `False` to suppress these events. See [Recursive logging](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-trail-recursive-logging.html) for details. If not specified, defaults to `True`.
+        /// </summary>
+        [Input("recursiveLogging")]
+        public Input<bool>? RecursiveLogging { get; set; }
+
+        /// <summary>
         /// Region where this resource will be [managed](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints). Defaults to the Region set in the provider configuration.
         /// </summary>
         [Input("region")]

@@ -127,9 +127,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// {
     ///     var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new()
     ///     {
-    ///         VpcId = example.Id,
-    ///         ServiceName = "com.amazonaws.us-west-2.ec2",
-    ///         VpcEndpointType = "Interface",
     ///         SubnetConfigurations = new[]
     ///         {
     ///             new Aws.Ec2.Inputs.VpcEndpointSubnetConfigurationArgs
@@ -143,6 +140,9 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///                 SubnetId = example2.Id,
     ///             },
     ///         },
+    ///         VpcId = example.Id,
+    ///         ServiceName = "com.amazonaws.us-west-2.ec2",
+    ///         VpcEndpointType = "Interface",
     ///         SubnetIds = new[]
     ///         {
     ///             example1.Id,
@@ -240,6 +240,37 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// });
     /// ```
     /// 
+    /// ### VPC Lattice Tunnel Endpoint Type
+    /// 
+    /// A `Tunnel` endpoint connects to exactly one `CIDR` type `aws.vpclattice.ResourceConfiguration`, and consumers must send GENEVE-encapsulated traffic (UDP port 6081) to it. See [Access a network segment through a tunnel VPC endpoint](https://docs.aws.amazon.com/vpc/latest/privatelink/use-cidr-endpoint.html).
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var example = new Aws.Ec2.VpcEndpoint("example", new()
+    ///     {
+    ///         ResourceConfigurationArn = exampleAwsVpclatticeResourceConfiguration.Arn,
+    ///         SecurityGroupIds = new[]
+    ///         {
+    ///             exampleAwsSecurityGroup.Id,
+    ///         },
+    ///         SubnetIds = new[]
+    ///         {
+    ///             example1.Id,
+    ///             example2.Id,
+    ///         },
+    ///         VpcEndpointType = "Tunnel",
+    ///         VpcId = exampleAwsVpc.Id,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// 
     /// ### Non-AWS Service
     /// 
     /// ```csharp
@@ -319,19 +350,19 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public bool? AutoAccept { get; set; }
 
         /// <summary>
-        /// The DNS options for the endpoint. See DnsOptions below.
+        /// DNS options for the endpoint. See `DnsOptions` below.
         /// </summary>
         [Input("dnsOptions")]
         public Input<Pulumi.Aws.Ec2.Inputs.VpcEndpointDnsOptionsArgs>? DnsOptions { get; set; }
 
         /// <summary>
-        /// The IP address type for the endpoint. Valid values are `Ipv4`, `Dualstack`, and `Ipv6`.
+        /// IP address type for the endpoint. Valid values are `Ipv4`, `Dualstack`, and `Ipv6`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
 
         /// <summary>
-        /// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
+        /// Policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details. For more information about building AWS IAM policy documents with Pulumi, see the AWS IAM Policy Document Guide.
         /// </summary>
         [Input("policy")]
         public Input<string>? Policy { get; set; }
@@ -349,7 +380,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public Input<string>? Region { get; set; }
 
         /// <summary>
-        /// The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `ResourceConfigurationArn`, `ServiceName` or `ServiceNetworkArn` is required.
+        /// ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `ResourceConfigurationArn`, `ServiceName` or `ServiceNetworkArn` is required. Applicable for endpoints of type `Resource` and `Tunnel`. For `Tunnel` endpoints, the resource configuration must be of type `CIDR`.
         /// </summary>
         [Input("resourceConfigurationArn")]
         public Input<string>? ResourceConfigurationArn { get; set; }
@@ -370,8 +401,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputList<string>? _securityGroupIds;
 
         /// <summary>
-        /// The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
-        /// If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
+        /// ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`, `Resource`, `ServiceNetwork`, and `Tunnel`. If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
         /// </summary>
         public InputList<string> SecurityGroupIds
         {
@@ -386,13 +416,13 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public string ServiceName { get; set; } = null!;
 
         /// <summary>
-        /// The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `ResourceConfigurationArn`, `ServiceName` or `ServiceNetworkArn` is required.
+        /// ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `ResourceConfigurationArn`, `ServiceName` or `ServiceNetworkArn` is required.
         /// </summary>
         [Input("serviceNetworkArn")]
         public Input<string>? ServiceNetworkArn { get; set; }
 
         /// <summary>
-        /// The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+        /// AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
         /// </summary>
         [Input("serviceRegion")]
         public Input<string>? ServiceRegion { get; set; }
@@ -413,7 +443,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputList<string>? _subnetIds;
 
         /// <summary>
-        /// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
+        /// ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer`, `Interface`, `Resource`, `ServiceNetwork`, and `Tunnel`. Interface type endpoints cannot function without being assigned to a subnet. For `Tunnel` endpoints, the subnets must be in the Availability Zones of the resource gateway associated with the resource configuration.
         /// </summary>
         public InputList<string> SubnetIds
         {
@@ -425,7 +455,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A map of tags to assign to the resource. If configured with a provider `DefaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the resource. If configured with a provider `DefaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -434,7 +464,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         }
 
         /// <summary>
-        /// The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
+        /// VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, `Interface`, `Resource`, `ServiceNetwork` or `Tunnel`. Defaults to `Gateway`.
         /// </summary>
         [Input("vpcEndpointType")]
         public Input<string>? VpcEndpointType { get; set; }
