@@ -21,10 +21,13 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	_ "embed"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -49,6 +52,9 @@ const (
 	Tool       = "pulumi-gen-awsx"
 	packageDir = "awsx"
 )
+
+//go:embed overlays/go/experimental/ecs/containerDefinitionOptions.go.txt
+var containerDefinitionOptionsOverlay []byte
 
 // Language is the SDK language.
 type Language string
@@ -220,6 +226,9 @@ func genGo(pkg *schema.Package, outdir string) error {
 	if err != nil {
 		return err
 	}
+	// The Go generator references ContainerDefinitionOptionsArgs for the plain containers map,
+	// but only declares ContainerDefinitionOptions. Supply the alias until pulumi/pulumi#10077 is fixed.
+	files["awsx/experimental/ecs/containerDefinitionOptions.go"] = containerDefinitionOptionsOverlay
 	return writeFiles(outdir, files)
 }
 
@@ -365,6 +374,9 @@ func writePulumiSchema(pkgSpec schema.PackageSpec, outdir string) error {
 }
 
 func main() {
+	// Terraform dependencies replace the standard logger during initialization.
+	// Keep generator errors visible even when Terraform logging is disabled.
+	log.SetOutput(os.Stderr)
 	if err := rootCmd().Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

@@ -11,13 +11,14 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint --deny-warnings .",
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit",
+    "emit": "node ./node_modules/typescript/bin/tsc6 --project tsconfig.provider.json --noCheck",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:plugin": "node scripts/check-plugin.mjs"
   },
   "dependencies": {
-    "@pulumi/aws": "7.48.0",
+    "@pulumi/aws": "7.53.0",
     "@pulumi/aws-native": "1.83.1",
     "@pulumi/pulumi": "3.261.0"
   },

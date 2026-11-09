@@ -50,5 +50,10 @@ export namespace ecr {
 export namespace ecs {
 }
 
+export namespace experimental {
+    export namespace ecs {
+    }
+}
+
 export namespace lb {
 }

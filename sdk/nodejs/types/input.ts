@@ -1172,6 +1172,1195 @@ export namespace ecs {
     }
 }
 
+export namespace experimental {
+    export namespace ecs {
+        export interface ApplicationServiceLoadBalancerArgs {
+            /**
+             * The name of the container to route traffic to.
+             */
+            containerName: string;
+            /**
+             * The port that the ECS Service receives traffic from the load balancer. This should be the same
+             * port used as the containerPort.
+             *
+             * Valid values between 1 and 65535
+             */
+            containerPort: number;
+            /**
+             * The ARN of the application listener to attach a production forwarding rule to. The listener's
+             * frontend access, certificates, and default action are not modified. Forwarding rules use the
+             * inherited AWS Native provider, whose account and region must match the service's AWS account
+             * and effective region. Configure aws-native:region or pass a matching aws-native provider.
+             */
+            listenerArn: pulumi.Input<string>;
+            /**
+             * Conditions selecting production requests. When omitted, a path rule matches all requests. An
+             * explicitly empty configuration is not allowed.
+             *
+             * Default - Match the path pattern `/*`.
+             */
+            match?: inputs.experimental.ecs.ListenerConditionsArgs;
+            /**
+             * The available priority for the production rule, from 1 to 50000.
+             *
+             * If you add multiple load balancer attachments you must ensure the priorities are unique
+             */
+            priority: number;
+            /**
+             * Health checks used by the Load Balancer to determine whether the ECS Service target can receive
+             * traffic.
+             *
+             * Default - HTTP on the target's traffic port, every 30 seconds with a 5-second timeout. Healthy
+             * and unhealthy thresholds are both 3. The default path is `/` with success code `200`, or
+             * `/AWS.ALB/healthcheck` with success code `12` for gRPC.
+             */
+            targetHealthCheck?: inputs.experimental.ecs.TargetGroupHealthCheckArgs;
+            /**
+             * Protocol used for requests from the Load Balancer to the ECS Service target.
+             *
+             * Default - ApplicationProtocol.HTTP
+             */
+            targetProtocol?: enums.experimental.ecs.ApplicationProtocol;
+            /**
+             * Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+             * GRPC require an HTTPS listener.
+             *
+             * Default - ApplicationProtocolVersion.HTTP_1
+             */
+            targetProtocolVersion?: enums.experimental.ecs.ApplicationProtocolVersion;
+            /**
+             * Routing for validating a new revision before production traffic shifts. Requires blue/green,
+             * canary, or linear deployments. Omitted means no test route.
+             */
+            testTraffic?: inputs.experimental.ecs.TestTrafficArgs;
+        }
+
+        export interface AwsLogsLogDriverArgs {
+            /**
+             * A multiline start pattern in Python strftime format.
+             */
+            datetimeFormat?: string;
+            /**
+             * The ARN of the log group to log to.
+             *
+             * Default - A log group is created automatically.
+             */
+            logGroupArn?: pulumi.Input<string | undefined>;
+            /**
+             * Size, in bytes, of the buffer used in non-blocking mode.
+             *
+             * Default - The AWS default of 10 MiB when mode is non-blocking.
+             */
+            maxBufferSizeBytes?: number;
+            /**
+             * The delivery mode for log messages.
+             */
+            mode?: enums.experimental.ecs.AwsLogDriverMode;
+            /**
+             * A multiline start pattern expressed as a regular expression.
+             */
+            multilinePattern?: string;
+            /**
+             * Prefix used for the container's log streams.
+             *
+             * Default - The task component name.
+             */
+            streamPrefix?: pulumi.Input<string | undefined>;
+        }
+
+        export interface AwsvpcPortMappingArgs {
+            /**
+             * The application protocol used by ECS Service Connect.
+             */
+            appProtocol?: enums.experimental.ecs.PortMappingAppProtocol;
+            /**
+             * The port number exposed by the container.
+             *
+             * Do not set this property when `containerPortRange` is set.
+             */
+            containerPort?: number;
+            /**
+             * A range of container ports with inclusive `start` and `end` values.
+             *
+             * Do not set this property when `containerPort` is set. ECS maps the host port range to the same
+             * container port range.
+             */
+            containerPortRange?: inputs.experimental.ecs.ContainerPortRangeArgs;
+            /**
+             * The name used by ECS Service Connect and VPC Lattice.
+             */
+            name?: string;
+            /**
+             * The protocol used for the port mapping.
+             *
+             * Default - 'tcp'
+             */
+            protocol?: enums.experimental.ecs.PortMappingProtocol;
+        }
+
+        export interface BlueGreenStrategyArgs {
+            /**
+             * Number of minutes to keep the previous service revision running after all production traffic
+             * has shifted to the new revision. This is separate from the canary observation period or the
+             * waits between linear traffic increments.
+             *
+             * Valid range: 0-1440 minutes.
+             */
+            bakeTimeMinutes: number;
+            /**
+             * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+             * breaker is always enabled.
+             *
+             * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+             * the deployment as failed without automatic rollback.
+             *
+             * Default - DeploymentFailureAction.ROLLBACK
+             */
+            failureAction?: enums.experimental.ecs.DeploymentFailureAction;
+            /**
+             * Lambda functions invoked at selected deployment stages.
+             *
+             * Lambda and pause hooks at the same stage run in parallel. All must complete before the
+             * deployment proceeds.
+             *
+             * Default - No Lambda hooks.
+             */
+            lambdaHooks?: inputs.experimental.ecs.ProgressiveLambdaHookArgs[];
+            /**
+             * Pauses at selected deployment stages for external approval or validation. To continue the
+             * deployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,
+             * the pause hookId, and CONTINUE or ROLLBACK.
+             *
+             * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+             * performed.
+             *
+             * Default - No pause hooks.
+             */
+            pauseHooks?: inputs.experimental.ecs.ProgressivePauseHookArgs[];
+        }
+
+        export interface CanaryStrategyArgs {
+            /**
+             * Number of minutes to keep the previous service revision running after all production traffic
+             * has shifted to the new revision. This is separate from the canary observation period or the
+             * waits between linear traffic increments.
+             *
+             * Valid range: 0-1440 minutes.
+             */
+            bakeTimeMinutes: number;
+            /**
+             * Number of minutes to observe the canary before shifting the remaining production traffic to the
+             * new revision. Valid range: 0-1440 minutes (24 hours).
+             *
+             * Default - AWS default of 10 minutes
+             */
+            canaryBakeTimeMinutes?: number;
+            /**
+             * Initial percentage of production traffic sent to the new service revision during the canary
+             * phase. Valid values are multiples of 0.1 from 0.1 to 100.0.
+             *
+             * Default - AWS default of 5.0
+             */
+            canaryPercent?: number;
+            /**
+             * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+             * breaker is always enabled.
+             *
+             * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+             * the deployment as failed without automatic rollback.
+             *
+             * Default - DeploymentFailureAction.ROLLBACK
+             */
+            failureAction?: enums.experimental.ecs.DeploymentFailureAction;
+            /**
+             * Lambda functions invoked at selected deployment stages.
+             *
+             * Lambda and pause hooks at the same stage run in parallel. All must complete before the
+             * deployment proceeds.
+             *
+             * Default - No Lambda hooks.
+             */
+            lambdaHooks?: inputs.experimental.ecs.ProgressiveLambdaHookArgs[];
+            /**
+             * Pauses at selected deployment stages for external approval or validation. To continue the
+             * deployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,
+             * the pause hookId, and CONTINUE or ROLLBACK.
+             *
+             * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+             * performed.
+             *
+             * Default - No pause hooks.
+             */
+            pauseHooks?: inputs.experimental.ecs.ProgressivePauseHookArgs[];
+        }
+
+        export interface CapacityAllocationArgs {
+            /**
+             * Number of desired tasks allocated here before weights are applied. Only one provider may
+             * specify a positive base. Does not increase desiredCount or guarantee healthy capacity.
+             *
+             * Default - 0.
+             */
+            base?: number;
+            /**
+             * Relative share of tasks remaining after the base. Zero allocates only the base tasks. At least
+             * one selected provider must have a positive weight. Order does not imply priority.
+             *
+             * Default - 1.
+             */
+            weight?: number;
+        }
+
+        export interface ContainerDefinitionOptionsArgs {
+            /**
+             * The command passed to the container.
+             *
+             * Default - The command configured in the container image.
+             */
+            command?: pulumi.Input<string>[];
+            /**
+             * CPU units reserved for this container. Within a task CPU limit, these control relative shares
+             * under contention.
+             *
+             * Default - No minimum CPU reservation.
+             */
+            cpuUnits?: number;
+            /**
+             * Domainless Active Directory authentication using an S3 credential specification. This component
+             * currently supports this integration only for Fargate-only tasks.
+             *
+             * Default - No Active Directory authentication.
+             */
+            credentialSpec?: inputs.experimental.ecs.FargateCredentialSpecArgs;
+            /**
+             * Startup ordering dependencies on other containers. ECS reverses them during shutdown.
+             *
+             * Default - No dependencies.
+             */
+            dependsOn?: pulumi.Input<inputs.experimental.ecs.ContainerDependencyArgs>[];
+            /**
+             * Labels to add to the container.
+             *
+             * Default - No labels.
+             */
+            dockerLabels?: {[key: string]: pulumi.Input<string>};
+            /**
+             * The entry point passed to the container.
+             *
+             * Default - The entry point configured in the container image.
+             *
+             * For more information, see [Dockerfile
+             * ENTRYPOINT](https://docs.docker.com/reference/dockerfile/#entrypoint).
+             */
+            entryPoint?: string[];
+            /**
+             * Environment variables keyed by name, including ordinary values, Pulumi secret-marked values,
+             * and references to existing SSM parameters or Secrets Manager secrets.
+             *
+             * Default - No environment variables.
+             */
+            environment?: {[key: string]: inputs.experimental.ecs.EnvironmentVariableArgs};
+            /**
+             * Environment files passed to the container.
+             */
+            environmentFiles?: inputs.experimental.ecs.EnvironmentFileArgs[];
+            /**
+             * Whether the container is essential to the task.
+             *
+             * If an essential container stops, ECS stops all other containers in the task. Each task must
+             * have at least one essential container.
+             *
+             * Default - `true`.
+             */
+            essential?: boolean;
+            /**
+             * Positive whole number of physical GPUs reserved for this container. Does not work with Fargate
+             * capability
+             *
+             * Default - No GPUs.
+             */
+            gpuCount?: number;
+            /**
+             * The health check command and settings for the container.
+             *
+             * Use a health check when the container can remain running while the application is unhealthy,
+             * such as an unresponsive server or a worker that has stopped processing jobs. A health check is
+             * not required merely to validate startup configuration if the application exits when that
+             * validation fails.
+             *
+             * ECS services can replace tasks with unhealthy essential containers. A health check does not
+             * provide automatic replacement for standalone tasks.
+             *
+             * ECS only monitors health checks specified in the task definition. It does not monitor a health
+             * check configured only in the container image.
+             *
+             * Default - No ECS container health check.
+             *
+             * For more information, see [Determine Amazon ECS task health using container health
+             * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
+             */
+            healthCheck?: inputs.experimental.ecs.HealthCheckArgs;
+            /**
+             * The image used to start the container.
+             */
+            image: pulumi.Input<string>;
+            /**
+             * Whether to keep standard input open for the container when no client is attached.
+             *
+             * Default - `false`.
+             */
+            interactive?: boolean;
+            /**
+             * Linux capability and init-process settings. Fargate permits adding only SYS_PTRACE.
+             */
+            linuxParameters?: inputs.experimental.ecs.LinuxParametersArgs;
+            /**
+             * Log collection. AWSX grants the execution role access to the configured log group.
+             *
+             * Default - CloudWatch logging with a shared log group created by this component.
+             */
+            logging?: inputs.experimental.ecs.ContainerLogDriverArgs;
+            /**
+             * Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed
+             * memoryReservationMiB when both are set.
+             *
+             * Default - No container-level hard memory limit. A task memory limit or container reservation is
+             * required.
+             */
+            memoryMiB?: number;
+            /**
+             * Soft memory reservation in MiB. The container can grow beyond this reservation when memory is
+             * available, up to its hard limit or the task's shared memory limit.
+             *
+             * Default - No soft memory reservation.
+             */
+            memoryReservationMiB?: number;
+            /**
+             * Ports exposed on the task's network interface.
+             */
+            portMappings?: inputs.experimental.ecs.AwsvpcPortMappingArgs[];
+            /**
+             * Run with elevated host privileges. Not supported by Fargate.
+             *
+             * Default - false.
+             */
+            privileged?: boolean;
+            /**
+             * Whether to allocate a TTY for the container.
+             *
+             * Default - `false`.
+             */
+            pseudoTerminal?: boolean;
+            /**
+             * Whether the container has read-only access to its root file system.
+             *
+             * Default - `false`.
+             */
+            readonlyRootFilesystem?: boolean;
+            /**
+             * Time in seconds to wait for this container's startup dependencies to become ready.
+             *
+             * Fargate accepts 2 through 120 seconds. Managed Instances allows up to 600 seconds. EC2 allows
+             * up to 120 seconds. Every selected compatibility's limit applies.
+             *
+             * Default - No container-specific startup timeout.
+             */
+            startTimeoutSeconds?: number;
+            /**
+             * Time in seconds to wait before forcefully stopping a container that does not exit normally.
+             *
+             * Fargate accepts 2 through 120 seconds. Managed Instances allows up to 86400 seconds. EC2 uses
+             * the container agent's timeout when this is omitted.
+             *
+             * Default - 30 seconds, or the EC2 container agent's configured stop timeout.
+             */
+            stopTimeoutSeconds?: number;
+            /**
+             * Namespaced kernel parameters to set in the container.
+             *
+             * Default - No system controls.
+             *
+             * For more information, see [System
+             * controls](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols).
+             */
+            systemControls?: inputs.experimental.ecs.SystemControlArgs[];
+            /**
+             * Linux resource limits. Explicit values override runtime defaults.
+             *
+             * Default - Runtime defaults.
+             */
+            ulimits?: inputs.experimental.ecs.UlimitArgs[];
+            /**
+             * The user that runs commands inside the container.
+             *
+             * The value can be a user name, user ID, or a user and group pair supported by the container
+             * operating system. This property is not supported for Windows containers.
+             *
+             * Default - The user configured in the container image, or the root user if the image does not
+             * configure one.
+             */
+            user?: string;
+            /**
+             * Whether ECS resolves image tags to digests so service tasks use a consistent image version.
+             *
+             * Default - true.
+             */
+            versionConsistencyEnabled?: boolean;
+            /**
+             * Data volumes to mount from another container in the same task.
+             *
+             * Each entry identifies the source container and whether this container has read-only access to
+             * its volumes.
+             *
+             * Default - No inherited volumes.
+             */
+            volumesFrom?: inputs.experimental.ecs.VolumeFromArgs[];
+            /**
+             * The working directory in which commands run inside the container.
+             *
+             * Default - The working directory configured in the container image, or `/` if the image does not
+             * configure one.
+             */
+            workingDirectory?: string;
+        }
+
+        export interface ContainerDependencyArgs {
+            /**
+             * The condition that the other container must satisfy.
+             */
+            condition: enums.experimental.ecs.ContainerDependencyCondition;
+            /**
+             * The name of the other container.
+             */
+            containerName: string;
+        }
+
+        export interface ContainerLogDriverArgs {
+            /**
+             * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+             *
+             * For more information, see [CloudWatch
+             * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+             */
+            cloudwatch?: inputs.experimental.ecs.AwsLogsLogDriverArgs;
+            /**
+             * Disable collection of this container's stdout and stderr through the log driver. Cannot be
+             * combined with `cloudwatch`.
+             *
+             * Default - false; logs are sent to CloudWatch Logs.
+             */
+            disabled?: boolean;
+        }
+
+        export interface ContainerPortRangeArgs {
+            /**
+             * The last port in the range. Must be from 1 through 65535 and greater than `start`.
+             */
+            end: number;
+            /**
+             * The first port in the range. Must be from 1 through 65535 and less than `end`.
+             */
+            start: number;
+        }
+
+        export interface EnvironmentFileArgs {
+            /**
+             * The ARN of the bucket that contains the environment file.
+             */
+            bucketArn: pulumi.Input<string>;
+            /**
+             * The object key of the environment file.
+             */
+            key: pulumi.Input<string>;
+        }
+
+        export interface EnvironmentVariableArgs {
+            /**
+             * An existing Secrets Manager secret. Cannot be combined with `value` or `ssmParameterArn`. AWSX
+             * grants retrieval permissions but does not modify or retain the supplied secret.
+             *
+             * For more information, see [Secrets Manager environment
+             * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html).
+             */
+            secretsManager?: inputs.experimental.ecs.SecretsManagerSecretArgs;
+            /**
+             * An existing SSM Parameter Store parameter ARN. Cannot be combined with `value` or
+             * `secretsManager`. AWSX grants retrieval permissions but does not modify or retain the
+             * parameter.
+             *
+             * For more information, see [SSM Parameter Store environment
+             * variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html).
+             */
+            ssmParameterArn?: pulumi.Input<string | undefined>;
+            /**
+             * The value passed to the container.
+             *
+             * Pulumi secret-marked values are stored in an AWSX-created Secrets Manager secret and referenced
+             * by version ID. Changing the value registers a new task-definition revision and deploys services
+             * consuming that revision.
+             *
+             * AWSX retains managed secrets, versions and retrieval permissions when this entry is removed.
+             * Retained resources require manual cleanup and continue to incur charges. AWS may
+             * garbage-collect old unlabeled versions after its version limit is exceeded.
+             *
+             * Default - Use the explicit SSM or Secrets Manager source instead.
+             */
+            value?: pulumi.Input<string | undefined>;
+        }
+
+        export interface FargateCredentialSpecArgs {
+            /**
+             * ARN of the general-purpose S3 bucket containing the CredSpec.
+             *
+             * The bucket remains user-managed. If its encryption configuration is created in the same update,
+             * ensure the component depends on that configuration.
+             */
+            bucketArn: pulumi.Input<string>;
+            /**
+             * Configuration used to generate a domainless CredSpec JSON object in the supplied bucket.
+             *
+             * The object uses the bucket's default encryption settings and a Pulumi auto-named key. Changing
+             * the configuration replaces the object with a new key and registers a new task definition
+             * revision. Removing this configuration deletes the component-managed object, not the bucket or
+             * secret.
+             *
+             * Default - Read the existing object identified by `key`.
+             */
+            config?: inputs.experimental.ecs.FargateCredentialSpecConfigArgs;
+            /**
+             * Key of an existing CredSpec object. The component reads the JSON to discover its credentials
+             * secret and reads the object's actual KMS key, which can differ from the bucket default.
+             *
+             * The object remains user-managed. Ensure it exists before the component's lookup, using
+             * `dependsOn` when necessary. Changes to its contents are discovered on the next update.
+             *
+             * Default - Create an object from `config`.
+             */
+            key?: pulumi.Input<string | undefined>;
+        }
+
+        export interface FargateCredentialSpecConfigArgs {
+            /**
+             * ARN of the Secrets Manager secret containing `username`, `password`, and `domainName` for an
+             * Active Directory user allowed to retrieve the gMSA password. The secret remains user-managed;
+             * only its metadata is read to discover the encryption key.
+             */
+            credentialsSecretArn: pulumi.Input<string>;
+            /**
+             * DNS name of the Active Directory forest root.
+             *
+             * Default - `domainName`.
+             */
+            dnsTreeName?: pulumi.Input<string | undefined>;
+            /**
+             * GUID of the Active Directory domain.
+             */
+            domainGuid: pulumi.Input<string>;
+            /**
+             * DNS name of the Active Directory domain, for example `example.com`.
+             */
+            domainName: pulumi.Input<string>;
+            /**
+             * Security identifier (SID) of the Active Directory domain.
+             */
+            domainSid: pulumi.Input<string>;
+            /**
+             * Name of the gMSA account, for example `WebApp01`.
+             */
+            gmsaAccountName: pulumi.Input<string>;
+            /**
+             * NetBIOS name of the Active Directory domain, for example `EXAMPLE`.
+             */
+            netBiosName: pulumi.Input<string>;
+        }
+
+        export interface FargateServiceCapacityArgs {
+            /**
+             * Allocate tasks to Fargate On-Demand. If neither allocation is specified, use the Fargate launch
+             * type without requiring a cluster capacity-provider association.
+             *
+             * Default - Fargate On-Demand when spot is also omitted, otherwise not selected.
+             */
+            onDemand?: inputs.experimental.ecs.CapacityAllocationArgs;
+            /**
+             * Allocate interruption-tolerant tasks to Fargate Spot. Unavailable Spot capacity is not
+             * automatically replaced by On-Demand capacity.
+             *
+             * Default - Not selected.
+             */
+            spot?: inputs.experimental.ecs.CapacityAllocationArgs;
+        }
+
+        export interface HeaderConditionArgs {
+            /**
+             * The name of the HTTP request header to match, such as "X-Deployment". Header names are matched
+             * case-insensitively
+             */
+            name: pulumi.Input<string>;
+            /**
+             * Regular-expression matching. Conflicts with `values`
+             */
+            regexValues?: pulumi.Input<string>[];
+            /**
+             * AWS value matching, including supported wildcards. Conflicts with `regexValues`
+             */
+            values?: pulumi.Input<string>[];
+        }
+
+        export interface HealthCheckArgs {
+            /**
+             * The command that the container runs to determine whether it is healthy.
+             *
+             * The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+             *
+             * Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+             */
+            command: string[];
+            /**
+             * The time, in seconds, between health checks. Valid values are from 5 through 300.
+             *
+             * Default - 30 seconds.
+             */
+            intervalSeconds?: number;
+            /**
+             * The number of consecutive failures required before the container becomes unhealthy. Valid
+             * values are from 1 through 10.
+             *
+             * Default - 3.
+             */
+            retries?: number;
+            /**
+             * The startup grace period, in seconds, during which failed checks do not count toward the retry
+             * limit. Valid values are from 0 through 300.
+             *
+             * Default - No startup grace period.
+             */
+            startPeriodSeconds?: number;
+            /**
+             * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+             *
+             * Default - 5 seconds.
+             */
+            timeoutSeconds?: number;
+        }
+
+        export interface KernelCapabilitiesArgs {
+            /**
+             * Linux capabilities to add to the container.
+             *
+             * Fargate supports adding only `SYS_PTRACE`.
+             */
+            add?: string[];
+            /**
+             * Linux capabilities to remove from the container.
+             */
+            drop?: string[];
+        }
+
+        export interface LinearStrategyArgs {
+            /**
+             * Number of minutes to keep the previous service revision running after all production traffic
+             * has shifted to the new revision. This is separate from the canary observation period or the
+             * waits between linear traffic increments.
+             *
+             * Valid range: 0-1440 minutes.
+             */
+            bakeTimeMinutes: number;
+            /**
+             * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+             * breaker is always enabled.
+             *
+             * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+             * the deployment as failed without automatic rollback.
+             *
+             * Default - DeploymentFailureAction.ROLLBACK
+             */
+            failureAction?: enums.experimental.ecs.DeploymentFailureAction;
+            /**
+             * Lambda functions invoked at selected deployment stages.
+             *
+             * Lambda and pause hooks at the same stage run in parallel. All must complete before the
+             * deployment proceeds.
+             *
+             * Default - No Lambda hooks.
+             */
+            lambdaHooks?: inputs.experimental.ecs.ProgressiveLambdaHookArgs[];
+            /**
+             * Pauses at selected deployment stages for external approval or validation. To continue the
+             * deployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,
+             * the pause hookId, and CONTINUE or ROLLBACK.
+             *
+             * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+             * performed.
+             *
+             * Default - No pause hooks.
+             */
+            pauseHooks?: inputs.experimental.ecs.ProgressivePauseHookArgs[];
+            /**
+             * Number of minutes to wait between traffic increments. Valid range: 0-1440 minutes (24 hours).
+             *
+             * Default - AWS default of 6 minutes
+             */
+            stepBakeTimeMinutes?: number;
+            /**
+             * Percentage of production traffic shifted to the new service revision in each increment. Valid
+             * values are multiples of 0.1 from 3.0 to 100.0.
+             *
+             * Default - AWS default of 10.0
+             */
+            stepPercent?: number;
+        }
+
+        export interface LinuxParametersArgs {
+            /**
+             * Linux capabilities to add to or remove from the container.
+             */
+            capabilities?: inputs.experimental.ecs.KernelCapabilitiesArgs;
+            /**
+             * Run an init process that forwards signals and reaps processes.
+             */
+            initProcessEnabled?: boolean;
+        }
+
+        export interface ListenerConditionsArgs {
+            /**
+             * HTTP request headers to match. Every configured header condition must match (AND). Within an
+             * individual condition, any configured value may match (OR).
+             */
+            headers?: inputs.experimental.ecs.HeaderConditionArgs[];
+            /**
+             * Hostname patterns or regular expressions matched against the request's Host header. Matching is
+             * case-insensitive
+             */
+            hostnames?: inputs.experimental.ecs.StringMatchArgs;
+            /**
+             * HTTP request methods to match, such as "GET" or "POST". Matching is case-sensitive and requires
+             * an exact match
+             */
+            methods?: pulumi.Input<string>[];
+            /**
+             * Path patterns or regular expressions matched against the request URL path. Matching is
+             * case-sensitive and excludes the query string.
+             */
+            pathPatterns?: inputs.experimental.ecs.StringMatchArgs;
+            /**
+             * Query-string key/value patterns to match.
+             */
+            queryStrings?: inputs.experimental.ecs.QueryStringConditionArgs[];
+        }
+
+        export interface ProgressiveLambdaHookArgs {
+            /**
+             * ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function
+             * revision that handles the hook.
+             *
+             * The function must return a JSON object with a hookStatus of SUCCEEDED, FAILED, or IN_PROGRESS.
+             * If IN_PROGRESS is returned then ECS will invoke the hook again until either FAILED or SUCCEEDED
+             * are returned.
+             */
+            functionArn: pulumi.Input<string>;
+            /**
+             * Custom JSON-compatible configuration passed to the Lambda function as event.hookDetails. Values
+             * can include nested objects, arrays, numbers, booleans, null, and Pulumi outputs. The component
+             * resolves outputs and serializes the object as JSON for ECS.
+             *
+             * A function returning IN_PROGRESS can also return hookDetails to persist state between its
+             * invocations within the same deployment. That state is not shared with other hooks or later
+             * deployments. Pass secret identifiers rather than secret values and let the function retrieve
+             * secrets using its execution role.
+             *
+             * Default - No custom configuration is passed.
+             */
+            hookDetails?: pulumi.Input<{[key: string]: any} | undefined>;
+            /**
+             * ARN of the IAM role ECS assumes to invoke this function. The role must trust ecs.amazonaws.com
+             * and allow lambda:InvokeFunction on functionArn, including any version or alias qualifier.
+             *
+             * If omitted, the service creates one shared invocation role for all Lambda hooks that omit this
+             * property, scoped to their function ARNs.
+             *
+             * Default - A shared invocation role is created when needed.
+             */
+            invocationRoleArn?: pulumi.Input<string | undefined>;
+            /**
+             * Stages at which ECS invokes this function. Hooks at the same stage run in parallel, and all
+             * must complete before the deployment proceeds. Array order does not define execution order.
+             *
+             * PRE_PRODUCTION_TRAFFIC_SHIFT and PRODUCTION_TRAFFIC_SHIFT run at every traffic shift step for
+             * canary and linear deployments. ECS can also reinvoke a function that returns IN_PROGRESS.
+             */
+            lifecycleStages: enums.experimental.ecs.ProgressiveLambdaLifecycleStage[];
+        }
+
+        export interface ProgressivePauseHookArgs {
+            /**
+             * Stages at which ECS waits for an external decision. Hooks at the same stage run in parallel.
+             * Each pause must be continued and each Lambda hook must succeed before the deployment proceeds.
+             * A pause can also be released by its timeout action. Array order does not define execution
+             * order.
+             *
+             * PRE_PRODUCTION_TRAFFIC_SHIFT pauses before every traffic shift step for canary and linear
+             * deployments, requiring a separate ContinueServiceDeployment call for each new hookId.
+             */
+            lifecycleStages: enums.experimental.ecs.ProgressivePauseLifecycleStage[];
+            /**
+             * Action ECS takes when this pause hook times out. ROLLBACK reverts the deployment, CONTINUE
+             * releases this hook while leaving any other unfinished hooks at the stage in effect.
+             *
+             * Default - AWS default of PauseTimeoutAction.ROLLBACK.
+             */
+            timeoutAction?: enums.experimental.ecs.PauseTimeoutAction;
+            /**
+             * Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.
+             *
+             * Valid range: 1-20160 minutes (14 days).
+             *
+             * Default - AWS default of 1440 minutes (24 hours).
+             */
+            timeoutMinutes?: number;
+        }
+
+        export interface QueryStringConditionArgs {
+            /**
+             * Query string key pattern to match.
+             */
+            key?: pulumi.Input<string | undefined>;
+            /**
+             * Query string value pattern to match.
+             */
+            value: pulumi.Input<string>;
+        }
+
+        export interface RollingLambdaHookArgs {
+            /**
+             * ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function
+             * revision that handles the hook.
+             *
+             * The function must return a JSON object with a hookStatus of SUCCEEDED, FAILED, or IN_PROGRESS.
+             * If IN_PROGRESS is returned then ECS will invoke the hook again until either FAILED or SUCCEEDED
+             * are returned.
+             */
+            functionArn: pulumi.Input<string>;
+            /**
+             * Custom JSON-compatible configuration passed to the Lambda function as event.hookDetails. Values
+             * can include nested objects, arrays, numbers, booleans, null, and Pulumi outputs. The component
+             * resolves outputs and serializes the object as JSON for ECS.
+             *
+             * A function returning IN_PROGRESS can also return hookDetails to persist state between its
+             * invocations within the same deployment. That state is not shared with other hooks or later
+             * deployments. Pass secret identifiers rather than secret values and let the function retrieve
+             * secrets using its execution role.
+             *
+             * Default - No custom configuration is passed.
+             */
+            hookDetails?: pulumi.Input<{[key: string]: any} | undefined>;
+            /**
+             * ARN of the IAM role ECS assumes to invoke this function. The role must trust ecs.amazonaws.com
+             * and allow lambda:InvokeFunction on functionArn, including any version or alias qualifier.
+             *
+             * If omitted, the service creates one shared invocation role for all Lambda hooks that omit this
+             * property, scoped to their function ARNs.
+             *
+             * Default - A shared invocation role is created when needed.
+             */
+            invocationRoleArn?: pulumi.Input<string | undefined>;
+        }
+
+        export interface RollingPauseHookArgs {
+            /**
+             * Action ECS takes when this pause hook times out. ROLLBACK reverts the deployment, CONTINUE
+             * releases this hook while leaving any other unfinished hooks at the stage in effect.
+             *
+             * Default - AWS default of PauseTimeoutAction.ROLLBACK.
+             */
+            timeoutAction?: enums.experimental.ecs.PauseTimeoutAction;
+            /**
+             * Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.
+             *
+             * Valid range: 1-20160 minutes (14 days).
+             *
+             * Default - AWS default of 1440 minutes (24 hours).
+             */
+            timeoutMinutes?: number;
+        }
+
+        export interface RollingStrategyArgs {
+            /**
+             * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+             * breaker is always enabled.
+             *
+             * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+             * the deployment as failed without automatic rollback.
+             *
+             * Default - DeploymentFailureAction.ROLLBACK
+             */
+            failureAction?: enums.experimental.ecs.DeploymentFailureAction;
+            /**
+             * Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+             *
+             * Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+             *
+             * Default - No Lambda hooks.
+             */
+            lambdaHooks?: inputs.experimental.ecs.RollingLambdaHookArgs[];
+            /**
+             * Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+             * external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+             * hookId, and CONTINUE or ROLLBACK.
+             *
+             * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+             * performed.
+             *
+             * Default - No pause hooks.
+             */
+            pauseHooks?: inputs.experimental.ecs.RollingPauseHookArgs[];
+        }
+
+        export interface SecretsManagerSecretArgs {
+            /**
+             * The JSON key whose value to extract. The secret must contain JSON when this is set.
+             *
+             * Default - The full secret contents.
+             */
+            jsonKey?: pulumi.Input<string | undefined>;
+            /**
+             * The ARN of the Secrets Manager secret whose value is passed to the container.
+             */
+            secretArn: pulumi.Input<string>;
+            /**
+             * The unique ID of the secret version to use.
+             *
+             * Cannot be combined with `versionStage`.
+             *
+             * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+             */
+            versionId?: pulumi.Input<string | undefined>;
+            /**
+             * The staging label of the secret version to use, such as `AWSPREVIOUS`.
+             *
+             * Cannot be combined with `versionId`.
+             *
+             * Default - ECS uses `AWSCURRENT` when neither version selector is set.
+             */
+            versionStage?: pulumi.Input<string | undefined>;
+        }
+
+        export interface ServiceCapacityArgs {
+            /**
+             * Select Fargate, overriding the cluster default.
+             *
+             * Default - Not explicitly selected.
+             */
+            fargate?: inputs.experimental.ecs.FargateServiceCapacityArgs;
+            /**
+             * Select a nonempty list of existing Managed Instances or EC2 providers. Each must belong to this
+             * service's cluster. Duplicate providers are rejected. List order has no priority semantics.
+             *
+             * Default - Not explicitly selected.
+             */
+            providers?: inputs.experimental.ecs.ServiceCapacityProviderArgs[];
+        }
+
+        export interface ServiceCapacityProviderArgs {
+            /**
+             * Number of desired tasks allocated here before weights are applied. Only one provider may
+             * specify a positive base. Does not increase desiredCount or guarantee healthy capacity.
+             *
+             * Default - 0.
+             */
+            base?: number;
+            /**
+             * ARN of an existing Managed Instances or ASG-backed capacity provider associated with this
+             * cluster. The provider must be usable in the cluster, with host networking that supports image
+             * pulls, secrets, and logs.
+             */
+            capacityProviderArn: pulumi.Input<string>;
+            /**
+             * Relative share of tasks remaining after the base. Zero allocates only the base tasks. At least
+             * one selected provider must have a positive weight. Order does not imply priority.
+             *
+             * Default - 1.
+             */
+            weight?: number;
+        }
+
+        export interface ServiceDeploymentStrategyArgs {
+            /**
+             * Configuration for shifting all production traffic to the new revision once it is ready.
+             */
+            blueGreen?: inputs.experimental.ecs.BlueGreenStrategyArgs;
+            /**
+             * Configuration for testing an initial percentage of production traffic before shifting the rest.
+             *
+             * Default - no canary configuration
+             */
+            canary?: inputs.experimental.ecs.CanaryStrategyArgs;
+            /**
+             * Configuration for shifting production traffic in equal increments.
+             *
+             * Default - no linear configuration
+             */
+            linear?: inputs.experimental.ecs.LinearStrategyArgs;
+            /**
+             * Configuration for the rolling update strategy. This is the default.
+             */
+            rolling?: inputs.experimental.ecs.RollingStrategyArgs;
+        }
+
+        export interface ServiceLoadBalancerArgs {
+            /**
+             * Application Load Balancer attachment for a named service endpoint. Creates target groups and
+             * forwarding rules on a caller-managed listener.
+             *
+             * An application configuration must be provided for each entry in the service's
+             * loadBalancerAttachments map.
+             */
+            application: inputs.experimental.ecs.ApplicationServiceLoadBalancerArgs;
+        }
+
+        export interface StringMatchArgs {
+            /**
+             * Regular-expression matching. Conflicts with `values`
+             */
+            regexValues?: pulumi.Input<string>[];
+            /**
+             * AWS value matching, including supported wildcards. Conflicts with `regexValues`
+             */
+            values?: pulumi.Input<string>[];
+        }
+
+        export interface SystemControlArgs {
+            /**
+             * The namespaced kernel parameter name.
+             */
+            namespace?: string;
+            /**
+             * The value assigned to the parameter.
+             */
+            value?: string;
+        }
+
+        export interface TargetGroupHealthCheckArgs {
+            /**
+             * The gRPC codes to use when checking for a response from a target. Values can be comma-separated
+             * individual values (e.g., "12,13") or a range of values (e.g., "12-15"). Once the value has been
+             * set, removing it has no effect. To unset it, set it to an empty string `""`.
+             *
+             * Values can be between `0` and `99`.
+             *
+             * Default - `12`.
+             */
+            healthGrpcCodes?: string;
+            /**
+             * The HTTP codes to use when checking for a successful response from a target. Values can be
+             * comma-separated individual values (e.g., "200,202") or a range of values (e.g., "200-299").
+             * Once the value has been set, removing it has no effect. To unset it, set it to an empty string
+             * `""`. Values can be between `200` and `499`
+             *
+             * Default - 200
+             */
+            healthyHttpCodes?: string;
+            /**
+             * Number of consecutive health check successes required before considering a target healthy. The
+             * range is 2-10.
+             *
+             * Default - 3
+             */
+            healthyThreshold?: number;
+            /**
+             * Approximate amount of time, in seconds, between health checks of an individual target. The
+             * range is 5-300.
+             *
+             * Default - 30.
+             */
+            intervalSeconds?: number;
+            /**
+             * Destination for the health check request. Once the value has been set, removing it has no
+             * effect. To unset it, set it to an empty string `""`.
+             *
+             * Default - `/` for HTTP/1 and HTTP/2, or `/AWS.ALB/healthcheck` for gRPC.
+             */
+            path?: string;
+            /**
+             * The port the load balancer uses when performing health checks on targets. Valid values are a
+             * valid port number between `1` and `65535`.
+             *
+             * Default - By default (when this is undefined) it uses the same port as the target group
+             */
+            port?: number;
+            /**
+             * Protocol the load balancer uses when performing health checks on targets. Must be one of
+             * `HTTP`, or `HTTPS`.
+             *
+             * Default - ApplicationProtocol.HTTP.
+             */
+            protocol?: enums.experimental.ecs.ApplicationProtocol;
+            /**
+             * Amount of time in seconds to wait before a health check times out. Range: 2-120 seconds.
+             *
+             * Default - 5 seconds
+             */
+            timeoutSeconds?: number;
+            /**
+             * Number of consecutive health check failures required before considering a target unhealthy. The
+             * range is 2-10.
+             *
+             * Default - 3.
+             */
+            unhealthyThreshold?: number;
+        }
+
+        export interface TestTrafficArgs {
+            /**
+             * This is only applicable when using blue/green, canary, or linear deployments. When those
+             * deployment strategies are used you can provide these match conditions to route certain requests
+             * to the new version immediately.
+             *
+             * When a new version is deployed using blue/green, canary, or linear deployments ECS starts by
+             * first shifting 100% of traffic matching these conditions to the new version. Once that shift is
+             * complete ECS then begins the production traffic shift. Using this `testTraffic` configuration
+             * can allow you to accomplish things like:
+             *
+             * - Automated smoke tests before shifting production traffic
+             * - Manual inspection before shifting production traffic
+             * - Targeted checks during a canary/linear deployment.
+             *
+             * The test rule uses the priority immediately before the production rule. That priority must be
+             * available, and the production priority must be greater than 1.
+             */
+            match: inputs.experimental.ecs.ListenerConditionsArgs;
+        }
+
+        export interface UlimitArgs {
+            /**
+             * The hard limit, in bytes, seconds, or a count, depending on `name`.
+             */
+            hardLimit: number;
+            /**
+             * The resource limit to configure.
+             */
+            name: enums.experimental.ecs.UlimitName;
+            /**
+             * The soft limit, in bytes, seconds, or a count, depending on `name`.
+             */
+            softLimit: number;
+        }
+
+        export interface VolumeFromArgs {
+            /**
+             * Whether this container has read-only access to the volumes.
+             *
+             * Default - `false`.
+             */
+            readOnly?: boolean;
+            /**
+             * The name of the container from which to mount volumes.
+             */
+            sourceContainer?: string;
+        }
+    }
+}
+
 export namespace lb {
     /**
      * Provides a Load Balancer Listener resource.
