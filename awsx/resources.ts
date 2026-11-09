@@ -19,8 +19,25 @@ import { Image, RegistryImage, Repository } from "./ecr";
 import * as ecs from "./ecs";
 import * as lb from "./lb";
 import * as schemaTypes from "./schema-types";
+import { TaskDefinition } from "@pulumi/awsx-next/src/ecs/taskDefinition";
+import { Service } from "@pulumi/awsx-next/src/ecs/service";
 
-const resources: schemaTypes.ResourceConstructor = {
+type ExperimentalResourceConstructors = {
+  "awsx:experimental/ecs:TaskDefinition": schemaTypes.ConstructComponent<TaskDefinition>;
+  "awsx:experimental/ecs:Service": schemaTypes.ConstructComponent<Service>;
+};
+
+const resources: schemaTypes.ResourceConstructor & ExperimentalResourceConstructors = {
+  "awsx:experimental/ecs:TaskDefinition": (name, args, opts) =>
+    new TaskDefinition(name, args, opts, {
+      type: "awsx:experimental/ecs:TaskDefinition",
+      aliases: [],
+    }),
+  "awsx:experimental/ecs:Service": (name, args, opts) =>
+    new Service(name, args, opts, {
+      type: "awsx:experimental/ecs:Service",
+      aliases: [],
+    }),
   "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
   "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
   "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),

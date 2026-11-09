@@ -28,3 +28,23 @@ Breaking changes require an explicit maintainer decision and a documented migrat
 The component moves to `awsx.<service>`. Normal AWSX compatibility requirements apply. If an
 existing stable component already has the preferred name, the new component keeps a version suffix
 when it graduates.
+
+## Provider integration
+
+The AWSX provider exposes the components implemented in `awsx-next` under
+`awsx:experimental/ecs`. Generated SDKs expose `TaskDefinition` and `Service`
+in the experimental ECS module. Existing stable AWSX components are unchanged.
+
+`awsx-next/index.ts` remains the source-based plugin entrypoint. Schema generation
+infers its public components and reachable types, then remaps their tokens into
+the AWSX experimental ECS module. Provider registration in `awsx/resources.ts`
+uses the same identities while preserving the standalone plugin identities.
+
+The provider installs and compiles `awsx-next` into its packaged module tree.
+Keep the provider's AWS, AWS Native, and Pulumi dependencies aligned with that
+workspace. Regenerate the schema and language SDKs after changing its public API.
+
+Both components inherit AWS and AWS Native providers from their parent. Configure
+both providers for the same account and region. Task definitions use AWS Native's
+structured ECS container inputs. Engine-side `transforms` can target the Native
+task resource, there is no separate remote container component.

@@ -1716,6 +1716,1504 @@
             },
             "type": "object"
         },
+        "awsx:experimental/ecs:ApplicationProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "HTTP",
+                    "value": "HTTP"
+                },
+                {
+                    "name": "HTTPS",
+                    "value": "HTTPS"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:ApplicationProtocolVersion": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "HTTP_1",
+                    "value": "HTTP1"
+                },
+                {
+                    "name": "HTTP_2",
+                    "value": "HTTP2"
+                },
+                {
+                    "name": "GRPC",
+                    "value": "GRPC"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:ApplicationServiceLoadBalancer": {
+            "properties": {
+                "containerName": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of the container to route traffic to."
+                },
+                "containerPort": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The port that the ECS Service receives traffic from the load balancer. This should be the same\nport used as the containerPort.\n\nValid values between 1 and 65535"
+                },
+                "listenerArn": {
+                    "type": "string",
+                    "description": "The ARN of the application listener to attach a production forwarding rule to. The listener's\nfrontend access, certificates, and default action are not modified. Forwarding rules use the\ninherited AWS Native provider, whose account and region must match the service's AWS account\nand effective region. Configure aws-native:region or pass a matching aws-native provider."
+                },
+                "match": {
+                    "$ref": "#/types/awsx:experimental/ecs:ListenerConditions",
+                    "plain": true,
+                    "description": "Conditions selecting production requests. When omitted, a path rule matches all requests. An\nexplicitly empty configuration is not allowed.\n\nDefault - Match the path pattern `/*`."
+                },
+                "priority": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The available priority for the production rule, from 1 to 50000.\n\nIf you add multiple load balancer attachments you must ensure the priorities are unique"
+                },
+                "targetHealthCheck": {
+                    "$ref": "#/types/awsx:experimental/ecs:TargetGroupHealthCheck",
+                    "plain": true,
+                    "description": "Health checks used by the Load Balancer to determine whether the ECS Service target can receive\ntraffic.\n\nDefault - HTTP on the target's traffic port, every 30 seconds with a 5-second timeout. Healthy\nand unhealthy thresholds are both 3. The default path is `/` with success code `200`, or\n`/AWS.ALB/healthcheck` with success code `12` for gRPC."
+                },
+                "targetProtocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:ApplicationProtocol",
+                    "plain": true,
+                    "description": "Protocol used for requests from the Load Balancer to the ECS Service target.\n\nDefault - ApplicationProtocol.HTTP"
+                },
+                "targetProtocolVersion": {
+                    "$ref": "#/types/awsx:experimental/ecs:ApplicationProtocolVersion",
+                    "plain": true,
+                    "description": "Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and\nGRPC require an HTTPS listener.\n\nDefault - ApplicationProtocolVersion.HTTP_1"
+                },
+                "testTraffic": {
+                    "$ref": "#/types/awsx:experimental/ecs:TestTraffic",
+                    "plain": true,
+                    "description": "Routing for validating a new revision before production traffic shifts. Requires blue/green,\ncanary, or linear deployments. Omitted means no test route."
+                }
+            },
+            "type": "object",
+            "required": [
+                "containerName",
+                "containerPort",
+                "listenerArn",
+                "priority"
+            ]
+        },
+        "awsx:experimental/ecs:AvailabilityZoneRebalancing": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "ENABLED",
+                    "description": "Availability zone rebalancing is enabled.",
+                    "value": "ENABLED"
+                },
+                {
+                    "name": "DISABLED",
+                    "description": "Availability zone rebalancing is disabled.",
+                    "value": "DISABLED"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:AwsLogDriverMode": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "BLOCKING",
+                    "description": "Deliver logs synchronously. Application writes can block when logs cannot be delivered.",
+                    "value": "blocking"
+                },
+                {
+                    "name": "NON_BLOCKING",
+                    "description": "Buffer logs in memory so application writes do not block. Logs can be lost when the buffer\nfills.",
+                    "value": "non-blocking"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:AwsLogsLogDriver": {
+            "properties": {
+                "datetimeFormat": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "A multiline start pattern in Python strftime format."
+                },
+                "logGroupArn": {
+                    "type": "string",
+                    "description": "The ARN of the log group to log to.\n\nDefault - A log group is created automatically."
+                },
+                "maxBufferSizeBytes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Size, in bytes, of the buffer used in non-blocking mode.\n\nDefault - The AWS default of 10 MiB when mode is non-blocking."
+                },
+                "mode": {
+                    "$ref": "#/types/awsx:experimental/ecs:AwsLogDriverMode",
+                    "plain": true,
+                    "description": "The delivery mode for log messages."
+                },
+                "multilinePattern": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "A multiline start pattern expressed as a regular expression."
+                },
+                "streamPrefix": {
+                    "type": "string",
+                    "description": "Prefix used for the container's log streams.\n\nDefault - The task component name."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:AwsvpcPortMapping": {
+            "properties": {
+                "appProtocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:PortMappingAppProtocol",
+                    "plain": true,
+                    "description": "The application protocol used by ECS Service Connect."
+                },
+                "containerPort": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The port number exposed by the container.\n\nDo not set this property when `containerPortRange` is set."
+                },
+                "containerPortRange": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerPortRange",
+                    "plain": true,
+                    "description": "A range of container ports with inclusive `start` and `end` values.\n\nDo not set this property when `containerPort` is set. ECS maps the host port range to the same\ncontainer port range."
+                },
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name used by ECS Service Connect and VPC Lattice."
+                },
+                "protocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:PortMappingProtocol",
+                    "plain": true,
+                    "description": "The protocol used for the port mapping.\n\nDefault - 'tcp'"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:BlueGreenStrategy": {
+            "properties": {
+                "bakeTimeMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes to keep the previous service revision running after all production traffic\nhas shifted to the new revision. This is separate from the canary observation period or the\nwaits between linear traffic increments.\n\nValid range: 0-1440 minutes."
+                },
+                "failureAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:DeploymentFailureAction",
+                    "plain": true,
+                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
+                },
+                "lambdaHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressiveLambdaHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Lambda functions invoked at selected deployment stages.\n\nLambda and pause hooks at the same stage run in parallel. All must complete before the\ndeployment proceeds.\n\nDefault - No Lambda hooks."
+                },
+                "pauseHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressivePauseHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Pauses at selected deployment stages for external approval or validation. To continue the\ndeployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,\nthe pause hookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
+                }
+            },
+            "type": "object",
+            "required": [
+                "bakeTimeMinutes"
+            ]
+        },
+        "awsx:experimental/ecs:CanaryStrategy": {
+            "properties": {
+                "bakeTimeMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes to keep the previous service revision running after all production traffic\nhas shifted to the new revision. This is separate from the canary observation period or the\nwaits between linear traffic increments.\n\nValid range: 0-1440 minutes."
+                },
+                "canaryBakeTimeMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes to observe the canary before shifting the remaining production traffic to the\nnew revision. Valid range: 0-1440 minutes (24 hours).\n\nDefault - AWS default of 10 minutes"
+                },
+                "canaryPercent": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Initial percentage of production traffic sent to the new service revision during the canary\nphase. Valid values are multiples of 0.1 from 0.1 to 100.0.\n\nDefault - AWS default of 5.0"
+                },
+                "failureAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:DeploymentFailureAction",
+                    "plain": true,
+                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
+                },
+                "lambdaHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressiveLambdaHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Lambda functions invoked at selected deployment stages.\n\nLambda and pause hooks at the same stage run in parallel. All must complete before the\ndeployment proceeds.\n\nDefault - No Lambda hooks."
+                },
+                "pauseHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressivePauseHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Pauses at selected deployment stages for external approval or validation. To continue the\ndeployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,\nthe pause hookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
+                }
+            },
+            "type": "object",
+            "required": [
+                "bakeTimeMinutes"
+            ]
+        },
+        "awsx:experimental/ecs:CapacityAllocation": {
+            "properties": {
+                "base": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of desired tasks allocated here before weights are applied. Only one provider may\nspecify a positive base. Does not increase desiredCount or guarantee healthy capacity.\n\nDefault - 0."
+                },
+                "weight": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Relative share of tasks remaining after the base. Zero allocates only the base tasks. At least\none selected provider must have a positive weight. Order does not imply priority.\n\nDefault - 1."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ContainerDefinitionOptions": {
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "The command passed to the container.\n\nDefault - The command configured in the container image."
+                },
+                "cpuUnits": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "CPU units reserved for this container. Within a task CPU limit, these control relative shares\nunder contention.\n\nDefault - No minimum CPU reservation."
+                },
+                "credentialSpec": {
+                    "$ref": "#/types/awsx:experimental/ecs:FargateCredentialSpec",
+                    "plain": true,
+                    "description": "Domainless Active Directory authentication using an S3 credential specification. This component\ncurrently supports this integration only for Fargate-only tasks.\n\nDefault - No Active Directory authentication."
+                },
+                "dependsOn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDependency"
+                    },
+                    "plain": true,
+                    "description": "Startup ordering dependencies on other containers. ECS reverses them during shutdown.\n\nDefault - No dependencies."
+                },
+                "dockerLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Labels to add to the container.\n\nDefault - No labels."
+                },
+                "entryPoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The entry point passed to the container.\n\nDefault - The entry point configured in the container image.\n\nFor more information, see [Dockerfile\nENTRYPOINT](https://docs.docker.com/reference/dockerfile/#entrypoint)."
+                },
+                "environment": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:experimental/ecs:EnvironmentVariable",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Environment variables keyed by name, including ordinary values, Pulumi secret-marked values,\nand references to existing SSM parameters or Secrets Manager secrets.\n\nDefault - No environment variables."
+                },
+                "environmentFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:EnvironmentFile",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Environment files passed to the container."
+                },
+                "essential": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the container is essential to the task.\n\nIf an essential container stops, ECS stops all other containers in the task. Each task must\nhave at least one essential container.\n\nDefault - `true`."
+                },
+                "gpuCount": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Positive whole number of physical GPUs reserved for this container. Does not work with Fargate\ncapability\n\nDefault - No GPUs."
+                },
+                "healthCheck": {
+                    "$ref": "#/types/awsx:experimental/ecs:HealthCheck",
+                    "plain": true,
+                    "description": "The health check command and settings for the container.\n\nUse a health check when the container can remain running while the application is unhealthy,\nsuch as an unresponsive server or a worker that has stopped processing jobs. A health check is\nnot required merely to validate startup configuration if the application exits when that\nvalidation fails.\n\nECS services can replace tasks with unhealthy essential containers. A health check does not\nprovide automatic replacement for standalone tasks.\n\nECS only monitors health checks specified in the task definition. It does not monitor a health\ncheck configured only in the container image.\n\nDefault - No ECS container health check.\n\nFor more information, see [Determine Amazon ECS task health using container health\nchecks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html)."
+                },
+                "image": {
+                    "type": "string",
+                    "description": "The image used to start the container."
+                },
+                "interactive": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to keep standard input open for the container when no client is attached.\n\nDefault - `false`."
+                },
+                "linuxParameters": {
+                    "$ref": "#/types/awsx:experimental/ecs:LinuxParameters",
+                    "plain": true,
+                    "description": "Linux capability and init-process settings. Fargate permits adding only SYS_PTRACE."
+                },
+                "logging": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerLogDriver",
+                    "plain": true,
+                    "description": "Log collection. AWSX grants the execution role access to the configured log group.\n\nDefault - CloudWatch logging with a shared log group created by this component."
+                },
+                "memoryMiB": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed\nmemoryReservationMiB when both are set.\n\nDefault - No container-level hard memory limit. A task memory limit or container reservation is\nrequired."
+                },
+                "memoryReservationMiB": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Soft memory reservation in MiB. The container can grow beyond this reservation when memory is\navailable, up to its hard limit or the task's shared memory limit.\n\nDefault - No soft memory reservation."
+                },
+                "portMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:AwsvpcPortMapping",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Ports exposed on the task's network interface."
+                },
+                "privileged": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Run with elevated host privileges. Not supported by Fargate.\n\nDefault - false."
+                },
+                "pseudoTerminal": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether to allocate a TTY for the container.\n\nDefault - `false`."
+                },
+                "readonlyRootFilesystem": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether the container has read-only access to its root file system.\n\nDefault - `false`."
+                },
+                "startTimeoutSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Time in seconds to wait for this container's startup dependencies to become ready.\n\nFargate accepts 2 through 120 seconds. Managed Instances allows up to 600 seconds. EC2 allows\nup to 120 seconds. Every selected compatibility's limit applies.\n\nDefault - No container-specific startup timeout."
+                },
+                "stopTimeoutSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Time in seconds to wait before forcefully stopping a container that does not exit normally.\n\nFargate accepts 2 through 120 seconds. Managed Instances allows up to 86400 seconds. EC2 uses\nthe container agent's timeout when this is omitted.\n\nDefault - 30 seconds, or the EC2 container agent's configured stop timeout."
+                },
+                "systemControls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:SystemControl",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Namespaced kernel parameters to set in the container.\n\nDefault - No system controls.\n\nFor more information, see [System\ncontrols](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols)."
+                },
+                "ulimits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:Ulimit",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Linux resource limits. Explicit values override runtime defaults.\n\nDefault - Runtime defaults."
+                },
+                "user": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The user that runs commands inside the container.\n\nThe value can be a user name, user ID, or a user and group pair supported by the container\noperating system. This property is not supported for Windows containers.\n\nDefault - The user configured in the container image, or the root user if the image does not\nconfigure one."
+                },
+                "versionConsistencyEnabled": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether ECS resolves image tags to digests so service tasks use a consistent image version.\n\nDefault - true."
+                },
+                "volumesFrom": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:VolumeFrom",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Data volumes to mount from another container in the same task.\n\nEach entry identifies the source container and whether this container has read-only access to\nits volumes.\n\nDefault - No inherited volumes."
+                },
+                "workingDirectory": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The working directory in which commands run inside the container.\n\nDefault - The working directory configured in the container image, or `/` if the image does not\nconfigure one."
+                }
+            },
+            "type": "object",
+            "required": [
+                "image"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDependency": {
+            "properties": {
+                "condition": {
+                    "$ref": "#/types/awsx:experimental/ecs:ContainerDependencyCondition",
+                    "plain": true,
+                    "description": "The condition that the other container must satisfy."
+                },
+                "containerName": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of the other container."
+                }
+            },
+            "type": "object",
+            "required": [
+                "condition",
+                "containerName"
+            ]
+        },
+        "awsx:experimental/ecs:ContainerDependencyCondition": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "START",
+                    "description": "Wait until the other container starts.",
+                    "value": "START"
+                },
+                {
+                    "name": "COMPLETE",
+                    "description": "Wait until the other container exits. The other container must not be essential.",
+                    "value": "COMPLETE"
+                },
+                {
+                    "name": "SUCCESS",
+                    "description": "Wait until the other container exits with a zero status. It must not be essential.",
+                    "value": "SUCCESS"
+                },
+                {
+                    "name": "HEALTHY",
+                    "description": "Wait until the other container passes its configured health check. Checked only at startup.",
+                    "value": "HEALTHY"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:ContainerLogDriver": {
+            "properties": {
+                "cloudwatch": {
+                    "$ref": "#/types/awsx:experimental/ecs:AwsLogsLogDriver",
+                    "plain": true,
+                    "description": "Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.\n\nFor more information, see [CloudWatch\nlogging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html)."
+                },
+                "disabled": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Disable collection of this container's stdout and stderr through the log driver. Cannot be\ncombined with `cloudwatch`.\n\nDefault - false; logs are sent to CloudWatch Logs."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ContainerPortRange": {
+            "properties": {
+                "end": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The last port in the range. Must be from 1 through 65535 and greater than `start`."
+                },
+                "start": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The first port in the range. Must be from 1 through 65535 and less than `end`."
+                }
+            },
+            "type": "object",
+            "required": [
+                "end",
+                "start"
+            ]
+        },
+        "awsx:experimental/ecs:CpuArchitecture": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "X86_64",
+                    "value": "X86_64"
+                },
+                {
+                    "name": "ARM64",
+                    "value": "ARM64"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:DeploymentFailureAction": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "ROLLBACK",
+                    "description": "On failure restore the last completed deployment",
+                    "value": "Rollback"
+                },
+                {
+                    "name": "STOP",
+                    "description": "On failure stop the failed deployment and require manual remediation",
+                    "value": "Stop"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:EnvironmentFile": {
+            "properties": {
+                "bucketArn": {
+                    "type": "string",
+                    "description": "The ARN of the bucket that contains the environment file."
+                },
+                "key": {
+                    "type": "string",
+                    "description": "The object key of the environment file."
+                }
+            },
+            "type": "object",
+            "required": [
+                "bucketArn",
+                "key"
+            ]
+        },
+        "awsx:experimental/ecs:EnvironmentVariable": {
+            "properties": {
+                "secretsManager": {
+                    "$ref": "#/types/awsx:experimental/ecs:SecretsManagerSecret",
+                    "plain": true,
+                    "description": "An existing Secrets Manager secret. Cannot be combined with `value` or `ssmParameterArn`. AWSX\ngrants retrieval permissions but does not modify or retain the supplied secret.\n\nFor more information, see [Secrets Manager environment\nvariables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html)."
+                },
+                "ssmParameterArn": {
+                    "type": "string",
+                    "description": "An existing SSM Parameter Store parameter ARN. Cannot be combined with `value` or\n`secretsManager`. AWSX grants retrieval permissions but does not modify or retain the\nparameter.\n\nFor more information, see [SSM Parameter Store environment\nvariables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-ssm-paramstore.html)."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The value passed to the container.\n\nPulumi secret-marked values are stored in an AWSX-created Secrets Manager secret and referenced\nby version ID. Changing the value registers a new task-definition revision and deploys services\nconsuming that revision.\n\nAWSX retains managed secrets, versions and retrieval permissions when this entry is removed.\nRetained resources require manual cleanup and continue to incur charges. AWS may\ngarbage-collect old unlabeled versions after its version limit is exceeded.\n\nDefault - Use the explicit SSM or Secrets Manager source instead."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:FargateCredentialSpec": {
+            "properties": {
+                "bucketArn": {
+                    "type": "string",
+                    "description": "ARN of the general-purpose S3 bucket containing the CredSpec.\n\nThe bucket remains user-managed. If its encryption configuration is created in the same update,\nensure the component depends on that configuration."
+                },
+                "config": {
+                    "$ref": "#/types/awsx:experimental/ecs:FargateCredentialSpecConfig",
+                    "plain": true,
+                    "description": "Configuration used to generate a domainless CredSpec JSON object in the supplied bucket.\n\nThe object uses the bucket's default encryption settings and a Pulumi auto-named key. Changing\nthe configuration replaces the object with a new key and registers a new task definition\nrevision. Removing this configuration deletes the component-managed object, not the bucket or\nsecret.\n\nDefault - Read the existing object identified by `key`."
+                },
+                "key": {
+                    "type": "string",
+                    "description": "Key of an existing CredSpec object. The component reads the JSON to discover its credentials\nsecret and reads the object's actual KMS key, which can differ from the bucket default.\n\nThe object remains user-managed. Ensure it exists before the component's lookup, using\n`dependsOn` when necessary. Changes to its contents are discovered on the next update.\n\nDefault - Create an object from `config`."
+                }
+            },
+            "type": "object",
+            "required": [
+                "bucketArn"
+            ]
+        },
+        "awsx:experimental/ecs:FargateCredentialSpecConfig": {
+            "properties": {
+                "credentialsSecretArn": {
+                    "type": "string",
+                    "description": "ARN of the Secrets Manager secret containing `username`, `password`, and `domainName` for an\nActive Directory user allowed to retrieve the gMSA password. The secret remains user-managed;\nonly its metadata is read to discover the encryption key."
+                },
+                "dnsTreeName": {
+                    "type": "string",
+                    "description": "DNS name of the Active Directory forest root.\n\nDefault - `domainName`."
+                },
+                "domainGuid": {
+                    "type": "string",
+                    "description": "GUID of the Active Directory domain."
+                },
+                "domainName": {
+                    "type": "string",
+                    "description": "DNS name of the Active Directory domain, for example `example.com`."
+                },
+                "domainSid": {
+                    "type": "string",
+                    "description": "Security identifier (SID) of the Active Directory domain."
+                },
+                "gmsaAccountName": {
+                    "type": "string",
+                    "description": "Name of the gMSA account, for example `WebApp01`."
+                },
+                "netBiosName": {
+                    "type": "string",
+                    "description": "NetBIOS name of the Active Directory domain, for example `EXAMPLE`."
+                }
+            },
+            "type": "object",
+            "required": [
+                "credentialsSecretArn",
+                "domainGuid",
+                "domainName",
+                "domainSid",
+                "gmsaAccountName",
+                "netBiosName"
+            ]
+        },
+        "awsx:experimental/ecs:FargateServiceCapacity": {
+            "properties": {
+                "onDemand": {
+                    "$ref": "#/types/awsx:experimental/ecs:CapacityAllocation",
+                    "plain": true,
+                    "description": "Allocate tasks to Fargate On-Demand. If neither allocation is specified, use the Fargate launch\ntype without requiring a cluster capacity-provider association.\n\nDefault - Fargate On-Demand when spot is also omitted, otherwise not selected."
+                },
+                "spot": {
+                    "$ref": "#/types/awsx:experimental/ecs:CapacityAllocation",
+                    "plain": true,
+                    "description": "Allocate interruption-tolerant tasks to Fargate Spot. Unavailable Spot capacity is not\nautomatically replaced by On-Demand capacity.\n\nDefault - Not selected."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:HeaderCondition": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the HTTP request header to match, such as \"X-Deployment\". Header names are matched\ncase-insensitively"
+                },
+                "regexValues": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Regular-expression matching. Conflicts with `values`"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "AWS value matching, including supported wildcards. Conflicts with `regexValues`"
+                }
+            },
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "awsx:experimental/ecs:HealthCheck": {
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The command that the container runs to determine whether it is healthy.\n\nThe first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.\n\nExample: [\"CMD-SHELL\", \"curl --fail http://localhost/health || exit 1\"]"
+                },
+                "intervalSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, between health checks. Valid values are from 5 through 300.\n\nDefault - 30 seconds."
+                },
+                "retries": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The number of consecutive failures required before the container becomes unhealthy. Valid\nvalues are from 1 through 10.\n\nDefault - 3."
+                },
+                "startPeriodSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The startup grace period, in seconds, during which failed checks do not count toward the retry\nlimit. Valid values are from 0 through 300.\n\nDefault - No startup grace period."
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.\n\nDefault - 5 seconds."
+                }
+            },
+            "type": "object",
+            "required": [
+                "command"
+            ]
+        },
+        "awsx:experimental/ecs:KernelCapabilities": {
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Linux capabilities to add to the container.\n\nFargate supports adding only `SYS_PTRACE`."
+                },
+                "drop": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Linux capabilities to remove from the container."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:LinearStrategy": {
+            "properties": {
+                "bakeTimeMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes to keep the previous service revision running after all production traffic\nhas shifted to the new revision. This is separate from the canary observation period or the\nwaits between linear traffic increments.\n\nValid range: 0-1440 minutes."
+                },
+                "failureAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:DeploymentFailureAction",
+                    "plain": true,
+                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
+                },
+                "lambdaHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressiveLambdaHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Lambda functions invoked at selected deployment stages.\n\nLambda and pause hooks at the same stage run in parallel. All must complete before the\ndeployment proceeds.\n\nDefault - No Lambda hooks."
+                },
+                "pauseHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressivePauseHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Pauses at selected deployment stages for external approval or validation. To continue the\ndeployment an external workflow has to call ContinueServiceDeployment with the deployment ARN,\nthe pause hookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
+                },
+                "stepBakeTimeMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes to wait between traffic increments. Valid range: 0-1440 minutes (24 hours).\n\nDefault - AWS default of 6 minutes"
+                },
+                "stepPercent": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Percentage of production traffic shifted to the new service revision in each increment. Valid\nvalues are multiples of 0.1 from 3.0 to 100.0.\n\nDefault - AWS default of 10.0"
+                }
+            },
+            "type": "object",
+            "required": [
+                "bakeTimeMinutes"
+            ]
+        },
+        "awsx:experimental/ecs:LinuxParameters": {
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/types/awsx:experimental/ecs:KernelCapabilities",
+                    "plain": true,
+                    "description": "Linux capabilities to add to or remove from the container."
+                },
+                "initProcessEnabled": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Run an init process that forwards signals and reaps processes."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ListenerConditions": {
+            "properties": {
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:HeaderCondition",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "HTTP request headers to match. Every configured header condition must match (AND). Within an\nindividual condition, any configured value may match (OR)."
+                },
+                "hostnames": {
+                    "$ref": "#/types/awsx:experimental/ecs:StringMatch",
+                    "plain": true,
+                    "description": "Hostname patterns or regular expressions matched against the request's Host header. Matching is\ncase-insensitive"
+                },
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "HTTP request methods to match, such as \"GET\" or \"POST\". Matching is case-sensitive and requires\nan exact match"
+                },
+                "pathPatterns": {
+                    "$ref": "#/types/awsx:experimental/ecs:StringMatch",
+                    "plain": true,
+                    "description": "Path patterns or regular expressions matched against the request URL path. Matching is\ncase-sensitive and excludes the query string."
+                },
+                "queryStrings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:QueryStringCondition",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Query-string key/value patterns to match."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:PauseTimeoutAction": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "ROLLBACK",
+                    "description": "Rolls back the deployment to the previous service revision.",
+                    "value": "ROLLBACK"
+                },
+                {
+                    "name": "CONTINUE",
+                    "description": "Releases this pause hook. Other hooks at the same stage must still complete before the\ndeployment proceeds.",
+                    "value": "CONTINUE"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:PortMappingAppProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "HTTP",
+                    "description": "Use HTTP protocol handling and telemetry.",
+                    "value": "http"
+                },
+                {
+                    "name": "HTTP2",
+                    "description": "Use HTTP/2 protocol handling and telemetry.",
+                    "value": "http2"
+                },
+                {
+                    "name": "GRPC",
+                    "description": "Use gRPC protocol handling and telemetry.",
+                    "value": "grpc"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:PortMappingProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "TCP",
+                    "description": "Use the Transmission Control Protocol.",
+                    "value": "tcp"
+                },
+                {
+                    "name": "UDP",
+                    "description": "Use the User Datagram Protocol.",
+                    "value": "udp"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:ProgressiveLambdaHook": {
+            "properties": {
+                "functionArn": {
+                    "type": "string",
+                    "description": "ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function\nrevision that handles the hook.\n\nThe function must return a JSON object with a hookStatus of SUCCEEDED, FAILED, or IN_PROGRESS.\nIf IN_PROGRESS is returned then ECS will invoke the hook again until either FAILED or SUCCEEDED\nare returned."
+                },
+                "hookDetails": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    },
+                    "description": "Custom JSON-compatible configuration passed to the Lambda function as event.hookDetails. Values\ncan include nested objects, arrays, numbers, booleans, null, and Pulumi outputs. The component\nresolves outputs and serializes the object as JSON for ECS.\n\nA function returning IN_PROGRESS can also return hookDetails to persist state between its\ninvocations within the same deployment. That state is not shared with other hooks or later\ndeployments. Pass secret identifiers rather than secret values and let the function retrieve\nsecrets using its execution role.\n\nDefault - No custom configuration is passed."
+                },
+                "invocationRoleArn": {
+                    "type": "string",
+                    "description": "ARN of the IAM role ECS assumes to invoke this function. The role must trust ecs.amazonaws.com\nand allow lambda:InvokeFunction on functionArn, including any version or alias qualifier.\n\nIf omitted, the service creates one shared invocation role for all Lambda hooks that omit this\nproperty, scoped to their function ARNs.\n\nDefault - A shared invocation role is created when needed."
+                },
+                "lifecycleStages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressiveLambdaLifecycleStage",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Stages at which ECS invokes this function. Hooks at the same stage run in parallel, and all\nmust complete before the deployment proceeds. Array order does not define execution order.\n\nPRE_PRODUCTION_TRAFFIC_SHIFT and PRODUCTION_TRAFFIC_SHIFT run at every traffic shift step for\ncanary and linear deployments. ECS can also reinvoke a function that returns IN_PROGRESS."
+                }
+            },
+            "type": "object",
+            "required": [
+                "functionArn",
+                "lifecycleStages"
+            ]
+        },
+        "awsx:experimental/ecs:ProgressiveLambdaLifecycleStage": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "RECONCILE_SERVICE",
+                    "description": "Reconciles the service before a deployment when more than one service revision is active.",
+                    "value": "RECONCILE_SERVICE"
+                },
+                {
+                    "name": "PRE_SCALE_UP",
+                    "description": "Runs before ECS starts tasks for the new service revision.",
+                    "value": "PRE_SCALE_UP"
+                },
+                {
+                    "name": "POST_SCALE_UP",
+                    "description": "Runs after tasks for the new service revision have started and become healthy, before they\nreceive traffic.",
+                    "value": "POST_SCALE_UP"
+                },
+                {
+                    "name": "TEST_TRAFFIC_SHIFT",
+                    "description": "Runs while ECS shifts test traffic to the new service revision. This hook can also run during\nrollback, so the function must handle traffic moving back to the previous revision.",
+                    "value": "TEST_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "POST_TEST_TRAFFIC_SHIFT",
+                    "description": "Runs after the test traffic shift completes and the new service revision receives all test\ntraffic. Use with a test route to validate the revision before production traffic shifts.",
+                    "value": "POST_TEST_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "PRE_PRODUCTION_TRAFFIC_SHIFT",
+                    "description": "Runs before production traffic shifts to the new service revision. For canary and linear\ndeployments, runs before each traffic shift step.",
+                    "value": "PRE_PRODUCTION_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "PRODUCTION_TRAFFIC_SHIFT",
+                    "description": "Runs while production traffic shifts to the new service revision, at each step for canary and\nlinear deployments. This hook also runs during rollback; inspect the traffic weights to\ndetermine the direction of the shift.",
+                    "value": "PRODUCTION_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "POST_PRODUCTION_TRAFFIC_SHIFT",
+                    "description": "Runs after all production traffic has shifted to the new service revision.",
+                    "value": "POST_PRODUCTION_TRAFFIC_SHIFT"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:ProgressivePauseHook": {
+            "properties": {
+                "lifecycleStages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ProgressivePauseLifecycleStage",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Stages at which ECS waits for an external decision. Hooks at the same stage run in parallel.\nEach pause must be continued and each Lambda hook must succeed before the deployment proceeds.\nA pause can also be released by its timeout action. Array order does not define execution\norder.\n\nPRE_PRODUCTION_TRAFFIC_SHIFT pauses before every traffic shift step for canary and linear\ndeployments, requiring a separate ContinueServiceDeployment call for each new hookId."
+                },
+                "timeoutAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:PauseTimeoutAction",
+                    "plain": true,
+                    "description": "Action ECS takes when this pause hook times out. ROLLBACK reverts the deployment, CONTINUE\nreleases this hook while leaving any other unfinished hooks at the stage in effect.\n\nDefault - AWS default of PauseTimeoutAction.ROLLBACK."
+                },
+                "timeoutMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.\n\nValid range: 1-20160 minutes (14 days).\n\nDefault - AWS default of 1440 minutes (24 hours)."
+                }
+            },
+            "type": "object",
+            "required": [
+                "lifecycleStages"
+            ]
+        },
+        "awsx:experimental/ecs:ProgressivePauseLifecycleStage": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "RECONCILE_SERVICE",
+                    "description": "Pauses during service reconciliation when more than one service revision is active.",
+                    "value": "RECONCILE_SERVICE"
+                },
+                {
+                    "name": "PRE_SCALE_UP",
+                    "description": "Pauses before ECS starts tasks for the new service revision.",
+                    "value": "PRE_SCALE_UP"
+                },
+                {
+                    "name": "POST_SCALE_UP",
+                    "description": "Pauses after tasks for the new service revision have started and become healthy, before they\nreceive traffic.",
+                    "value": "POST_SCALE_UP"
+                },
+                {
+                    "name": "POST_TEST_TRAFFIC_SHIFT",
+                    "description": "Pauses after the test traffic shift completes and before production traffic shifts. Use with a\ntest route to inspect or validate the new revision.",
+                    "value": "POST_TEST_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "PRE_PRODUCTION_TRAFFIC_SHIFT",
+                    "description": "Pauses before production traffic shifts to the new service revision. Canary and linear\ndeployments pause before each traffic shift step, with a new hookId to continue each time.",
+                    "value": "PRE_PRODUCTION_TRAFFIC_SHIFT"
+                },
+                {
+                    "name": "POST_PRODUCTION_TRAFFIC_SHIFT",
+                    "description": "Pauses after all production traffic has shifted to the new service revision.",
+                    "value": "POST_PRODUCTION_TRAFFIC_SHIFT"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:PropagateTags": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "SERVICE",
+                    "description": "Copies tags from the ECS service to newly launched tasks. This is the default",
+                    "value": "SERVICE"
+                },
+                {
+                    "name": "TASK_DEFINITION",
+                    "description": "Copies tags from the task definition to newly launched tasks.",
+                    "value": "TASK_DEFINITION"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:QueryStringCondition": {
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "Query string key pattern to match."
+                },
+                "value": {
+                    "type": "string",
+                    "description": "Query string value pattern to match."
+                }
+            },
+            "type": "object",
+            "required": [
+                "value"
+            ]
+        },
+        "awsx:experimental/ecs:RollingLambdaHook": {
+            "properties": {
+                "functionArn": {
+                    "type": "string",
+                    "description": "ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function\nrevision that handles the hook.\n\nThe function must return a JSON object with a hookStatus of SUCCEEDED, FAILED, or IN_PROGRESS.\nIf IN_PROGRESS is returned then ECS will invoke the hook again until either FAILED or SUCCEEDED\nare returned."
+                },
+                "hookDetails": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    },
+                    "description": "Custom JSON-compatible configuration passed to the Lambda function as event.hookDetails. Values\ncan include nested objects, arrays, numbers, booleans, null, and Pulumi outputs. The component\nresolves outputs and serializes the object as JSON for ECS.\n\nA function returning IN_PROGRESS can also return hookDetails to persist state between its\ninvocations within the same deployment. That state is not shared with other hooks or later\ndeployments. Pass secret identifiers rather than secret values and let the function retrieve\nsecrets using its execution role.\n\nDefault - No custom configuration is passed."
+                },
+                "invocationRoleArn": {
+                    "type": "string",
+                    "description": "ARN of the IAM role ECS assumes to invoke this function. The role must trust ecs.amazonaws.com\nand allow lambda:InvokeFunction on functionArn, including any version or alias qualifier.\n\nIf omitted, the service creates one shared invocation role for all Lambda hooks that omit this\nproperty, scoped to their function ARNs.\n\nDefault - A shared invocation role is created when needed."
+                }
+            },
+            "type": "object",
+            "required": [
+                "functionArn"
+            ]
+        },
+        "awsx:experimental/ecs:RollingPauseHook": {
+            "properties": {
+                "timeoutAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:PauseTimeoutAction",
+                    "plain": true,
+                    "description": "Action ECS takes when this pause hook times out. ROLLBACK reverts the deployment, CONTINUE\nreleases this hook while leaving any other unfinished hooks at the stage in effect.\n\nDefault - AWS default of PauseTimeoutAction.ROLLBACK."
+                },
+                "timeoutMinutes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.\n\nValid range: 1-20160 minutes (14 days).\n\nDefault - AWS default of 1440 minutes (24 hours)."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:RollingStrategy": {
+            "properties": {
+                "failureAction": {
+                    "$ref": "#/types/awsx:experimental/ecs:DeploymentFailureAction",
+                    "plain": true,
+                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
+                },
+                "lambdaHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:RollingLambdaHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.\n\nLambda and pause hooks run in parallel at this stage, and all must complete before tasks start.\n\nDefault - No Lambda hooks."
+                },
+                "pauseHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:RollingPauseHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an\nexternal workflow has to call ContinueServiceDeployment with the deployment ARN, the pause\nhookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:SecretsManagerSecret": {
+            "properties": {
+                "jsonKey": {
+                    "type": "string",
+                    "description": "The JSON key whose value to extract. The secret must contain JSON when this is set.\n\nDefault - The full secret contents."
+                },
+                "secretArn": {
+                    "type": "string",
+                    "description": "The ARN of the Secrets Manager secret whose value is passed to the container."
+                },
+                "versionId": {
+                    "type": "string",
+                    "description": "The unique ID of the secret version to use.\n\nCannot be combined with `versionStage`.\n\nDefault - ECS uses `AWSCURRENT` when neither version selector is set."
+                },
+                "versionStage": {
+                    "type": "string",
+                    "description": "The staging label of the secret version to use, such as `AWSPREVIOUS`.\n\nCannot be combined with `versionId`.\n\nDefault - ECS uses `AWSCURRENT` when neither version selector is set."
+                }
+            },
+            "type": "object",
+            "required": [
+                "secretArn"
+            ]
+        },
+        "awsx:experimental/ecs:ServiceCapacity": {
+            "properties": {
+                "fargate": {
+                    "$ref": "#/types/awsx:experimental/ecs:FargateServiceCapacity",
+                    "plain": true,
+                    "description": "Select Fargate, overriding the cluster default.\n\nDefault - Not explicitly selected."
+                },
+                "providers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:ServiceCapacityProvider",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Select a nonempty list of existing Managed Instances or EC2 providers. Each must belong to this\nservice's cluster. Duplicate providers are rejected. List order has no priority semantics.\n\nDefault - Not explicitly selected."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ServiceCapacityProvider": {
+            "properties": {
+                "base": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of desired tasks allocated here before weights are applied. Only one provider may\nspecify a positive base. Does not increase desiredCount or guarantee healthy capacity.\n\nDefault - 0."
+                },
+                "capacityProviderArn": {
+                    "type": "string",
+                    "description": "ARN of an existing Managed Instances or ASG-backed capacity provider associated with this\ncluster. The provider must be usable in the cluster, with host networking that supports image\npulls, secrets, and logs."
+                },
+                "weight": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Relative share of tasks remaining after the base. Zero allocates only the base tasks. At least\none selected provider must have a positive weight. Order does not imply priority.\n\nDefault - 1."
+                }
+            },
+            "type": "object",
+            "required": [
+                "capacityProviderArn"
+            ]
+        },
+        "awsx:experimental/ecs:ServiceDeploymentStrategy": {
+            "properties": {
+                "blueGreen": {
+                    "$ref": "#/types/awsx:experimental/ecs:BlueGreenStrategy",
+                    "plain": true,
+                    "description": "Configuration for shifting all production traffic to the new revision once it is ready."
+                },
+                "canary": {
+                    "$ref": "#/types/awsx:experimental/ecs:CanaryStrategy",
+                    "plain": true,
+                    "description": "Configuration for testing an initial percentage of production traffic before shifting the rest.\n\nDefault - no canary configuration"
+                },
+                "linear": {
+                    "$ref": "#/types/awsx:experimental/ecs:LinearStrategy",
+                    "plain": true,
+                    "description": "Configuration for shifting production traffic in equal increments.\n\nDefault - no linear configuration"
+                },
+                "rolling": {
+                    "$ref": "#/types/awsx:experimental/ecs:RollingStrategy",
+                    "plain": true,
+                    "description": "Configuration for the rolling update strategy. This is the default."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:ServiceLoadBalancer": {
+            "properties": {
+                "application": {
+                    "$ref": "#/types/awsx:experimental/ecs:ApplicationServiceLoadBalancer",
+                    "plain": true,
+                    "description": "Application Load Balancer attachment for a named service endpoint. Creates target groups and\nforwarding rules on a caller-managed listener.\n\nAn application configuration must be provided for each entry in the service's\nloadBalancerAttachments map."
+                }
+            },
+            "type": "object",
+            "required": [
+                "application"
+            ]
+        },
+        "awsx:experimental/ecs:StringMatch": {
+            "properties": {
+                "regexValues": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Regular-expression matching. Conflicts with `values`"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "AWS value matching, including supported wildcards. Conflicts with `regexValues`"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:SystemControl": {
+            "properties": {
+                "namespace": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The namespaced kernel parameter name."
+                },
+                "value": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The value assigned to the parameter."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:TargetGroupHealthCheck": {
+            "properties": {
+                "healthGrpcCodes": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The gRPC codes to use when checking for a response from a target. Values can be comma-separated\nindividual values (e.g., \"12,13\") or a range of values (e.g., \"12-15\"). Once the value has been\nset, removing it has no effect. To unset it, set it to an empty string `\"\"`.\n\nValues can be between `0` and `99`.\n\nDefault - `12`."
+                },
+                "healthyHttpCodes": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The HTTP codes to use when checking for a successful response from a target. Values can be\ncomma-separated individual values (e.g., \"200,202\") or a range of values (e.g., \"200-299\").\nOnce the value has been set, removing it has no effect. To unset it, set it to an empty string\n`\"\"`. Values can be between `200` and `499`\n\nDefault - 200"
+                },
+                "healthyThreshold": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of consecutive health check successes required before considering a target healthy. The\nrange is 2-10.\n\nDefault - 3"
+                },
+                "intervalSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Approximate amount of time, in seconds, between health checks of an individual target. The\nrange is 5-300.\n\nDefault - 30."
+                },
+                "path": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "Destination for the health check request. Once the value has been set, removing it has no\neffect. To unset it, set it to an empty string `\"\"`.\n\nDefault - `/` for HTTP/1 and HTTP/2, or `/AWS.ALB/healthcheck` for gRPC."
+                },
+                "port": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The port the load balancer uses when performing health checks on targets. Valid values are a\nvalid port number between `1` and `65535`.\n\nDefault - By default (when this is undefined) it uses the same port as the target group"
+                },
+                "protocol": {
+                    "$ref": "#/types/awsx:experimental/ecs:ApplicationProtocol",
+                    "plain": true,
+                    "description": "Protocol the load balancer uses when performing health checks on targets. Must be one of\n`HTTP`, or `HTTPS`.\n\nDefault - ApplicationProtocol.HTTP."
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Amount of time in seconds to wait before a health check times out. Range: 2-120 seconds.\n\nDefault - 5 seconds"
+                },
+                "unhealthyThreshold": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of consecutive health check failures required before considering a target unhealthy. The\nrange is 2-10.\n\nDefault - 3."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:experimental/ecs:TaskCompatibility": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "FARGATE",
+                    "value": "FARGATE"
+                },
+                {
+                    "name": "MANAGED_INSTANCES",
+                    "value": "MANAGED_INSTANCES"
+                },
+                {
+                    "name": "EC2",
+                    "value": "EC2"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:TestTraffic": {
+            "properties": {
+                "match": {
+                    "$ref": "#/types/awsx:experimental/ecs:ListenerConditions",
+                    "plain": true,
+                    "description": "This is only applicable when using blue/green, canary, or linear deployments. When those\ndeployment strategies are used you can provide these match conditions to route certain requests\nto the new version immediately.\n\nWhen a new version is deployed using blue/green, canary, or linear deployments ECS starts by\nfirst shifting 100% of traffic matching these conditions to the new version. Once that shift is\ncomplete ECS then begins the production traffic shift. Using this `testTraffic` configuration\ncan allow you to accomplish things like:\n\n- Automated smoke tests before shifting production traffic\n- Manual inspection before shifting production traffic\n- Targeted checks during a canary/linear deployment.\n\nThe test rule uses the priority immediately before the production rule. That priority must be\navailable, and the production priority must be greater than 1."
+                }
+            },
+            "type": "object",
+            "required": [
+                "match"
+            ]
+        },
+        "awsx:experimental/ecs:Ulimit": {
+            "properties": {
+                "hardLimit": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The hard limit, in bytes, seconds, or a count, depending on `name`."
+                },
+                "name": {
+                    "$ref": "#/types/awsx:experimental/ecs:UlimitName",
+                    "plain": true,
+                    "description": "The resource limit to configure."
+                },
+                "softLimit": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The soft limit, in bytes, seconds, or a count, depending on `name`."
+                }
+            },
+            "type": "object",
+            "required": [
+                "hardLimit",
+                "name",
+                "softLimit"
+            ]
+        },
+        "awsx:experimental/ecs:UlimitName": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "CORE",
+                    "description": "Limit the size of core dump files.",
+                    "value": "core"
+                },
+                {
+                    "name": "CPU",
+                    "description": "Limit CPU time.",
+                    "value": "cpu"
+                },
+                {
+                    "name": "DATA",
+                    "description": "Limit the size of the process data segment.",
+                    "value": "data"
+                },
+                {
+                    "name": "FSIZE",
+                    "description": "Limit the size of files that the process can create.",
+                    "value": "fsize"
+                },
+                {
+                    "name": "LOCKS",
+                    "description": "Limit the number of file locks.",
+                    "value": "locks"
+                },
+                {
+                    "name": "MEMLOCK",
+                    "description": "Limit the amount of memory that can be locked.",
+                    "value": "memlock"
+                },
+                {
+                    "name": "MSGQUEUE",
+                    "description": "Limit the number of bytes allocated for POSIX message queues.",
+                    "value": "msgqueue"
+                },
+                {
+                    "name": "NICE",
+                    "description": "Limit the process nice priority.",
+                    "value": "nice"
+                },
+                {
+                    "name": "NOFILE",
+                    "description": "Limit the number of open file descriptors.",
+                    "value": "nofile"
+                },
+                {
+                    "name": "NPROC",
+                    "description": "Limit the number of processes available to the user.",
+                    "value": "nproc"
+                },
+                {
+                    "name": "RSS",
+                    "description": "Limit the resident set size.",
+                    "value": "rss"
+                },
+                {
+                    "name": "RTPRIO",
+                    "description": "Limit the real-time priority.",
+                    "value": "rtprio"
+                },
+                {
+                    "name": "RTTIME",
+                    "description": "Limit CPU time scheduled under a real-time policy.",
+                    "value": "rttime"
+                },
+                {
+                    "name": "SIGPENDING",
+                    "description": "Limit the number of pending signals.",
+                    "value": "sigpending"
+                },
+                {
+                    "name": "STACK",
+                    "description": "Limit the process stack size.",
+                    "value": "stack"
+                }
+            ]
+        },
+        "awsx:experimental/ecs:VolumeFrom": {
+            "properties": {
+                "readOnly": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Whether this container has read-only access to the volumes.\n\nDefault - `false`."
+                },
+                "sourceContainer": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of the container from which to mount volumes."
+                }
+            },
+            "type": "object"
+        },
         "awsx:lb:Listener": {
             "description": "Provides a Load Balancer Listener resource.\n\n\u003e **Note:** \u003cspan pulumi-lang-nodejs=\"`aws.alb.Listener`\" pulumi-lang-dotnet=\"`aws.alb.Listener`\" pulumi-lang-go=\"`alb.Listener`\" pulumi-lang-python=\"`alb.Listener`\" pulumi-lang-yaml=\"`aws.alb.Listener`\" pulumi-lang-java=\"`aws.alb.Listener`\" pulumi-lang-hcl=\"`aws_alb_listener`\"\u003e`aws.alb.Listener`\u003c/span\u003e is known as \u003cspan pulumi-lang-nodejs=\"`aws.lb.Listener`\" pulumi-lang-dotnet=\"`aws.lb.Listener`\" pulumi-lang-go=\"`lb.Listener`\" pulumi-lang-python=\"`lb.Listener`\" pulumi-lang-yaml=\"`aws.lb.Listener`\" pulumi-lang-java=\"`aws.lb.Listener`\" pulumi-lang-hcl=\"`aws_lb_listener`\"\u003e`aws.lb.Listener`\u003c/span\u003e. The functionality is identical.\n\n## Example Usage\n\n### Forward Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndTargetGroup.arn,\n    }],\n    loadBalancerArn: frontEnd.arn,\n    port: 443,\n    protocol: \"HTTPS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_target_group.arn,\n    }],\n    load_balancer_arn=front_end.arn,\n    port=443,\n    protocol=\"HTTPS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 443,\n        Protocol = \"HTTPS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_target_group\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.front_end.arn\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"443\"\n  protocol          = \"HTTPS\"\n  ssl_policy        = \"ELBSecurityPolicy-2016-08\"\n  certificate_arn   = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndTargetGroup.arn())\n                .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(443)\n            .protocol(\"HTTPS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n      loadBalancerArn: ${frontEnd.arn}\n      port: '443'\n      protocol: HTTPS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\nWith weighted target groups:\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndBlue = new aws.lb.TargetGroup(\"front_end_blue\", {});\nconst frontEndGreen = new aws.lb.TargetGroup(\"front_end_green\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [{\n        forward: {\n            targetGroups: [\n                {\n                    arn: frontEndBlue.arn,\n                    weight: 100,\n                },\n                {\n                    arn: frontEndGreen.arn,\n                    weight: 0,\n                },\n            ],\n        },\n        type: \"forward\",\n    }],\n    loadBalancerArn: frontEnd.arn,\n    port: 443,\n    protocol: \"HTTPS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_blue = aws.lb.TargetGroup(\"front_end_blue\")\nfront_end_green = aws.lb.TargetGroup(\"front_end_green\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[{\n        \"forward\": {\n            \"target_groups\": [\n                {\n                    \"arn\": front_end_blue.arn,\n                    \"weight\": 100,\n                },\n                {\n                    \"arn\": front_end_green.arn,\n                    \"weight\": 0,\n                },\n            ],\n        },\n        \"type\": \"forward\",\n    }],\n    load_balancer_arn=front_end.arn,\n    port=443,\n    protocol=\"HTTPS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndBlue = new Aws.LB.TargetGroup(\"front_end_blue\");\n\n    var frontEndGreen = new Aws.LB.TargetGroup(\"front_end_green\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Forward = new Aws.LB.Inputs.ListenerDefaultActionForwardArgs\n                {\n                    TargetGroups = new[]\n                    {\n                        new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs\n                        {\n                            Arn = frontEndBlue.Arn,\n                            Weight = 100,\n                        },\n                        new Aws.LB.Inputs.ListenerDefaultActionForwardTargetGroupArgs\n                        {\n                            Arn = frontEndGreen.Arn,\n                            Weight = 0,\n                        },\n                    },\n                },\n                Type = \"forward\",\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 443,\n        Protocol = \"HTTPS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndBlue, err := lb.NewTargetGroup(ctx, \"front_end_blue\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndGreen, err := lb.NewTargetGroup(ctx, \"front_end_green\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tForward: \u0026lb.ListenerDefaultActionForwardArgs{\n\t\t\t\t\t\tTargetGroups: lb.ListenerDefaultActionForwardTargetGroupArray{\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionForwardTargetGroupArgs{\n\t\t\t\t\t\t\t\tArn:    frontEndBlue.Arn,\n\t\t\t\t\t\t\t\tWeight: pulumi.Int(100),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionForwardTargetGroupArgs{\n\t\t\t\t\t\t\t\tArn:    frontEndGreen.Arn,\n\t\t\t\t\t\t\t\tWeight: pulumi.Int(0),\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_target_group\" \"front_end_blue\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_target_group\" \"front_end_green\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    forward {\n      target_group {\n        arn    = aws_lb_target_group.front_end_blue.arn\n        weight = 100\n      }\n      target_group {\n        arn    = aws_lb_target_group.front_end_green.arn\n        weight = 0\n      }\n    }\n    type = \"forward\"\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"443\"\n  protocol          = \"HTTPS\"\n  ssl_policy        = \"ELBSecurityPolicy-2016-08\"\n  certificate_arn   = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionForwardArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionForwardTargetGroupArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndBlue = new TargetGroup(\"frontEndBlue\");\n\n        var frontEndGreen = new TargetGroup(\"frontEndGreen\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .forward(ListenerDefaultActionForwardArgs.builder()\n                    .targetGroups(                    \n                        ListenerDefaultActionForwardTargetGroupArgs.builder()\n                            .arn(frontEndBlue.arn())\n                            .weight(100)\n                            .build(),\n                        ListenerDefaultActionForwardTargetGroupArgs.builder()\n                            .arn(frontEndGreen.arn())\n                            .weight(0)\n                            .build())\n                    .build())\n                .type(\"forward\")\n                .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(443)\n            .protocol(\"HTTPS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndBlue:\n    type: aws:lb:TargetGroup\n    name: front_end_blue\n  frontEndGreen:\n    type: aws:lb:TargetGroup\n    name: front_end_green\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - forward:\n            targetGroups:\n              - arn: ${frontEndBlue.arn}\n                weight: 100\n              - arn: ${frontEndGreen.arn}\n                weight: 0\n          type: forward\n      loadBalancerArn: ${frontEnd.arn}\n      port: '443'\n      protocol: HTTPS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\nTo a NLB:\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [{\n        type: \"forward\",\n        targetGroupArn: frontEndAwsLbTargetGroup.arn,\n    }],\n    loadBalancerArn: frontEndAwsLb.arn,\n    port: 443,\n    protocol: \"TLS\",\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpnPolicy: \"HTTP2Preferred\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.Listener(\"front_end\",\n    default_actions=[{\n        \"type\": \"forward\",\n        \"target_group_arn\": front_end_aws_lb_target_group[\"arn\"],\n    }],\n    load_balancer_arn=front_end_aws_lb[\"arn\"],\n    port=443,\n    protocol=\"TLS\",\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n    alpn_policy=\"HTTP2Preferred\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndAwsLbTargetGroup.Arn,\n            },\n        },\n        LoadBalancerArn = frontEndAwsLb.Arn,\n        Port = 443,\n        Protocol = \"TLS\",\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\",\n        AlpnPolicy = \"HTTP2Preferred\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: pulumi.Any(frontEndAwsLbTargetGroup.Arn),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: pulumi.Any(frontEndAwsLb.Arn),\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tProtocol:        pulumi.String(\"TLS\"),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.String(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"),\n\t\t\tAlpnPolicy:      pulumi.String(\"HTTP2Preferred\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    type             = \"forward\"\n    target_group_arn = frontEndAwsLbTargetGroup.arn\n  }\n  load_balancer_arn = frontEndAwsLb.arn\n  port              = \"443\"\n  protocol          = \"TLS\"\n  ssl_policy        = \"ELBSecurityPolicy-2016-08\"\n  certificate_arn   = \"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\"\n  alpn_policy       = \"HTTP2Preferred\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new Listener(\"frontEnd\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .type(\"forward\")\n                .targetGroupArn(frontEndAwsLbTargetGroup.get(\"arn\"))\n                .build())\n            .loadBalancerArn(frontEndAwsLb.get(\"arn\"))\n            .port(443)\n            .protocol(\"TLS\")\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(\"arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\")\n            .alpnPolicy(\"HTTP2Preferred\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - type: forward\n          targetGroupArn: ${frontEndAwsLbTargetGroup.arn}\n      loadBalancerArn: ${frontEndAwsLb.arn}\n      port: '443'\n      protocol: TLS\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4\n      alpnPolicy: HTTP2Preferred\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Redirect Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [{\n        redirect: {\n            port: \"443\",\n            protocol: \"HTTPS\",\n            statusCode: \"HTTP_301\",\n        },\n        type: \"redirect\",\n    }],\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[{\n        \"redirect\": {\n            \"port\": \"443\",\n            \"protocol\": \"HTTPS\",\n            \"status_code\": \"HTTP_301\",\n        },\n        \"type\": \"redirect\",\n    }],\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Redirect = new Aws.LB.Inputs.ListenerDefaultActionRedirectArgs\n                {\n                    Port = \"443\",\n                    Protocol = \"HTTPS\",\n                    StatusCode = \"HTTP_301\",\n                },\n                Type = \"redirect\",\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tRedirect: \u0026lb.ListenerDefaultActionRedirectArgs{\n\t\t\t\t\t\tPort:       pulumi.String(\"443\"),\n\t\t\t\t\t\tProtocol:   pulumi.String(\"HTTPS\"),\n\t\t\t\t\t\tStatusCode: pulumi.String(\"HTTP_301\"),\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"redirect\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    redirect {\n      port        = \"443\"\n      protocol    = \"HTTPS\"\n      status_code = \"HTTP_301\"\n    }\n    type = \"redirect\"\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionRedirectArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .redirect(ListenerDefaultActionRedirectArgs.builder()\n                    .port(\"443\")\n                    .protocol(\"HTTPS\")\n                    .statusCode(\"HTTP_301\")\n                    .build())\n                .type(\"redirect\")\n                .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - redirect:\n            port: '443'\n            protocol: HTTPS\n            statusCode: HTTP_301\n          type: redirect\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Fixed-response Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [{\n        fixedResponse: {\n            contentType: \"text/plain\",\n            messageBody: \"Fixed response content\",\n            statusCode: \"200\",\n        },\n        type: \"fixed-response\",\n    }],\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[{\n        \"fixed_response\": {\n            \"content_type\": \"text/plain\",\n            \"message_body\": \"Fixed response content\",\n            \"status_code\": \"200\",\n        },\n        \"type\": \"fixed-response\",\n    }],\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs\n                {\n                    ContentType = \"text/plain\",\n                    MessageBody = \"Fixed response content\",\n                    StatusCode = \"200\",\n                },\n                Type = \"fixed-response\",\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tFixedResponse: \u0026lb.ListenerDefaultActionFixedResponseArgs{\n\t\t\t\t\t\tContentType: pulumi.String(\"text/plain\"),\n\t\t\t\t\t\tMessageBody: pulumi.String(\"Fixed response content\"),\n\t\t\t\t\t\tStatusCode:  pulumi.String(\"200\"),\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"fixed-response\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    fixed_response {\n      content_type = \"text/plain\"\n      message_body = \"Fixed response content\"\n      status_code  = \"200\"\n    }\n    type = \"fixed-response\"\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()\n                    .contentType(\"text/plain\")\n                    .messageBody(\"Fixed response content\")\n                    .statusCode(\"200\")\n                    .build())\n                .type(\"fixed-response\")\n                .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - fixedResponse:\n            contentType: text/plain\n            messageBody: Fixed response content\n            statusCode: '200'\n          type: fixed-response\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-cognito Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst pool = new aws.cognito.UserPool(\"pool\", {});\nconst client = new aws.cognito.UserPoolClient(\"client\", {});\nconst domain = new aws.cognito.UserPoolDomain(\"domain\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [\n        {\n            authenticateCognito: {\n                userPoolArn: pool.arn,\n                userPoolClientId: client.id,\n                userPoolDomain: domain.domain,\n            },\n            type: \"authenticate-cognito\",\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\npool = aws.cognito.UserPool(\"pool\")\nclient = aws.cognito.UserPoolClient(\"client\")\ndomain = aws.cognito.UserPoolDomain(\"domain\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[\n        {\n            \"authenticate_cognito\": {\n                \"user_pool_arn\": pool.arn,\n                \"user_pool_client_id\": client.id,\n                \"user_pool_domain\": domain.domain,\n            },\n            \"type\": \"authenticate-cognito\",\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ],\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var pool = new Aws.Cognito.UserPool(\"pool\");\n\n    var client = new Aws.Cognito.UserPoolClient(\"client\");\n\n    var domain = new Aws.Cognito.UserPoolDomain(\"domain\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                AuthenticateCognito = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateCognitoArgs\n                {\n                    UserPoolArn = pool.Arn,\n                    UserPoolClientId = client.Id,\n                    UserPoolDomain = domain.Domain,\n                },\n                Type = \"authenticate-cognito\",\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cognito\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tpool, err := cognito.NewUserPool(ctx, \"pool\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tclient, err := cognito.NewUserPoolClient(ctx, \"client\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tdomain, err := cognito.NewUserPoolDomain(ctx, \"domain\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tAuthenticateCognito: \u0026lb.ListenerDefaultActionAuthenticateCognitoArgs{\n\t\t\t\t\t\tUserPoolArn:      pool.Arn,\n\t\t\t\t\t\tUserPoolClientId: client.ID(),\n\t\t\t\t\t\tUserPoolDomain:   domain.Domain,\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"authenticate-cognito\"),\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_target_group\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_cognito_user_pool\" \"pool\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_cognito_user_pool_client\" \"client\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_cognito_user_pool_domain\" \"domain\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    authenticate_cognito {\n      user_pool_arn       = aws_cognito_user_pool.pool.arn\n      user_pool_client_id = aws_cognito_user_pool_client.client.id\n      user_pool_domain    = aws_cognito_user_pool_domain.domain.domain\n    }\n    type = \"authenticate-cognito\"\n  }\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.front_end.arn\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.cognito.UserPool;\nimport com.pulumi.aws.cognito.UserPoolClient;\nimport com.pulumi.aws.cognito.UserPoolDomain;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateCognitoArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var pool = new UserPool(\"pool\");\n\n        var client = new UserPoolClient(\"client\");\n\n        var domain = new UserPoolDomain(\"domain\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .authenticateCognito(ListenerDefaultActionAuthenticateCognitoArgs.builder()\n                        .userPoolArn(pool.arn())\n                        .userPoolClientId(client.id())\n                        .userPoolDomain(domain.domain())\n                        .build())\n                    .type(\"authenticate-cognito\")\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  pool:\n    type: aws:cognito:UserPool\n  client:\n    type: aws:cognito:UserPoolClient\n  domain:\n    type: aws:cognito:UserPoolDomain\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - authenticateCognito:\n            userPoolArn: ${pool.arn}\n            userPoolClientId: ${client.id}\n            userPoolDomain: ${domain.domain}\n          type: authenticate-cognito\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Authenticate-OIDC Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst frontEnd = new aws.lb.LoadBalancer(\"front_end\", {});\nconst frontEndTargetGroup = new aws.lb.TargetGroup(\"front_end\", {});\nconst frontEndListener = new aws.lb.Listener(\"front_end\", {\n    defaultActions: [\n        {\n            authenticateOidc: {\n                authorizationEndpoint: \"https://example.com/authorization_endpoint\",\n                clientId: \"client_id\",\n                clientSecret: \"client_secret\",\n                issuer: \"https://example.com\",\n                tokenEndpoint: \"https://example.com/token_endpoint\",\n                userInfoEndpoint: \"https://example.com/user_info_endpoint\",\n            },\n            type: \"authenticate-oidc\",\n        },\n        {\n            type: \"forward\",\n            targetGroupArn: frontEndTargetGroup.arn,\n        },\n    ],\n    loadBalancerArn: frontEnd.arn,\n    port: 80,\n    protocol: \"HTTP\",\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nfront_end = aws.lb.LoadBalancer(\"front_end\")\nfront_end_target_group = aws.lb.TargetGroup(\"front_end\")\nfront_end_listener = aws.lb.Listener(\"front_end\",\n    default_actions=[\n        {\n            \"authenticate_oidc\": {\n                \"authorization_endpoint\": \"https://example.com/authorization_endpoint\",\n                \"client_id\": \"client_id\",\n                \"client_secret\": \"client_secret\",\n                \"issuer\": \"https://example.com\",\n                \"token_endpoint\": \"https://example.com/token_endpoint\",\n                \"user_info_endpoint\": \"https://example.com/user_info_endpoint\",\n            },\n            \"type\": \"authenticate-oidc\",\n        },\n        {\n            \"type\": \"forward\",\n            \"target_group_arn\": front_end_target_group.arn,\n        },\n    ],\n    load_balancer_arn=front_end.arn,\n    port=80,\n    protocol=\"HTTP\")\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var frontEnd = new Aws.LB.LoadBalancer(\"front_end\");\n\n    var frontEndTargetGroup = new Aws.LB.TargetGroup(\"front_end\");\n\n    var frontEndListener = new Aws.LB.Listener(\"front_end\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                AuthenticateOidc = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateOidcArgs\n                {\n                    AuthorizationEndpoint = \"https://example.com/authorization_endpoint\",\n                    ClientId = \"client_id\",\n                    ClientSecret = \"client_secret\",\n                    Issuer = \"https://example.com\",\n                    TokenEndpoint = \"https://example.com/token_endpoint\",\n                    UserInfoEndpoint = \"https://example.com/user_info_endpoint\",\n                },\n                Type = \"authenticate-oidc\",\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                Type = \"forward\",\n                TargetGroupArn = frontEndTargetGroup.Arn,\n            },\n        },\n        LoadBalancerArn = frontEnd.Arn,\n        Port = 80,\n        Protocol = \"HTTP\",\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\tfrontEnd, err := lb.NewLoadBalancer(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfrontEndTargetGroup, err := lb.NewTargetGroup(ctx, \"front_end\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"front_end\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tAuthenticateOidc: \u0026lb.ListenerDefaultActionAuthenticateOidcArgs{\n\t\t\t\t\t\tAuthorizationEndpoint: pulumi.String(\"https://example.com/authorization_endpoint\"),\n\t\t\t\t\t\tClientId:              pulumi.String(\"client_id\"),\n\t\t\t\t\t\tClientSecret:          pulumi.String(\"client_secret\"),\n\t\t\t\t\t\tIssuer:                pulumi.String(\"https://example.com\"),\n\t\t\t\t\t\tTokenEndpoint:         pulumi.String(\"https://example.com/token_endpoint\"),\n\t\t\t\t\t\tUserInfoEndpoint:      pulumi.String(\"https://example.com/user_info_endpoint\"),\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"authenticate-oidc\"),\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t\tTargetGroupArn: frontEndTargetGroup.Arn,\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: frontEnd.Arn,\n\t\t\tPort:            pulumi.Int(80),\n\t\t\tProtocol:        pulumi.String(\"HTTP\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_target_group\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"front_end\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    authenticate_oidc {\n      authorization_endpoint = \"https://example.com/authorization_endpoint\"\n      client_id              = \"client_id\"\n      client_secret          = \"client_secret\"\n      issuer                 = \"https://example.com\"\n      token_endpoint         = \"https://example.com/token_endpoint\"\n      user_info_endpoint     = \"https://example.com/user_info_endpoint\"\n    }\n    type = \"authenticate-oidc\"\n  }\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.front_end.arn\n  }\n  load_balancer_arn = aws_lb_load_balancer.front_end.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateOidcArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var frontEnd = new LoadBalancer(\"frontEnd\");\n\n        var frontEndTargetGroup = new TargetGroup(\"frontEndTargetGroup\");\n\n        var frontEndListener = new Listener(\"frontEndListener\", ListenerArgs.builder()\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .authenticateOidc(ListenerDefaultActionAuthenticateOidcArgs.builder()\n                        .authorizationEndpoint(\"https://example.com/authorization_endpoint\")\n                        .clientId(\"client_id\")\n                        .clientSecret(\"client_secret\")\n                        .issuer(\"https://example.com\")\n                        .tokenEndpoint(\"https://example.com/token_endpoint\")\n                        .userInfoEndpoint(\"https://example.com/user_info_endpoint\")\n                        .build())\n                    .type(\"authenticate-oidc\")\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .type(\"forward\")\n                    .targetGroupArn(frontEndTargetGroup.arn())\n                    .build())\n            .loadBalancerArn(frontEnd.arn())\n            .port(80)\n            .protocol(\"HTTP\")\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  frontEnd:\n    type: aws:lb:LoadBalancer\n    name: front_end\n  frontEndTargetGroup:\n    type: aws:lb:TargetGroup\n    name: front_end\n  frontEndListener:\n    type: aws:lb:Listener\n    name: front_end\n    properties:\n      defaultActions:\n        - authenticateOidc:\n            authorizationEndpoint: https://example.com/authorization_endpoint\n            clientId: client_id\n            clientSecret: client_secret\n            issuer: https://example.com\n            tokenEndpoint: https://example.com/token_endpoint\n            userInfoEndpoint: https://example.com/user_info_endpoint\n          type: authenticate-oidc\n        - type: forward\n          targetGroupArn: ${frontEndTargetGroup.arn}\n      loadBalancerArn: ${frontEnd.arn}\n      port: '80'\n      protocol: HTTP\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### JWT Validation Action\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst test = new aws.lb.Listener(\"test\", {\n    defaultActions: [\n        {\n            jwtValidation: {\n                additionalClaims: [\n                    {\n                        format: \"string-array\",\n                        name: \"claim_name1\",\n                        values: [\n                            \"value1\",\n                            \"value2\",\n                        ],\n                    },\n                    {\n                        format: \"single-string\",\n                        name: \"claim_name2\",\n                        values: [\"value1\"],\n                    },\n                ],\n                issuer: \"https://example.com\",\n                jwksEndpoint: \"https://example.com/.well-known/jwks.json\",\n            },\n            type: \"jwt-validation\",\n        },\n        {\n            targetGroupArn: testAwsLbTargetGroup.id,\n            type: \"forward\",\n        },\n    ],\n    loadBalancerArn: testAwsLb.id,\n    protocol: \"HTTPS\",\n    port: 443,\n    sslPolicy: \"ELBSecurityPolicy-2016-08\",\n    certificateArn: testAwsIamServerCertificate.arn,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\ntest = aws.lb.Listener(\"test\",\n    default_actions=[\n        {\n            \"jwt_validation\": {\n                \"additional_claims\": [\n                    {\n                        \"format\": \"string-array\",\n                        \"name\": \"claim_name1\",\n                        \"values\": [\n                            \"value1\",\n                            \"value2\",\n                        ],\n                    },\n                    {\n                        \"format\": \"single-string\",\n                        \"name\": \"claim_name2\",\n                        \"values\": [\"value1\"],\n                    },\n                ],\n                \"issuer\": \"https://example.com\",\n                \"jwks_endpoint\": \"https://example.com/.well-known/jwks.json\",\n            },\n            \"type\": \"jwt-validation\",\n        },\n        {\n            \"target_group_arn\": test_aws_lb_target_group[\"id\"],\n            \"type\": \"forward\",\n        },\n    ],\n    load_balancer_arn=test_aws_lb[\"id\"],\n    protocol=\"HTTPS\",\n    port=443,\n    ssl_policy=\"ELBSecurityPolicy-2016-08\",\n    certificate_arn=test_aws_iam_server_certificate[\"arn\"])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var test = new Aws.LB.Listener(\"test\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                JwtValidation = new Aws.LB.Inputs.ListenerDefaultActionJwtValidationArgs\n                {\n                    AdditionalClaims = new[]\n                    {\n                        new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs\n                        {\n                            Format = \"string-array\",\n                            Name = \"claim_name1\",\n                            Values = new[]\n                            {\n                                \"value1\",\n                                \"value2\",\n                            },\n                        },\n                        new Aws.LB.Inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs\n                        {\n                            Format = \"single-string\",\n                            Name = \"claim_name2\",\n                            Values = new[]\n                            {\n                                \"value1\",\n                            },\n                        },\n                    },\n                    Issuer = \"https://example.com\",\n                    JwksEndpoint = \"https://example.com/.well-known/jwks.json\",\n                },\n                Type = \"jwt-validation\",\n            },\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = testAwsLbTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n        LoadBalancerArn = testAwsLb.Id,\n        Protocol = \"HTTPS\",\n        Port = 443,\n        SslPolicy = \"ELBSecurityPolicy-2016-08\",\n        CertificateArn = testAwsIamServerCertificate.Arn,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := lb.NewListener(ctx, \"test\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tJwtValidation: \u0026lb.ListenerDefaultActionJwtValidationArgs{\n\t\t\t\t\t\tAdditionalClaims: lb.ListenerDefaultActionJwtValidationAdditionalClaimArray{\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{\n\t\t\t\t\t\t\t\tFormat: pulumi.String(\"string-array\"),\n\t\t\t\t\t\t\t\tName:   pulumi.String(\"claim_name1\"),\n\t\t\t\t\t\t\t\tValues: pulumi.StringArray{\n\t\t\t\t\t\t\t\t\tpulumi.String(\"value1\"),\n\t\t\t\t\t\t\t\t\tpulumi.String(\"value2\"),\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\u0026lb.ListenerDefaultActionJwtValidationAdditionalClaimArgs{\n\t\t\t\t\t\t\t\tFormat: pulumi.String(\"single-string\"),\n\t\t\t\t\t\t\t\tName:   pulumi.String(\"claim_name2\"),\n\t\t\t\t\t\t\t\tValues: pulumi.StringArray{\n\t\t\t\t\t\t\t\t\tpulumi.String(\"value1\"),\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t},\n\t\t\t\t\t\tIssuer:       pulumi.String(\"https://example.com\"),\n\t\t\t\t\t\tJwksEndpoint: pulumi.String(\"https://example.com/.well-known/jwks.json\"),\n\t\t\t\t\t},\n\t\t\t\t\tType: pulumi.String(\"jwt-validation\"),\n\t\t\t\t},\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: pulumi.Any(testAwsLbTargetGroup.Id),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: pulumi.Any(testAwsLb.Id),\n\t\t\tProtocol:        pulumi.String(\"HTTPS\"),\n\t\t\tPort:            pulumi.Int(443),\n\t\t\tSslPolicy:       pulumi.String(\"ELBSecurityPolicy-2016-08\"),\n\t\t\tCertificateArn:  pulumi.Any(testAwsIamServerCertificate.Arn),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_listener\" \"test\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    jwt_validation {\n      additional_claim {\n        format = \"string-array\"\n        name   = \"claim_name1\"\n        values = [\"value1\", \"value2\"]\n      }\n      additional_claim {\n        format = \"single-string\"\n        name   = \"claim_name2\"\n        values = [\"value1\"]\n      }\n      issuer        = \"https://example.com\"\n      jwks_endpoint = \"https://example.com/.well-known/jwks.json\"\n    }\n    type = \"jwt-validation\"\n  }\n  default_action {\n    target_group_arn = testAwsLbTargetGroup.id\n    type             = \"forward\"\n  }\n  load_balancer_arn = testAwsLb.id\n  protocol          = \"HTTPS\"\n  port              = \"443\"\n  ssl_policy        = \"ELBSecurityPolicy-2016-08\"\n  certificate_arn   = testAwsIamServerCertificate.arn\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionJwtValidationAdditionalClaimArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var test = new Listener(\"test\", ListenerArgs.builder()\n            .defaultActions(            \n                ListenerDefaultActionArgs.builder()\n                    .jwtValidation(ListenerDefaultActionJwtValidationArgs.builder()\n                        .additionalClaims(                        \n                            ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()\n                                .format(\"string-array\")\n                                .name(\"claim_name1\")\n                                .values(                                \n                                    \"value1\",\n                                    \"value2\")\n                                .build(),\n                            ListenerDefaultActionJwtValidationAdditionalClaimArgs.builder()\n                                .format(\"single-string\")\n                                .name(\"claim_name2\")\n                                .values(\"value1\")\n                                .build())\n                        .issuer(\"https://example.com\")\n                        .jwksEndpoint(\"https://example.com/.well-known/jwks.json\")\n                        .build())\n                    .type(\"jwt-validation\")\n                    .build(),\n                ListenerDefaultActionArgs.builder()\n                    .targetGroupArn(testAwsLbTargetGroup.get(\"id\"))\n                    .type(\"forward\")\n                    .build())\n            .loadBalancerArn(testAwsLb.get(\"id\"))\n            .protocol(\"HTTPS\")\n            .port(443)\n            .sslPolicy(\"ELBSecurityPolicy-2016-08\")\n            .certificateArn(testAwsIamServerCertificate.get(\"arn\"))\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  test:\n    type: aws:lb:Listener\n    properties:\n      defaultActions:\n        - jwtValidation:\n            additionalClaims:\n              - format: string-array\n                name: claim_name1\n                values:\n                  - value1\n                  - value2\n              - format: single-string\n                name: claim_name2\n                values:\n                  - value1\n            issuer: https://example.com\n            jwksEndpoint: https://example.com/.well-known/jwks.json\n          type: jwt-validation\n        - targetGroupArn: ${testAwsLbTargetGroup.id}\n          type: forward\n      loadBalancerArn: ${testAwsLb.id}\n      protocol: HTTPS\n      port: '443'\n      sslPolicy: ELBSecurityPolicy-2016-08\n      certificateArn: ${testAwsIamServerCertificate.arn}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Gateway Load Balancer Listener\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {\n    subnetMappings: [{\n        subnetId: exampleAwsSubnet.id,\n    }],\n    loadBalancerType: \"gateway\",\n    name: \"example\",\n});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {\n    healthCheck: {\n        port: \"80\",\n        protocol: \"HTTP\",\n    },\n    name: \"example\",\n    port: 6081,\n    protocol: \"GENEVE\",\n    vpcId: exampleAwsVpc.id,\n});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n    loadBalancerArn: example.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\",\n    subnet_mappings=[{\n        \"subnet_id\": example_aws_subnet[\"id\"],\n    }],\n    load_balancer_type=\"gateway\",\n    name=\"example\")\nexample_target_group = aws.lb.TargetGroup(\"example\",\n    health_check={\n        \"port\": \"80\",\n        \"protocol\": \"HTTP\",\n    },\n    name=\"example\",\n    port=6081,\n    protocol=\"GENEVE\",\n    vpc_id=example_aws_vpc[\"id\"])\nexample_listener = aws.lb.Listener(\"example\",\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }],\n    load_balancer_arn=example.id)\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        SubnetMappings = new[]\n        {\n            new Aws.LB.Inputs.LoadBalancerSubnetMappingArgs\n            {\n                SubnetId = exampleAwsSubnet.Id,\n            },\n        },\n        LoadBalancerType = \"gateway\",\n        Name = \"example\",\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\", new()\n    {\n        HealthCheck = new Aws.LB.Inputs.TargetGroupHealthCheckArgs\n        {\n            Port = \"80\",\n            Protocol = \"HTTP\",\n        },\n        Name = \"example\",\n        Port = 6081,\n        Protocol = \"GENEVE\",\n        VpcId = exampleAwsVpc.Id,\n    });\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n        LoadBalancerArn = example.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tSubnetMappings: lb.LoadBalancerSubnetMappingArray{\n\t\t\t\t\u0026lb.LoadBalancerSubnetMappingArgs{\n\t\t\t\t\tSubnetId: pulumi.Any(exampleAwsSubnet.Id),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerType: pulumi.String(\"gateway\"),\n\t\t\tName:             pulumi.String(\"example\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", \u0026lb.TargetGroupArgs{\n\t\t\tHealthCheck: \u0026lb.TargetGroupHealthCheckArgs{\n\t\t\t\tPort:     pulumi.String(\"80\"),\n\t\t\t\tProtocol: pulumi.String(\"HTTP\"),\n\t\t\t},\n\t\t\tName:     pulumi.String(\"example\"),\n\t\t\tPort:     pulumi.Int(6081),\n\t\t\tProtocol: pulumi.String(\"GENEVE\"),\n\t\t\tVpcId:    pulumi.Any(exampleAwsVpc.Id),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  subnet_mappings {\n    subnet_id = exampleAwsSubnet.id\n  }\n  load_balancer_type = \"gateway\"\n  name               = \"example\"\n}\nresource \"aws_lb_target_group\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  health_check {\n    port     = 80\n    protocol = \"HTTP\"\n  }\n  name     = \"example\"\n  port     = 6081\n  protocol = \"GENEVE\"\n  vpc_id   = exampleAwsVpc.id\n}\nresource \"aws_lb_listener\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  default_action {\n    target_group_arn = aws_lb_target_group.example.id\n    type             = \"forward\"\n  }\n  load_balancer_arn = aws_lb_load_balancer.example.id\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.TargetGroupArgs;\nimport com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .subnetMappings(LoadBalancerSubnetMappingArgs.builder()\n                .subnetId(exampleAwsSubnet.get(\"id\"))\n                .build())\n            .loadBalancerType(\"gateway\")\n            .name(\"example\")\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\", TargetGroupArgs.builder()\n            .healthCheck(TargetGroupHealthCheckArgs.builder()\n                .port(\"80\")\n                .protocol(\"HTTP\")\n                .build())\n            .name(\"example\")\n            .port(6081)\n            .protocol(\"GENEVE\")\n            .vpcId(exampleAwsVpc.get(\"id\"))\n            .build());\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .loadBalancerArn(example.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      subnetMappings:\n        - subnetId: ${exampleAwsSubnet.id}\n      loadBalancerType: gateway\n      name: example\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n    properties:\n      healthCheck:\n        port: 80\n        protocol: HTTP\n      name: example\n      port: 6081\n      protocol: GENEVE\n      vpcId: ${exampleAwsVpc.id}\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n      loadBalancerArn: ${example.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n### Mutual TLS Authentication\n\n\u003c!--Start PulumiCodeChooser --\u003e\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.lb.LoadBalancer(\"example\", {loadBalancerType: \"application\"});\nconst exampleTargetGroup = new aws.lb.TargetGroup(\"example\", {});\nconst exampleListener = new aws.lb.Listener(\"example\", {\n    mutualAuthentication: {\n        mode: \"verify\",\n        trustStoreArn: \"...\",\n    },\n    defaultActions: [{\n        targetGroupArn: exampleTargetGroup.id,\n        type: \"forward\",\n    }],\n    loadBalancerArn: example.id,\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.lb.LoadBalancer(\"example\", load_balancer_type=\"application\")\nexample_target_group = aws.lb.TargetGroup(\"example\")\nexample_listener = aws.lb.Listener(\"example\",\n    mutual_authentication={\n        \"mode\": \"verify\",\n        \"trust_store_arn\": \"...\",\n    },\n    default_actions=[{\n        \"target_group_arn\": example_target_group.id,\n        \"type\": \"forward\",\n    }],\n    load_balancer_arn=example.id)\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.LB.LoadBalancer(\"example\", new()\n    {\n        LoadBalancerType = \"application\",\n    });\n\n    var exampleTargetGroup = new Aws.LB.TargetGroup(\"example\");\n\n    var exampleListener = new Aws.LB.Listener(\"example\", new()\n    {\n        MutualAuthentication = new Aws.LB.Inputs.ListenerMutualAuthenticationArgs\n        {\n            Mode = \"verify\",\n            TrustStoreArn = \"...\",\n        },\n        DefaultActions = new[]\n        {\n            new Aws.LB.Inputs.ListenerDefaultActionArgs\n            {\n                TargetGroupArn = exampleTargetGroup.Id,\n                Type = \"forward\",\n            },\n        },\n        LoadBalancerArn = example.Id,\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texample, err := lb.NewLoadBalancer(ctx, \"example\", \u0026lb.LoadBalancerArgs{\n\t\t\tLoadBalancerType: pulumi.String(\"application\"),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\texampleTargetGroup, err := lb.NewTargetGroup(ctx, \"example\", nil)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = lb.NewListener(ctx, \"example\", \u0026lb.ListenerArgs{\n\t\t\tMutualAuthentication: \u0026lb.ListenerMutualAuthenticationArgs{\n\t\t\t\tMode:          pulumi.String(\"verify\"),\n\t\t\t\tTrustStoreArn: pulumi.String(\"...\"),\n\t\t\t},\n\t\t\tDefaultActions: lb.ListenerDefaultActionArray{\n\t\t\t\t\u0026lb.ListenerDefaultActionArgs{\n\t\t\t\t\tTargetGroupArn: exampleTargetGroup.ID(),\n\t\t\t\t\tType:           pulumi.String(\"forward\"),\n\t\t\t\t},\n\t\t\t},\n\t\t\tLoadBalancerArn: example.ID(),\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```hcl\nterraform {\n  required_providers {\n    aws = {\n      source = \"pulumi/aws\"\n    }\n  }\n}\n\nresource \"aws_lb_load_balancer\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  load_balancer_type = \"application\"\n}\nresource \"aws_lb_target_group\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n}\nresource \"aws_lb_listener\" \"example\" {\n  lifecycle {\n    create_before_destroy = true\n  }\n  mutual_authentication {\n    mode            = \"verify\"\n    trust_store_arn = \"...\"\n  }\n  default_action {\n    target_group_arn = aws_lb_target_group.example.id\n    type             = \"forward\"\n  }\n  load_balancer_arn = aws_lb_load_balancer.example.id\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.lb.LoadBalancer;\nimport com.pulumi.aws.lb.LoadBalancerArgs;\nimport com.pulumi.aws.lb.TargetGroup;\nimport com.pulumi.aws.lb.Listener;\nimport com.pulumi.aws.lb.ListenerArgs;\nimport com.pulumi.aws.lb.inputs.ListenerMutualAuthenticationArgs;\nimport com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new LoadBalancer(\"example\", LoadBalancerArgs.builder()\n            .loadBalancerType(\"application\")\n            .build());\n\n        var exampleTargetGroup = new TargetGroup(\"exampleTargetGroup\");\n\n        var exampleListener = new Listener(\"exampleListener\", ListenerArgs.builder()\n            .mutualAuthentication(ListenerMutualAuthenticationArgs.builder()\n                .mode(\"verify\")\n                .trustStoreArn(\"...\")\n                .build())\n            .defaultActions(ListenerDefaultActionArgs.builder()\n                .targetGroupArn(exampleTargetGroup.id())\n                .type(\"forward\")\n                .build())\n            .loadBalancerArn(example.id())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:lb:LoadBalancer\n    properties:\n      loadBalancerType: application\n  exampleTargetGroup:\n    type: aws:lb:TargetGroup\n    name: example\n  exampleListener:\n    type: aws:lb:Listener\n    name: example\n    properties:\n      mutualAuthentication:\n        mode: verify\n        trustStoreArn: '...'\n      defaultActions:\n        - targetGroupArn: ${exampleTargetGroup.id}\n          type: forward\n      loadBalancerArn: ${example.id}\n```\n\u003c!--End PulumiCodeChooser --\u003e\n\n## Import\n\n### Identity Schema\n\n#### Required\n\n- \u003cspan pulumi-lang-nodejs=\"`arn`\" pulumi-lang-dotnet=\"`Arn`\" pulumi-lang-go=\"`arn`\" pulumi-lang-python=\"`arn`\" pulumi-lang-yaml=\"`arn`\" pulumi-lang-java=\"`arn`\" pulumi-lang-hcl=\"`arn`\"\u003e`arn`\u003c/span\u003e (String) ARN of the load balancer listener.\n\n\nUsing `pulumi import`, import listeners using their ARN. For example:\n\n```sh\n$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96\n```\n\n",
             "properties": {
@@ -3218,6 +4716,258 @@
                     "willReplaceOnChanges": true
                 }
             },
+            "isComponent": true
+        },
+        "awsx:experimental/ecs:Service": {
+            "properties": {
+                "securityGroups": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v7.53.0/schema.json#/resources/aws:ec2%2FsecurityGroup:SecurityGroup"
+                    },
+                    "description": "Security groups attached to the service, preserving the order of securityGroupIds when\nsupplied. Automatic ingress rules are added ONLY to the first group, unless manageIngress is\nfalse. Supplied-group egress is never modified.\n\nYou can add non-duplicate standalone rules that are not required for initial service readiness.\nDo not use this output for rules needed to make load-balancer targets healthy: the remote\ncomponent can wait for steady state before returning its outputs. For manual ingress, supply\nyour own groups and create required rules from their original references before this service.\n\nDo not combine automatic ingress with inline or exclusive ingress management. AWSX-created\ngroups also have standalone IPv4 allow-all egress."
+                },
+                "serviceArn": {
+                    "type": "string",
+                    "description": "ARN of the ECS service"
+                },
+                "serviceName": {
+                    "type": "string",
+                    "description": "Name of the ECS service within its cluster."
+                }
+            },
+            "type": "object",
+            "required": [
+                "securityGroups",
+                "serviceArn",
+                "serviceName"
+            ],
+            "inputProperties": {
+                "assignPublicIp": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Specifies whether the task's elastic network interface receives a public IP address.\n\nIf true, each task will receive a public IP address. Supported only on Fargate.\n\nDefault - false"
+                },
+                "availabilityZoneRebalancing": {
+                    "$ref": "#/types/awsx:experimental/ecs:AvailabilityZoneRebalancing",
+                    "plain": true,
+                    "description": "Whether to use Availability Zone rebalancing for the service.\n\nIf enabled, `deploymentMaximumPercent` must be greater than 100."
+                },
+                "capacity": {
+                    "$ref": "#/types/awsx:experimental/ecs:ServiceCapacity",
+                    "plain": true,
+                    "description": "Select Fargate or existing capacity providers. When omitted, adopt a nonempty cluster default\nand otherwise use Fargate."
+                },
+                "clusterArn": {
+                    "type": "string",
+                    "description": "The ARN of the cluster that hosts the service."
+                },
+                "deploymentMaximumPercent": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that\ncan be running in a service during a deployment.\n\nDefault - 200"
+                },
+                "deploymentMinHealthyPercent": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that\nmust remain running and healthy in a service during a deployment.\n\nDefault - 100"
+                },
+                "deploymentStrategy": {
+                    "$ref": "#/types/awsx:experimental/ecs:ServiceDeploymentStrategy",
+                    "plain": true,
+                    "description": "The deployment strategy to use for the Service.\n\nDefault - Rolling deployment strategy"
+                },
+                "deploymentTimeout": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "Total time Pulumi allows for ECS service creation or an update while waiting for steady state.\nUses Pulumi duration syntax, for example \"90m\" or \"2h\". Overrides the AWS provider timeout for\nboth operations.\n\nDefault - The AWS provider's ECS service timeout, currently 20 minutes, plus configured\nprogressive bake times and pause budgets. Hooks at the same stage run in parallel, so only the\nlongest pause at each stage is counted. Recurring pauses are counted at every traffic shift.\nLambda execution time is unknown. Override this timeout when additional time is needed.\n\nSet this explicitly when the service needs more time to stabilize. This only applies to the\nPulumi resource create/update timeout. If that timeout is reached the Pulumi deployment fails,\nbut the ECS deployment is unaffected."
+                },
+                "desiredCount": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Number of instances of the task definition to place and keep running on the service.\n\nDefault - 1"
+                },
+                "enableEcsManagedTags": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Enables Amazon ECS-managed tags on tasks launched by this service.\n\nDefault - true"
+                },
+                "forceNewDeployment": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Force a new task deployment on service updates. Enable when changing capacity-provider\nstrategies, as required by the AWS provider. Other service updates can also roll tasks.\n\nDefault - Unset."
+                },
+                "healthCheckGracePeriodSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Seconds ECS ignores failing health checks for newly started tasks, allowing the application\ntime to start. This does not change the target group's health checks or Pulumi's deployment\ntimeout.\n\nMust be an integer from 0 through 2147483647.\n\nDefault - Unset, using the AWS default of 0 seconds."
+                },
+                "loadBalancerAttachments": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:experimental/ecs:ServiceLoadBalancer",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Attach a load balancer to a specific container running in the service.\n\n- Use one attachment when a single rule can express all routing to a backend, including multiple\n  hostnames or path patterns.\n- Use multiple attachments for different containers or ports, separate listeners or\n  public/private load balancers, or hostname/path pairings that must be evaluated\n  independently.\n\nEach attachment creates its own target group and forwarding rule.\n\nDefault - The ECS service is not attached to a load balancer"
+                },
+                "manageIngress": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "When manageIngress is true, awsx will automatically add ingress rules to the service security\ngroup allowing ingress from any attached load balancers.\n\nSet this to false in order to manage the ingress rules yourself\n\nWithout load-balancer attachments, AWSX can still create a group when securityGroupIds is\nomitted. Its standalone IPv4 allow-all egress is unaffected by this setting.\n\nDefault - true."
+                },
+                "propagateTags": {
+                    "$ref": "#/types/awsx:experimental/ecs:PropagateTags",
+                    "plain": true,
+                    "description": "Selects the resource whose tags are copied to newly launched tasks.\n\nDefault - PropagateTags.SERVICE"
+                },
+                "region": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "Region where this service and its AWS child resources will be managed. Load-balancer forwarding\nrules use the inherited AWS Native provider, which must target the same account and this\neffective region. The component validates that both providers match; this input does not\noverride the AWS Native provider's region.\n\nDefaults to the Region set in the AWS provider configuration."
+                },
+                "securityGroupIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Security groups to attach to the service's tasks, in order. If provided, the list must not be\nempty.\n\nWhen manageIngress is true (the default), AWSX adds standalone application and health-check\ningress rules to ONLY the first supplied group.\n\nSet manageIngress to false to manage ingress yourself or if you are using inline ingress rules.\n\nDefault - AWSX creates one group with standalone IPv4 allow-all egress."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Tags assigned to the ECS service. These are propagated to newly launched tasks when\npropagateTags is SERVICE."
+                },
+                "taskDefinitionArn": {
+                    "type": "string",
+                    "description": "The full ARN of the task definition that you want to run in your service. The task definition\nmust use awsvpc networking and be compatible with the selected capacity"
+                },
+                "vpcSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The subnets where the service will be deployed in"
+                },
+                "waitForSteadyState": {
+                    "type": "boolean",
+                    "description": "When this is `true` the Pulumi operation will wait until the service reaches a steady state. If\nyou are using progressive deployment strategies then this will be the entire length of that\ndeployment.\n\nSet this to `false` to disable waiting for the service to reach a steady state. In this case\nyou will need a separate process to monitor the service deployment. Pulumi will return a\nsuccessful status before the deployment completes"
+                }
+            },
+            "requiredInputs": [
+                "clusterArn",
+                "taskDefinitionArn",
+                "vpcSubnetIds"
+            ],
+            "isComponent": true
+        },
+        "awsx:experimental/ecs:TaskDefinition": {
+            "properties": {
+                "executionRole": {
+                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "The Execution Role of the task"
+                },
+                "family": {
+                    "type": "string",
+                    "description": "The family of the registered task definition."
+                },
+                "logGroup": {
+                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "The shared CloudWatch Logs log group created by the component for containers using CloudWatch\nlogging (enabled by default) without specifying `logGroupArn`. This output is undefined when\nthe component does not create a default log group"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "revision": {
+                    "type": "number",
+                    "description": "The revision number assigned by ECS to the registered task definition."
+                },
+                "taskDefinitionArn": {
+                    "type": "string",
+                    "description": "The ARN of the registered task-definition revision. Pass this to an ECS service or task."
+                },
+                "taskRole": {
+                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "The Task Role of the task"
+                }
+            },
+            "type": "object",
+            "required": [
+                "executionRole",
+                "family",
+                "name",
+                "revision",
+                "taskDefinitionArn",
+                "taskRole"
+            ],
+            "inputProperties": {
+                "compatibilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:experimental/ecs:TaskCompatibility",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Compute environments this task definition must support. When multiple environments are\nselected, the task must satisfy every selected environment's restrictions. Including Fargate\nenables automatic task sizing using valid Fargate CPU and memory configurations.\n\nThis does not select where tasks run. Configure capacity separately on the service.\n\nDefault - FARGATE."
+                },
+                "containers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:experimental/ecs:ContainerDefinitionOptions",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Containers in the task, keyed by container name.\n\nAWSX uses each map key as the corresponding ECS container name."
+                },
+                "cpuArchitecture": {
+                    "$ref": "#/types/awsx:experimental/ecs:CpuArchitecture",
+                    "plain": true,
+                    "description": "The CpuArchitecture of the task.\n\nDefault - AWS default of X86_64 for Fargate. EC2 and Managed Instances default is based on the\nselected capacity provider on the service."
+                },
+                "cpuUnits": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The number of cpu units used by the task. For tasks using the Fargate launch type, this field\nis required and you must use one of the following values, which determines your range of valid\nvalues for the memory parameter:\n\n256 (.25 vCPU) - Available memory values: 512 (0.5 GB), 1024 (1 GB), 2048 (2 GB)\n\n512 (.5 vCPU) - Available memory values: 1024 (1 GB), 2048 (2 GB), 3072 (3 GB), 4096 (4 GB)\n\n1024 (1 vCPU) - Available memory values: 2048 (2 GB), 3072 (3 GB), 4096 (4 GB), 5120 (5 GB),\n6144 (6 GB), 7168 (7 GB), 8192 (8 GB)\n\n2048 (2 vCPU) - Available memory values: Between 4096 (4 GB) and 16384 (16 GB) in increments of\n1024 (1 GB)\n\n4096 (4 vCPU) - Available memory values: Between 8192 (8 GB) and 30720 (30 GB) in increments of\n1024 (1 GB)\n\n8192 (8 vCPU) - Available memory values: Between 16384 (16 GB) and 61440 (60 GB) in increments\nof 4096 (4 GB)\n\n16384 (16 vCPU) - Available memory values: Between 32768 (32 GB) and 122880 (120 GB) in\nincrements of 8192 (8 GB)\n\n32768 (32 vCPU) - Available memory values: 61440 (60 GB), 122880 (120 GB), 249856 (244 GB)\n\nDefault - Select a valid task size from container requirements when Fargate is included,\notherwise leave the task-wide limit unset."
+                },
+                "ephemeralStorageGiB": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The amount (in GiB) of ephemeral storage to be allocated to the task.\n\nRequires Fargate-only compatibility\n\nDefault - AWS default of 20GiB ephemeral storage."
+                },
+                "executionRoleArn": {
+                    "type": "string",
+                    "description": "The ARN of the IAM task execution role that will be used by the ECS Task.\n\nThe execution role grants access required by the configured containers, such as pulling images\nfrom Amazon ECR, writing logs to CloudWatch, retrieving secrets and credential specifications,\netc.\n\nThe component will automatically attach IAM policies granting access based on the container\ndefinitions. Policies for AWSX-managed environment secrets are retained when a variable is\nremoved, preserving access for older task definitions using this role.\n\nDefault - An execution role will be automatically created for you"
+                },
+                "family": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The name of a family that this task definition is registered to. A family groups multiple\nversions of a task definition.\n\nDefault - The Pulumi resource name of this component"
+                },
+                "memoryMiB": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type, this\nfield is required and must be valid for the selected CPU value:\n\n256 CPU units - 512 (0.5 GB), 1024 (1 GB), or 2048 (2 GB)\n\n512 CPU units - Between 1024 (1 GB) and 4096 (4 GB) in increments of 1024 (1 GB)\n\n1024 CPU units - Between 2048 (2 GB) and 8192 (8 GB) in increments of 1024 (1 GB)\n\n2048 CPU units - Between 4096 (4 GB) and 16384 (16 GB) in increments of 1024 (1 GB)\n\n4096 CPU units - Between 8192 (8 GB) and 30720 (30 GB) in increments of 1024 (1 GB)\n\n8192 CPU units - Between 16384 (16 GB) and 61440 (60 GB) in increments of 4096 (4 GB)\n\n16384 CPU units - Between 32768 (32 GB) and 122880 (120 GB) in increments of 8192 (8 GB)\n\n32768 CPU units - 61440 (60 GB), 122880 (120 GB), or 249856 (244 GB)\n\nFor EC2 and Managed Instances, task-level memory is optional and is not automatically\ncalculated. When omitted, every container must specify memoryMiB or memoryReservationMiB\n\nDefault - Select a valid task size when Fargate is included, otherwise leave unset."
+                },
+                "region": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "Region where this task and its supporting resources will be managed.\n\nThe AWS Native provider must use this region and the same account as the AWS provider. This\ninput does not override the AWS Native provider configuration.\n\nDefault - Region set in the AWS provider configuration."
+                },
+                "taskRoleArn": {
+                    "type": "string",
+                    "description": "The ARN of the IAM role that grants containers in the task permission to call AWS APIs on your\nbehalf.\n\nDefault - A task role is automatically created for you."
+                }
+            },
+            "requiredInputs": [
+                "containers"
+            ],
             "isComponent": true
         },
         "awsx:lb:ApplicationLoadBalancer": {
