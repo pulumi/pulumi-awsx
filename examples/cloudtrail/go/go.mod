@@ -3,7 +3,7 @@ module github.com/pulumi/pulumi-awsx/examples/go-trail
 go 1.26.10
 
 require (
-	github.com/pulumi/pulumi-awsx/sdk/v3 v3.12.0
+	github.com/pulumi/pulumi-awsx/sdk/v3 v3.13.0
 	github.com/pulumi/pulumi/sdk/v3 v3.274.0
 )
 
