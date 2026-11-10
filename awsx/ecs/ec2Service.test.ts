@@ -49,6 +49,39 @@ function promiseOf<T>(output: pulumi.Output<T>): Promise<T> {
   return new Promise((resolve) => output.apply(resolve));
 }
 
+describe("EC2Service region propagation", () => {
+  it("passes top-level region to the nested task definition", async () => {
+    const taskDefinitionResources: pulumi.runtime.MockResourceArgs[] = [];
+    pulumi.runtime.setMocks({
+      newResource(args) {
+        if (args.type === "aws:ecs/service:Service") {
+          serviceResources.push(args);
+        }
+        if (args.type === "aws:ecs/taskDefinition:TaskDefinition") {
+          taskDefinitionResources.push(args);
+        }
+        return { id: `${args.name}-id`, state: args.inputs };
+      },
+      call(args) {
+        return args.inputs;
+      },
+    });
+
+    const service = new EC2Service("region-ec2", {
+      cluster: "cluster-arn",
+      region: "us-west-2",
+      taskDefinitionArgs: {
+        container: { name: "fake-name", image: "fake-image" },
+      },
+    });
+    await promiseOf(service.service.id);
+
+    expect(taskDefinitionResources).toHaveLength(1);
+    expect(taskDefinitionResources[0].inputs.region).toBe("us-west-2");
+    expect(ecsServiceInputs().region).toBe("us-west-2");
+  });
+});
+
 describe("EC2Service capacity provider configuration", () => {
   const baseArgs = {
     cluster: "cluster-arn",

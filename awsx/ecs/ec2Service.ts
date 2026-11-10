@@ -43,9 +43,16 @@ export class EC2Service extends schema.EC2Service {
     let taskDefinitionIdentifier = args.taskDefinition;
     let taskDefinition: EC2TaskDefinition | undefined;
     if (args.taskDefinitionArgs) {
-      taskDefinition = new EC2TaskDefinition(name, args.taskDefinitionArgs, {
-        parent: this,
-      });
+      taskDefinition = new EC2TaskDefinition(
+        name,
+        {
+          ...args.taskDefinitionArgs,
+          region: args.taskDefinitionArgs.region ?? args.region,
+        },
+        {
+          parent: this,
+        },
+      );
       this.taskDefinition = taskDefinition.taskDefinition;
       taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
     }
