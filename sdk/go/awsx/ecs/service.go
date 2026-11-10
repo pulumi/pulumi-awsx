@@ -13,6 +13,1062 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// # Services
+//
+// You can use an Amazon ECS service to run and maintain a specified number of instances of a task definition simultaneously in an Amazon ECS cluster. If one of your tasks fails or stops, the Amazon ECS service scheduler launches another instance of your task definition to replace it. This helps maintain your desired number of tasks in the service.
+//
+// This component uses both the [AWS](https://www.pulumi.com/registry/packages/aws/) and [AWS Cloud Control](https://www.pulumi.com/registry/packages/aws-native/) providers so make sure they are both configured to use the same account and region.
+//
+// ## Example Usage
+//
+// ### Basic example
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	experimentalecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cluster, err := ecs.NewCluster(ctx, "cluster", nil)
+//			if err != nil {
+//				return err
+//			}
+//			vpc, err := ec2.NewVpc(ctx, "vpc", nil)
+//			if err != nil {
+//				return err
+//			}
+//			taskDefinition, err := experimentalecs.NewTaskDefinition(ctx, "taskDefinition", &experimentalecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//				ClusterArn:        cluster.Arn,
+//				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//				VpcSubnetIds:      vpc.PrivateSubnetIds,
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// The task definition must use `awsvpc` networking and be compatible with the service's selected capacity. The AWSX `TaskDefinitition` use `awsvpc` networking by default.
+//
+// ### Application Load Balancer
+//
+// Use `loadBalancerAttachments` to route requests from an existing Application Load Balancer listener to a container in the service.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	awsec2 "github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecs"
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/vpc"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecr"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	experimentalecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			vpc2, err := ec2.NewVpc(ctx, "vpc", &ec2.VpcArgs{
+//				NumberOfAvailabilityZones: 2,
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			frontend, err := awsec2.NewSecurityGroup(ctx, "frontend", &awsec2.SecurityGroupArgs{
+//				VpcId: vpc2.VpcId,
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			frontendHttp, err := vpc.NewSecurityGroupIngressRule(ctx, "frontendHttp", &vpc.SecurityGroupIngressRuleArgs{
+//				SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+//				IpProtocol:      pulumi.String("-1"),
+//				CidrIpv4:        pulumi.String("0.0.0.0/0"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			frontendEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "frontendEgress", &vpc.SecurityGroupEgressRuleArgs{
+//				SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+//				IpProtocol:      pulumi.String("tcp"),
+//				FromPort:        pulumi.Int(80),
+//				ToPort:          pulumi.Int(80),
+//				CidrIpv4: vpc2.Vpc.ApplyT(func(vpc *ec2.Vpc) (string, error) {
+//					return vpc2.CidrBlock, nil
+//				}).(pulumi.StringOutput),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			alb, err := lb.NewLoadBalancer(ctx, "alb", &lb.LoadBalancerArgs{
+//				LoadBalancerType: pulumi.String("application"),
+//				Internal:         pulumi.Bool(false),
+//				Subnets:          vpc2.PublicSubnetIds,
+//				SecurityGroups: pulumi.StringArray{
+//					frontend.ID().ToIDOutput().ToStringOutput(),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			listener, err := lb.NewListener(ctx, "listener", &lb.ListenerArgs{
+//				LoadBalancerArn: alb.Arn,
+//				Port:            pulumi.Int(80),
+//				Protocol:        pulumi.String("HTTP"),
+//				DefaultActions: lb.ListenerDefaultActionArray{
+//					&lb.ListenerDefaultActionArgs{
+//						Type: pulumi.String("fixed-response"),
+//						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+//							StatusCode:  pulumi.String("404"),
+//							ContentType: pulumi.String("text/plain"),
+//							MessageBody: pulumi.String("Not found"),
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			cluster, err := ecs.NewCluster(ctx, "cluster", nil)
+//			if err != nil {
+//				return err
+//			}
+//			repository, err := ecr.NewRepository(ctx, "repository", nil)
+//			if err != nil {
+//				return err
+//			}
+//			image, err := ecr.NewImage(ctx, "image", &ecr.ImageArgs{
+//				RepositoryUrl: repository.Repository.ApplyT(func(repository *ecr.Repository) (string, error) {
+//					return repository.RepositoryUrl, nil
+//				}).(pulumi.StringOutput),
+//				Context:  pulumi.String("./app"),
+//				Platform: pulumi.String("linux/amd64"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			taskDefinition, err := experimentalecs.NewTaskDefinition(ctx, "taskDefinition", &experimentalecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: image.ImageUri,
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//				ClusterArn:        cluster.Arn,
+//				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//				VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//				LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//					"app": ecs.ServiceLoadBalancerArgs{
+//						Application: ecs.ApplicationServiceLoadBalancerArgs{
+//							ContainerName: "app",
+//							ContainerPort: 80,
+//							ListenerArn:   listener.Arn,
+//							Priority:      10,
+//							TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//								Path: "/health",
+//							},
+//						},
+//					},
+//				},
+//			}, pulumi.DependsOn([]pulumi.Resource{
+//				frontendHttp,
+//				frontendEgress,
+//			}))
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("url", alb.DnsName.ApplyT(func(dnsName string) (string, error) {
+//				return fmt.Sprintf("http://%v", dnsName), nil
+//			}).(pulumi.StringOutput))
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// With `match` omitted, the attachment forwards all request paths. The listener's default 404 response is a fallback for requests that do not match a forwarding rule.
+//
+// ### Single attachment
+//
+// A single attachment can express all traffic going to the backend service.
+//
+// - One hostname serving many paths.
+// - Multiple hostnames route to the same backend
+// - Several path patterns route to the same backend
+//
+// For example, an application that serves `/users`, `/orders`, and `/admin` through `api.example.com` can create a single attachment
+// that matches on hostname and let the backend application handle the URL paths.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("api.example.com"),
+//							},
+//						},
+//					},
+//					Priority: 50,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// You could also select only specific paths to send to the backend service.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("api.example.com"),
+//							},
+//						},
+//						PathPatterns: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("/api/*"),
+//								pulumi.String("/admin/*"),
+//							},
+//						},
+//					},
+//					Priority: 50,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// This matches requests where the hostname is `api.example.com` **AND** the path matches either `/api/*` **OR** `/admin/*`. Alternatives within a condition are combined with OR, different condition types are combined with AND.
+//
+// The rule of thumb here is that if you can express the routing logic in a single attachment then you should.
+//
+// ### Multiple attachments to same backend
+//
+// You can use separate attachments when the same container and port needs more than one independently evaluated production forwarding rule.
+//
+// - Different priorities, hostname/path pairings, or condition lists that cannot fit in one rule
+// - Two listeners directly forward application traffic to the same backend
+// - External and internal clients reach the same application through different load balancers
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"admin": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("admin.example.com"),
+//							},
+//						},
+//						PathPatterns: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("/admin/*"),
+//							},
+//						},
+//					},
+//					Priority: 20,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//			"api": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("api.example.com"),
+//							},
+//						},
+//						PathPatterns: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("/api/*"),
+//							},
+//						},
+//					},
+//					Priority: 10,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// These attachments preserve two specific hostname/path pairings.
+//
+// - `api.example.com` with `/api/*`
+// - `admin.example.com` with `/admin/*`
+//
+// Combining both hostnames and both paths in one rule would also permit the cross-pairings (`api.example.com/admin/*` _and_ `admin.example.com/api/*`). If those pairings must remain distinct, use separate rules and attachments.
+//
+// For progressive deployments, each production rule has its own primary/alternate target-group pair. Both attachments follow the same service-wide deployment configuration.
+//
+// #### Different listeners or ALBs
+//
+// The same pattern works with different `listenerArn` values. For example, maybe you configure a private Load Balancer and a public Load Balancer to route to the same backend. In that case you need two attachments.
+//
+// > **Automatic ingress limitation:** When attachments share an application or health-check port, automatic ingress requires them to use the same ALB source security group. Different ALBs with different source groups require `manageIngress: false` and user managed task ingress.
+// >
+// > AWSX declares ingress resources during preview, when ALB security-group IDs may still be unknown. This restriction avoids duplicate rules without creating resources inside an apply.
+//
+// ```go
+//
+//	taskGroup, err := ec2.NewSecurityGroup(ctx, "taskGroup", &ec2.SecurityGroupArgs{
+//		VpcId: vpc2.VpcId,
+//	})
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	privateIngress, err := vpc.NewSecurityGroupIngressRule(ctx, "privateIngress", &vpc.SecurityGroupIngressRuleArgs{
+//		FromPort:                  pulumi.Int(80),
+//		IpProtocol:                pulumi.String("tcp"),
+//		ReferencedSecurityGroupId: privateAlbGroup.ID().ToIDOutput().ToStringOutput(),
+//		SecurityGroupId:           taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		ToPort:                    pulumi.Int(80),
+//	})
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	publicIngress, err := vpc.NewSecurityGroupIngressRule(ctx, "publicIngress", &vpc.SecurityGroupIngressRuleArgs{
+//		FromPort:                  pulumi.Int(80),
+//		IpProtocol:                pulumi.String("tcp"),
+//		ReferencedSecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+//		SecurityGroupId:           taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		ToPort:                    pulumi.Int(80),
+//	})
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	taskEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "taskEgress", &vpc.SecurityGroupEgressRuleArgs{
+//		CidrIpv4:        pulumi.String("0.0.0.0/0"),
+//		IpProtocol:      pulumi.String("-1"),
+//		SecurityGroupId: taskGroup.ID().ToIDOutput().ToStringOutput(),
+//	})
+//
+//	if err != nil {
+//		return err
+//	}
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"private": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   privateListener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						PathPatterns: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("/*"),
+//							},
+//						},
+//					},
+//					Priority: 50,
+//				},
+//			},
+//			"public": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						PathPatterns: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("/*"),
+//							},
+//						},
+//					},
+//					Priority: 50,
+//				},
+//			},
+//		},
+//		ManageIngress: false,
+//		SecurityGroupIds: []pulumi.String{
+//			taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		taskEgress,
+//		privateIngress,
+//		publicIngress,
+//		frontendHttp,
+//		frontendEgress,
+//		privateFrontendHttp,
+//		privateFrontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// If health checks use a separate port, allow that port from both ALB security groups too.
+//
+// ### Multiple attachments to different backends
+//
+// You can use separate attachments when different containers or ports in a single task receive different traffic.
+//
+// - A UI container and an API container run together in a single task
+// - One container serves multiple load-balanced ports
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"api": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "api",
+//					ContainerPort: 8080,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("api.example.com"),
+//							},
+//						},
+//					},
+//					Priority: 20,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//			"ui": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "ui",
+//					ContainerPort: 3000,
+//					ListenerArn:   listener.Arn,
+//					Match: ecs.ListenerConditionsArgs{
+//						Hostnames: ecs.StringMatchArgs{
+//							Values: []pulumi.String{
+//								pulumi.String("www.example.com"),
+//							},
+//						},
+//					},
+//					Priority: 10,
+//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//						Path: "/health",
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: uiApiTask.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//		frontendUiEgress,
+//		frontendApiEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// ### Deployment strategies
+//
+// Deployment strategies control how ECS replaces tasks and shifts traffic to a new service revision:
+//
+// 1. **Rolling (default)** replaces tasks within the service.
+// 2. **Blue/green** shifts production traffic to the new revision once it is ready.
+// 3. **Linear** shifts production traffic in increments.
+// 4. **Canary** shifts an initial percentage of production traffic, then shifts the remainder after an observation period.
+//
+// To select a strategy explicitly, configure exactly one of `rolling`, `blueGreen`, `linear`, or `canary` in `deploymentStrategy`. For blue/green, linear, and canary deployments, each load balancer attachment uses two target groups. ECS manages the forwarding weights during deployment. AWSX ignores changes to those weights so Pulumi does not reset the current traffic allocation. Make sure to `refresh` the stack before subsequent updates to retain ECS's current allocation in state.
+//
+// #### Rolling deployments
+//
+// Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: ecs.RollingStrategyArgs{
+//				FailureAction: experimentalecs.DeploymentFailureActionROLLBACK,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// By default, a failed deployment rolls back to the last successfully completed deployment when one is available.
+//
+// #### Blue/green deployments
+//
+// Blue/green deployments start a new service revision before shifting all production traffic to it.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			BlueGreen: ecs.BlueGreenStrategyArgs{
+//				BakeTimeMinutes: 5,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// `bakeTimeMinutes` is the amount of time ECS keeps the previous revision running after production traffic is shifted to the new revision. After the `bakeTimeMinutes` is up, the old revision is removed. See [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html).
+//
+// #### Linear deployments
+//
+// Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Linear: ecs.LinearStrategyArgs{
+//				BakeTimeMinutes:     5,
+//				StepBakeTimeMinutes: 3,
+//				StepPercent:         20,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// After all production traffic shifts, ECS keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+//
+// Linear deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-linear.html).
+//
+// #### Canary deployments
+//
+// Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// This configuration sends 10% of production traffic (`canaryPercent`) to the new revision for 10 minutes (`canaryBakeTimeMinutes`). ECS then shifts the remaining traffic and keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+//
+// Canary deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/canary-deployment.html).
+//
+// ### Deployment lifecycle hooks
+//
+// Use `lambdaHooks` to validate a deployment with a Lambda function, or `pauseHooks` to wait for an external approval or validation workflow.
+//
+// #### Lambda hooks
+//
+// Add Lambda hooks inside the selected deployment strategy. This example invokes an existing Lambda function before a rolling deployment starts replacement tasks.
+//
+// The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: ecs.RollingStrategyArgs{
+//				LambdaHooks: []ecs.RollingLambdaHookArgs{
+//					{
+//						FunctionArn: pulumi.String("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation"),
+//						HookDetails: {
+//							"someKey": pulumi.Any("someValue"),
+//						},
+//					},
+//				},
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// The existing function's execution role must grant any permissions its checks require, such as reading configuration or writing logs. This is separate from the invocation role that lets ECS call the function.
+//
+// The `hookDetails` field is a dictionary that you can use to pass data into your lifecycle hook function.
+//
+// #### Pause hooks
+//
+// Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: ecs.RollingStrategyArgs{
+//				PauseHooks: []ecs.RollingPauseHookArgs{
+//					{
+//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutMinutes: 30,
+//					},
+//				},
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// See the [AWS docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html) for more details on pause hooks.
+//
+// Lambda and pause hooks at the same stage run in parallel and every hook must complete before the deployment proceeds.
+//
+// #### Progressive deployment hooks
+//
+// For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			Canary: ecs.CanaryStrategyArgs{
+//				BakeTimeMinutes:       5,
+//				CanaryBakeTimeMinutes: 10,
+//				CanaryPercent:         10,
+//				LambdaHooks: []ecs.ProgressiveLambdaHookArgs{
+//					{
+//						FunctionArn: pulumi.String("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation"),
+//						LifecycleStages: []experimentalecs.ProgressiveLambdaLifecycleStage{
+//							experimentalecs.ProgressiveLambdaLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
+//						},
+//					},
+//				},
+//				PauseHooks: []ecs.ProgressivePauseHookArgs{
+//					{
+//						LifecycleStages: []experimentalecs.ProgressivePauseLifecycleStage{
+//							experimentalecs.ProgressivePauseLifecycleStage_PRE_PRODUCTION_TRAFFIC_SHIFT,
+//						},
+//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutMinutes: 30,
+//					},
+//				},
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//					TestTraffic: ecs.TestTrafficArgs{
+//						Match: ecs.ListenerConditionsArgs{
+//							Headers: []ecs.HeaderConditionArgs{
+//								{
+//									Name: pulumi.String("X-Deployment-Test"),
+//									Values: []pulumi.String{
+//										pulumi.String("true"),
+//									},
+//								},
+//							},
+//						},
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// Use `POST_TEST_TRAFFIC_SHIFT` with a test traffic route to validate the new revision before production traffic shifts.
+//
+// For canary and linear deployments, `PRE_PRODUCTION_TRAFFIC_SHIFT` pauses before each traffic shift. Each pause has a new hook ID and requires a separate decision.
+//
+// ### Test traffic
+//
+// Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn: cluster.Arn,
+//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
+//			BlueGreen: ecs.BlueGreenStrategyArgs{
+//				BakeTimeMinutes: 5,
+//				PauseHooks: []ecs.ProgressivePauseHookArgs{
+//					{
+//						LifecycleStages: []experimentalecs.ProgressivePauseLifecycleStage{
+//							experimentalecs.ProgressivePauseLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
+//						},
+//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutMinutes: 30,
+//					},
+//				},
+//			},
+//		},
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//					TestTraffic: ecs.TestTrafficArgs{
+//						Match: ecs.ListenerConditionsArgs{
+//							Headers: []ecs.HeaderConditionArgs{
+//								{
+//									Name: pulumi.String("X-Deployment-Test"),
+//									Values: []pulumi.String{
+//										pulumi.String("true"),
+//									},
+//								},
+//							},
+//						},
+//					},
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// An outside workflow must then call `ContinueServiceDeployment` with `CONTINUE` or `ROLLBACK`.
+//
+// ### Deployment timeouts
+//
+// By default, Pulumi waits for the service to reach a steady state. For progressive deployments, this includes the traffic shifts and bake periods which can be substantial depending on the configuration.
+//
+// The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
+//
+// ```go
+//
+//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//		ClusterArn:        cluster.Arn,
+//		DeploymentTimeout: "2h",
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
+//			"app": ecs.ServiceLoadBalancerArgs{
+//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//					ContainerName: "app",
+//					ContainerPort: 80,
+//					ListenerArn:   listener.Arn,
+//					Priority:      10,
+//				},
+//			},
+//		},
+//		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
+//		VpcSubnetIds:      vpc2.PrivateSubnetIds,
+//	}, pulumi.DependsOn([]pulumi.Resource{
+//
+//		frontendHttp,
+//		frontendEgress,
+//	}))
+//
+//	if err != nil {
+//		return err
+//	}
+//
+// ```
+//
+// This timeout applies to Pulumi's create and update operations. Reaching it fails the Pulumi operation but does not stop the ECS deployment.
+//
+// If you have a separate process that monitors the ECS deployment and don't want the Pulumi operation to wait, you can set `waitForSteadyState: false`.
 type Service struct {
 	pulumi.ResourceState
 
