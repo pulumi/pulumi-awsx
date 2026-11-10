@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build, watch, and serve the local AWSX registry preview"
+#MISE depends=["docs:watch", "docs:serve"]
+# The dependencies run the initial build once, then watch and serve in parallel.
+:

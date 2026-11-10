@@ -9,7 +9,9 @@ AWSX_NEXT_SCHEMA_SOURCES := \
 bin/$(CODEGEN): $(wildcard provider/pkg/schemagen/*.go) \
 	provider/cmd/pulumi-gen-awsx/main.go \
 	$(shell find provider/cmd/pulumi-gen-awsx/overlays -type f)
-.make/schema: $(AWSX_NEXT_SCHEMA_SOURCES) .make/awsx_next_install
+# Schema inference may refresh package-lock.json while installing its own dependencies.
+# Installation must complete first, but its stamp is not a schema input.
+.make/schema: $(AWSX_NEXT_SCHEMA_SOURCES) | .make/awsx_next_install
 
 test_provider: .make/awsx_next_install
 .make/awsx_next_install: awsx-next/package.json awsx-next/package-lock.json
