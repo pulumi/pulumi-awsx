@@ -14,6 +14,911 @@ import java.lang.String;
 import java.util.List;
 import javax.annotation.Nullable;
 
+/**
+ * # Services
+ * 
+ * You can use an Amazon ECS service to run and maintain a specified number of instances of a task definition simultaneously in an Amazon ECS cluster. If one of your tasks fails or stops, the Amazon ECS service scheduler launches another instance of your task definition to replace it. This helps maintain your desired number of tasks in the service.
+ * 
+ * This component uses both the [AWS](https://www.pulumi.com/registry/packages/aws/) and [AWS Cloud Control](https://www.pulumi.com/registry/packages/aws-native/) providers so make sure they are both configured to use the same account and region.
+ * 
+ * ## Example Usage
+ * 
+ * ### Basic example
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ecs.Cluster;
+ * import com.pulumi.awsx.ec2.Vpc;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import com.pulumi.awsx.experimental.Service;
+ * import com.pulumi.awsx.experimental.ServiceArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var cluster = new Cluster("cluster");
+ * 
+ *         var vpc = new Vpc("vpc");
+ * 
+ *         var taskDefinition = new TaskDefinition("taskDefinition", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         var service = new Service("service", ServiceArgs.builder()
+ *             .clusterArn(cluster.arn())
+ *             .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *             .vpcSubnetIds(vpc.privateSubnetIds())
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * The task definition must use `awsvpc` networking and be compatible with the service&#39;s selected capacity. The AWSX `TaskDefinitition` use `awsvpc` networking by default.
+ * 
+ * ### Application Load Balancer
+ * 
+ * Use `loadBalancerAttachments` to route requests from an existing Application Load Balancer listener to a container in the service.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.ec2.Vpc;
+ * import com.pulumi.awsx.ec2.VpcArgs;
+ * import com.pulumi.aws.ec2.SecurityGroup;
+ * import com.pulumi.aws.ec2.SecurityGroupArgs;
+ * import com.pulumi.aws.vpc.SecurityGroupIngressRule;
+ * import com.pulumi.aws.vpc.SecurityGroupIngressRuleArgs;
+ * import com.pulumi.aws.vpc.SecurityGroupEgressRule;
+ * import com.pulumi.aws.vpc.SecurityGroupEgressRuleArgs;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.LoadBalancerArgs;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;
+ * import com.pulumi.aws.ecs.Cluster;
+ * import com.pulumi.awsx.ecr.Repository;
+ * import com.pulumi.awsx.ecr.Image;
+ * import com.pulumi.awsx.ecr.ImageArgs;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import com.pulumi.awsx.experimental.Service;
+ * import com.pulumi.awsx.experimental.ServiceArgs;
+ * import com.pulumi.awsx.experimental.inputs.ServiceLoadBalancerArgs;
+ * import com.pulumi.awsx.experimental.inputs.ApplicationServiceLoadBalancerArgs;
+ * import com.pulumi.awsx.experimental.inputs.TargetGroupHealthCheckArgs;
+ * import com.pulumi.resources.CustomResourceOptions;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var vpc = new Vpc("vpc", VpcArgs.builder()
+ *             .numberOfAvailabilityZones(2)
+ *             .build());
+ * 
+ *         var frontend = new SecurityGroup("frontend", SecurityGroupArgs.builder()
+ *             .vpcId(vpc.vpcId())
+ *             .build());
+ * 
+ *         var frontendHttp = new SecurityGroupIngressRule("frontendHttp", SecurityGroupIngressRuleArgs.builder()
+ *             .securityGroupId(frontend.id())
+ *             .ipProtocol("-1")
+ *             .cidrIpv4("0.0.0.0/0")
+ *             .build());
+ * 
+ *         var frontendEgress = new SecurityGroupEgressRule("frontendEgress", SecurityGroupEgressRuleArgs.builder()
+ *             .securityGroupId(frontend.id())
+ *             .ipProtocol("tcp")
+ *             .fromPort(80)
+ *             .toPort(80)
+ *             .cidrIpv4(vpc.vpc().applyValue(_vpc -> _vpc.cidrBlock()))
+ *             .build());
+ * 
+ *         var alb = new LoadBalancer("alb", LoadBalancerArgs.builder()
+ *             .loadBalancerType("application")
+ *             .internal(false)
+ *             .subnets(vpc.publicSubnetIds())
+ *             .securityGroups(frontend.id())
+ *             .build());
+ * 
+ *         var listener = new Listener("listener", ListenerArgs.builder()
+ *             .loadBalancerArn(alb.arn())
+ *             .port(80)
+ *             .protocol("HTTP")
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
+ *                 .type("fixed-response")
+ *                 .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()
+ *                     .statusCode("404")
+ *                     .contentType("text/plain")
+ *                     .messageBody("Not found")
+ *                     .build())
+ *                 .build())
+ *             .build());
+ * 
+ *         var cluster = new Cluster("cluster");
+ * 
+ *         var repository = new Repository("repository");
+ * 
+ *         var image = new Image("image", ImageArgs.builder()
+ *             .repositoryUrl(repository.repository().applyValue(_repository -> _repository.repositoryUrl()))
+ *             .context("./app")
+ *             .platform("linux/amd64")
+ *             .build());
+ * 
+ *         var taskDefinition = new TaskDefinition("taskDefinition", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image(image.imageUri())
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         var service = new Service("service", ServiceArgs.builder()
+ *             .clusterArn(cluster.arn())
+ *             .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *             .vpcSubnetIds(vpc.privateSubnetIds())
+ *             .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *                 .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                     .containerName("app")
+ *                     .containerPort(80.0)
+ *                     .listenerArn(listener.arn())
+ *                     .priority(10.0)
+ *                     .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                         .path("/health")
+ *                         .build())
+ *                     .build())
+ *                 .build()))
+ *             .build(), CustomResourceOptions.builder()
+ *                 .dependsOn(                
+ *                     frontendHttp,
+ *                     frontendEgress)
+ *                 .build());
+ * 
+ *         ctx.export("url", alb.dnsName().applyValue(_dnsName -> String.format("http://%s", _dnsName)));
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * With `match` omitted, the attachment forwards all request paths. The listener&#39;s default 404 response is a fallback for requests that do not match a forwarding rule.
+ * 
+ * ### Single attachment
+ * 
+ * A single attachment can express all traffic going to the backend service.
+ * 
+ * - One hostname serving many paths.
+ * - Multiple hostnames route to the same backend
+ * - Several path patterns route to the same backend
+ * 
+ * For example, an application that serves `/users`, `/orders`, and `/admin` through `api.example.com` can create a single attachment
+ * that matches on hostname and let the backend application handle the URL paths.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .match(ListenerConditionsArgs.builder()
+ *                 .hostnames(StringMatchArgs.builder()
+ *                     .values("api.example.com")
+ *                     .build().applyValue(___convert -> ___convert))
+ *                 .build())
+ *             .priority(50.0)
+ *             .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                 .path("/health")
+ *                 .build())
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * You could also select only specific paths to send to the backend service.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .match(ListenerConditionsArgs.builder()
+ *                 .hostnames(StringMatchArgs.builder()
+ *                     .values("api.example.com")
+ *                     .build().applyValue(___convert -> ___convert))
+ *                 .pathPatterns(StringMatchArgs.builder()
+ *                     .values(                            
+ *                         "/api/*",
+ *                         "/admin/*")
+ *                     .build().applyValue(___convert -> ___convert))
+ *                 .build())
+ *             .priority(50.0)
+ *             .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                 .path("/health")
+ *                 .build())
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * This matches requests where the hostname is `api.example.com` **AND** the path matches either `/api/*` **OR** `/admin/*`. Alternatives within a condition are combined with OR, different condition types are combined with AND.
+ * 
+ * The rule of thumb here is that if you can express the routing logic in a single attachment then you should.
+ * 
+ * ### Multiple attachments to same backend
+ * 
+ * You can use separate attachments when the same container and port needs more than one independently evaluated production forwarding rule.
+ * 
+ * - Different priorities, hostname/path pairings, or condition lists that cannot fit in one rule
+ * - Two listeners directly forward application traffic to the same backend
+ * - External and internal clients reach the same application through different load balancers
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.ofEntries(
+ *         Map.entry("admin", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("app")
+ *                 .containerPort(80.0)
+ *                 .listenerArn(listener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .hostnames(StringMatchArgs.builder()
+ *                         .values("admin.example.com")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .pathPatterns(StringMatchArgs.builder()
+ *                         .values("/admin/*")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(20.0)
+ *                 .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                     .path("/health")
+ *                     .build())
+ *                 .build())
+ *             .build()),
+ *         Map.entry("api", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("app")
+ *                 .containerPort(80.0)
+ *                 .listenerArn(listener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .hostnames(StringMatchArgs.builder()
+ *                         .values("api.example.com")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .pathPatterns(StringMatchArgs.builder()
+ *                         .values("/api/*")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(10.0)
+ *                 .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                     .path("/health")
+ *                     .build())
+ *                 .build())
+ *             .build())
+ *     ))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * These attachments preserve two specific hostname/path pairings.
+ * 
+ * - `api.example.com` with `/api/*`
+ * - `admin.example.com` with `/admin/*`
+ * 
+ * Combining both hostnames and both paths in one rule would also permit the cross-pairings (`api.example.com/admin/*` _and_ `admin.example.com/api/*`). If those pairings must remain distinct, use separate rules and attachments.
+ * 
+ * For progressive deployments, each production rule has its own primary/alternate target-group pair. Both attachments follow the same service-wide deployment configuration.
+ * 
+ * #### Different listeners or ALBs
+ * 
+ * The same pattern works with different `listenerArn` values. For example, maybe you configure a private Load Balancer and a public Load Balancer to route to the same backend. In that case you need two attachments.
+ * 
+ * &gt; **Automatic ingress limitation:** When attachments share an application or health-check port, automatic ingress requires them to use the same ALB source security group. Different ALBs with different source groups require `manageIngress: false` and user managed task ingress.
+ * &gt; 
+ * &gt; AWSX declares ingress resources during preview, when ALB security-group IDs may still be unknown. This restriction avoids duplicate rules without creating resources inside an apply.
+ * 
+ * <pre>
+ * {@code
+ * var taskGroup = new SecurityGroup("taskGroup", SecurityGroupArgs.builder()
+ *     .vpcId(vpc.vpcId())
+ *     .build());
+ * 
+ * var privateIngress = new SecurityGroupIngressRule("privateIngress", SecurityGroupIngressRuleArgs.builder()
+ *     .fromPort(80)
+ *     .ipProtocol("tcp")
+ *     .referencedSecurityGroupId(privateAlbGroup.id())
+ *     .securityGroupId(taskGroup.id())
+ *     .toPort(80)
+ *     .build());
+ * 
+ * var publicIngress = new SecurityGroupIngressRule("publicIngress", SecurityGroupIngressRuleArgs.builder()
+ *     .fromPort(80)
+ *     .ipProtocol("tcp")
+ *     .referencedSecurityGroupId(frontend.id())
+ *     .securityGroupId(taskGroup.id())
+ *     .toPort(80)
+ *     .build());
+ * 
+ * var taskEgress = new SecurityGroupEgressRule("taskEgress", SecurityGroupEgressRuleArgs.builder()
+ *     .cidrIpv4("0.0.0.0/0")
+ *     .ipProtocol("-1")
+ *     .securityGroupId(taskGroup.id())
+ *     .build());
+ * 
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.ofEntries(
+ *         Map.entry("private", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("app")
+ *                 .containerPort(80.0)
+ *                 .listenerArn(privateListener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .pathPatterns(StringMatchArgs.builder()
+ *                         .values("/*")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(50.0)
+ *                 .build())
+ *             .build()),
+ *         Map.entry("public", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("app")
+ *                 .containerPort(80.0)
+ *                 .listenerArn(listener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .pathPatterns(StringMatchArgs.builder()
+ *                         .values("/*")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(50.0)
+ *                 .build())
+ *             .build())
+ *     ))
+ *     .manageIngress(false)
+ *     .securityGroupIds(taskGroup.id())
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             taskEgress,
+ *             privateIngress,
+ *             publicIngress,
+ *             frontendHttp,
+ *             frontendEgress,
+ *             privateFrontendHttp,
+ *             privateFrontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * If health checks use a separate port, allow that port from both ALB security groups too.
+ * 
+ * ### Multiple attachments to different backends
+ * 
+ * You can use separate attachments when different containers or ports in a single task receive different traffic.
+ * 
+ * - A UI container and an API container run together in a single task
+ * - One container serves multiple load-balanced ports
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.ofEntries(
+ *         Map.entry("api", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("api")
+ *                 .containerPort(8080.0)
+ *                 .listenerArn(listener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .hostnames(StringMatchArgs.builder()
+ *                         .values("api.example.com")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(20.0)
+ *                 .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                     .path("/health")
+ *                     .build())
+ *                 .build())
+ *             .build()),
+ *         Map.entry("ui", ServiceLoadBalancerArgs.builder()
+ *             .application(ApplicationServiceLoadBalancerArgs.builder()
+ *                 .containerName("ui")
+ *                 .containerPort(3000.0)
+ *                 .listenerArn(listener.arn())
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .hostnames(StringMatchArgs.builder()
+ *                         .values("www.example.com")
+ *                         .build().applyValue(___convert -> ___convert))
+ *                     .build())
+ *                 .priority(10.0)
+ *                 .targetHealthCheck(TargetGroupHealthCheckArgs.builder()
+ *                     .path("/health")
+ *                     .build())
+ *                 .build())
+ *             .build())
+ *     ))
+ *     .taskDefinitionArn(uiApiTask.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress,
+ *             frontendUiEgress,
+ *             frontendApiEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * ### Deployment strategies
+ * 
+ * Deployment strategies control how ECS replaces tasks and shifts traffic to a new service revision:
+ * 
+ * 1. **Rolling (default)** replaces tasks within the service.
+ * 2. **Blue/green** shifts production traffic to the new revision once it is ready.
+ * 3. **Linear** shifts production traffic in increments.
+ * 4. **Canary** shifts an initial percentage of production traffic, then shifts the remainder after an observation period.
+ * 
+ * To select a strategy explicitly, configure exactly one of `rolling`, `blueGreen`, `linear`, or `canary` in `deploymentStrategy`. For blue/green, linear, and canary deployments, each load balancer attachment uses two target groups. ECS manages the forwarding weights during deployment. AWSX ignores changes to those weights so Pulumi does not reset the current traffic allocation. Make sure to `refresh` the stack before subsequent updates to retain ECS&#39;s current allocation in state.
+ * 
+ * #### Rolling deployments
+ * 
+ * Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .rolling(RollingStrategyArgs.builder()
+ *             .failureAction("Rollback")
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * By default, a failed deployment rolls back to the last successfully completed deployment when one is available.
+ * 
+ * #### Blue/green deployments
+ * 
+ * Blue/green deployments start a new service revision before shifting all production traffic to it.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .blueGreen(BlueGreenStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * `bakeTimeMinutes` is the amount of time ECS keeps the previous revision running after production traffic is shifted to the new revision. After the `bakeTimeMinutes` is up, the old revision is removed. See [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html).
+ * 
+ * #### Linear deployments
+ * 
+ * Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .linear(LinearStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .stepBakeTimeMinutes(3.0)
+ *             .stepPercent(20.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * After all production traffic shifts, ECS keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+ * 
+ * Linear deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-linear.html).
+ * 
+ * #### Canary deployments
+ * 
+ * Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * This configuration sends 10% of production traffic (`canaryPercent`) to the new revision for 10 minutes (`canaryBakeTimeMinutes`). ECS then shifts the remaining traffic and keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+ * 
+ * Canary deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/canary-deployment.html).
+ * 
+ * ### Deployment lifecycle hooks
+ * 
+ * Use `lambdaHooks` to validate a deployment with a Lambda function, or `pauseHooks` to wait for an external approval or validation workflow.
+ * 
+ * #### Lambda hooks
+ * 
+ * Add Lambda hooks inside the selected deployment strategy. This example invokes an existing Lambda function before a rolling deployment starts replacement tasks.
+ * 
+ * The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .rolling(RollingStrategyArgs.builder()
+ *             .lambdaHooks(RollingLambdaHookArgs.builder()
+ *                 .functionArn("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation")
+ *                 .hookDetails(Map.of("someKey", "someValue"))
+ *                 .build())
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * The existing function&#39;s execution role must grant any permissions its checks require, such as reading configuration or writing logs. This is separate from the invocation role that lets ECS call the function.
+ * 
+ * The `hookDetails` field is a dictionary that you can use to pass data into your lifecycle hook function.
+ * 
+ * #### Pause hooks
+ * 
+ * Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .rolling(RollingStrategyArgs.builder()
+ *             .pauseHooks(RollingPauseHookArgs.builder()
+ *                 .timeoutAction("ROLLBACK")
+ *                 .timeoutMinutes(30.0)
+ *                 .build())
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * See the [AWS docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html) for more details on pause hooks.
+ * 
+ * Lambda and pause hooks at the same stage run in parallel and every hook must complete before the deployment proceeds.
+ * 
+ * #### Progressive deployment hooks
+ * 
+ * For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .canary(CanaryStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .canaryBakeTimeMinutes(10.0)
+ *             .canaryPercent(10.0)
+ *             .lambdaHooks(ProgressiveLambdaHookArgs.builder()
+ *                 .functionArn("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation")
+ *                 .lifecycleStages("POST_TEST_TRAFFIC_SHIFT")
+ *                 .build())
+ *             .pauseHooks(ProgressivePauseHookArgs.builder()
+ *                 .lifecycleStages("PRE_PRODUCTION_TRAFFIC_SHIFT")
+ *                 .timeoutAction("ROLLBACK")
+ *                 .timeoutMinutes(30.0)
+ *                 .build())
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .testTraffic(TestTrafficArgs.builder()
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .headers(HeaderConditionArgs.builder()
+ *                         .name("X-Deployment-Test")
+ *                         .values("true")
+ *                         .build().applyValue(___convert -> ___convert).applyValue(___convert -> ___convert))
+ *                     .build().applyValue(___convert -> ___convert))
+ *                 .build())
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * Use `POST_TEST_TRAFFIC_SHIFT` with a test traffic route to validate the new revision before production traffic shifts.
+ * 
+ * For canary and linear deployments, `PRE_PRODUCTION_TRAFFIC_SHIFT` pauses before each traffic shift. Each pause has a new hook ID and requires a separate decision.
+ * 
+ * ### Test traffic
+ * 
+ * Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentStrategy(ServiceDeploymentStrategyArgs.builder()
+ *         .blueGreen(BlueGreenStrategyArgs.builder()
+ *             .bakeTimeMinutes(5.0)
+ *             .pauseHooks(ProgressivePauseHookArgs.builder()
+ *                 .lifecycleStages("POST_TEST_TRAFFIC_SHIFT")
+ *                 .timeoutAction("ROLLBACK")
+ *                 .timeoutMinutes(30.0)
+ *                 .build())
+ *             .build())
+ *         .build())
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .testTraffic(TestTrafficArgs.builder()
+ *                 .match(ListenerConditionsArgs.builder()
+ *                     .headers(HeaderConditionArgs.builder()
+ *                         .name("X-Deployment-Test")
+ *                         .values("true")
+ *                         .build().applyValue(___convert -> ___convert).applyValue(___convert -> ___convert))
+ *                     .build().applyValue(___convert -> ___convert))
+ *                 .build())
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * An outside workflow must then call `ContinueServiceDeployment` with `CONTINUE` or `ROLLBACK`.
+ * 
+ * ### Deployment timeouts
+ * 
+ * By default, Pulumi waits for the service to reach a steady state. For progressive deployments, this includes the traffic shifts and bake periods which can be substantial depending on the configuration.
+ * 
+ * The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
+ * 
+ * <pre>
+ * {@code
+ * var service = new Service("service", ServiceArgs.builder()
+ *     .clusterArn(cluster.arn())
+ *     .deploymentTimeout("2h")
+ *     .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
+ *         .application(ApplicationServiceLoadBalancerArgs.builder()
+ *             .containerName("app")
+ *             .containerPort(80.0)
+ *             .listenerArn(listener.arn())
+ *             .priority(10.0)
+ *             .build())
+ *         .build()))
+ *     .taskDefinitionArn(taskDefinition.taskDefinitionArn())
+ *     .vpcSubnetIds(vpc.privateSubnetIds())
+ *     .build(), CustomResourceOptions.builder()
+ *         .dependsOn(                
+ *             frontendHttp,
+ *             frontendEgress)
+ *         .build());
+ * }
+ * </pre>
+ * 
+ * This timeout applies to Pulumi&#39;s create and update operations. Reaching it fails the Pulumi operation but does not stop the ECS deployment.
+ * 
+ * If you have a separate process that monitors the ECS deployment and don&#39;t want the Pulumi operation to wait, you can set `waitForSteadyState: false`.
+ * 
+ */
 @ResourceType(type="awsx:experimental/ecs:Service")
 public class Service extends com.pulumi.resources.ComponentResource {
     /**

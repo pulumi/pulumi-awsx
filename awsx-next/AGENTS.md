@@ -24,6 +24,12 @@ Validate with `pulumi package get-schema ./awsx-next` from the repository root.
 export changes, compare the actual schemas, including descriptions, enum members,
 required fields, and references.
 
+## Documentation
+
+After editing component docs under `docs/`, run `make generate` from the repository
+root and commit the updated schema and SDK descriptions. `make schema` alone leaves
+the SDK documentation stale and fails CI's regeneration check.
+
 ## Component authoring
 
 - Use schema-compatible public argument and output types, with constructor parameters `name`, `args`, and optional `opts` so Pulumi can infer the schema.

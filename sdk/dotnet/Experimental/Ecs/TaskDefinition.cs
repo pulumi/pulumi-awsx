@@ -9,6 +9,445 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Experimental.Ecs
 {
+    /// <summary>
+    /// # Task definitions
+    /// 
+    /// A task definition is a blueprint for your application. It describes the parameters and one or more containers that form your application.
+    /// 
+    /// ## Example Usage
+    /// 
+    /// ### Basic example
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// ### Capacity compatibility
+    /// 
+    /// Task compatibility defines which compute environments the task can run on:
+    /// 
+    /// 1. **Fargate**
+    /// 2. **EC2**
+    /// 3. **Managed Instances**
+    /// 
+    /// Compatibility defaults to `FARGATE`. To support multiple environments, list them in `compatibilities`. AWSX validates the configuration against all selected environments. This does not select _where_ the task runs or provision capacity, it only declares where it _can_ run.
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Compatibilities = new()
+    ///         {
+    ///             Awsx.Experimental.Ecs.TaskCompatibility.FARGATE,
+    ///             Awsx.Experimental.Ecs.TaskCompatibility.MANAGED_INSTANCES,
+    ///             Awsx.Experimental.Ecs.TaskCompatibility.EC2,
+    ///         },
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// 
+    /// ### Managed Instances compatibility
+    /// 
+    /// When `FARGATE` is included, AWSX selects a valid Fargate task size from the container requirements unless you provide explicit CPU and memory values. To use a task size outside the supported Fargate combinations, select only the environment you need.
+    /// 
+    /// This example targets Managed Instances and explicitly sets the task's CPU and memory:
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         CpuUnits = 256.0,
+    ///         MemoryMiB = 256.0,
+    ///         Compatibilities = new()
+    ///         {
+    ///             Awsx.Experimental.Ecs.TaskCompatibility.MANAGED_INSTANCES,
+    ///         },
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// ### Environment variables and secrets
+    /// 
+    /// Use `environment` to configure ordinary values, Pulumi secrets, and references to AWS Secrets Manager or Systems Manager Parameter Store.
+    /// 
+    /// For secret sources, AWSX adds retrieval permissions to the task execution role. ECS retrieves the values when tasks start. The values are available as environment variables inside the container, rather than stored as plaintext in the ECS task definition.
+    /// 
+    /// ### Pulumi secrets
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var config = new Config();
+    ///     var apiToken = config.RequireSecret("apiToken");
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 Environment = 
+    ///                 {
+    ///                     { "API_TOKEN", new Awsx.Experimental.Ecs.Inputs.EnvironmentVariableArgs
+    ///                     {
+    ///                         Value = apiToken,
+    ///                     } },
+    ///                 },
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// AWSX creates a Secrets Manager secret for the Pulumi secret value and references a specific secret version. Changing the configuration value creates a new task-definition revision which will trigger a new deployment for services that reference the task definition.
+    /// 
+    /// ### AWS Secrets Manager
+    /// 
+    /// Reference a secret managed outside the task-definition component. This example creates a JSON secret with a generated password, then injects only its `password` field.
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using AwsNative = Pulumi.AwsNative;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var databaseSecret = new AwsNative.SecretsManager.Secret("databaseSecret", new()
+    ///     {
+    ///         GenerateSecretString = new AwsNative.SecretsManager.Inputs.SecretGenerateSecretStringArgs
+    ///         {
+    ///             SecretStringTemplate = "{\"username\":\"app\"}",
+    ///             GenerateStringKey = "password",
+    ///             PasswordLength = 32,
+    ///             ExcludePunctuation = true,
+    ///         },
+    ///     });
+    /// 
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 Environment = 
+    ///                 {
+    ///                     { "DATABASE_PASSWORD", new Awsx.Experimental.Ecs.Inputs.EnvironmentVariableArgs
+    ///                     {
+    ///                         SecretsManager = new Awsx.Experimental.Ecs.Inputs.SecretsManagerSecretArgs
+    ///                         {
+    ///                             SecretArn = databaseSecret.AwsId,
+    ///                             JsonKey = "password",
+    ///                         },
+    ///                     } },
+    ///                 },
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// ### AWS Systems Manager Parameter Store
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var config = new Config();
+    ///     var sharedTokenParameterArn = config.Require("sharedTokenParameterArn");
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 Environment = 
+    ///                 {
+    ///                     { "SHARED_TOKEN", new Awsx.Experimental.Ecs.Inputs.EnvironmentVariableArgs
+    ///                     {
+    ///                         SsmParameterArn = sharedTokenParameterArn,
+    ///                     } },
+    ///                 },
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// Changing the value stored in the parameter will not trigger a deployment.
+    /// 
+    /// ### Logging
+    /// 
+    /// The `TaskDefinition` creates a shared CloudWatch Logs log group by default where all container logs are sent. To control settings such as retention, create a log group and pass its ARN.
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var applicationLogs = new Aws.CloudWatch.LogGroup("applicationLogs", new()
+    ///     {
+    ///         RetentionInDays = 14,
+    ///     });
+    /// 
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///                 Logging = new Awsx.Experimental.Ecs.Inputs.ContainerLogDriverArgs
+    ///                 {
+    ///                     Cloudwatch = new Awsx.Experimental.Ecs.Inputs.AwsLogsLogDriverArgs
+    ///                     {
+    ///                         LogGroupArn = applicationLogs.Arn,
+    ///                         StreamPrefix = "app",
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///         ["logGroupName"] = applicationLogs.Name,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// AWSX grants the task execution role permission to write to this log group.
+    /// 
+    /// ### CPU and memory
+    /// 
+    /// Task-level CPU and memory configure the resources allocated to the task. Container-level settings configure CPU reservations and memory limits within that allocation.
+    /// 
+    /// #### Automatic task sizing
+    /// 
+    /// For a small application that needs 0.5 vCPU and up to 1 GiB of memory, configure the container and leave task-level sizing unset:
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var config = new Config();
+    ///     var applicationImage = config.Require("applicationImage");
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = applicationImage,
+    ///                 CpuUnits = 512.0,
+    ///                 MemoryMiB = 1024.0,
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// AWSX selects a Fargate task with 512 CPU units and 1024 MiB of memory. This gives the task 0.5 vCPU and 1 GiB of memory.
+    /// 
+    /// #### Reserving headroom for memory bursts
+    /// 
+    /// A worker might normally need 1 GiB of memory but use up to 3 GiB while processing a job. A telemetry sidecar might normally need 256 MiB and should never exceed 512 MiB.
+    /// 
+    /// Use `memoryReservationMiB` for each container’s soft memory reservation and `memoryMiB` for its hard limit. Set task-level memory explicitly to provide room for bursts:
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var config = new Config();
+    ///     var workerImage = config.Require("workerImage");
+    ///     var telemetryImage = config.Require("telemetryImage");
+    ///     var task = new Awsx.Experimental.Ecs.TaskDefinition("task", new()
+    ///     {
+    ///         CpuUnits = 1024.0,
+    ///         MemoryMiB = 4096.0,
+    ///         Containers = 
+    ///         {
+    ///             { "worker", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = workerImage,
+    ///                 CpuUnits = 768.0,
+    ///                 MemoryReservationMiB = 1024.0,
+    ///                 MemoryMiB = 3072.0,
+    ///             } },
+    ///             { "telemetry", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = telemetryImage,
+    ///                 CpuUnits = 256.0,
+    ///                 MemoryReservationMiB = 256.0,
+    ///                 MemoryMiB = 512.0,
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["taskDefinitionArn"] = task.TaskDefinitionArn,
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// The task has 1 vCPU and 4 GiB of memory. Within that allocation:
+    /// 
+    /// - The worker has a soft memory reservation of 1 GiB and a hard limit of 3 GiB.
+    /// - Telemetry has a soft memory reservation of 256 MiB and a hard limit of 512 MiB.
+    /// - When both containers compete for CPU, the worker has three times the CPU weight of telemetry.
+    /// 
+    /// When `memoryReservationMiB` is set, automatic sizing uses that reservation instead of the container’s hard memory limit. In this example, automatic sizing would select a 2 GiB task. Explicitly allocating 4 GiB provides enough headroom for the worker to grow toward its 3 GiB limit while telemetry continues running.
+    /// </summary>
     [AwsxResourceType("awsx:experimental/ecs:TaskDefinition")]
     public partial class TaskDefinition : global::Pulumi.ComponentResource
     {

@@ -9,6 +9,1133 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Experimental.Ecs
 {
+    /// <summary>
+    /// # Services
+    /// 
+    /// You can use an Amazon ECS service to run and maintain a specified number of instances of a task definition simultaneously in an Amazon ECS cluster. If one of your tasks fails or stops, the Amazon ECS service scheduler launches another instance of your task definition to replace it. This helps maintain your desired number of tasks in the service.
+    /// 
+    /// This component uses both the [AWS](https://www.pulumi.com/registry/packages/aws/) and [AWS Cloud Control](https://www.pulumi.com/registry/packages/aws-native/) providers so make sure they are both configured to use the same account and region.
+    /// 
+    /// ## Example Usage
+    /// 
+    /// ### Basic example
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var cluster = new Aws.Ecs.Cluster("cluster");
+    /// 
+    ///     var vpc = new Awsx.Ec2.Vpc("vpc");
+    /// 
+    ///     var taskDefinition = new Awsx.Experimental.Ecs.TaskDefinition("taskDefinition", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = "nginx:stable",
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     var service = new Awsx.Experimental.Ecs.Service("service", new()
+    ///     {
+    ///         ClusterArn = cluster.Arn,
+    ///         TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///         VpcSubnetIds = vpc.PrivateSubnetIds,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// 
+    /// The task definition must use `awsvpc` networking and be compatible with the service's selected capacity. The AWSX `TaskDefinitition` use `awsvpc` networking by default.
+    /// 
+    /// ### Application Load Balancer
+    /// 
+    /// Use `loadBalancerAttachments` to route requests from an existing Application Load Balancer listener to a container in the service.
+    /// 
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// using Awsx = Pulumi.Awsx;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var vpc = new Awsx.Ec2.Vpc("vpc", new()
+    ///     {
+    ///         NumberOfAvailabilityZones = 2,
+    ///     });
+    /// 
+    ///     var frontend = new Aws.Ec2.SecurityGroup("frontend", new()
+    ///     {
+    ///         VpcId = vpc.VpcId,
+    ///     });
+    /// 
+    ///     var frontendHttp = new Aws.Vpc.SecurityGroupIngressRule("frontendHttp", new()
+    ///     {
+    ///         SecurityGroupId = frontend.Id,
+    ///         IpProtocol = "-1",
+    ///         CidrIpv4 = "0.0.0.0/0",
+    ///     });
+    /// 
+    ///     var frontendEgress = new Aws.Vpc.SecurityGroupEgressRule("frontendEgress", new()
+    ///     {
+    ///         SecurityGroupId = frontend.Id,
+    ///         IpProtocol = "tcp",
+    ///         FromPort = 80,
+    ///         ToPort = 80,
+    ///         CidrIpv4 = vpc.Vpc.Apply(vpc =&gt; vpc.CidrBlock),
+    ///     });
+    /// 
+    ///     var alb = new Aws.LB.LoadBalancer("alb", new()
+    ///     {
+    ///         LoadBalancerType = "application",
+    ///         Internal = false,
+    ///         Subnets = vpc.PublicSubnetIds,
+    ///         SecurityGroups = new[]
+    ///         {
+    ///             frontend.Id,
+    ///         },
+    ///     });
+    /// 
+    ///     var listener = new Aws.LB.Listener("listener", new()
+    ///     {
+    ///         LoadBalancerArn = alb.Arn,
+    ///         Port = 80,
+    ///         Protocol = "HTTP",
+    ///         DefaultActions = new[]
+    ///         {
+    ///             new Aws.LB.Inputs.ListenerDefaultActionArgs
+    ///             {
+    ///                 Type = "fixed-response",
+    ///                 FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs
+    ///                 {
+    ///                     StatusCode = "404",
+    ///                     ContentType = "text/plain",
+    ///                     MessageBody = "Not found",
+    ///                 },
+    ///             },
+    ///         },
+    ///     });
+    /// 
+    ///     var cluster = new Aws.Ecs.Cluster("cluster");
+    /// 
+    ///     var repository = new Awsx.Ecr.Repository("repository");
+    /// 
+    ///     var image = new Awsx.Ecr.Image("image", new()
+    ///     {
+    ///         RepositoryUrl = repository.Repository.Apply(repository =&gt; repository.RepositoryUrl),
+    ///         Context = "./app",
+    ///         Platform = "linux/amd64",
+    ///     });
+    /// 
+    ///     var taskDefinition = new Awsx.Experimental.Ecs.TaskDefinition("taskDefinition", new()
+    ///     {
+    ///         Containers = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             {
+    ///                 Image = image.ImageUri,
+    ///                 PortMappings = new()
+    ///                 {
+    ///                     new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+    ///                     {
+    ///                         ContainerPort = 80.0,
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     });
+    /// 
+    ///     var service = new Awsx.Experimental.Ecs.Service("service", new()
+    ///     {
+    ///         ClusterArn = cluster.Arn,
+    ///         TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///         VpcSubnetIds = vpc.PrivateSubnetIds,
+    ///         LoadBalancerAttachments = 
+    ///         {
+    ///             { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///             {
+    ///                 Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///                 {
+    ///                     ContainerName = "app",
+    ///                     ContainerPort = 80.0,
+    ///                     ListenerArn = listener.Arn,
+    ///                     Priority = 10.0,
+    ///                     TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                     {
+    ///                         Path = "/health",
+    ///                     },
+    ///                 },
+    ///             } },
+    ///         },
+    ///     }, new ComponentResourceOptions
+    ///     {
+    ///         DependsOn =
+    ///         {
+    ///             frontendHttp,
+    ///             frontendEgress,
+    ///         },
+    ///     });
+    /// 
+    ///     return new Dictionary&lt;string, object?&gt;
+    ///     {
+    ///         ["url"] = alb.DnsName.Apply(dnsName =&gt; $"http://{dnsName}"),
+    ///     };
+    /// });
+    /// ```
+    /// 
+    /// With `match` omitted, the attachment forwards all request paths. The listener's default 404 response is a fallback for requests that do not match a forwarding rule.
+    /// 
+    /// ### Single attachment
+    /// 
+    /// A single attachment can express all traffic going to the backend service.
+    /// 
+    /// - One hostname serving many paths.
+    /// - Multiple hostnames route to the same backend
+    /// - Several path patterns route to the same backend
+    /// 
+    /// For example, an application that serves `/users`, `/orders`, and `/admin` through `api.example.com` can create a single attachment
+    /// that matches on hostname and let the backend application handle the URL paths.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "api.example.com",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 50.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// You could also select only specific paths to send to the backend service.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "api.example.com",
+    ///                         },
+    ///                     },
+    ///                     PathPatterns = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "/api/*",
+    ///                             "/admin/*",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 50.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// This matches requests where the hostname is `api.example.com` **AND** the path matches either `/api/*` **OR** `/admin/*`. Alternatives within a condition are combined with OR, different condition types are combined with AND.
+    /// 
+    /// The rule of thumb here is that if you can express the routing logic in a single attachment then you should.
+    /// 
+    /// ### Multiple attachments to same backend
+    /// 
+    /// You can use separate attachments when the same container and port needs more than one independently evaluated production forwarding rule.
+    /// 
+    /// - Different priorities, hostname/path pairings, or condition lists that cannot fit in one rule
+    /// - Two listeners directly forward application traffic to the same backend
+    /// - External and internal clients reach the same application through different load balancers
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "admin", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "admin.example.com",
+    ///                         },
+    ///                     },
+    ///                     PathPatterns = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "/admin/*",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 20.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///         { "api", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "api.example.com",
+    ///                         },
+    ///                     },
+    ///                     PathPatterns = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "/api/*",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 10.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// These attachments preserve two specific hostname/path pairings.
+    /// 
+    /// - `api.example.com` with `/api/*`
+    /// - `admin.example.com` with `/admin/*`
+    /// 
+    /// Combining both hostnames and both paths in one rule would also permit the cross-pairings (`api.example.com/admin/*` _and_ `admin.example.com/api/*`). If those pairings must remain distinct, use separate rules and attachments.
+    /// 
+    /// For progressive deployments, each production rule has its own primary/alternate target-group pair. Both attachments follow the same service-wide deployment configuration.
+    /// 
+    /// #### Different listeners or ALBs
+    /// 
+    /// The same pattern works with different `listenerArn` values. For example, maybe you configure a private Load Balancer and a public Load Balancer to route to the same backend. In that case you need two attachments.
+    /// 
+    /// &gt; **Automatic ingress limitation:** When attachments share an application or health-check port, automatic ingress requires them to use the same ALB source security group. Different ALBs with different source groups require `manageIngress: false` and user managed task ingress.
+    /// &gt; 
+    /// &gt; AWSX declares ingress resources during preview, when ALB security-group IDs may still be unknown. This restriction avoids duplicate rules without creating resources inside an apply.
+    /// 
+    /// ```csharp
+    /// var taskGroup = new Aws.Ec2.SecurityGroup("taskGroup", new()
+    /// {
+    ///     VpcId = vpc.VpcId,
+    /// });
+    /// 
+    /// var privateIngress = new Aws.Vpc.SecurityGroupIngressRule("privateIngress", new()
+    /// {
+    ///     FromPort = 80,
+    ///     IpProtocol = "tcp",
+    ///     ReferencedSecurityGroupId = privateAlbGroup.Id,
+    ///     SecurityGroupId = taskGroup.Id,
+    ///     ToPort = 80,
+    /// });
+    /// 
+    /// var publicIngress = new Aws.Vpc.SecurityGroupIngressRule("publicIngress", new()
+    /// {
+    ///     FromPort = 80,
+    ///     IpProtocol = "tcp",
+    ///     ReferencedSecurityGroupId = frontend.Id,
+    ///     SecurityGroupId = taskGroup.Id,
+    ///     ToPort = 80,
+    /// });
+    /// 
+    /// var taskEgress = new Aws.Vpc.SecurityGroupEgressRule("taskEgress", new()
+    /// {
+    ///     CidrIpv4 = "0.0.0.0/0",
+    ///     IpProtocol = "-1",
+    ///     SecurityGroupId = taskGroup.Id,
+    /// });
+    /// 
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "private", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = privateListener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     PathPatterns = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "/*",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 50.0,
+    ///             },
+    ///         } },
+    ///         { "public", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     PathPatterns = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "/*",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 50.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     ManageIngress = false,
+    ///     SecurityGroupIds = new()
+    ///     {
+    ///         taskGroup.Id,
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         taskEgress,
+    ///         privateIngress,
+    ///         publicIngress,
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///         privateFrontendHttp,
+    ///         privateFrontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// If health checks use a separate port, allow that port from both ALB security groups too.
+    /// 
+    /// ### Multiple attachments to different backends
+    /// 
+    /// You can use separate attachments when different containers or ports in a single task receive different traffic.
+    /// 
+    /// - A UI container and an API container run together in a single task
+    /// - One container serves multiple load-balanced ports
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "api", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "api",
+    ///                 ContainerPort = 8080.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "api.example.com",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 20.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///         { "ui", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "ui",
+    ///                 ContainerPort = 3000.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                 {
+    ///                     Hostnames = new Awsx.Experimental.Ecs.Inputs.StringMatchArgs
+    ///                     {
+    ///                         Values = new()
+    ///                         {
+    ///                             "www.example.com",
+    ///                         },
+    ///                     },
+    ///                 },
+    ///                 Priority = 10.0,
+    ///                 TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+    ///                 {
+    ///                     Path = "/health",
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = uiApiTask.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///         frontendUiEgress,
+    ///         frontendApiEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// ### Deployment strategies
+    /// 
+    /// Deployment strategies control how ECS replaces tasks and shifts traffic to a new service revision:
+    /// 
+    /// 1. **Rolling (default)** replaces tasks within the service.
+    /// 2. **Blue/green** shifts production traffic to the new revision once it is ready.
+    /// 3. **Linear** shifts production traffic in increments.
+    /// 4. **Canary** shifts an initial percentage of production traffic, then shifts the remainder after an observation period.
+    /// 
+    /// To select a strategy explicitly, configure exactly one of `rolling`, `blueGreen`, `linear`, or `canary` in `deploymentStrategy`. For blue/green, linear, and canary deployments, each load balancer attachment uses two target groups. ECS manages the forwarding weights during deployment. AWSX ignores changes to those weights so Pulumi does not reset the current traffic allocation. Make sure to `refresh` the stack before subsequent updates to retain ECS's current allocation in state.
+    /// 
+    /// #### Rolling deployments
+    /// 
+    /// Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Rolling = new Awsx.Experimental.Ecs.Inputs.RollingStrategyArgs
+    ///         {
+    ///             FailureAction = Awsx.Experimental.Ecs.DeploymentFailureAction.ROLLBACK,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// By default, a failed deployment rolls back to the last successfully completed deployment when one is available.
+    /// 
+    /// #### Blue/green deployments
+    /// 
+    /// Blue/green deployments start a new service revision before shifting all production traffic to it.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         BlueGreen = new Awsx.Experimental.Ecs.Inputs.BlueGreenStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// `bakeTimeMinutes` is the amount of time ECS keeps the previous revision running after production traffic is shifted to the new revision. After the `bakeTimeMinutes` is up, the old revision is removed. See [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html).
+    /// 
+    /// #### Linear deployments
+    /// 
+    /// Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Linear = new Awsx.Experimental.Ecs.Inputs.LinearStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             StepBakeTimeMinutes = 3.0,
+    ///             StepPercent = 20.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// After all production traffic shifts, ECS keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+    /// 
+    /// Linear deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-linear.html).
+    /// 
+    /// #### Canary deployments
+    /// 
+    /// Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// This configuration sends 10% of production traffic (`canaryPercent`) to the new revision for 10 minutes (`canaryBakeTimeMinutes`). ECS then shifts the remaining traffic and keeps the previous revision running for another 5 minutes (`bakeTimeMinutes`).
+    /// 
+    /// Canary deployments require at least one load balancer attachment, see [the AWS docs for more details](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/canary-deployment.html).
+    /// 
+    /// ### Deployment lifecycle hooks
+    /// 
+    /// Use `lambdaHooks` to validate a deployment with a Lambda function, or `pauseHooks` to wait for an external approval or validation workflow.
+    /// 
+    /// #### Lambda hooks
+    /// 
+    /// Add Lambda hooks inside the selected deployment strategy. This example invokes an existing Lambda function before a rolling deployment starts replacement tasks.
+    /// 
+    /// The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Rolling = new Awsx.Experimental.Ecs.Inputs.RollingStrategyArgs
+    ///         {
+    ///             LambdaHooks = new()
+    ///             {
+    ///                 new Awsx.Experimental.Ecs.Inputs.RollingLambdaHookArgs
+    ///                 {
+    ///                     FunctionArn = "arn:aws:lambda:us-west-2:123456789012:function:deployment-validation",
+    ///                     HookDetails = 
+    ///                     {
+    ///                         { "someKey", "someValue" },
+    ///                     },
+    ///                 },
+    ///             },
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// The existing function's execution role must grant any permissions its checks require, such as reading configuration or writing logs. This is separate from the invocation role that lets ECS call the function.
+    /// 
+    /// The `hookDetails` field is a dictionary that you can use to pass data into your lifecycle hook function.
+    /// 
+    /// #### Pause hooks
+    /// 
+    /// Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Rolling = new Awsx.Experimental.Ecs.Inputs.RollingStrategyArgs
+    ///         {
+    ///             PauseHooks = new()
+    ///             {
+    ///                 new Awsx.Experimental.Ecs.Inputs.RollingPauseHookArgs
+    ///                 {
+    ///                     TimeoutAction = Awsx.Experimental.Ecs.PauseTimeoutAction.ROLLBACK,
+    ///                     TimeoutMinutes = 30.0,
+    ///                 },
+    ///             },
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// See the [AWS docs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/pause-lifecycle-hooks.html) for more details on pause hooks.
+    /// 
+    /// Lambda and pause hooks at the same stage run in parallel and every hook must complete before the deployment proceeds.
+    /// 
+    /// #### Progressive deployment hooks
+    /// 
+    /// For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         Canary = new Awsx.Experimental.Ecs.Inputs.CanaryStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             CanaryBakeTimeMinutes = 10.0,
+    ///             CanaryPercent = 10.0,
+    ///             LambdaHooks = new()
+    ///             {
+    ///                 new Awsx.Experimental.Ecs.Inputs.ProgressiveLambdaHookArgs
+    ///                 {
+    ///                     FunctionArn = "arn:aws:lambda:us-west-2:123456789012:function:deployment-validation",
+    ///                     LifecycleStages = new()
+    ///                     {
+    ///                         Awsx.Experimental.Ecs.ProgressiveLambdaLifecycleStage.POST_TEST_TRAFFIC_SHIFT,
+    ///                     },
+    ///                 },
+    ///             },
+    ///             PauseHooks = new()
+    ///             {
+    ///                 new Awsx.Experimental.Ecs.Inputs.ProgressivePauseHookArgs
+    ///                 {
+    ///                     LifecycleStages = new()
+    ///                     {
+    ///                         Awsx.Experimental.Ecs.ProgressivePauseLifecycleStage.PRE_PRODUCTION_TRAFFIC_SHIFT,
+    ///                     },
+    ///                     TimeoutAction = Awsx.Experimental.Ecs.PauseTimeoutAction.ROLLBACK,
+    ///                     TimeoutMinutes = 30.0,
+    ///                 },
+    ///             },
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///                 TestTraffic = new Awsx.Experimental.Ecs.Inputs.TestTrafficArgs
+    ///                 {
+    ///                     Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                     {
+    ///                         Headers = new()
+    ///                         {
+    ///                             new Awsx.Experimental.Ecs.Inputs.HeaderConditionArgs
+    ///                             {
+    ///                                 Name = "X-Deployment-Test",
+    ///                                 Values = new()
+    ///                                 {
+    ///                                     "true",
+    ///                                 },
+    ///                             },
+    ///                         },
+    ///                     },
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// Use `POST_TEST_TRAFFIC_SHIFT` with a test traffic route to validate the new revision before production traffic shifts.
+    /// 
+    /// For canary and linear deployments, `PRE_PRODUCTION_TRAFFIC_SHIFT` pauses before each traffic shift. Each pause has a new hook ID and requires a separate decision.
+    /// 
+    /// ### Test traffic
+    /// 
+    /// Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentStrategy = new Awsx.Experimental.Ecs.Inputs.ServiceDeploymentStrategyArgs
+    ///     {
+    ///         BlueGreen = new Awsx.Experimental.Ecs.Inputs.BlueGreenStrategyArgs
+    ///         {
+    ///             BakeTimeMinutes = 5.0,
+    ///             PauseHooks = new()
+    ///             {
+    ///                 new Awsx.Experimental.Ecs.Inputs.ProgressivePauseHookArgs
+    ///                 {
+    ///                     LifecycleStages = new()
+    ///                     {
+    ///                         Awsx.Experimental.Ecs.ProgressivePauseLifecycleStage.POST_TEST_TRAFFIC_SHIFT,
+    ///                     },
+    ///                     TimeoutAction = Awsx.Experimental.Ecs.PauseTimeoutAction.ROLLBACK,
+    ///                     TimeoutMinutes = 30.0,
+    ///                 },
+    ///             },
+    ///         },
+    ///     },
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///                 TestTraffic = new Awsx.Experimental.Ecs.Inputs.TestTrafficArgs
+    ///                 {
+    ///                     Match = new Awsx.Experimental.Ecs.Inputs.ListenerConditionsArgs
+    ///                     {
+    ///                         Headers = new()
+    ///                         {
+    ///                             new Awsx.Experimental.Ecs.Inputs.HeaderConditionArgs
+    ///                             {
+    ///                                 Name = "X-Deployment-Test",
+    ///                                 Values = new()
+    ///                                 {
+    ///                                     "true",
+    ///                                 },
+    ///                             },
+    ///                         },
+    ///                     },
+    ///                 },
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// An outside workflow must then call `ContinueServiceDeployment` with `CONTINUE` or `ROLLBACK`.
+    /// 
+    /// ### Deployment timeouts
+    /// 
+    /// By default, Pulumi waits for the service to reach a steady state. For progressive deployments, this includes the traffic shifts and bake periods which can be substantial depending on the configuration.
+    /// 
+    /// The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
+    /// 
+    /// ```csharp
+    /// var service = new Awsx.Experimental.Ecs.Service("service", new()
+    /// {
+    ///     ClusterArn = cluster.Arn,
+    ///     DeploymentTimeout = "2h",
+    ///     LoadBalancerAttachments = 
+    ///     {
+    ///         { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         {
+    ///             Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             {
+    ///                 ContainerName = "app",
+    ///                 ContainerPort = 80.0,
+    ///                 ListenerArn = listener.Arn,
+    ///                 Priority = 10.0,
+    ///             },
+    ///         } },
+    ///     },
+    ///     TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
+    ///     VpcSubnetIds = vpc.PrivateSubnetIds,
+    /// }, new ComponentResourceOptions
+    /// {
+    ///     DependsOn =
+    ///     {
+    ///         frontendHttp,
+    ///         frontendEgress,
+    ///     },
+    /// });
+    /// ```
+    /// 
+    /// This timeout applies to Pulumi's create and update operations. Reaching it fails the Pulumi operation but does not stop the ECS deployment.
+    /// 
+    /// If you have a separate process that monitors the ECS deployment and don't want the Pulumi operation to wait, you can set `waitForSteadyState: false`.
+    /// </summary>
     [AwsxResourceType("awsx:experimental/ecs:Service")]
     public partial class Service : global::Pulumi.ComponentResource
     {
