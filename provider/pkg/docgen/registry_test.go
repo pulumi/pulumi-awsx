@@ -13,11 +13,13 @@ import (
 
 	"github.com/pgavlin/goldmark"
 	"github.com/pgavlin/goldmark/renderer/html"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
 func TestRegistryExampleRendersMarkdownInsideTabs(t *testing.T) {
-	markdown := "{{% example %}}\n```python\nprint(\"<tag>&\")\n```\n```typescript\nconst value = 1;\n```\n{{% /example %}}\n"
+	markdown := "{{% example %}}\n```python\nprint(\"<tag>&\")\n```\n```typescript\n" +
+		"const value = 1;\n```\n{{% /example %}}\n"
 	rendered, err := renderRegistryExample(markdown)
 	if err != nil {
 		t.Fatal(err)
@@ -29,10 +31,16 @@ func TestRegistryExampleRendersMarkdownInsideTabs(t *testing.T) {
 		t.Fatalf("schema shortcodes leaked into landing output: %s", rendered)
 	}
 	var page bytes.Buffer
-	if err := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe())).Convert([]byte(rendered), &page); err != nil {
+	markdownRenderer := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()))
+	if err := markdownRenderer.Convert([]byte(rendered), &page); err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{`<pulumi-chooser type="language"`, `<pulumi-choosable type="language" values="python">`, `<pre><code class="language-python">`, "&lt;tag&gt;&amp;"} {
+	for _, want := range []string{
+		`<pulumi-chooser type="language"`,
+		`<pulumi-choosable type="language" values="python">`,
+		`<pre><code class="language-python">`,
+		"&lt;tag&gt;&amp;",
+	} {
 		if !strings.Contains(page.String(), want) {
 			t.Errorf("rendered HTML is missing %q: %s", want, page.String())
 		}
@@ -40,13 +48,16 @@ func TestRegistryExampleRendersMarkdownInsideTabs(t *testing.T) {
 }
 
 func TestLandingPreservesProseAndGroupsAuthoredHCL(t *testing.T) {
-	prefix := "---\ntitle: Example\nlayout: package\n---\n\nAuthored prose.\n\n```yaml\nordinary: unchanged\n```\n\n{{< aws-resource-note >}}\n\n"
-	source := prefix + beginChooser + "\n```yaml pulumi-example\nname: example\nruntime: yaml\n```\n```hcl\nresource \"example_widget\" \"app\" {}\n```\n" + endChooser + "\nAfter.\n"
+	prefix := "---\ntitle: Example\nlayout: package\n---\n\nAuthored prose.\n\n```yaml\n" +
+		"ordinary: unchanged\n```\n\n{{< aws-resource-note >}}\n\n"
+	source := prefix + beginChooser + "\n```yaml pulumi-example\nname: example\nruntime: yaml\n```\n```hcl\n" +
+		"resource \"example_widget\" \"app\" {}\n```\n" + endChooser + "\nAfter.\n"
 	output, err := renderLandingMarkdown(source, func(yaml string) (string, error) {
 		if yaml != "name: example\nruntime: yaml\n" {
 			t.Fatalf("incorrect extracted YAML %q", yaml)
 		}
-		return beginChooser + "\n\n```typescript\nconst app = 1;\n```\n```yaml\n" + yaml + "```\n" + endChooser + "\n", nil
+		return beginChooser + "\n\n```typescript\nconst app = 1;\n```\n```yaml\n" +
+			yaml + "```\n" + endChooser + "\n", nil
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +65,8 @@ func TestLandingPreservesProseAndGroupsAuthoredHCL(t *testing.T) {
 	if !strings.HasPrefix(output, prefix) || !strings.HasSuffix(output, "\nAfter.\n") {
 		t.Fatalf("changed surrounding authored Markdown: %s", output)
 	}
-	if !strings.Contains(output, `options="typescript,yaml,hcl"`) || !strings.Contains(output, `resource "example_widget" "app" {}`) {
+	if !strings.Contains(output, `options="typescript,yaml,hcl"`) ||
+		!strings.Contains(output, `resource "example_widget" "app" {}`) {
 		t.Fatalf("lost authored HCL variant: %s", output)
 	}
 	if strings.Contains(output, beginChooser) || strings.Contains(output, "yaml pulumi-example") {
@@ -63,8 +75,12 @@ func TestLandingPreservesProseAndGroupsAuthoredHCL(t *testing.T) {
 }
 
 func TestLandingKeepsMarkersInsideOrdinaryCode(t *testing.T) {
-	source := "Examples of reserved syntax:\n\n````markdown\n" + beginChooser + "\n```yaml pulumi-example\nnot a program\n```\n" + endChooser + "\n````\n"
-	output, err := renderLandingMarkdown(source, func(string) (string, error) { t.Fatal("converted quoted authoring syntax"); return "", nil })
+	source := "Examples of reserved syntax:\n\n````markdown\n" + beginChooser +
+		"\n```yaml pulumi-example\nnot a program\n```\n" + endChooser + "\n````\n"
+	output, err := renderLandingMarkdown(
+		source,
+		func(string) (string, error) { t.Fatal("converted quoted authoring syntax"); return "", nil },
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +91,10 @@ func TestLandingKeepsMarkersInsideOrdinaryCode(t *testing.T) {
 
 func TestLandingRenderingFailures(t *testing.T) {
 	failure := errors.New("invalid resource")
-	_, err := renderLandingMarkdown("```yaml pulumi-example\nname: broken\n```\n", func(string) (string, error) { return "", failure })
+	_, err := renderLandingMarkdown(
+		"```yaml pulumi-example\nname: broken\n```\n",
+		func(string) (string, error) { return "", failure },
+	)
 	if !errors.Is(err, failure) {
 		t.Fatalf("conversion failure was lost: %v", err)
 	}
@@ -84,7 +103,11 @@ func TestLandingRenderingFailures(t *testing.T) {
 			t.Errorf("accepted malformed group %q", source)
 		}
 	}
-	for _, snippet := range []string{"no snippets", "```ruby\nputs 1\n```", "```yaml\nname: one\n```\n```yaml\nname: two\n```"} {
+	for _, snippet := range []string{
+		"no snippets",
+		"```ruby\nputs 1\n```",
+		"```yaml\nname: one\n```\n```yaml\nname: two\n```",
+	} {
 		if _, err := renderRegistryExample(snippet); err == nil {
 			t.Errorf("accepted invalid example %q", snippet)
 		}
@@ -99,7 +122,8 @@ func TestGeneratedLandingFrontMatter(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !strings.HasPrefix(generated, frontMatter) || !strings.HasSuffix(generated, "Prose.\n") || !strings.Contains(generated, "Generated from docs/source/_index.md") {
+		if !strings.HasPrefix(generated, frontMatter) || !strings.HasSuffix(generated, "Prose.\n") ||
+			!strings.Contains(generated, "Generated from docs/source/_index.md") {
 			t.Fatalf("invalid generated page %q", generated)
 		}
 	}
@@ -118,11 +142,42 @@ func TestGenerateLandingPages(t *testing.T) {
 		t.Fatal(err)
 	}
 	var spec schema.PackageSpec
-	raw := `{"name":"docsfixture","version":"1.0.0","language":{"go":{"importBasePath":"example.com/docsfixture/sdk/go/docsfixture"},"java":{"basePackage":"com.pulumi"}},"resources":{"docsfixture:index:Widget":{"inputProperties":{"message":{"type":"string"}},"requiredInputs":["message"],"properties":{"message":{"type":"string"}}}}}`
+	raw := `{
+  "name": "docsfixture",
+  "version": "1.0.0",
+  "language": {
+    "go": {
+      "importBasePath": "example.com/docsfixture/sdk/go/docsfixture"
+    },
+    "java": {
+      "basePackage": "com.pulumi"
+    }
+  },
+  "resources": {
+    "docsfixture:index:Widget": {
+      "inputProperties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "requiredInputs": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}`
 	if err := json.Unmarshal([]byte(raw), &spec); err != nil {
 		t.Fatal(err)
 	}
-	overview := "---\ntitle: Fixture\nlayout: package\n---\n\n## Example\n\n```yaml pulumi-example\nname: fixture\nruntime: yaml\nresources:\n  widget:\n    type: docsfixture:index:Widget\n    properties:\n      message: hello-docs\n```\n"
+	overview := "---\ntitle: Fixture\nlayout: package\n---\n\n## Example\n\n" +
+		"```yaml pulumi-example\nname: fixture\nruntime: yaml\nresources:\n" +
+		"  widget:\n    type: docsfixture:index:Widget\n    properties:\n" +
+		"      message: hello-docs\n```\n"
 	install := "---\ntitle: Installation\nlayout: package\n---\n\nInstall the package.\n"
 	writeSource := func(name, content string) {
 		t.Helper()

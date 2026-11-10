@@ -27,7 +27,8 @@ func normalizeObjectKeys(program map[string]string) error {
 			text       string
 		}
 		var replacements []replacement
-		hclsyntax.VisitAll(file.Body.(*hclsyntax.Body), func(node hclsyntax.Node) hcl.Diagnostics {
+		// This visitor only collects replacements and never emits diagnostics.
+		_ = hclsyntax.VisitAll(file.Body.(*hclsyntax.Body), func(node hclsyntax.Node) hcl.Diagnostics {
 			key, ok := node.(*hclsyntax.ObjectConsKeyExpr)
 			if !ok {
 				return nil
