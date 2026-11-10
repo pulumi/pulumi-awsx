@@ -524,9 +524,6 @@ export namespace ec2 {
      * import * as aws from "@pulumi/aws";
      *
      * const ec2 = new aws.ec2.VpcEndpoint("ec2", {
-     *     vpcId: example.id,
-     *     serviceName: "com.amazonaws.us-west-2.ec2",
-     *     vpcEndpointType: "Interface",
      *     subnetConfigurations: [
      *         {
      *             ipv4: "10.0.1.10",
@@ -537,6 +534,9 @@ export namespace ec2 {
      *             subnetId: example2.id,
      *         },
      *     ],
+     *     vpcId: example.id,
+     *     serviceName: "com.amazonaws.us-west-2.ec2",
+     *     vpcEndpointType: "Interface",
      *     subnetIds: [
      *         example1.id,
      *         example2.id,
@@ -592,6 +592,26 @@ export namespace ec2 {
      * });
      * ```
      *
+     * ### VPC Lattice Tunnel Endpoint Type
+     *
+     * A `Tunnel` endpoint connects to exactly one `CIDR` type `aws.vpclattice.ResourceConfiguration`, and consumers must send GENEVE-encapsulated traffic (UDP port 6081) to it. See [Access a network segment through a tunnel VPC endpoint](https://docs.aws.amazon.com/vpc/latest/privatelink/use-cidr-endpoint.html).
+     *
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const example = new aws.ec2.VpcEndpoint("example", {
+     *     resourceConfigurationArn: exampleAwsVpclatticeResourceConfiguration.arn,
+     *     securityGroupIds: [exampleAwsSecurityGroup.id],
+     *     subnetIds: [
+     *         example1.id,
+     *         example2.id,
+     *     ],
+     *     vpcEndpointType: "Tunnel",
+     *     vpcId: exampleAwsVpc.id,
+     * });
+     * ```
+     *
      * ### Non-AWS Service
      *
      * ```typescript
@@ -616,7 +636,7 @@ export namespace ec2 {
      *     name: internal.then(internal => `ptfe.${internal.name}`),
      *     type: aws.route53.RecordType.CNAME,
      *     ttl: 300,
-     *     records: [ptfeService.dnsEntries[0].dns_name.apply(x =>String(x))],
+     *     records: [ptfeService.dnsEntries[0].dns_name],
      * });
      * ```
      *
@@ -647,15 +667,15 @@ export namespace ec2 {
          */
         autoAccept?: boolean;
         /**
-         * The DNS options for the endpoint. See dnsOptions below.
+         * DNS options for the endpoint. See `dnsOptions` below.
          */
         dnsOptions?: pulumi.Input<pulumiAws.types.input.ec2.VpcEndpointDnsOptions | undefined>;
         /**
-         * The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+         * IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
          */
         ipAddressType?: pulumi.Input<string | undefined>;
         /**
-         * A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
+         * Policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details. For more information about building AWS IAM policy documents with Pulumi, see the AWS IAM Policy Document Guide.
          */
         policy?: pulumi.Input<string | undefined>;
         /**
@@ -667,7 +687,7 @@ export namespace ec2 {
          */
         region?: pulumi.Input<string | undefined>;
         /**
-         * The ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resourceConfigurationArn`, `serviceName` or `serviceNetworkArn` is required.
+         * ARN of a Resource Configuration to connect this VPC Endpoint to. Exactly one of `resourceConfigurationArn`, `serviceName` or `serviceNetworkArn` is required. Applicable for endpoints of type `Resource` and `Tunnel`. For `Tunnel` endpoints, the resource configuration must be of type `CIDR`.
          */
         resourceConfigurationArn?: pulumi.Input<string | undefined>;
         /**
@@ -675,8 +695,7 @@ export namespace ec2 {
          */
         routeTableIds?: pulumi.Input<pulumi.Input<string>[] | undefined>;
         /**
-         * The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
-         * If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
+         * ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`, `Resource`, `ServiceNetwork`, and `Tunnel`. If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
          */
         securityGroupIds?: pulumi.Input<pulumi.Input<string>[] | undefined>;
         /**
@@ -684,11 +703,11 @@ export namespace ec2 {
          */
         serviceName: string;
         /**
-         * The ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resourceConfigurationArn`, `serviceName` or `serviceNetworkArn` is required.
+         * ARN of a Service Network to connect this VPC Endpoint to. Exactly one of `resourceConfigurationArn`, `serviceName` or `serviceNetworkArn` is required.
          */
         serviceNetworkArn?: pulumi.Input<string | undefined>;
         /**
-         * The AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
+         * AWS region of the VPC Endpoint Service. If specified, the VPC endpoint will connect to the service in the provided region. Applicable for endpoints of type `Interface`.
          */
         serviceRegion?: pulumi.Input<string | undefined>;
         /**
@@ -696,15 +715,15 @@ export namespace ec2 {
          */
         subnetConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.VpcEndpointSubnetConfiguration>[] | undefined>;
         /**
-         * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
+         * ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer`, `Interface`, `Resource`, `ServiceNetwork`, and `Tunnel`. Interface type endpoints cannot function without being assigned to a subnet. For `Tunnel` endpoints, the subnets must be in the Availability Zones of the resource gateway associated with the resource configuration.
          */
         subnetIds?: pulumi.Input<pulumi.Input<string>[] | undefined>;
         /**
-         * A map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         * Map of tags to assign to the resource. If configured with a provider `defaultTags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>} | undefined>;
         /**
-         * The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`,`Interface`, `Resource` or `ServiceNetwork`. Defaults to `Gateway`.
+         * VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, `Interface`, `Resource`, `ServiceNetwork` or `Tunnel`. Defaults to `Gateway`.
          */
         vpcEndpointType?: pulumi.Input<string | undefined>;
     }
@@ -1170,15 +1189,15 @@ export namespace lb {
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndTargetGroup = new aws.lb.TargetGroup("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
+     *     defaultActions: [{
+     *         type: "forward",
+     *         targetGroupArn: frontEndTargetGroup.arn,
+     *     }],
      *     loadBalancerArn: frontEnd.arn,
      *     port: 443,
      *     protocol: "HTTPS",
      *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-     *     defaultActions: [{
-     *         type: "forward",
-     *         targetGroupArn: frontEndTargetGroup.arn,
-     *     }],
      * });
      * ```
      *
@@ -1192,13 +1211,7 @@ export namespace lb {
      * const frontEndBlue = new aws.lb.TargetGroup("front_end_blue", {});
      * const frontEndGreen = new aws.lb.TargetGroup("front_end_green", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 443,
-     *     protocol: "HTTPS",
-     *     sslPolicy: "ELBSecurityPolicy-2016-08",
-     *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     defaultActions: [{
-     *         type: "forward",
      *         forward: {
      *             targetGroups: [
      *                 {
@@ -1211,7 +1224,13 @@ export namespace lb {
      *                 },
      *             ],
      *         },
+     *         type: "forward",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 443,
+     *     protocol: "HTTPS",
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
+     *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      * });
      * ```
      *
@@ -1222,16 +1241,16 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const frontEnd = new aws.lb.Listener("front_end", {
+     *     defaultActions: [{
+     *         type: "forward",
+     *         targetGroupArn: frontEndAwsLbTargetGroup.arn,
+     *     }],
      *     loadBalancerArn: frontEndAwsLb.arn,
      *     port: 443,
      *     protocol: "TLS",
      *     sslPolicy: "ELBSecurityPolicy-2016-08",
      *     certificateArn: "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
      *     alpnPolicy: "HTTP2Preferred",
-     *     defaultActions: [{
-     *         type: "forward",
-     *         targetGroupArn: frontEndAwsLbTargetGroup.arn,
-     *     }],
      * });
      * ```
      *
@@ -1243,17 +1262,17 @@ export namespace lb {
      *
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [{
-     *         type: "redirect",
      *         redirect: {
      *             port: "443",
      *             protocol: "HTTPS",
      *             statusCode: "HTTP_301",
      *         },
+     *         type: "redirect",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1265,17 +1284,17 @@ export namespace lb {
      *
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [{
-     *         type: "fixed-response",
      *         fixedResponse: {
      *             contentType: "text/plain",
      *             messageBody: "Fixed response content",
      *             statusCode: "200",
      *         },
+     *         type: "fixed-response",
      *     }],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1291,23 +1310,23 @@ export namespace lb {
      * const client = new aws.cognito.UserPoolClient("client", {});
      * const domain = new aws.cognito.UserPoolDomain("domain", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [
      *         {
-     *             type: "authenticate-cognito",
      *             authenticateCognito: {
      *                 userPoolArn: pool.arn,
      *                 userPoolClientId: client.id,
      *                 userPoolDomain: domain.domain,
      *             },
+     *             type: "authenticate-cognito",
      *         },
      *         {
      *             type: "forward",
      *             targetGroupArn: frontEndTargetGroup.arn,
      *         },
      *     ],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1320,12 +1339,8 @@ export namespace lb {
      * const frontEnd = new aws.lb.LoadBalancer("front_end", {});
      * const frontEndTargetGroup = new aws.lb.TargetGroup("front_end", {});
      * const frontEndListener = new aws.lb.Listener("front_end", {
-     *     loadBalancerArn: frontEnd.arn,
-     *     port: 80,
-     *     protocol: "HTTP",
      *     defaultActions: [
      *         {
-     *             type: "authenticate-oidc",
      *             authenticateOidc: {
      *                 authorizationEndpoint: "https://example.com/authorization_endpoint",
      *                 clientId: "client_id",
@@ -1334,12 +1349,16 @@ export namespace lb {
      *                 tokenEndpoint: "https://example.com/token_endpoint",
      *                 userInfoEndpoint: "https://example.com/user_info_endpoint",
      *             },
+     *             type: "authenticate-oidc",
      *         },
      *         {
      *             type: "forward",
      *             targetGroupArn: frontEndTargetGroup.arn,
      *         },
      *     ],
+     *     loadBalancerArn: frontEnd.arn,
+     *     port: 80,
+     *     protocol: "HTTP",
      * });
      * ```
      *
@@ -1350,17 +1369,9 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const test = new aws.lb.Listener("test", {
-     *     loadBalancerArn: testAwsLb.id,
-     *     protocol: "HTTPS",
-     *     port: 443,
-     *     sslPolicy: "ELBSecurityPolicy-2016-08",
-     *     certificateArn: testAwsIamServerCertificate.arn,
      *     defaultActions: [
      *         {
-     *             type: "jwt-validation",
      *             jwtValidation: {
-     *                 issuer: "https://example.com",
-     *                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
      *                 additionalClaims: [
      *                     {
      *                         format: "string-array",
@@ -1376,13 +1387,21 @@ export namespace lb {
      *                         values: ["value1"],
      *                     },
      *                 ],
+     *                 issuer: "https://example.com",
+     *                 jwksEndpoint: "https://example.com/.well-known/jwks.json",
      *             },
+     *             type: "jwt-validation",
      *         },
      *         {
      *             targetGroupArn: testAwsLbTargetGroup.id,
      *             type: "forward",
      *         },
      *     ],
+     *     loadBalancerArn: testAwsLb.id,
+     *     protocol: "HTTPS",
+     *     port: 443,
+     *     sslPolicy: "ELBSecurityPolicy-2016-08",
+     *     certificateArn: testAwsIamServerCertificate.arn,
      * });
      * ```
      *
@@ -1393,28 +1412,28 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const example = new aws.lb.LoadBalancer("example", {
-     *     loadBalancerType: "gateway",
-     *     name: "example",
      *     subnetMappings: [{
      *         subnetId: exampleAwsSubnet.id,
      *     }],
+     *     loadBalancerType: "gateway",
+     *     name: "example",
      * });
      * const exampleTargetGroup = new aws.lb.TargetGroup("example", {
-     *     name: "example",
-     *     port: 6081,
-     *     protocol: "GENEVE",
-     *     vpcId: exampleAwsVpc.id,
      *     healthCheck: {
      *         port: "80",
      *         protocol: "HTTP",
      *     },
+     *     name: "example",
+     *     port: 6081,
+     *     protocol: "GENEVE",
+     *     vpcId: exampleAwsVpc.id,
      * });
      * const exampleListener = new aws.lb.Listener("example", {
-     *     loadBalancerArn: example.id,
      *     defaultActions: [{
      *         targetGroupArn: exampleTargetGroup.id,
      *         type: "forward",
      *     }],
+     *     loadBalancerArn: example.id,
      * });
      * ```
      *
@@ -1427,15 +1446,15 @@ export namespace lb {
      * const example = new aws.lb.LoadBalancer("example", {loadBalancerType: "application"});
      * const exampleTargetGroup = new aws.lb.TargetGroup("example", {});
      * const exampleListener = new aws.lb.Listener("example", {
-     *     loadBalancerArn: example.id,
-     *     defaultActions: [{
-     *         targetGroupArn: exampleTargetGroup.id,
-     *         type: "forward",
-     *     }],
      *     mutualAuthentication: {
      *         mode: "verify",
      *         trustStoreArn: "...",
      *     },
+     *     defaultActions: [{
+     *         targetGroupArn: exampleTargetGroup.id,
+     *         type: "forward",
+     *     }],
+     *     loadBalancerArn: example.id,
      * });
      * ```
      *
@@ -1445,7 +1464,7 @@ export namespace lb {
      *
      * #### Required
      *
-     * - `arn` (String) Amazon Resource Name (ARN) of the load balancer listener.
+     * - `arn` (String) ARN of the load balancer listener.
      *
      * Using `pulumi import`, import listeners using their ARN. For example:
      *
@@ -1646,13 +1665,13 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+     *     targetHealthStates: [{
+     *         enableUnhealthyConnectionTermination: false,
+     *     }],
      *     name: "tf-example-lb-nlb-tg",
      *     port: 25,
      *     protocol: "TCP",
      *     vpcId: main.id,
-     *     targetHealthStates: [{
-     *         enableUnhealthyConnectionTermination: false,
-     *     }],
      * });
      * ```
      *
@@ -1663,10 +1682,6 @@ export namespace lb {
      * import * as aws from "@pulumi/aws";
      *
      * const tcp_example = new aws.lb.TargetGroup("tcp-example", {
-     *     name: "tf-example-lb-nlb-tg",
-     *     port: 80,
-     *     protocol: "TCP",
-     *     vpcId: main.id,
      *     targetGroupHealth: {
      *         dnsFailover: {
      *             minimumHealthyTargetsCount: "1",
@@ -1677,6 +1692,10 @@ export namespace lb {
      *             minimumHealthyTargetsPercentage: "off",
      *         },
      *     },
+     *     name: "tf-example-lb-nlb-tg",
+     *     port: 80,
+     *     protocol: "TCP",
+     *     vpcId: main.id,
      * });
      * ```
      *
@@ -1686,7 +1705,7 @@ export namespace lb {
      *
      * #### Required
      *
-     * - `arn` (String) Amazon Resource Name (ARN) of the target group.
+     * - `arn` (String) ARN of the target group.
      *
      * Using `pulumi import`, import Target Groups using their ARN. For example:
      *
@@ -1797,7 +1816,7 @@ export namespace lb {
          *
          * Note that you can't specify targets for a target group using both instance IDs and IP addresses.
          *
-         * If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+         * If the target type is `ip`, specify IP addresses from the subnets of the VPC for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
          *
          * Network Load Balancers do not support the `lambda` target type.
          *

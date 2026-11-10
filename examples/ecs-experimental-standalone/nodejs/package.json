@@ -2,7 +2,7 @@
   "name": "ecs-experimental-standalone-nodejs",
   "private": true,
   "dependencies": {
-    "@pulumi/aws": "7.43.0",
+    "@pulumi/aws": "7.53.0",
     "@pulumi/pulumi": "3.274.1"
   },
   "devDependencies": {
