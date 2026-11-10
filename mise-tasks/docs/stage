@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#MISE description="Publish generated docs into the registry's ignored preview overlay"
+#MISE hide=true
+#MISE raw_args=true
+set -euo pipefail
+
+: "${REGISTRY_DIR:?Set REGISTRY_DIR=/path/to/pulumi-registry}"
+generated=${1:?Usage: mise run docs:stage -- GENERATED_DIR SCHEMA}
+schema=${2:?Usage: mise run docs:stage -- GENERATED_DIR SCHEMA}
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
+registry=$(cd "$REGISTRY_DIR" && pwd -P)
+[[ -f "$registry/tools/resourcedocsgen/go.mod" ]] || { echo "Not a pulumi-registry checkout: $registry" >&2; exit 1; }
+
+safe_destination() {
+    local path="$registry/$1" parent="$registry/$1"
+    while [[ "$parent" != "$registry" ]]; do
+        [[ ! -L "$parent" ]] || { echo "Refusing preview destination through symlink: $parent" >&2; return 1; }
+        parent=$(dirname "$parent")
+    done
+    git -C "$registry" check-ignore --quiet -- "$path" || {
+        echo "Preview output must be git-ignored: $path" >&2; return 1;
+    }
+}
+
+# Validate all inputs and destinations before replacing the working preview.
+for input in "$generated/api-docs/_index.md" "$generated/navs/awsx.json" \
+    "$root/docs/_index.md" "$root/docs/installation-configuration.md" "$schema"; do
+    [[ -f "$input" ]] || { echo "Missing generated preview input: $input" >&2; exit 1; }
+done
+for path in content/registry/packages/awsx/api-docs \
+    content/registry/packages/awsx/_index.md \
+    content/registry/packages/awsx/installation-configuration.md \
+    static/registry/packages/navs/awsx.json .make/awsx-docs-preview-site; do
+    safe_destination "$path"
+done
+
+# Hugo writes module requirements on startup. Keep those writes in an ignored
+# project, using the real registry configuration, content, and theme.
+site="$registry/.make/awsx-docs-preview-site"
+mkdir -p "$site"
+for name in config content static themes data assets layouts i18n archetypes; do
+    if [[ -d "$registry/$name" ]]; then
+        if [[ -L "$site/$name" ]]; then
+            [[ "$(readlink "$site/$name")" == "$registry/$name" ]] || {
+                echo "Unexpected symlink in preview site: $site/$name" >&2; exit 1;
+            }
+        elif [[ -e "$site/$name" ]]; then
+            echo "Unexpected file in preview site: $site/$name" >&2; exit 1
+        else
+            ln -s "$registry/$name" "$site/$name"
+        fi
+    fi
+done
+for name in go.mod go.sum; do
+    safe_destination ".make/awsx-docs-preview-site/$name"
+    if [[ -f "$registry/$name" && ! -e "$site/$name" ]]; then
+        cp "$registry/$name" "$site/$name"
+    fi
+done
+
+package="$registry/content/registry/packages/awsx"
+api="$package/api-docs"
+for name in _index.md installation-configuration.md; do
+    cp "$root/docs/$name" "$generated/$name"
+done
+mkdir -p "$package" "$registry/static/registry/packages/navs"
+if [[ -e "$api" ]]; then
+    mv "$api" "$generated/previous-api-docs"
+fi
+if ! mv "$generated/api-docs" "$api"; then
+    if [[ -e "$generated/previous-api-docs" ]]; then
+        mv "$generated/previous-api-docs" "$api"
+    fi
+    exit 1
+fi
+for name in _index.md installation-configuration.md; do
+    mv -f "$generated/$name" "$package/$name"
+done
+mv -f "$generated/navs/awsx.json" "$registry/static/registry/packages/navs/awsx.json"
+mkdir -p "$root/.make/docs-preview"
+cp "$schema" "$root/.make/docs-preview/schema.json"
+echo "AWSX registry preview rebuilt."

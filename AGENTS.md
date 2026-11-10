@@ -109,6 +109,7 @@ to your change.
 ## Generated Boundaries
 Never hand-edit generated outputs as the source of truth:
 - `sdk/**`
+- `docs/_index.md` and `docs/installation-configuration.md`, authored under `docs/source/` and regenerated with `make schema`
 - `provider/cmd/pulumi-resource-awsx/schema.json`
 - `provider/cmd/pulumi-resource-awsx/schema-embed.json`
 - `awsx/schema-types.ts` (regenerate with `yarn --cwd awsx gen-types` after a schema change)

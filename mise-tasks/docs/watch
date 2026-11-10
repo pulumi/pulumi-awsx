@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild docs when authored sources change"
+#MISE depends=["docs:build"]
+set -euo pipefail
+exec mise watch docs:build --postpone --on-busy-update queue
