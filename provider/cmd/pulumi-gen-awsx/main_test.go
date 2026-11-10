@@ -24,12 +24,14 @@ func TestEnrichComponentDocs(t *testing.T) {
 		"awsx:ecs:FargateService": {},
 	}}
 	// Missing integration must fail rather than silently skip authored docs.
-	if err := enrichComponentDocs(&spec, root); err == nil || !strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
+	if err := enrichComponentDocs(&spec, root); err == nil ||
+		!strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
 		t.Fatalf("expected missing component error, got %v", err)
 	}
 	spec.Resources["awsx:experimental/ecs:Service"] = schema.ResourceSpec{}
 	// A misspelled file must still fail when the experimental namespace exists.
-	if err := enrichComponentDocs(&spec, root); err == nil || !strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
+	if err := enrichComponentDocs(&spec, root); err == nil ||
+		!strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
 		t.Fatalf("expected strict docs validation during generation, got %v", err)
 	}
 }

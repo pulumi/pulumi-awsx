@@ -48,17 +48,25 @@ func TestFixtureValidation(t *testing.T) {
 }
 
 func TestFixtureFence(t *testing.T) {
-	_, err := renderExampleFences("```yaml pulumi-example fixture=common.yaml\nresources: {}\n```\n", func(source, path string) (string, error) {
-		if path != "common.yaml" || source != "resources: {}\n" {
-			t.Fatalf("lost fixture metadata: %q %q", path, source)
-		}
-		return "converted", nil
-	})
+	_, err := renderExampleFences(
+		"```yaml pulumi-example fixture=common.yaml\nresources: {}\n```\n",
+		func(source, path string) (string, error) {
+			if path != "common.yaml" || source != "resources: {}\n" {
+				t.Fatalf("lost fixture metadata: %q %q", path, source)
+			}
+			return "converted", nil
+		},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, info := range []string{"fixture=", "unknown=x", "fixture=a.yaml extra"} {
-		if _, err := renderExampleFences("```yaml pulumi-example "+info+"\nresources: {}\n```", func(string, string) (string, error) { t.Fatal("invalid annotation reached converter"); return "", nil }); err == nil {
+		input := "```yaml pulumi-example " + info + "\nresources: {}\n```"
+		_, err := renderExampleFences(input, func(string, string) (string, error) {
+			t.Fatal("invalid annotation reached converter")
+			return "", nil
+		})
+		if err == nil {
 			t.Fatalf("accepted %q", info)
 		}
 	}
@@ -87,13 +95,71 @@ func TestBuildFixtureDocs(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	write("schema.json", `{"name":"docsfixture","version":"1.0.0","language":{"go":{"importBasePath":"example.com/docsfixture/sdk/go/docsfixture"},"java":{"basePackage":"com.pulumi"}},"resources":{"docsfixture:index:Widget":{"inputProperties":{"message":{"type":"string"},"details":{"type":"object","additionalProperties":{"$ref":"#/types/docsfixture:index:Detail"}}},"requiredInputs":["message"],"properties":{"message":{"type":"string"}}}},"types":{"docsfixture:index:Detail":{"type":"object","properties":{"message":{"type":"string"}}}}}`)
+	write(
+		"schema.json",
+		`{
+  "name": "docsfixture",
+  "version": "1.0.0",
+  "language": {
+    "go": {
+      "importBasePath": "example.com/docsfixture/sdk/go/docsfixture"
+    },
+    "java": {
+      "basePackage": "com.pulumi"
+    }
+  },
+  "resources": {
+    "docsfixture:index:Widget": {
+      "inputProperties": {
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/types/docsfixture:index:Detail"
+          }
+        }
+      },
+      "requiredInputs": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "types": {
+    "docsfixture:index:Detail": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}`,
+	)
 	if err := os.Mkdir(filepath.Join(root, "index"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	write("index/shared.yaml", "name: fixture\nruntime: yaml\nresources:\n  supportingWidget:\n    type: docsfixture:index:Widget\n    properties:\n      message: HIDDEN_FIXTURE_VALUE\n")
+	write(
+		"index/shared.yaml",
+		"name: fixture\nruntime: yaml\nresources:\n  supportingWidget:\n"+
+			"    type: docsfixture:index:Widget\n    properties:\n"+
+			"      message: HIDDEN_FIXTURE_VALUE\n",
+	)
 	writeDoc := func(message string) {
-		write("index/Widget.md", "Before\n\n```yaml pulumi-example fixture=shared.yaml\nresources:\n  shownWidget:\n    type: docsfixture:index:Widget\n    properties:\n      message: "+message+"\n      details:\n        app:\n          message: ${supportingWidget.message}\n```\nAfter\n")
+		write(
+			"index/Widget.md",
+			"Before\n\n```yaml pulumi-example fixture=shared.yaml\nresources:\n"+
+				"  shownWidget:\n    type: docsfixture:index:Widget\n    properties:\n"+
+				"      message: "+message+"\n      details:\n        app:\n"+
+				"          message: ${supportingWidget.message}\n```\nAfter\n",
+		)
 	}
 	writeDoc("${supportingWidget.message}")
 	out := filepath.Join(root, "out.json")
@@ -112,7 +178,8 @@ func TestBuildFixtureDocs(t *testing.T) {
 	if strings.Contains(description, "%!v(PANIC=") {
 		t.Fatalf("generator emitted malformed typed-map code: %s", description)
 	}
-	if strings.Contains(description, "HIDDEN_FIXTURE_VALUE") || strings.Contains(description, "AWSX_DOCS_") || strings.Contains(description, "__awsxDocs") {
+	if strings.Contains(description, "HIDDEN_FIXTURE_VALUE") || strings.Contains(description, "AWSX_DOCS_") ||
+		strings.Contains(description, "__awsxDocs") {
 		t.Fatalf("fixture or markers leaked: %s", description)
 	}
 	for _, language := range append(languages, struct{ runtime, fence string }{"yaml", "yaml"}) {
@@ -120,7 +187,8 @@ func TestBuildFixtureDocs(t *testing.T) {
 			t.Errorf("missing %s", language.fence)
 		}
 	}
-	if !strings.Contains(description, "${supportingWidget.message}") || !strings.Contains(description, "supportingWidget.Message") {
+	if !strings.Contains(description, "${supportingWidget.message}") ||
+		!strings.Contains(description, "supportingWidget.Message") {
 		t.Fatalf("lost typed fixture reference: %s", description)
 	}
 	// A fixture must actually participate in binding, not just suppress errors.

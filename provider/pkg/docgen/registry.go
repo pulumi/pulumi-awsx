@@ -13,6 +13,7 @@ import (
 	"github.com/pgavlin/goldmark"
 	"github.com/pgavlin/goldmark/ast"
 	"github.com/pgavlin/goldmark/text"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
@@ -21,7 +22,8 @@ import (
 // with those sources. Unlike the full resource template, this preserves the page's
 // authored headings and emits only languages for which snippets exist.
 // Upstream revision f4530ec993677ea530e458bb9a2ef4ada7a4c8dc:
-// https://github.com/pulumi/registry/blob/f4530ec993677ea530e458bb9a2ef4ada7a4c8dc/tools/resourcedocsgen/pkg/docs/templates/examples.tmpl
+// Repository: https://github.com/pulumi/registry
+// Path: tools/resourcedocsgen/pkg/docs/templates/examples.tmpl
 var registryExampleTemplate = template.Must(template.New("example").Parse(`<div><pulumi-examples>
 <div><pulumi-chooser type="language" options="{{ .Languages }}"></pulumi-chooser></div>
 {{ range .Snippets }}
@@ -255,7 +257,7 @@ func GenerateLandingPagesTo(spec *schema.PackageSpec, sourceDir, outDir string) 
 		if !ok {
 			continue
 		}
-		if err := os.WriteFile(filepath.Join(outDir, entry.Name()), []byte(page), 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, entry.Name()), []byte(page), 0o600); err != nil {
 			return err
 		}
 	}

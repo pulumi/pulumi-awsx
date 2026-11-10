@@ -12,7 +12,52 @@ import (
 )
 
 func TestConversionSchemaPreservesAPIAndSource(t *testing.T) {
-	raw := []byte(`{"name":"fixture","description":"package prose","language":{"go":{"importBasePath":"example.com/fixture"}},"resources":{"fixture:index:Thing":{"description":"resource prose","inputProperties":{"description":{"type":"string","description":"input prose","secret":true,"default":"default text"}},"requiredInputs":["description"],"properties":{"description":{"type":"string","description":"output prose"}}}},"types":{"fixture:index:Settings":{"type":"object","description":"type prose","properties":{"description":{"type":"string","description":"nested prose"}},"required":["description"]}}}`)
+	raw := []byte(
+		`{
+  "name": "fixture",
+  "description": "package prose",
+  "language": {
+    "go": {"importBasePath":"example.com/fixture"}
+  },
+  "resources": {
+    "fixture:index:Thing": {
+      "description": "resource prose",
+      "inputProperties": {
+        "description": {
+          "type": "string",
+          "description": "input prose",
+          "secret": true,
+          "default": "default text"
+        }
+      },
+      "requiredInputs": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "output prose"
+        }
+      }
+    }
+  },
+  "types": {
+    "fixture:index:Settings": {
+      "type": "object",
+      "description": "type prose",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "nested prose"
+        }
+      },
+      "required": [
+        "description"
+      ]
+    }
+  }
+}`,
+	)
 	slim, err := conversionSchema(raw)
 	if err != nil {
 		t.Fatal(err)
@@ -28,7 +73,8 @@ func TestConversionSchemaPreservesAPIAndSource(t *testing.T) {
 		t.Fatal("mutated the source schema")
 	}
 	resource := converted.Resources["fixture:index:Thing"]
-	if converted.Description != "" || resource.Description != "" || resource.InputProperties["description"].Description != "" {
+	if converted.Description != "" || resource.Description != "" ||
+		resource.InputProperties["description"].Description != "" {
 		t.Fatal("retained conversion-only documentation")
 	}
 	property, ok := resource.InputProperties["description"]
@@ -58,11 +104,30 @@ func (l *rawOnlyLoader) LoadRawSchemaBytes(context.Context, *schema.PackageDescr
 }
 
 func TestLocalLoaderServesAndCachesRawSchemasWithoutBinding(t *testing.T) {
-	fallback := &rawOnlyLoader{raw: []byte(`{"name":"dep","version":"1.0.0","description":"dependency docs","resources":{"dep:index:Role":{"properties":{"description":{"type":"string"}}}}}`)}
+	fallback := &rawOnlyLoader{
+		raw: []byte(
+			`{
+  "name": "dep",
+  "version": "1.0.0",
+  "description": "dependency docs",
+  "resources": {
+    "dep:index:Role": {
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}`,
+		),
+	}
 	spec := schema.PackageSpec{Name: "awsx", Resources: map[string]schema.ResourceSpec{
-		"awsx:experimental/ecs:Thing": {ObjectTypeSpec: schema.ObjectTypeSpec{Properties: map[string]schema.PropertySpec{
-			"role": {TypeSpec: schema.TypeSpec{Ref: "/dep/v1.0.0/schema.json#/resources/dep:index:Role"}},
-		}}},
+		"awsx:experimental/ecs:Thing": {
+			ObjectTypeSpec: schema.ObjectTypeSpec{Properties: map[string]schema.PropertySpec{
+				"role": {TypeSpec: schema.TypeSpec{Ref: "/dep/v1.0.0/schema.json#/resources/dep:index:Role"}},
+			}},
+		},
 	}}
 	loader, err := newLocalLoader(&spec, fallback)
 	if err != nil {

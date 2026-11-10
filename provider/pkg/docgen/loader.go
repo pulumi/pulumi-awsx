@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/blang/semver"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
@@ -46,7 +47,10 @@ func newLocalLoader(spec *schema.PackageSpec, fallback schema.ReferenceLoader) (
 	return &localLoader{ReferenceLoader: fallback, pkg: pkg, raw: raw, dependencies: map[string][]byte{}}, nil
 }
 
-func (l *localLoader) LoadPackageReferenceV2(ctx context.Context, descriptor *schema.PackageDescriptor) (schema.PackageReference, error) {
+func (l *localLoader) LoadPackageReferenceV2(
+	ctx context.Context,
+	descriptor *schema.PackageDescriptor,
+) (schema.PackageReference, error) {
 	if descriptor.Name != l.pkg.Name() {
 		return l.ReferenceLoader.LoadPackageReferenceV2(ctx, descriptor)
 	}
@@ -54,7 +58,12 @@ func (l *localLoader) LoadPackageReferenceV2(ctx context.Context, descriptor *sc
 		return nil, fmt.Errorf("documentation examples cannot parameterize %s", l.pkg.Name())
 	}
 	if descriptor.Version != nil && (l.pkg.Version() == nil || !descriptor.Version.EQ(*l.pkg.Version())) {
-		return nil, fmt.Errorf("example requests %s version %s, not the supplied local schema version %v", l.pkg.Name(), descriptor.Version, l.pkg.Version())
+		return nil, fmt.Errorf(
+			"example requests %s version %s, not the supplied local schema version %v",
+			l.pkg.Name(),
+			descriptor.Version,
+			l.pkg.Version(),
+		)
 	}
 	return l.pkg, nil
 }
@@ -63,7 +72,10 @@ func (l *localLoader) LoadPackageReference(name string, version *semver.Version)
 	return l.LoadPackageReferenceV2(context.Background(), &schema.PackageDescriptor{Name: name, Version: version})
 }
 
-func (l *localLoader) LoadPackageV2(ctx context.Context, descriptor *schema.PackageDescriptor) (*schema.Package, error) {
+func (l *localLoader) LoadPackageV2(
+	ctx context.Context,
+	descriptor *schema.PackageDescriptor,
+) (*schema.Package, error) {
 	ref, err := l.LoadPackageReferenceV2(ctx, descriptor)
 	if err != nil {
 		return nil, err
@@ -75,7 +87,10 @@ func (l *localLoader) LoadPackage(name string, version *semver.Version) (*schema
 	return l.LoadPackageV2(context.Background(), &schema.PackageDescriptor{Name: name, Version: version})
 }
 
-func (l *localLoader) LoadRawSchemaBytes(ctx context.Context, descriptor *schema.PackageDescriptor) ([]byte, bool, error) {
+func (l *localLoader) LoadRawSchemaBytes(
+	ctx context.Context,
+	descriptor *schema.PackageDescriptor,
+) ([]byte, bool, error) {
 	if descriptor.Name == l.pkg.Name() {
 		if _, err := l.LoadPackageReferenceV2(ctx, descriptor); err != nil {
 			return nil, false, err
@@ -104,7 +119,13 @@ func (l *localLoader) LoadRawSchemaBytes(ctx context.Context, descriptor *schema
 	if err != nil {
 		return nil, false, err
 	}
-	fmt.Fprintf(os.Stderr, "Prepared %s conversion schema: %.1f MiB -> %.1f MiB\n", descriptor.Name, float64(len(raw))/(1<<20), float64(len(slim))/(1<<20))
+	fmt.Fprintf(
+		os.Stderr,
+		"Prepared %s conversion schema: %.1f MiB -> %.1f MiB\n",
+		descriptor.Name,
+		float64(len(raw))/(1<<20),
+		float64(len(slim))/(1<<20),
+	)
 	l.dependencies[string(key)] = slim
 	return slim, true, nil
 }

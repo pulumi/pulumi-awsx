@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/blang/semver"
+
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfgen/schemafilter"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
@@ -21,7 +22,10 @@ func TestLocalLoaderRejectsPublishedVersion(t *testing.T) {
 	publishedVersion := semver.MustParse("2.0.0")
 	loader := &localLoader{pkg: (&schema.Package{Name: "awsx", Version: &localVersion}).Reference()}
 	// No fallback loader is provided. A regression that tries the registry panics.
-	_, err := loader.LoadPackageReferenceV2(context.Background(), &schema.PackageDescriptor{Name: "awsx", Version: &publishedVersion})
+	_, err := loader.LoadPackageReferenceV2(
+		context.Background(),
+		&schema.PackageDescriptor{Name: "awsx", Version: &publishedVersion},
+	)
 	if err == nil || !strings.Contains(err.Error(), "supplied local schema") {
 		t.Fatalf("expected version mismatch, got %v", err)
 	}
@@ -33,7 +37,8 @@ func TestRenderExamples(t *testing.T) {
 	// The annotated-looking block inside a longer Markdown fence is documentation,
 	// not an example to execute. A shorter fence inside YAML is also just content.
 	quoted := "````markdown\n```yaml pulumi-example\nnot a program\n```\n````\n"
-	input := "Before\n\n" + ordinary + quoted + "\n```yaml pulumi-example\n" + yaml + "```\nBetween\n\n~~~~yaml pulumi-example\n" + yaml + "~~~~\nAfter\n"
+	input := "Before\n\n" + ordinary + quoted + "\n```yaml pulumi-example\n" + yaml +
+		"```\nBetween\n\n~~~~yaml pulumi-example\n" + yaml + "~~~~\nAfter\n"
 	calls := 0
 	actual, err := renderExamples(input, func(source string) (string, error) {
 		calls++
@@ -50,12 +55,23 @@ func TestRenderExamples(t *testing.T) {
 		t.Fatalf("got %d calls and output %q", calls, actual)
 	}
 	failure := errors.New("invalid YAML resource")
-	_, err = renderExamples("```yaml pulumi-example\n"+yaml+"```", func(string) (string, error) { return "", failure })
+	_, err = renderExamples(
+		"```yaml pulumi-example\n"+yaml+"```",
+		func(string) (string, error) { return "", failure },
+	)
 	if !errors.Is(err, failure) {
 		t.Fatalf("expected conversion failure, got %v", err)
 	}
-	for _, input := range []string{"```yaml pulumi-example\n```", "```yaml pulumi-example\nname: missing-close\n", "> ```yaml pulumi-example\n> name: nested\n> ```"} {
-		if _, err := renderExamples(input, func(string) (string, error) { t.Fatal("invalid fence reached converter"); return "", nil }); err == nil {
+	for _, input := range []string{
+		"```yaml pulumi-example\n```",
+		"```yaml pulumi-example\nname: missing-close\n",
+		"> ```yaml pulumi-example\n> name: nested\n> ```",
+	} {
+		_, err := renderExamples(input, func(string) (string, error) {
+			t.Fatal("invalid fence reached converter")
+			return "", nil
+		})
+		if err == nil {
 			t.Fatalf("accepted invalid fence %q", input)
 		}
 	}
@@ -63,7 +79,12 @@ func TestRenderExamples(t *testing.T) {
 
 func TestDiscover(t *testing.T) {
 	root := t.TempDir()
-	for _, name := range []string{"README.md", "experimental/ecs/TaskDefinition.md", "experimental/other/TaskDefinition.md", "experimental/ecs/ignored.txt"} {
+	for _, name := range []string{
+		"README.md",
+		"experimental/ecs/TaskDefinition.md",
+		"experimental/other/TaskDefinition.md",
+		"experimental/ecs/ignored.txt",
+	} {
 		path := filepath.Join(root, name)
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			t.Fatal(err)
@@ -107,8 +128,40 @@ func TestBuildDocs(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	write("schema.json", `{"name":"docsfixture","version":"1.0.0","language":{"go":{"importBasePath":"example.com/docsfixture/sdk/go/docsfixture"},"java":{"basePackage":"com.pulumi"}},"resources":{"docsfixture:index:Widget":{"inputProperties":{"message":{"type":"string"}},"requiredInputs":["message"],"properties":{"message":{"type":"string"}}}}}`)
-	const before = "# Widget\n\nIntroductory prose.\n\n### Environment variables\n\n#### Pulumi secrets\n\nExplanation before the first example.\n\n"
+	write(
+		"schema.json",
+		`{
+  "name": "docsfixture",
+  "version": "1.0.0",
+  "language": {
+    "go": {
+      "importBasePath": "example.com/docsfixture/sdk/go/docsfixture"
+    },
+    "java": {
+      "basePackage": "com.pulumi"
+    }
+  },
+  "resources": {
+    "docsfixture:index:Widget": {
+      "inputProperties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "requiredInputs": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}`,
+	)
+	const before = "# Widget\n\nIntroductory prose.\n\n### Environment variables\n\n" +
+		"#### Pulumi secrets\n\nExplanation before the first example.\n\n"
 	const between = "\nExplanation after the first example.\n\n#### Existing secrets\n\n- Authored list item.\n\n"
 	const after = "\nFinal explanation after the second example.\n"
 	writeExample := func(yaml string) {
@@ -116,7 +169,11 @@ func TestBuildDocs(t *testing.T) {
 		block := "```yaml pulumi-example\n" + yaml + "```\n"
 		write("index/Widget.md", before+block+between+block+after)
 	}
-	writeExample("name: fixture\nruntime: yaml\nresources:\n  widget:\n    type: docsfixture:index:Widget\n    properties:\n      message: hello-docs\noutputs:\n  message: ${widget.message}\n")
+	writeExample(
+		"name: fixture\nruntime: yaml\nresources:\n  widget:\n" +
+			"    type: docsfixture:index:Widget\n    properties:\n" +
+			"      message: hello-docs\noutputs:\n  message: ${widget.message}\n",
+	)
 	out := filepath.Join(root, "enriched.json")
 	if err := BuildFile(filepath.Join(root, "schema.json"), root, out); err != nil {
 		t.Fatal(err)
@@ -144,7 +201,8 @@ func TestBuildDocs(t *testing.T) {
 	if strings.Contains(description, "{{%") {
 		t.Fatalf("schema example wrappers still present: %s", description)
 	}
-	if !strings.HasPrefix(description, before) || !strings.Contains(description, between) || !strings.HasSuffix(description, after) {
+	if !strings.HasPrefix(description, before) || !strings.Contains(description, between) ||
+		!strings.HasSuffix(description, after) {
 		t.Fatalf("authored headings or prose were changed: %s", description)
 	}
 	// Exercise the local copy of the registry's inline rendering convention on
@@ -156,7 +214,9 @@ func TestBuildDocs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Count(rendered, "<pulumi-chooser ") != 2 || !strings.HasPrefix(rendered, before) || !strings.Contains(rendered, between) || !strings.HasSuffix(rendered, after) {
+	if strings.Count(rendered, "<pulumi-chooser ") != 2 || !strings.HasPrefix(rendered, before) ||
+		!strings.Contains(rendered, between) ||
+		!strings.HasSuffix(rendered, after) {
 		t.Fatalf("inline rendering lost examples or authored structure: %s", rendered)
 	}
 	for _, language := range languages {
@@ -165,10 +225,12 @@ func TestBuildDocs(t *testing.T) {
 			t.Fatal(err)
 		}
 		description := filtered.Resources["docsfixture:index:Widget"].Description
-		if strings.Contains(description, "PulumiCodeChooser") || strings.Count(description, "```"+language.fence) != 2 {
+		if strings.Contains(description, "PulumiCodeChooser") ||
+			strings.Count(description, "```"+language.fence) != 2 {
 			t.Errorf("%s SDK docs retained markers or lost examples: %s", language.runtime, description)
 		}
-		if !strings.HasPrefix(description, before) || !strings.Contains(description, between) || !strings.HasSuffix(description, after) {
+		if !strings.HasPrefix(description, before) || !strings.Contains(description, between) ||
+			!strings.HasSuffix(description, after) {
 			t.Errorf("%s SDK docs lost authored structure: %s", language.runtime, description)
 		}
 		for _, other := range append(languages, struct{ runtime, fence string }{"yaml", "yaml"}) {
@@ -178,7 +240,11 @@ func TestBuildDocs(t *testing.T) {
 		}
 	}
 	// A misspelled input must fail rather than publishing misleading snippets.
-	writeExample("name: fixture\nruntime: yaml\nresources:\n  widget:\n    type: docsfixture:index:Widget\n    properties:\n      message: hello-docs\n      nonexistent: invalid\n")
+	writeExample(
+		"name: fixture\nruntime: yaml\nresources:\n  widget:\n" +
+			"    type: docsfixture:index:Widget\n    properties:\n" +
+			"      message: hello-docs\n      nonexistent: invalid\n",
+	)
 	if err := BuildFile(filepath.Join(root, "schema.json"), root, filepath.Join(root, "bad.json")); err == nil {
 		t.Fatal("accepted unknown resource input")
 	}

@@ -94,7 +94,10 @@ func prepareExample(source, fixture, dir string) (docExample, error) {
 	}
 	for name := range resources {
 		if !fixtureIdentifier.MatchString(name) || strings.HasPrefix(name, "__awsxDocs") {
-			return example, fmt.Errorf("fixture resource %q must be an identifier without the reserved __awsxDocs prefix", name)
+			return example, fmt.Errorf(
+				"fixture resource %q must be an identifier without the reserved __awsxDocs prefix",
+				name,
+			)
 		}
 	}
 	merged, err := yaml.Marshal(shared)
@@ -150,7 +153,10 @@ func markResourceBoundaries(program map[string]string, visible map[string]bool) 
 			name := block.Labels[0]
 			found[name] = true
 			names = append(names, name)
-			insertions = append(insertions, insertion{block.TypeRange.Start.Byte, "// " + resourceBoundary + name + "\n"})
+			insertions = append(
+				insertions,
+				insertion{block.TypeRange.Start.Byte, "// " + resourceBoundary + name + "\n"},
+			)
 		}
 		sort.Slice(insertions, func(i, j int) bool { return insertions[i].offset > insertions[j].offset })
 		for _, item := range insertions {

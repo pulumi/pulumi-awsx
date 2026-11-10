@@ -19,6 +19,7 @@ import (
 	"github.com/pgavlin/goldmark"
 	"github.com/pgavlin/goldmark/ast"
 	"github.com/pgavlin/goldmark/text"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 	pkghost "github.com/pulumi/pulumi/pkg/v3/host"
 	"github.com/pulumi/pulumi/pkg/v3/resource/plugin"
@@ -220,7 +221,8 @@ func renderExampleFences(markdown string, generate func(string, string) (string,
 		}
 		fixture := ""
 		if len(fields) > 2 {
-			if len(fields) != 3 || !strings.HasPrefix(fields[2], "fixture=") || strings.TrimPrefix(fields[2], "fixture=") == "" {
+			if len(fields) != 3 || !strings.HasPrefix(fields[2], "fixture=") ||
+				strings.TrimPrefix(fields[2], "fixture=") == "" {
 				return ast.WalkStop, fmt.Errorf("expected yaml pulumi-example fixture=relative/path.yaml")
 			}
 			fixture = strings.TrimPrefix(fields[2], "fixture=")
@@ -253,7 +255,11 @@ func renderExampleFences(markdown string, generate func(string, string) (string,
 		}
 		example, err := generate(yaml.String(), fixture)
 		if err != nil {
-			return ast.WalkStop, fmt.Errorf("inline example at line %d: %w", strings.Count(markdown[:start], "\n")+1, err)
+			return ast.WalkStop, fmt.Errorf(
+				"inline example at line %d: %w",
+				strings.Count(markdown[:start], "\n")+1,
+				err,
+			)
 		}
 		result.WriteString(markdown[cursor:start])
 		result.WriteString(example)
@@ -267,7 +273,12 @@ func renderExampleFences(markdown string, generate func(string, string) (string,
 	return result.String(), nil
 }
 
-func convertExample(pctx *plugin.Context, converter plugin.Converter, loaderTarget string, example docExample) (string, error) {
+func convertExample(
+	pctx *plugin.Context,
+	converter plugin.Converter,
+	loaderTarget string,
+	example docExample,
+) (string, error) {
 	temp, err := os.MkdirTemp("", "awsx-docs-")
 	if err != nil {
 		return "", err
@@ -369,7 +380,11 @@ func convertExample(pctx *plugin.Context, converter plugin.Converter, loaderTarg
 // generateLanguage bypasses Host.LanguageRuntime's process cache. A fresh process
 // per invocation bounds the lifetime of code generators' package-graph caches,
 // including Go's global cache keyed by schema object identity.
-func generateLanguage(pctx *plugin.Context, program map[string]string, loaderTarget, language string) (files map[string][]byte, err error) {
+func generateLanguage(
+	pctx *plugin.Context,
+	program map[string]string,
+	loaderTarget, language string,
+) (files map[string][]byte, err error) {
 	runtime, err := plugin.NewLanguageRuntime(pctx.Host, pctx, language, pctx.Pwd)
 	if err != nil {
 		return nil, err
