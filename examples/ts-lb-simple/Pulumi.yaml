@@ -1,3 +1,0 @@
-name: ts-lb-simple
-runtime: nodejs
-description: Minimal LoadBalancer Typescript component test

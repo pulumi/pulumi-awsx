@@ -1,6 +1,0 @@
-name: ecs-experimental-service-load-balancer
-runtime:
-  name: nodejs
-  options:
-    packagemanager: npm
-description: Fargate service attachments to a caller-owned ALB and listener

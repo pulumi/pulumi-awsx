@@ -1,6 +1,0 @@
-name: ecs-experimental-service-linear
-runtime:
-  name: nodejs
-  options:
-    packagemanager: npm
-description: Fargate linear deployment with a caller-owned ALB

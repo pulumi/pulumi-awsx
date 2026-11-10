@@ -1,6 +1,0 @@
-name: ecs-experimental-service-blue-green
-runtime:
-  name: nodejs
-  options:
-    packagemanager: npm
-description: Fargate blue/green deployment with a caller-owned ALB

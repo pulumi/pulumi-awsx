@@ -1,3 +1,0 @@
-name: fargate-service-with-firelens
-runtime: nodejs
-description: A minimal TypeScript Pulumi program
