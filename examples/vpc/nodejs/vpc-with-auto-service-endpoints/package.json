@@ -8,6 +8,6 @@
         "@aws-sdk/client-sqs": "^3.0.0",
         "@pulumi/aws": "7.53.0",
         "@pulumi/awsx": "latest",
-        "@pulumi/pulumi": "3.274.1"
+        "@pulumi/pulumi": "3.275.0"
     }
 }
