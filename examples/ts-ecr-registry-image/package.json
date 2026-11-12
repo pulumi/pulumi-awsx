@@ -7,7 +7,7 @@
     },
     "dependencies": {
         "@pulumi/aws": "7.53.0",
-        "@pulumi/docker": "5.2.2",
+        "@pulumi/docker": "5.3.0",
         "@pulumi/pulumi": "3.274.1"
     },
     "devDependencies": {
