@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@pulumi/aws": "7.53.0",
-    "@pulumi/pulumi": "3.274.1"
+    "@pulumi/pulumi": "3.275.0"
   },
   "peerDependencies": {
     "@pulumi/awsx": "latest"
