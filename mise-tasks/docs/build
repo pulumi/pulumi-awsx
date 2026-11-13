@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#MISE description="Generate AWSX schema, landing pages, and registry API docs"
+#MISE outputs=[]
+#MISE cache={enabled=false}
+#MISE sources=[
+#MISE   "docs/source/**", "awsx-next/docs/**", "awsx-next/src/**/*.ts",
+#MISE   "awsx-next/index.ts", "awsx-next/package.json", "awsx-next/PulumiPlugin.yaml",
+#MISE   "awsx-next/tsconfig.json", "awsx/package.json", "provider/pkg/schemagen/**/*.go",
+#MISE   "provider/pkg/docgen/**/*.go", "provider/cmd/pulumi-gen-awsx/**",
+#MISE   "provider/go.mod", "provider/go.sum", ".mk/docs.mk", ".mk/awsx-next.mk",
+#MISE   "mise-tasks/docs/**",
+#MISE ]
+set -euo pipefail
+
+: "${REGISTRY_DIR:?Set REGISTRY_DIR=/path/to/pulumi-registry}"
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
+registry=$(cd "$REGISTRY_DIR" && pwd -P)
+[[ -f "$registry/tools/resourcedocsgen/go.mod" ]] || { echo "Not a pulumi-registry checkout: $registry" >&2; exit 1; }
+export GOMEMLIMIT="${GOMEMLIMIT:-2GiB}" GOMAXPROCS="${GOMAXPROCS:-2}"
+cd "$root"
+
+# Make owns schema freshness. Inference rewrites package-lock.json, so it is a
+# Make dependency but deliberately not a watch source.
+make schema
+mise -C "$registry" exec -- make bin/resourcedocsgen
+mkdir -p "$registry/.make"
+generated=$(mktemp -d "$registry/.make/awsx-preview.XXXXXX")
+trap 'rm -rf "$generated"' EXIT
+schema="$root/provider/cmd/pulumi-resource-awsx/schema.json"
+"$registry/bin/resourcedocsgen" docs \
+    --schemaFile "$schema" --version "${DOCS_PREVIEW_VERSION:-v0.0.0-dev}" \
+    --docsOutDir "$generated/api-docs" --packageTreeJSONOutDir "$generated/navs"
+REGISTRY_DIR="$registry" mise run docs:stage -- "$generated" "$schema"

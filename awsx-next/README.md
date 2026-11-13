@@ -77,12 +77,19 @@ charges. AWS can garbage-collect old unlabeled versions after its version limit 
 Retention is not an indefinite rollback archive. User-supplied storage is not modified or
 retained, and changes to its value alone do not trigger deployment.
 
-## Authoring constraints
+## Documentation
 
-- Export public components from `index.ts`.
-- Use schema-compatible public argument and output types.
-- Keep the constructor shape `(name, args, opts?)` so Pulumi can infer the schema.
-- Assign public outputs before calling `registerOutputs`.
-- Do not bundle the source entry point. Pulumi analyzes its TypeScript declarations.
-- Keep the package CommonJS-compatible because the Pulumi Node.js plugin host loads the entry point
-  through `require()`.
+- Component pages live in `docs/<module>/<Component>.md`, such as `docs/experimental/ecs/Service.md`. Input and output descriptions stay in TypeScript JSDoc.
+- Registry overview and installation pages live in the repository's `docs/source/` directory.
+- Use `yaml pulumi-example` fences for complete programs. The build generates the other language variants. Ordinary code fences stay unchanged.
+- To hide shared setup, use `yaml pulumi-example fixture=Service.fixture.yaml`. The adjacent fixture supplies `name`, `runtime: yaml`, and supporting `resources`; the inline block contains only the resources to display.
+
+From the repository root, preview with a local [pulumi-registry](https://github.com/pulumi/registry) checkout whose tools and frontend assets are installed:
+
+```shell
+REGISTRY_DIR=/path/to/pulumi-registry mise run docs:preview
+```
+
+Open http://localhost:1313/registry/packages/awsx/. Edits rebuild automatically. Stop with Ctrl-C.
+Use `mise run docs:build` with the same `REGISTRY_DIR` to rebuild without serving.
+`make schema` regenerates the checked-in schema and landing pages for publication.

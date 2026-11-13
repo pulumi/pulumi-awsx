@@ -24,6 +24,13 @@ Validate with `pulumi package get-schema ./awsx-next` from the repository root.
 export changes, compare the actual schemas, including descriptions, enum members,
 required fields, and references.
 
+## Component authoring
+
+- Use schema-compatible public argument and output types, with constructor parameters `name`, `args`, and optional `opts` so Pulumi can infer the schema.
+- Assign public outputs before calling `registerOutputs`.
+- Do not bundle the source entry point. Pulumi analyzes its TypeScript declarations.
+- Keep the package CommonJS-compatible. The Pulumi Node.js plugin host loads the entry point through `require()`.
+
 The public entrypoint exports `TaskDefinition` and `Service`.
 Task definitions use AWS Native's structured container inputs internally. Keep
 AWSX user-facing container types independent and do not add a parallel raw ECS
