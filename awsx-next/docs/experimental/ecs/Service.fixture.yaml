@@ -1,0 +1,135 @@
+# Shared compilation context. Only resources authored inline appear in the docs.
+name: experimental-service-alb
+runtime: yaml
+resources:
+  vpc:
+    type: awsx:ec2:Vpc
+    properties:
+      subnetStrategy: AutoMerge
+      subnetNameTagStrategy: AvailabilityZone
+  frontend:
+    type: aws:ec2/securityGroup:SecurityGroup
+    properties:
+      vpcId: ${vpc.vpcId}
+  frontendHttp:
+    type: aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule
+    properties:
+      securityGroupId: ${frontend.id}
+      ipProtocol: tcp
+      fromPort: 80
+      toPort: 80
+      cidrIpv4: 0.0.0.0/0
+  frontendEgress:
+    type: aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule
+    properties:
+      securityGroupId: ${frontend.id}
+      ipProtocol: tcp
+      fromPort: 80
+      toPort: 80
+      cidrIpv4: ${vpc.vpc.cidrBlock}
+  alb:
+    type: aws:lb/loadBalancer:LoadBalancer
+    properties:
+      loadBalancerType: application
+      internal: false
+      subnets: ${vpc.publicSubnetIds}
+      securityGroups:
+        - ${frontend.id}
+  listener:
+    type: aws:lb/listener:Listener
+    properties:
+      loadBalancerArn: ${alb.arn}
+      port: 80
+      protocol: HTTP
+      defaultActions:
+        - type: fixed-response
+          fixedResponse:
+            statusCode: "404"
+            contentType: text/plain
+            messageBody: Not found
+  cluster:
+    type: aws:ecs/cluster:Cluster
+  repository:
+    type: awsx:ecr:Repository
+  image:
+    type: awsx:ecr:Image
+    properties:
+      repositoryUrl: ${repository.repository.repositoryUrl}
+      context: ./app
+      platform: linux/amd64
+  taskDefinition:
+    type: awsx:experimental/ecs:TaskDefinition
+    properties:
+      containers:
+        app:
+          image: ${image.imageUri}
+          portMappings:
+            - containerPort: 80
+  privateAlbGroup:
+    type: aws:ec2/securityGroup:SecurityGroup
+    properties:
+      vpcId: ${vpc.vpcId}
+  privateFrontendHttp:
+    type: aws:vpc/securityGroupIngressRule:SecurityGroupIngressRule
+    properties:
+      securityGroupId: ${privateAlbGroup.id}
+      ipProtocol: tcp
+      fromPort: 80
+      toPort: 80
+      cidrIpv4: ${vpc.vpc.cidrBlock}
+  privateFrontendEgress:
+    type: aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule
+    properties:
+      securityGroupId: ${privateAlbGroup.id}
+      ipProtocol: tcp
+      fromPort: 80
+      toPort: 80
+      cidrIpv4: ${vpc.vpc.cidrBlock}
+  privateAlb:
+    type: aws:lb/loadBalancer:LoadBalancer
+    properties:
+      loadBalancerType: application
+      internal: true
+      subnets: ${vpc.privateSubnetIds}
+      securityGroups:
+        - ${privateAlbGroup.id}
+  privateListener:
+    type: aws:lb/listener:Listener
+    properties:
+      loadBalancerArn: ${privateAlb.arn}
+      port: 80
+      protocol: HTTP
+      defaultActions:
+        - type: fixed-response
+          fixedResponse:
+            statusCode: "404"
+            contentType: text/plain
+            messageBody: Not found
+  frontendUiEgress:
+    type: aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule
+    properties:
+      securityGroupId: ${frontend.id}
+      ipProtocol: tcp
+      fromPort: 3000
+      toPort: 3000
+      cidrIpv4: ${vpc.vpc.cidrBlock}
+  frontendApiEgress:
+    type: aws:vpc/securityGroupEgressRule:SecurityGroupEgressRule
+    properties:
+      securityGroupId: ${frontend.id}
+      ipProtocol: tcp
+      fromPort: 8080
+      toPort: 8080
+      cidrIpv4: ${vpc.vpc.cidrBlock}
+  uiApiTask:
+    type: awsx:experimental/ecs:TaskDefinition
+    properties:
+      containers:
+        ui:
+          image: ${image.imageUri}
+          portMappings:
+            - containerPort: 3000
+        api:
+          image: ${image.imageUri}
+          portMappings:
+            - containerPort: 8080

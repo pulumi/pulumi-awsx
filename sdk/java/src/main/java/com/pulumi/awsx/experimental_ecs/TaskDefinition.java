@@ -16,6 +16,496 @@ import java.lang.String;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+/**
+ * # Task definitions
+ * 
+ * A task definition is a blueprint for your application. It describes the parameters and one or more containers that form your application.
+ * 
+ * ## Example Usage
+ * 
+ * ### Basic example
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * ### Capacity compatibility
+ * 
+ * Task compatibility defines which compute environments the task can run on:
+ * 
+ * 1. **Fargate**
+ * 2. **EC2**
+ * 3. **Managed Instances**
+ * 
+ * Compatibility defaults to `FARGATE`. To support multiple environments, list them in `compatibilities`. AWSX validates the configuration against all selected environments. This does not select _where_ the task runs or provision capacity, it only declares where it _can_ run.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .compatibilities(            
+ *                 "FARGATE",
+ *                 "MANAGED_INSTANCES",
+ *                 "EC2")
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * ### Managed Instances compatibility
+ * 
+ * When `FARGATE` is included, AWSX selects a valid Fargate task size from the container requirements unless you provide explicit CPU and memory values. To use a task size outside the supported Fargate combinations, select only the environment you need.
+ * 
+ * This example targets Managed Instances and explicitly sets the task&#39;s CPU and memory:
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .cpuUnits(256.0)
+ *             .memoryMiB(256.0)
+ *             .compatibilities("MANAGED_INSTANCES")
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * ### Environment variables and secrets
+ * 
+ * Use `environment` to configure ordinary values, Pulumi secrets, and references to AWS Secrets Manager or Systems Manager Parameter Store.
+ * 
+ * For secret sources, AWSX adds retrieval permissions to the task execution role. ECS retrieves the values when tasks start. The values are available as environment variables inside the container, rather than stored as plaintext in the ECS task definition.
+ * 
+ * ### Pulumi secrets
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.EnvironmentVariableArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         final var config = ctx.config();
+ *         final var apiToken = config.requireSecret("apiToken");
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .environment(Map.of("API_TOKEN", EnvironmentVariableArgs.builder()
+ *                     .value(apiToken)
+ *                     .build()))
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * AWSX creates a Secrets Manager secret for the Pulumi secret value and references a specific secret version. Changing the configuration value creates a new task-definition revision which will trigger a new deployment for services that reference the task definition.
+ * 
+ * ### AWS Secrets Manager
+ * 
+ * Reference a secret managed outside the task-definition component. This example creates a JSON secret with a generated password, then injects only its `password` field.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsnative.secretsmanager.Secret;
+ * import com.pulumi.awsnative.secretsmanager.SecretArgs;
+ * import com.pulumi.awsnative.secretsmanager.inputs.SecretGenerateSecretStringArgs;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.EnvironmentVariableArgs;
+ * import com.pulumi.awsx.experimental.inputs.SecretsManagerSecretArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var databaseSecret = new Secret("databaseSecret", SecretArgs.builder()
+ *             .generateSecretString(SecretGenerateSecretStringArgs.builder()
+ *                 .secretStringTemplate("{\"username\":\"app\"}")
+ *                 .generateStringKey("password")
+ *                 .passwordLength(32)
+ *                 .excludePunctuation(true)
+ *                 .build())
+ *             .build());
+ * 
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .environment(Map.of("DATABASE_PASSWORD", EnvironmentVariableArgs.builder()
+ *                     .secretsManager(SecretsManagerSecretArgs.builder()
+ *                         .secretArn(databaseSecret.awsId())
+ *                         .jsonKey("password")
+ *                         .build())
+ *                     .build()))
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * ### AWS Systems Manager Parameter Store
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.EnvironmentVariableArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         final var config = ctx.config();
+ *         final var sharedTokenParameterArn = config.require("sharedTokenParameterArn");
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .environment(Map.of("SHARED_TOKEN", EnvironmentVariableArgs.builder()
+ *                     .ssmParameterArn(sharedTokenParameterArn)
+ *                     .build()))
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * Changing the value stored in the parameter will not trigger a deployment.
+ * 
+ * ### Logging
+ * 
+ * The `TaskDefinition` creates a shared CloudWatch Logs log group by default where all container logs are sent. To control settings such as retention, create a log group and pass its ARN.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.cloudwatch.LogGroup;
+ * import com.pulumi.aws.cloudwatch.LogGroupArgs;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerLogDriverArgs;
+ * import com.pulumi.awsx.experimental.inputs.AwsLogsLogDriverArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var applicationLogs = new LogGroup("applicationLogs", LogGroupArgs.builder()
+ *             .retentionInDays(14)
+ *             .build());
+ * 
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image("nginx:stable")
+ *                 .portMappings(AwsvpcPortMappingArgs.builder()
+ *                     .containerPort(80.0)
+ *                     .build())
+ *                 .logging(ContainerLogDriverArgs.builder()
+ *                     .cloudwatch(AwsLogsLogDriverArgs.builder()
+ *                         .logGroupArn(applicationLogs.arn())
+ *                         .streamPrefix("app")
+ *                         .build())
+ *                     .build())
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *         ctx.export("logGroupName", applicationLogs.name());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * AWSX grants the task execution role permission to write to this log group.
+ * 
+ * ### CPU and memory
+ * 
+ * Task-level CPU and memory configure the resources allocated to the task. Container-level settings configure CPU reservations and memory limits within that allocation.
+ * 
+ * #### Automatic task sizing
+ * 
+ * For a small application that needs 0.5 vCPU and up to 1 GiB of memory, configure the container and leave task-level sizing unset:
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         final var config = ctx.config();
+ *         final var applicationImage = config.require("applicationImage");
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *                 .image(applicationImage)
+ *                 .cpuUnits(512.0)
+ *                 .memoryMiB(1024.0)
+ *                 .build()))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * AWSX selects a Fargate task with 512 CPU units and 1024 MiB of memory. This gives the task 0.5 vCPU and 1 GiB of memory.
+ * 
+ * #### Reserving headroom for memory bursts
+ * 
+ * A worker might normally need 1 GiB of memory but use up to 3 GiB while processing a job. A telemetry sidecar might normally need 256 MiB and should never exceed 512 MiB.
+ * 
+ * Use `memoryReservationMiB` for each container’s soft memory reservation and `memoryMiB` for its hard limit. Set task-level memory explicitly to provide room for bursts:
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.experimental.TaskDefinition;
+ * import com.pulumi.awsx.experimental.TaskDefinitionArgs;
+ * import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         final var config = ctx.config();
+ *         final var workerImage = config.require("workerImage");
+ *         final var telemetryImage = config.require("telemetryImage");
+ *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
+ *             .cpuUnits(1024.0)
+ *             .memoryMiB(4096.0)
+ *             .containers(Map.ofEntries(
+ *                 Map.entry("worker", ContainerDefinitionOptionsArgs.builder()
+ *                     .image(workerImage)
+ *                     .cpuUnits(768.0)
+ *                     .memoryReservationMiB(1024.0)
+ *                     .memoryMiB(3072.0)
+ *                     .build()),
+ *                 Map.entry("telemetry", ContainerDefinitionOptionsArgs.builder()
+ *                     .image(telemetryImage)
+ *                     .cpuUnits(256.0)
+ *                     .memoryReservationMiB(256.0)
+ *                     .memoryMiB(512.0)
+ *                     .build())
+ *             ))
+ *             .build());
+ * 
+ *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * The task has 1 vCPU and 4 GiB of memory. Within that allocation:
+ * 
+ * - The worker has a soft memory reservation of 1 GiB and a hard limit of 3 GiB.
+ * - Telemetry has a soft memory reservation of 256 MiB and a hard limit of 512 MiB.
+ * - When both containers compete for CPU, the worker has three times the CPU weight of telemetry.
+ * 
+ * When `memoryReservationMiB` is set, automatic sizing uses that reservation instead of the container’s hard memory limit. In this example, automatic sizing would select a 2 GiB task. Explicitly allocating 4 GiB provides enough headroom for the worker to grow toward its 3 GiB limit while telemetry continues running.
+ * 
+ */
 @ResourceType(type="awsx:experimental/ecs:TaskDefinition")
 public class TaskDefinition extends com.pulumi.resources.ComponentResource {
     /**

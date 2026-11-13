@@ -14,6 +14,461 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// # Task definitions
+//
+// A task definition is a blueprint for your application. It describes the parameters and one or more containers that form your application.
+//
+// ## Example Usage
+//
+// ### Basic example
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ### Capacity compatibility
+//
+// Task compatibility defines which compute environments the task can run on:
+//
+// 1. **Fargate**
+// 2. **EC2**
+// 3. **Managed Instances**
+//
+// Compatibility defaults to `FARGATE`. To support multiple environments, list them in `compatibilities`. AWSX validates the configuration against all selected environments. This does not select _where_ the task runs or provision capacity, it only declares where it _can_ run.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Compatibilities: []experimentalecs.TaskCompatibility{
+//					ecs.TaskCompatibilityFARGATE,
+//					ecs.TaskCompatibility_MANAGED_INSTANCES,
+//					ecs.TaskCompatibilityEC2,
+//				},
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ### Managed Instances compatibility
+//
+// When `FARGATE` is included, AWSX selects a valid Fargate task size from the container requirements unless you provide explicit CPU and memory values. To use a task size outside the supported Fargate combinations, select only the environment you need.
+//
+// This example targets Managed Instances and explicitly sets the task's CPU and memory:
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				CpuUnits:  256,
+//				MemoryMiB: 256,
+//				Compatibilities: []experimentalecs.TaskCompatibility{
+//					ecs.TaskCompatibility_MANAGED_INSTANCES,
+//				},
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ### Environment variables and secrets
+//
+// Use `environment` to configure ordinary values, Pulumi secrets, and references to AWS Secrets Manager or Systems Manager Parameter Store.
+//
+// For secret sources, AWSX adds retrieval permissions to the task execution role. ECS retrieves the values when tasks start. The values are available as environment variables inside the container, rather than stored as plaintext in the ECS task definition.
+//
+// ### Pulumi secrets
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cfg := config.New(ctx, "")
+//			apiToken := cfg.RequireSecret("apiToken")
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						Environment: map[string]ecs.EnvironmentVariableArgs{
+//							"API_TOKEN": ecs.EnvironmentVariableArgs{
+//								Value: apiToken,
+//							},
+//						},
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// AWSX creates a Secrets Manager secret for the Pulumi secret value and references a specific secret version. Changing the configuration value creates a new task-definition revision which will trigger a new deployment for services that reference the task definition.
+//
+// ### AWS Secrets Manager
+//
+// Reference a secret managed outside the task-definition component. This example creates a JSON secret with a generated password, then injects only its `password` field.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws-native/sdk/go/aws/secretsmanager"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			databaseSecret, err := secretsmanager.NewSecret(ctx, "databaseSecret", &secretsmanager.SecretArgs{
+//				GenerateSecretString: &secretsmanager.SecretGenerateSecretStringArgs{
+//					SecretStringTemplate: pulumi.String("{\"username\":\"app\"}"),
+//					GenerateStringKey:    pulumi.String("password"),
+//					PasswordLength:       pulumi.Int(32),
+//					ExcludePunctuation:   pulumi.Bool(true),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						Environment: map[string]ecs.EnvironmentVariableArgs{
+//							"DATABASE_PASSWORD": ecs.EnvironmentVariableArgs{
+//								SecretsManager: ecs.SecretsManagerSecretArgs{
+//									SecretArn: databaseSecret.AwsId,
+//									JsonKey:   pulumi.String("password"),
+//								},
+//							},
+//						},
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ### AWS Systems Manager Parameter Store
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cfg := config.New(ctx, "")
+//			sharedTokenParameterArn := cfg.Require("sharedTokenParameterArn")
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						Environment: map[string]ecs.EnvironmentVariableArgs{
+//							"SHARED_TOKEN": ecs.EnvironmentVariableArgs{
+//								SsmParameterArn: pulumi.String(sharedTokenParameterArn),
+//							},
+//						},
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// Changing the value stored in the parameter will not trigger a deployment.
+//
+// ### Logging
+//
+// The `TaskDefinition` creates a shared CloudWatch Logs log group by default where all container logs are sent. To control settings such as retention, create a log group and pass its ARN.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudwatch"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			applicationLogs, err := cloudwatch.NewLogGroup(ctx, "applicationLogs", &cloudwatch.LogGroupArgs{
+//				RetentionInDays: pulumi.Int(14),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image: pulumi.String("nginx:stable"),
+//						PortMappings: []ecs.AwsvpcPortMappingArgs{
+//							{
+//								ContainerPort: 80,
+//							},
+//						},
+//						Logging: ecs.ContainerLogDriverArgs{
+//							Cloudwatch: ecs.AwsLogsLogDriverArgs{
+//								LogGroupArn:  applicationLogs.Arn,
+//								StreamPrefix: pulumi.String("app"),
+//							},
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			ctx.Export("logGroupName", applicationLogs.Name)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// AWSX grants the task execution role permission to write to this log group.
+//
+// ### CPU and memory
+//
+// Task-level CPU and memory configure the resources allocated to the task. Container-level settings configure CPU reservations and memory limits within that allocation.
+//
+// #### Automatic task sizing
+//
+// For a small application that needs 0.5 vCPU and up to 1 GiB of memory, configure the container and leave task-level sizing unset:
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cfg := config.New(ctx, "")
+//			applicationImage := cfg.Require("applicationImage")
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"app": ecs.ContainerDefinitionOptionsArgs{
+//						Image:     pulumi.String(applicationImage),
+//						CpuUnits:  512,
+//						MemoryMiB: 1024,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// AWSX selects a Fargate task with 512 CPU units and 1024 MiB of memory. This gives the task 0.5 vCPU and 1 GiB of memory.
+//
+// #### Reserving headroom for memory bursts
+//
+// A worker might normally need 1 GiB of memory but use up to 3 GiB while processing a job. A telemetry sidecar might normally need 256 MiB and should never exceed 512 MiB.
+//
+// Use `memoryReservationMiB` for each container’s soft memory reservation and `memoryMiB` for its hard limit. Set task-level memory explicitly to provide room for bursts:
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cfg := config.New(ctx, "")
+//			workerImage := cfg.Require("workerImage")
+//			telemetryImage := cfg.Require("telemetryImage")
+//			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
+//				CpuUnits:  1024,
+//				MemoryMiB: 4096,
+//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
+//					"worker": ecs.ContainerDefinitionOptionsArgs{
+//						Image:                pulumi.String(workerImage),
+//						CpuUnits:             768,
+//						MemoryReservationMiB: 1024,
+//						MemoryMiB:            3072,
+//					},
+//					"telemetry": ecs.ContainerDefinitionOptionsArgs{
+//						Image:                pulumi.String(telemetryImage),
+//						CpuUnits:             256,
+//						MemoryReservationMiB: 256,
+//						MemoryMiB:            512,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// The task has 1 vCPU and 4 GiB of memory. Within that allocation:
+//
+// - The worker has a soft memory reservation of 1 GiB and a hard limit of 3 GiB.
+// - Telemetry has a soft memory reservation of 256 MiB and a hard limit of 512 MiB.
+// - When both containers compete for CPU, the worker has three times the CPU weight of telemetry.
+//
+// When `memoryReservationMiB` is set, automatic sizing uses that reservation instead of the container’s hard memory limit. In this example, automatic sizing would select a 2 GiB task. Explicitly allocating 4 GiB provides enough headroom for the worker to grow toward its 3 GiB limit while telemetry continues running.
 type TaskDefinition struct {
 	pulumi.ResourceState
 
