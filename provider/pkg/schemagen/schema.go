@@ -118,6 +118,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 	return extendSchemas(packageSpec,
 		generateCloudtrail(awsSpec),
 		generateEcs(awsSpec, awsNativeSpec),
+		generateNextComponents(packageDir),
 		generateLb(awsSpec),
 		generateCloudwatch(awsSpec),
 		generateIam(awsSpec),
@@ -235,6 +236,11 @@ func renameTypeSpecRefs(typeSpec schema.TypeSpec, old, replacement string) schem
 	if typeSpec.Items != nil {
 		items := renameTypeSpecRefs(*typeSpec.Items, old, replacement)
 		typeSpec.Items = &items
+	}
+	// Unions can occur inside array items or map values. Rewrite their references too,
+	// so nested alternatives do not retain the original package's schema tokens.
+	if typeSpec.OneOf != nil {
+		typeSpec.OneOf = renameTypeSpecsRefs(typeSpec.OneOf, old, replacement)
 	}
 	return typeSpec
 }

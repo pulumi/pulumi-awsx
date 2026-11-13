@@ -192,6 +192,9 @@ export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
   aliases: [],
 };
 
+// Keep implementation-only state out of inferred component outputs.
+const providerRegions = new WeakMap<pulumi.ComponentResource, pulumi.Output<string>>();
+
 export class TaskDefinition extends pulumi.ComponentResource {
   /**
    * The Task Role of the task
@@ -228,7 +231,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
   public readonly name!: string;
 
   public readonly region?: string;
-  private providerRegion?: pulumi.Output<string>;
 
   constructor(
     name: string,
@@ -536,7 +538,12 @@ export class TaskDefinition extends pulumi.ComponentResource {
    * @returns The inherited provider region.
    */
   private getProviderRegion(): pulumi.Output<string> {
-    return (this.providerRegion ??= aws.getRegionOutput(undefined, { parent: this }).region);
+    let region = providerRegions.get(this);
+    if (!region) {
+      region = aws.getRegionOutput(undefined, { parent: this }).region;
+      providerRegions.set(this, region);
+    }
+    return region;
   }
 
   /**
