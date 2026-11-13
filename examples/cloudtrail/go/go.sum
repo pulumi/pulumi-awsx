@@ -168,8 +168,8 @@ github.com/pkg/term v1.1.0/go.mod h1:E25nymQcrSllhX42Ok8MRm1+hyBdHY0dCeiKZ9jpNGw
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 h1:vkHw5I/plNdTr435cARxCW6q9gc0S/Yxz7Mkd38pOb0=
 github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231/go.mod h1:murToZ2N9hNJzewjHBgfFdXhZKjY3z5cYC1VXk+lbFE=
-github.com/pulumi/pulumi-aws/sdk/v7 v7.54.0 h1:p2SWcmsC3lotHTDp9rW+fomFBmBDW9LPmpJgTtHx3FI=
-github.com/pulumi/pulumi-aws/sdk/v7 v7.54.0/go.mod h1:KYttMyRXXTvk/DO4D07yJb3dFzsmloqqUPoaJ1Ocl/Y=
+github.com/pulumi/pulumi-aws/sdk/v7 v7.55.0 h1:Y4298KjPEe/8eIctEqMLmPuOluWp4NNeUF0Gf+RkIoQ=
+github.com/pulumi/pulumi-aws/sdk/v7 v7.55.0/go.mod h1:KYttMyRXXTvk/DO4D07yJb3dFzsmloqqUPoaJ1Ocl/Y=
 github.com/pulumi/pulumi-awsx/sdk/v3 v3.13.0 h1:IqVAGbBcAzIVWqTIZ13YacwmWcGPwYmAhZh0qI+rBG8=
 github.com/pulumi/pulumi-awsx/sdk/v3 v3.13.0/go.mod h1:izCGsD172CdFQaCfwNkVp7/+8rp+lTGV+UYQHfgHltg=
 github.com/pulumi/pulumi-cloud-sdk/go v1.20261112.0 h1:ntbtYXGdta8ZwVqEcw7K2rcbJXVSP34AWg7DsY08u3k=
