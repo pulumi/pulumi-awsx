@@ -67,6 +67,10 @@ export enum PropagateTags {
 export interface ServiceArgs {
   /**
    * The ARN of the cluster that hosts the service.
+   *
+   * Capacity lookups depend on this input, not component-wide `dependsOn`. If a separately managed
+   * capacity-provider association must be ready first, compose its output into this input, for
+   * example `pulumi.all([cluster.arn, association.id]).apply(([arn]) => arn)` in TypeScript.
    */
   readonly clusterArn: pulumi.Input<string>;
 
@@ -353,10 +357,12 @@ export class Service extends pulumi.ComponentResource {
       (progressive || selected.config.pauseHooks?.length
         ? estimateDeploymentTimeout(selected)
         : undefined);
-    const capacity = this.resolveCapacity(name, args, opts.dependsOn);
+    // Remote component options include dependencies from every input. Reads must instead
+    // follow their own identifiers so unrelated task or listener changes cannot defer them.
+    const capacity = this.resolveCapacity(name, args);
     const task = aws.ecs.getTaskDefinitionOutput(
       { taskDefinition: args.taskDefinitionArn, region: args.region },
-      { parent: this, dependsOn: opts.dependsOn },
+      { parent: this },
     );
     // Validation gates the ECS service inputs. Every child is declared outside applies, including
     // when task, cluster, and capacity identifiers are unknown during preview.
@@ -390,20 +396,33 @@ export class Service extends pulumi.ComponentResource {
       { attachmentName: string; sourceGroupId: pulumi.Input<string> }[]
     >();
     const attachmentEntries = Object.entries(args.loadBalancerAttachments ?? {});
-    // Listener IDs may be Outputs. Validate collisions after resolution, but declare every
-    // attachment synchronously and gate its forwarding rule on this shared validation.
-    const listenerRuleValidation = pulumi
-      .all(attachmentEntries.map(([, attachment]) => attachment.application.listenerArn))
-      .apply((arns) => {
-        const rules = attachmentEntries.map(([attachmentName, attachment], index) => ({
-          attachmentName,
-          listenerArn: arns[index]!,
-          priority: attachment.application.priority,
-          testTraffic: attachment.application.testTraffic !== undefined,
-        }));
-        validateListenerRulePriorities(rules);
-      });
     for (const [attachmentName, attachmentArgs] of attachmentEntries) {
+      // Only attachments with overlapping priorities can collide. An unrelated listener may
+      // be unknown during preview without making this attachment's rule inputs unknown.
+      const application = attachmentArgs.application;
+      const priorities = [
+        application.priority,
+        ...(application.testTraffic ? [application.priority - 1] : []),
+      ];
+      const candidates = attachmentEntries.filter(([, { application: other }]) =>
+        priorities.some(
+          (priority) =>
+            priority === other.priority ||
+            (other.testTraffic !== undefined && priority === other.priority - 1),
+        ),
+      );
+      const listenerRuleValidation = pulumi
+        .all(candidates.map(([, attachment]) => attachment.application.listenerArn))
+        .apply((arns) => {
+          validateListenerRulePriorities(
+            candidates.map(([candidateName, attachment], index) => ({
+              attachmentName: candidateName,
+              listenerArn: arns[index]!,
+              priority: attachment.application.priority,
+              testTraffic: attachment.application.testTraffic !== undefined,
+            })),
+          );
+        });
       const attachment = createApplicationServiceAttachment(
         name,
         attachmentName,
@@ -552,14 +571,9 @@ export class Service extends pulumi.ComponentResource {
    *
    * @param name The component name.
    * @param args The service settings.
-   * @param dependsOn Dependencies that must finish before reading capacity configuration.
    * @returns The resolved launch type or provider strategy.
    */
-  private resolveCapacity(
-    name: string,
-    args: ServiceArgs,
-    dependsOn: pulumi.ResourceOptions['dependsOn'],
-  ): pulumi.Output<ResolvedServiceCapacity> {
+  private resolveCapacity(name: string, args: ServiceArgs): pulumi.Output<ResolvedServiceCapacity> {
     if (args.capacity?.fargate) {
       const { onDemand, spot } = args.capacity.fargate;
       const strategies = [
@@ -600,7 +614,7 @@ export class Service extends pulumi.ComponentResource {
           `${name}-capacity-provider-${index}`,
           id,
           undefined,
-          { parent: this, dependsOn },
+          { parent: this },
         );
         return {
           name: provider.name,
@@ -616,7 +630,7 @@ export class Service extends pulumi.ComponentResource {
         `${name}-cluster-capacity`,
         clusterId,
         undefined,
-        { parent: this, dependsOn },
+        { parent: this },
       );
       return pulumi
         .output({
@@ -655,7 +669,7 @@ export class Service extends pulumi.ComponentResource {
       `${name}-cluster-capacity`,
       id,
       undefined,
-      { parent: this, dependsOn },
+      { parent: this },
     );
     return clusterCapacity.defaultCapacityProviderStrategies.apply(async (defaults) => {
       const capacity = resolveClusterCapacity(defaults);
