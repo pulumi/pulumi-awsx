@@ -357,8 +357,6 @@ export class Service extends pulumi.ComponentResource {
       (progressive || selected.config.pauseHooks?.length
         ? estimateDeploymentTimeout(selected)
         : undefined);
-    // Remote component options include dependencies from every input. Reads must instead
-    // follow their own identifiers so unrelated task or listener changes cannot defer them.
     const capacity = this.resolveCapacity(name, args);
     const task = aws.ecs.getTaskDefinitionOutput(
       { taskDefinition: args.taskDefinitionArn, region: args.region },
