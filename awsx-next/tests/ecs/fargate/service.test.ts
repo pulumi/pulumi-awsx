@@ -484,15 +484,11 @@ test.each([
   const { component } = await createService(name);
   clusterDefaults = defaults.map((capacityProvider) => ({ capacityProvider, weight: 1 }));
   providerProperties = properties as Record<string, string>;
-  const capacity = component['resolveCapacity'](
-    `${name}-invalid`,
-    {
-      clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
-      taskDefinitionArn: 'task-arn',
-      vpcSubnetIds: ['subnet-first'],
-    },
-    undefined,
-  );
+  const capacity = component['resolveCapacity'](`${name}-invalid`, {
+    clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+    taskDefinitionArn: 'task-arn',
+    vpcSubnetIds: ['subnet-first'],
+  });
   // Output rejection also rejects its metadata promises. Observe all three to avoid
   // unhandled rejections while asserting the actual resolver error.
   const output = capacity as unknown as {
@@ -717,9 +713,11 @@ test.each([false, true])(
           },
         },
       });
-      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validate).toHaveBeenCalledTimes(2);
       expect(validate).toHaveBeenCalledWith([
         { attachmentName: 'api', listenerArn: 'listener-shared', priority: 10, testTraffic: false },
+      ]);
+      expect(validate).toHaveBeenCalledWith([
         { attachmentName: 'admin', listenerArn: 'listener-shared', priority: 20, testTraffic },
       ]);
     } finally {

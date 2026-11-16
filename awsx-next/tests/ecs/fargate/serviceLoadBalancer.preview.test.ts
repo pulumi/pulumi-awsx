@@ -144,6 +144,64 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
   );
 });
 
+it.each([
+  { priority: 20, testTraffic: false, expectedPriority: 10 },
+  { priority: 10, testTraffic: false, expectedPriority: pulumi.unknown },
+  { priority: 11, testTraffic: true, expectedPriority: pulumi.unknown },
+])(
+  'preserves an existing listener identity with an unknown sibling at priority $priority and test traffic $testTraffic',
+  async ({ priority, testTraffic, expectedPriority }) => {
+    const children: pulumi.Resource[] = [];
+    new Service(
+      `isolated-${priority}-${testTraffic}`,
+      {
+        clusterArn: 'arn:aws:ecs:us-west-2:123456789012:cluster/test',
+        capacity: { fargate: {} },
+        taskDefinitionArn: 'task',
+        vpcSubnetIds: ['subnet'],
+        securityGroupIds: ['sg-existing'],
+        manageIngress: false,
+        deploymentStrategy: testTraffic ? { canary: { bakeTimeMinutes: 5 } } : undefined,
+        loadBalancerAttachments: {
+          existing: {
+            application: {
+              listenerArn: 'listener-existing',
+              containerName: 'app',
+              containerPort: 3000,
+              priority: 10,
+            },
+          },
+          changing: {
+            application: {
+              listenerArn: pulumi.output(pulumi.unknown as unknown as string),
+              containerName: 'app',
+              containerPort: 3000,
+              priority,
+              testTraffic: testTraffic ? { match: { methods: ['GET'] } } : undefined,
+            },
+          },
+        },
+      },
+      {
+        transformations: [
+          (args): undefined => {
+            children.push(args.resource);
+            return undefined;
+          },
+        ],
+      },
+    );
+    await Promise.all(children.map((child) => new Promise((done) => child.urn.apply(done))));
+    const rules = registrations.filter(
+      (args) => args.type === 'aws-native:elasticloadbalancingv2:ListenerRule',
+    );
+    expect(rules).toHaveLength(testTraffic ? 3 : 2);
+    const existing = rules.find((args) => args.name.endsWith('-existing-listener-rule'))!;
+    expect(existing.inputs.listenerArn).toBe('listener-existing');
+    expect(existing.inputs.priority).toEqual(expectedPriority);
+  },
+);
+
 it('declares deduplicated service ingress synchronously when ALB source groups are unknown', async () => {
   const children: pulumi.Resource[] = [];
   new Service(

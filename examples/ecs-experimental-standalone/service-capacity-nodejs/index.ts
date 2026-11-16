@@ -126,7 +126,8 @@ const association = managed
       defaultCapacityProviderStrategies: [{ capacityProvider: provider.name, weight: 1 }],
     });
 const common = {
-  clusterArn: cluster.arn,
+  // Order capacity lookups after the association without gating unrelated service inputs.
+  clusterArn: pulumi.all([cluster.arn, association.id]).apply(([arn]) => arn),
   taskDefinitionArn: task.taskDefinitionArn,
   vpcSubnetIds: vpc.privateSubnetIds,
   deploymentTimeout: "30m",
@@ -135,8 +136,8 @@ const services = [
   new awsxNext.Service("explicit", {
     ...common,
     capacity: { providers: [{ capacityProviderArn: provider.arn }] },
-  }, { dependsOn: [association] }),
-  new awsxNext.Service("inherited", common, { dependsOn: [association] }),
+  }),
+  new awsxNext.Service("inherited", common),
 ];
 
 export const clusterArn = cluster.arn;

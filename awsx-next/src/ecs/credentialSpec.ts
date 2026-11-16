@@ -31,7 +31,9 @@ export interface FargateCredentialSpec {
    * ARN of the general-purpose S3 bucket containing the CredSpec.
    *
    * The bucket remains user-managed. If its encryption configuration is created in the same update,
-   * ensure the component depends on that configuration.
+   * make this input depend on that configuration, for example with `pulumi.all([bucket.arn,
+   * encryption.id]).apply(([arn]) => arn)` in TypeScript. Component-wide `dependsOn` is not
+   * forwarded to lookups.
    */
   readonly bucketArn: pulumi.Input<string>;
 
@@ -39,8 +41,9 @@ export interface FargateCredentialSpec {
    * Key of an existing CredSpec object. The component reads the JSON to discover its credentials
    * secret and reads the object's actual KMS key, which can differ from the bucket default.
    *
-   * The object remains user-managed. Ensure it exists before the component's lookup, using
-   * `dependsOn` when necessary. Changes to its contents are discovered on the next update.
+   * The object remains user-managed. Pass the object's `key` Output so the lookup waits for its
+   * creation. If additional readiness is required, compose it into this input rather than using
+   * component-wide `dependsOn`. Changes to its contents are discovered on the next update.
    *
    * Default - Create an object from `config`.
    */

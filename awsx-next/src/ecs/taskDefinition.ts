@@ -416,7 +416,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       ecrRepositories.push(ecrRepo);
 
       const credentialSpec = container.credentialSpec
-        ? this.renderCredentialSpec(container.credentialSpec, containerName, opts.dependsOn)
+        ? this.renderCredentialSpec(container.credentialSpec, containerName)
         : undefined;
       const environmentFiles = container.environmentFiles?.map((file, i) =>
         this.renderEnvironmentFile(`containers.${containerName}.environmentFiles[${i}]`, file),
@@ -664,13 +664,11 @@ export class TaskDefinition extends pulumi.ComponentResource {
    *
    * @param spec The S3 source or configuration.
    * @param containerName The container using the specification.
-   * @param dependsOn Explicit component dependencies that must precede S3 lookups.
    * @returns The ECS reference and scoped execution-role statements.
    */
   private renderCredentialSpec(
     spec: FargateCredentialSpec,
     containerName: string,
-    dependsOn: pulumi.ComponentResourceOptions['dependsOn'],
   ): Rendered<string> {
     const propertyPath = `containers.${containerName}.credentialSpec`;
     if ((spec.key !== undefined) === (spec.config !== undefined)) {
@@ -685,7 +683,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     );
     const bucket = aws.s3.getBucketOutput(
       { bucket: bucketName, region: this.region },
-      { parent: this, dependsOn },
+      { parent: this },
     );
     let objectArn: pulumi.Output<string>;
     let objectKeyId: pulumi.Output<string | undefined>;
@@ -720,7 +718,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       });
       const object = aws.s3.getObjectOutput(
         { bucket: bucketName, key, region: bucket.bucketRegion, downloadBody: 'true' },
-        { parent: this, dependsOn },
+        { parent: this },
       );
       // Force downloading the body, including application/octet-stream objects.
       credentialsSecretArn = object.bodyBase64.apply((body) =>

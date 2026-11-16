@@ -273,7 +273,8 @@ export interface ApplicationServiceAttachmentContext {
    */
   readonly region?: string;
   /**
-   * Optional service-wide validation that must finish before forwarding rules can be created.
+   * Optional collision validation for attachments with overlapping rule priorities. Must finish
+   * before forwarding rules can be created, without changing their listener identity.
    */
   readonly listenerRuleValidation?: pulumi.Input<void>;
 }
@@ -457,15 +458,19 @@ export function createApplicationServiceAttachment(
   const validatedListenerArn = pulumi
     .output({
       arn: listener.arn,
-      validation: context.listenerRuleValidation,
       routingProviderValidation,
     })
     .apply(({ arn }) => arn);
+  // Collision validation can depend on another listener that is unknown during preview.
+  // Gate the mutable priority, never this rule's create-only listener identity.
+  const validatedPriority = pulumi
+    .output(context.listenerRuleValidation)
+    .apply(() => args.priority);
   const productionRule = new awsNative.elasticloadbalancingv2.ListenerRule(
     `${resourceName}-listener-rule`,
     {
       listenerArn: validatedListenerArn,
-      priority: args.priority,
+      priority: validatedPriority,
       conditions,
       actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
     },
@@ -477,7 +482,7 @@ export function createApplicationServiceAttachment(
           `${resourceName}-listener-rule-test`,
           {
             listenerArn: validatedListenerArn,
-            priority: args.priority - 1,
+            priority: validatedPriority.apply((priority) => priority - 1),
             conditions: testConditions,
             actions: [{ type: 'forward', order: 1, forwardConfig: { targetGroups: targets } }],
           },
