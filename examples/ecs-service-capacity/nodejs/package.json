@@ -8,6 +8,7 @@
     "@pulumi/pulumi": "3.276.0"
   },
   "devDependencies": {
-    "@types/node": "^24"
+    "@types/node": "^24",
+    "typescript": "^5.9.3"
   }
 }

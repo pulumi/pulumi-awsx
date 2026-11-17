@@ -7,6 +7,7 @@
     "@pulumi/awsx": "3.13.0"
   },
   "devDependencies": {
-    "@types/node": "^24"
+    "@types/node": "^24",
+    "typescript": "^5.9.3"
   }
 }

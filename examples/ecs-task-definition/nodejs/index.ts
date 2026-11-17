@@ -34,7 +34,6 @@ const task = new awsx.ecs.TaskDefinition("task", {
   }],
 });
 
-export const componentName = task.name;
 export const taskDefinitionArn = task.taskDefinitionArn;
 export const executionRoleArn = task.executionRole.arn;
 export const logGroupName = task.logGroup.apply(group  => group?.name ?? "");

@@ -13,5 +13,4 @@ task = ecs.TaskDefinition(
     memory_mi_b=512,
 )
 
-pulumi.export("componentName", task.name)
 pulumi.export("taskDefinitionArn", task.task_definition_arn)

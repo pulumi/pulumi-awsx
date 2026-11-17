@@ -91,7 +91,6 @@ func TestAccEcsTaskDefinitionTs(t *testing.T) {
 	pt := newEcsNodeTest(t, "ecs-task-definition")
 	result := pt.Up(t)
 
-	require.Equal(t, "task", result.Outputs["componentName"].Value)
 	require.NotEmptyf(t, result.Outputs["taskDefinitionArn"].Value, "taskDefinitionArn empty")
 	require.Equal(t, "task", result.Outputs["family"].Value)
 	require.Positive(t, result.Outputs["revision"].Value)

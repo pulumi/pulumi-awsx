@@ -12,6 +12,10 @@ node = '24.22.1'
 # into .config/mise.toml by ci-mgmt.
 "github:pulumi/schema-tools" = "0.7.1"
 
+[plugins]
+# Newer vfox-dotnet releases crash mise while enumerating runtime variants.
+"vfox:version-fox/vfox-dotnet" = "https://github.com/version-fox/vfox-dotnet.git#5cbf1758e786f09213a3c0b82153f7cfa977a3ab"
+
 [deps.agent-skills]
 sources = ["apm.yml", "apm.lock.yaml"]
 outputs = [

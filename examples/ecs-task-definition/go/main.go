@@ -17,7 +17,6 @@ func main() {
 		if err != nil {
 			return err
 		}
-		ctx.Export("componentName", task.Name)
 		ctx.Export("taskDefinitionArn", task.TaskDefinitionArn)
 		return nil
 	})
