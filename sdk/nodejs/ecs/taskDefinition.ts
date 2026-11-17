@@ -22,7 +22,7 @@ import * as pulumiAws from "@pulumi/aws";
  * import * as pulumi from "@pulumi/pulumi";
  * import * as awsx from "@pulumi/awsx";
  *
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         portMappings: [{
@@ -47,11 +47,11 @@ import * as pulumiAws from "@pulumi/aws";
  * import * as pulumi from "@pulumi/pulumi";
  * import * as awsx from "@pulumi/awsx";
  *
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {
+ * const task = new awsx.ecs.TaskDefinition("task", {
  *     compatibilities: [
- *         awsx.experimental.ecs.TaskCompatibility.FARGATE,
- *         awsx.experimental.ecs.TaskCompatibility.MANAGED_INSTANCES,
- *         awsx.experimental.ecs.TaskCompatibility.EC2,
+ *         awsx.ecs.TaskCompatibility.FARGATE,
+ *         awsx.ecs.TaskCompatibility.MANAGED_INSTANCES,
+ *         awsx.ecs.TaskCompatibility.EC2,
  *     ],
  *     containers: {
  *         app: {
@@ -74,10 +74,10 @@ import * as pulumiAws from "@pulumi/aws";
  * import * as pulumi from "@pulumi/pulumi";
  * import * as awsx from "@pulumi/awsx";
  *
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {
+ * const task = new awsx.ecs.TaskDefinition("task", {
  *     cpuUnits: 256,
  *     memoryMiB: 256,
- *     compatibilities: [awsx.experimental.ecs.TaskCompatibility.MANAGED_INSTANCES],
+ *     compatibilities: [awsx.ecs.TaskCompatibility.MANAGED_INSTANCES],
  *     containers: {
  *         app: {
  *             image: "nginx:stable",
@@ -104,7 +104,7 @@ import * as pulumiAws from "@pulumi/aws";
  *
  * const config = new pulumi.Config();
  * const apiToken = config.requireSecret("apiToken");
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         environment: {
@@ -137,7 +137,7 @@ import * as pulumiAws from "@pulumi/aws";
  *     passwordLength: 32,
  *     excludePunctuation: true,
  * }});
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         environment: {
@@ -164,7 +164,7 @@ import * as pulumiAws from "@pulumi/aws";
  *
  * const config = new pulumi.Config();
  * const sharedTokenParameterArn = config.require("sharedTokenParameterArn");
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         environment: {
@@ -192,7 +192,7 @@ import * as pulumiAws from "@pulumi/aws";
  * import * as awsx from "@pulumi/awsx";
  *
  * const applicationLogs = new aws.cloudwatch.LogGroup("applicationLogs", {retentionInDays: 14});
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         portMappings: [{
@@ -226,7 +226,7 @@ import * as pulumiAws from "@pulumi/aws";
  *
  * const config = new pulumi.Config();
  * const applicationImage = config.require("applicationImage");
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {containers: {
+ * const task = new awsx.ecs.TaskDefinition("task", {containers: {
  *     app: {
  *         image: applicationImage,
  *         cpuUnits: 512,
@@ -251,7 +251,7 @@ import * as pulumiAws from "@pulumi/aws";
  * const config = new pulumi.Config();
  * const workerImage = config.require("workerImage");
  * const telemetryImage = config.require("telemetryImage");
- * const task = new awsx.experimental.ecs.TaskDefinition("task", {
+ * const task = new awsx.ecs.TaskDefinition("task", {
  *     cpuUnits: 1024,
  *     memoryMiB: 4096,
  *     containers: {

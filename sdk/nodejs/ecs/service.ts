@@ -27,7 +27,7 @@ import * as pulumiAws from "@pulumi/aws";
  *
  * const cluster = new aws.ecs.Cluster("cluster", {});
  * const vpc = new awsx.ec2.Vpc("vpc", {});
- * const taskDefinition = new awsx.experimental.ecs.TaskDefinition("taskDefinition", {containers: {
+ * const taskDefinition = new awsx.ecs.TaskDefinition("taskDefinition", {containers: {
  *     app: {
  *         image: "nginx:stable",
  *         portMappings: [{
@@ -35,7 +35,7 @@ import * as pulumiAws from "@pulumi/aws";
  *         }],
  *     },
  * }});
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     taskDefinitionArn: taskDefinition.taskDefinitionArn,
  *     vpcSubnetIds: vpc.privateSubnetIds,
@@ -93,7 +93,7 @@ import * as pulumiAws from "@pulumi/aws";
  *     context: "./app",
  *     platform: "linux/amd64",
  * });
- * const taskDefinition = new awsx.experimental.ecs.TaskDefinition("taskDefinition", {containers: {
+ * const taskDefinition = new awsx.ecs.TaskDefinition("taskDefinition", {containers: {
  *     app: {
  *         image: image.imageUri,
  *         portMappings: [{
@@ -101,7 +101,7 @@ import * as pulumiAws from "@pulumi/aws";
  *         }],
  *     },
  * }});
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     taskDefinitionArn: taskDefinition.taskDefinitionArn,
  *     vpcSubnetIds: vpc.privateSubnetIds,
@@ -141,7 +141,7 @@ import * as pulumiAws from "@pulumi/aws";
  * that matches on hostname and let the backend application handle the URL paths.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -181,7 +181,7 @@ import * as pulumiAws from "@pulumi/aws";
  * You could also select only specific paths to send to the backend service.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -237,7 +237,7 @@ import * as pulumiAws from "@pulumi/aws";
  * - External and internal clients reach the same application through different load balancers
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -334,7 +334,7 @@ import * as pulumiAws from "@pulumi/aws";
  *     ipProtocol: "-1",
  *     securityGroupId: taskGroup.id,
  * });
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -398,7 +398,7 @@ import * as pulumiAws from "@pulumi/aws";
  * - One container serves multiple load-balanced ports
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -469,11 +469,11 @@ import * as pulumiAws from "@pulumi/aws";
  * Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         rolling: {
- *             failureAction: awsx.experimental.ecs.DeploymentFailureAction.ROLLBACK,
+ *             failureAction: awsx.ecs.DeploymentFailureAction.ROLLBACK,
  *         },
  *     },
  *     loadBalancerAttachments: {
@@ -503,7 +503,7 @@ import * as pulumiAws from "@pulumi/aws";
  * Blue/green deployments start a new service revision before shifting all production traffic to it.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         blueGreen: {
@@ -537,7 +537,7 @@ import * as pulumiAws from "@pulumi/aws";
  * Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         linear: {
@@ -575,7 +575,7 @@ import * as pulumiAws from "@pulumi/aws";
  * Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -619,7 +619,7 @@ import * as pulumiAws from "@pulumi/aws";
  * The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         rolling: {
@@ -660,12 +660,12 @@ import * as pulumiAws from "@pulumi/aws";
  * Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         rolling: {
  *             pauseHooks: [{
- *                 timeoutAction: awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+ *                 timeoutAction: awsx.ecs.PauseTimeoutAction.ROLLBACK,
  *                 timeoutMinutes: 30,
  *             }],
  *         },
@@ -699,7 +699,7 @@ import * as pulumiAws from "@pulumi/aws";
  * For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         canary: {
@@ -708,11 +708,11 @@ import * as pulumiAws from "@pulumi/aws";
  *             canaryPercent: 10,
  *             lambdaHooks: [{
  *                 functionArn: "arn:aws:lambda:us-west-2:123456789012:function:deployment-validation",
- *                 lifecycleStages: [awsx.experimental.ecs.ProgressiveLambdaLifecycleStage.POST_TEST_TRAFFIC_SHIFT],
+ *                 lifecycleStages: [awsx.ecs.ProgressiveLambdaLifecycleStage.POST_TEST_TRAFFIC_SHIFT],
  *             }],
  *             pauseHooks: [{
- *                 lifecycleStages: [awsx.experimental.ecs.ProgressivePauseLifecycleStage.PRE_PRODUCTION_TRAFFIC_SHIFT],
- *                 timeoutAction: awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+ *                 lifecycleStages: [awsx.ecs.ProgressivePauseLifecycleStage.PRE_PRODUCTION_TRAFFIC_SHIFT],
+ *                 timeoutAction: awsx.ecs.PauseTimeoutAction.ROLLBACK,
  *                 timeoutMinutes: 30,
  *             }],
  *         },
@@ -754,14 +754,14 @@ import * as pulumiAws from "@pulumi/aws";
  * Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentStrategy: {
  *         blueGreen: {
  *             bakeTimeMinutes: 5,
  *             pauseHooks: [{
- *                 lifecycleStages: [awsx.experimental.ecs.ProgressivePauseLifecycleStage.POST_TEST_TRAFFIC_SHIFT],
- *                 timeoutAction: awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+ *                 lifecycleStages: [awsx.ecs.ProgressivePauseLifecycleStage.POST_TEST_TRAFFIC_SHIFT],
+ *                 timeoutAction: awsx.ecs.PauseTimeoutAction.ROLLBACK,
  *                 timeoutMinutes: 30,
  *             }],
  *         },
@@ -803,7 +803,7 @@ import * as pulumiAws from "@pulumi/aws";
  * The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
  *
  * ```typescript
- * const service = new awsx.experimental.ecs.Service("service", {
+ * const service = new awsx.ecs.Service("service", {
  *     clusterArn: cluster.arn,
  *     deploymentTimeout: "2h",
  *     loadBalancerAttachments: {

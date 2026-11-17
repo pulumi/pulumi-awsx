@@ -385,7 +385,7 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -410,11 +410,11 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             compatibilities=[
-                awsx.experimental.ecs.TaskCompatibility.FARGATE,
-                awsx.experimental.ecs.TaskCompatibility.MANAGE_D_INSTANCES,
-                awsx.experimental.ecs.TaskCompatibility.EC2,
+                awsx.ecs.TaskCompatibility.FARGATE,
+                awsx.ecs.TaskCompatibility.MANAGE_D_INSTANCES,
+                awsx.ecs.TaskCompatibility.EC2,
             ],
             containers={
                 "app": {
@@ -436,10 +436,10 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             cpu_units=float(256),
             memory_mi_b=float(256),
-            compatibilities=[awsx.experimental.ecs.TaskCompatibility.MANAGE_D_INSTANCES],
+            compatibilities=[awsx.ecs.TaskCompatibility.MANAGE_D_INSTANCES],
             containers={
                 "app": {
                     "image": "nginx:stable",
@@ -465,7 +465,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         api_token = config.require_secret("apiToken")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -498,7 +498,7 @@ class TaskDefinition(pulumi.ComponentResource):
             "password_length": 32,
             "exclude_punctuation": True,
         })
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -525,7 +525,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         shared_token_parameter_arn = config.require("sharedTokenParameterArn")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -553,7 +553,7 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi_awsx as awsx
 
         application_logs = aws.cloudwatch.LogGroup("applicationLogs", retention_in_days=14)
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -587,7 +587,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         application_image = config.require("applicationImage")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": application_image,
                 "cpu_units": float(512),
@@ -612,7 +612,7 @@ class TaskDefinition(pulumi.ComponentResource):
         config = pulumi.Config()
         worker_image = config.require("workerImage")
         telemetry_image = config.require("telemetryImage")
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             cpu_units=float(1024),
             memory_mi_b=float(4096),
             containers={
@@ -757,7 +757,7 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -782,11 +782,11 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             compatibilities=[
-                awsx.experimental.ecs.TaskCompatibility.FARGATE,
-                awsx.experimental.ecs.TaskCompatibility.MANAGE_D_INSTANCES,
-                awsx.experimental.ecs.TaskCompatibility.EC2,
+                awsx.ecs.TaskCompatibility.FARGATE,
+                awsx.ecs.TaskCompatibility.MANAGE_D_INSTANCES,
+                awsx.ecs.TaskCompatibility.EC2,
             ],
             containers={
                 "app": {
@@ -808,10 +808,10 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi
         import pulumi_awsx as awsx
 
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             cpu_units=float(256),
             memory_mi_b=float(256),
-            compatibilities=[awsx.experimental.ecs.TaskCompatibility.MANAGE_D_INSTANCES],
+            compatibilities=[awsx.ecs.TaskCompatibility.MANAGE_D_INSTANCES],
             containers={
                 "app": {
                     "image": "nginx:stable",
@@ -837,7 +837,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         api_token = config.require_secret("apiToken")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -870,7 +870,7 @@ class TaskDefinition(pulumi.ComponentResource):
             "password_length": 32,
             "exclude_punctuation": True,
         })
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -897,7 +897,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         shared_token_parameter_arn = config.require("sharedTokenParameterArn")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "environment": {
@@ -925,7 +925,7 @@ class TaskDefinition(pulumi.ComponentResource):
         import pulumi_awsx as awsx
 
         application_logs = aws.cloudwatch.LogGroup("applicationLogs", retention_in_days=14)
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -959,7 +959,7 @@ class TaskDefinition(pulumi.ComponentResource):
 
         config = pulumi.Config()
         application_image = config.require("applicationImage")
-        task = awsx.experimental.ecs.TaskDefinition("task", containers={
+        task = awsx.ecs.TaskDefinition("task", containers={
             "app": {
                 "image": application_image,
                 "cpu_units": float(512),
@@ -984,7 +984,7 @@ class TaskDefinition(pulumi.ComponentResource):
         config = pulumi.Config()
         worker_image = config.require("workerImage")
         telemetry_image = config.require("telemetryImage")
-        task = awsx.experimental.ecs.TaskDefinition("task",
+        task = awsx.ecs.TaskDefinition("task",
             cpu_units=float(1024),
             memory_mi_b=float(4096),
             containers={

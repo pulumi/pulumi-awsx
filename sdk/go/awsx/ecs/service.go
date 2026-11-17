@@ -30,8 +30,7 @@ import (
 //
 //	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/ecs"
 //	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	experimentalecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	awsxecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -46,7 +45,7 @@ import (
 //			if err != nil {
 //				return err
 //			}
-//			taskDefinition, err := experimentalecs.NewTaskDefinition(ctx, "taskDefinition", &experimentalecs.TaskDefinitionArgs{
+//			taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
 //				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
 //					"app": ecs.ContainerDefinitionOptionsArgs{
 //						Image: pulumi.String("nginx:stable"),
@@ -61,7 +60,7 @@ import (
 //			if err != nil {
 //				return err
 //			}
-//			_, err = experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//			_, err = awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //				ClusterArn:        cluster.Arn,
 //				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 //				VpcSubnetIds:      vpc.PrivateSubnetIds,
@@ -94,8 +93,7 @@ import (
 //	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/vpc"
 //	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
 //	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecr"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	experimentalecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	awsxecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -181,7 +179,7 @@ import (
 //			if err != nil {
 //				return err
 //			}
-//			taskDefinition, err := experimentalecs.NewTaskDefinition(ctx, "taskDefinition", &experimentalecs.TaskDefinitionArgs{
+//			taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
 //				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
 //					"app": ecs.ContainerDefinitionOptionsArgs{
 //						Image: image.ImageUri,
@@ -196,7 +194,7 @@ import (
 //			if err != nil {
 //				return err
 //			}
-//			_, err = experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//			_, err = awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //				ClusterArn:        cluster.Arn,
 //				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 //				VpcSubnetIds:      vpc2.PrivateSubnetIds,
@@ -244,7 +242,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -291,7 +289,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -354,7 +352,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -486,7 +484,7 @@ import (
 //		return err
 //	}
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -561,7 +559,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -641,11 +639,11 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Rolling: ecs.RollingStrategyArgs{
-//				FailureAction: experimentalecs.DeploymentFailureActionROLLBACK,
+//				FailureAction: awsxecs.DeploymentFailureActionROLLBACK,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
@@ -680,7 +678,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			BlueGreen: ecs.BlueGreenStrategyArgs{
@@ -719,7 +717,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Linear: ecs.LinearStrategyArgs{
@@ -762,7 +760,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -811,7 +809,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Rolling: ecs.RollingStrategyArgs{
@@ -859,13 +857,13 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Rolling: ecs.RollingStrategyArgs{
 //				PauseHooks: []ecs.RollingPauseHookArgs{
 //					{
-//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutAction:  awsxecs.PauseTimeoutActionROLLBACK,
 //						TimeoutMinutes: 30,
 //					},
 //				},
@@ -905,7 +903,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			Canary: ecs.CanaryStrategyArgs{
@@ -915,17 +913,17 @@ import (
 //				LambdaHooks: []ecs.ProgressiveLambdaHookArgs{
 //					{
 //						FunctionArn: pulumi.String("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation"),
-//						LifecycleStages: []experimentalecs.ProgressiveLambdaLifecycleStage{
-//							experimentalecs.ProgressiveLambdaLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
+//						LifecycleStages: []ecs.ProgressiveLambdaLifecycleStage{
+//							awsxecs.ProgressiveLambdaLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
 //						},
 //					},
 //				},
 //				PauseHooks: []ecs.ProgressivePauseHookArgs{
 //					{
-//						LifecycleStages: []experimentalecs.ProgressivePauseLifecycleStage{
-//							experimentalecs.ProgressivePauseLifecycleStage_PRE_PRODUCTION_TRAFFIC_SHIFT,
+//						LifecycleStages: []ecs.ProgressivePauseLifecycleStage{
+//							awsxecs.ProgressivePauseLifecycleStage_PRE_PRODUCTION_TRAFFIC_SHIFT,
 //						},
-//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutAction:  awsxecs.PauseTimeoutActionROLLBACK,
 //						TimeoutMinutes: 30,
 //					},
 //				},
@@ -977,17 +975,17 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
 //			BlueGreen: ecs.BlueGreenStrategyArgs{
 //				BakeTimeMinutes: 5,
 //				PauseHooks: []ecs.ProgressivePauseHookArgs{
 //					{
-//						LifecycleStages: []experimentalecs.ProgressivePauseLifecycleStage{
-//							experimentalecs.ProgressivePauseLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
+//						LifecycleStages: []ecs.ProgressivePauseLifecycleStage{
+//							awsxecs.ProgressivePauseLifecycleStage_POST_TEST_TRAFFIC_SHIFT,
 //						},
-//						TimeoutAction:  experimentalecs.PauseTimeoutActionROLLBACK,
+//						TimeoutAction:  awsxecs.PauseTimeoutActionROLLBACK,
 //						TimeoutMinutes: 30,
 //					},
 //				},
@@ -1039,7 +1037,7 @@ import (
 //
 // ```go
 //
-//	service, err := experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+//	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn:        cluster.Arn,
 //		DeploymentTimeout: "2h",
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{

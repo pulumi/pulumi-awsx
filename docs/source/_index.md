@@ -61,10 +61,10 @@ output "publicSubnetIds" {
 
 ## ECS
 
-The experimental ECS components in `awsx.experimental.ecs` allow you to deploy containerized applications to AWS.
+The ECS components in `awsx.ecs` allow you to deploy containerized applications to AWS.
 
-- A [TaskDefinition](./api-docs/experimental/ecs/taskdefinition/) describes the containers and parameters that form your application.
-- A [Service](./api-docs/experimental/ecs/service/) runs and maintains tasks from a task-definition revision, connects them to load balancers, and manages deployments.
+- A [TaskDefinition](./api-docs/ecs/taskdefinition/) describes the containers and parameters that form your application.
+- A [Service](./api-docs/ecs/service/) runs and maintains tasks from a task-definition revision, connects them to load balancers, and manages deployments.
 
 These components can be combined with the other AWSX components (`Vpc`, `Image`, etc) to deploy your entire application infrastructure.
 
@@ -82,7 +82,7 @@ The `Service` component is designed to be used in combination with Load Balancer
 An **attachment** connects a forwarding rule to one container and port in the service. For example, an attachment can route requests for `api.example.com` to an `app` container on port 80. AWSX creates the target groups and forwarding rule, and ECS registers the tasks as targets.
 
 ```yaml pulumi-example
-name: experimental-service-alb
+name: ecs-service-alb
 runtime: yaml
 resources:
   vpc:
@@ -145,7 +145,7 @@ resources:
       context: ./app
       platform: linux/amd64
   taskDefinition:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -154,7 +154,7 @@ resources:
             - containerPort: 80
   # Create your ECS Service attached to the load balancer targeting the "app" container on port 80
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -211,4 +211,4 @@ resources:
 
 After the initial deployment, the ECS service will manage the weights on the listener rule as part of the progressive deployment. For example, if using a `blue/green` deployment it will change the weight on the `primaryTargetGroup` to `0` and the weight on the `alternateTargetGroup` to `1`. ECS is only able to do this at this grouping level. You can have multiple `ListenerRule + PrimaryTargetGroup + AlternateTargetGroup` pairings, but the same deployment configuration applies across all of them.
 
-For a complete application example and detailed strategy, hook, and timeout settings, see the [Service documentation](./api-docs/experimental/ecs/service/).
+For a complete application example and detailed strategy, hook, and timeout settings, see the [Service documentation](./api-docs/ecs/service/).

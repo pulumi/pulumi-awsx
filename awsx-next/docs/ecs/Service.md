@@ -9,7 +9,7 @@ This component uses both the [AWS](https://www.pulumi.com/registry/packages/aws/
 ### Basic example
 
 ```yaml pulumi-example
-name: experimental-service
+name: ecs-service
 runtime: yaml
 resources:
   cluster:
@@ -17,7 +17,7 @@ resources:
   vpc:
     type: awsx:ec2:Vpc
   taskDefinition:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -25,7 +25,7 @@ resources:
           portMappings:
             - containerPort: 80
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -39,7 +39,7 @@ The task definition must use `awsvpc` networking and be compatible with the serv
 Use `loadBalancerAttachments` to route requests from an existing Application Load Balancer listener to a container in the service.
 
 ```yaml pulumi-example
-name: experimental-service-alb
+name: ecs-service-alb
 runtime: yaml
 resources:
   vpc:
@@ -95,7 +95,7 @@ resources:
       context: ./app
       platform: linux/amd64
   taskDefinition:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -103,7 +103,7 @@ resources:
           portMappings:
             - containerPort: 80
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -141,7 +141,7 @@ that matches on hostname and let the backend application handle the URL paths.
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -175,7 +175,7 @@ You could also select only specific paths to send to the backend service.
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -223,7 +223,7 @@ You can use separate attachments when the same container and port needs more tha
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -316,7 +316,7 @@ resources:
       fromPort: 80
       toPort: 80
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -373,7 +373,7 @@ You can use separate attachments when different containers or ports in a single 
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${uiApiTask.taskDefinitionArn}
@@ -434,7 +434,7 @@ Rolling deployments replace existing tasks with tasks using the new revision. Th
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -464,7 +464,7 @@ Blue/green deployments start a new service revision before shifting all producti
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -494,7 +494,7 @@ Linear deployments shift production traffic to the new revision in increments. T
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -528,7 +528,7 @@ Canary deployments send an initial percentage of production traffic to the new r
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -568,7 +568,7 @@ The Lambda Function must implement the [ECS Lambda hook contract](https://docs.a
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -603,7 +603,7 @@ Pause hooks wait for an external workflow to continue or roll back the deploymen
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -637,7 +637,7 @@ For blue/green, linear, and canary deployments, you can specify the lifecycle st
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -686,7 +686,7 @@ Use `testTraffic` to route validation requests to the new revision before produc
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -729,7 +729,7 @@ The component attempts to calculate the timeout based on how the progressive dep
 ```yaml pulumi-example fixture=Service.fixture.yaml
 resources:
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}

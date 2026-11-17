@@ -188,10 +188,10 @@ output "publicSubnetIds" {
 
 ## ECS
 
-The experimental ECS components in `awsx.experimental.ecs` allow you to deploy containerized applications to AWS.
+The ECS components in `awsx.ecs` allow you to deploy containerized applications to AWS.
 
-- A [TaskDefinition](./api-docs/experimental/ecs/taskdefinition/) describes the containers and parameters that form your application.
-- A [Service](./api-docs/experimental/ecs/service/) runs and maintains tasks from a task-definition revision, connects them to load balancers, and manages deployments.
+- A [TaskDefinition](./api-docs/ecs/taskdefinition/) describes the containers and parameters that form your application.
+- A [Service](./api-docs/ecs/service/) runs and maintains tasks from a task-definition revision, connects them to load balancers, and manages deployments.
 
 These components can be combined with the other AWSX components (`Vpc`, `Image`, etc) to deploy your entire application infrastructure.
 
@@ -261,7 +261,7 @@ const image = new awsx.ecr.Image("image", {
     context: "./app",
     platform: "linux/amd64",
 });
-const taskDefinition = new awsx.experimental.ecs.TaskDefinition("taskDefinition", {containers: {
+const taskDefinition = new awsx.ecs.TaskDefinition("taskDefinition", {containers: {
     app: {
         image: image.imageUri,
         portMappings: [{
@@ -269,7 +269,7 @@ const taskDefinition = new awsx.experimental.ecs.TaskDefinition("taskDefinition"
         }],
     },
 }});
-const service = new awsx.experimental.ecs.Service("service", {
+const service = new awsx.ecs.Service("service", {
     clusterArn: cluster.arn,
     taskDefinitionArn: taskDefinition.taskDefinitionArn,
     vpcSubnetIds: vpc.privateSubnetIds,
@@ -342,7 +342,7 @@ image = awsx.ecr.Image("image",
     repository_url=repository.repository.repository_url,
     context="./app",
     platform="linux/amd64")
-task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", containers={
+task_definition = awsx.ecs.TaskDefinition("taskDefinition", containers={
     "app": {
         "image": image.image_uri,
         "port_mappings": [{
@@ -350,7 +350,7 @@ task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", contain
         }],
     },
 })
-service = awsx.experimental.ecs.Service("service",
+service = awsx.ecs.Service("service",
     cluster_arn=cluster.arn,
     task_definition_arn=task_definition.task_definition_arn,
     vpc_subnet_ids=vpc.private_subnet_ids,
@@ -391,8 +391,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/vpc"
 	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ec2"
 	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecr"
-	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-	experimentalecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+	awsxecs "github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -476,7 +475,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		taskDefinition, err := experimentalecs.NewTaskDefinition(ctx, "taskDefinition", &experimentalecs.TaskDefinitionArgs{
+		taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
 			Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
 				"app": ecs.ContainerDefinitionOptionsArgs{
 					Image: image.ImageUri,
@@ -491,7 +490,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		_, err = experimentalecs.NewService(ctx, "service", &experimentalecs.ServiceArgs{
+		_, err = awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 			ClusterArn:        cluster.Arn,
 			TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 			VpcSubnetIds:      vpc2.PrivateSubnetIds,
@@ -606,16 +605,16 @@ return await Deployment.RunAsync(() =>
         Platform = "linux/amd64",
     });
 
-    var taskDefinition = new Awsx.Experimental.Ecs.TaskDefinition("taskDefinition", new()
+    var taskDefinition = new Awsx.Ecs.TaskDefinition("taskDefinition", new()
     {
         Containers = 
         {
-            { "app", new Awsx.Experimental.Ecs.Inputs.ContainerDefinitionOptionsArgs
+            { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
             {
                 Image = image.ImageUri,
                 PortMappings = new()
                 {
-                    new Awsx.Experimental.Ecs.Inputs.AwsvpcPortMappingArgs
+                    new Awsx.Ecs.Inputs.AwsvpcPortMappingArgs
                     {
                         ContainerPort = 80.0,
                     },
@@ -624,22 +623,22 @@ return await Deployment.RunAsync(() =>
         },
     });
 
-    var service = new Awsx.Experimental.Ecs.Service("service", new()
+    var service = new Awsx.Ecs.Service("service", new()
     {
         ClusterArn = cluster.Arn,
         TaskDefinitionArn = taskDefinition.TaskDefinitionArn,
         VpcSubnetIds = vpc.PrivateSubnetIds,
         LoadBalancerAttachments = 
         {
-            { "app", new Awsx.Experimental.Ecs.Inputs.ServiceLoadBalancerArgs
+            { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
             {
-                Application = new Awsx.Experimental.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+                Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
                 {
                     ContainerName = "app",
                     ContainerPort = 80.0,
                     ListenerArn = listener.Arn,
                     Priority = 10.0,
-                    TargetHealthCheck = new Awsx.Experimental.Ecs.Inputs.TargetGroupHealthCheckArgs
+                    TargetHealthCheck = new Awsx.Ecs.Inputs.TargetGroupHealthCheckArgs
                     {
                         Path = "/health",
                     },
@@ -691,15 +690,15 @@ import com.pulumi.aws.ecs.Cluster;
 import com.pulumi.awsx.ecr.Repository;
 import com.pulumi.awsx.ecr.Image;
 import com.pulumi.awsx.ecr.ImageArgs;
-import com.pulumi.awsx.experimental.TaskDefinition;
-import com.pulumi.awsx.experimental.TaskDefinitionArgs;
-import com.pulumi.awsx.experimental.inputs.ContainerDefinitionOptionsArgs;
-import com.pulumi.awsx.experimental.inputs.AwsvpcPortMappingArgs;
-import com.pulumi.awsx.experimental.Service;
-import com.pulumi.awsx.experimental.ServiceArgs;
-import com.pulumi.awsx.experimental.inputs.ServiceLoadBalancerArgs;
-import com.pulumi.awsx.experimental.inputs.ApplicationServiceLoadBalancerArgs;
-import com.pulumi.awsx.experimental.inputs.TargetGroupHealthCheckArgs;
+import com.pulumi.awsx.ecs.TaskDefinition;
+import com.pulumi.awsx.ecs.TaskDefinitionArgs;
+import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
+import com.pulumi.awsx.ecs.Service;
+import com.pulumi.awsx.ecs.ServiceArgs;
+import com.pulumi.awsx.ecs.inputs.ServiceLoadBalancerArgs;
+import com.pulumi.awsx.ecs.inputs.ApplicationServiceLoadBalancerArgs;
+import com.pulumi.awsx.ecs.inputs.TargetGroupHealthCheckArgs;
 import com.pulumi.resources.CustomResourceOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -809,7 +808,7 @@ public class App {
 <div><pulumi-choosable type="language" values="yaml">
 
 ```yaml
-name: experimental-service-alb
+name: ecs-service-alb
 runtime: yaml
 resources:
   vpc:
@@ -872,7 +871,7 @@ resources:
       context: ./app
       platform: linux/amd64
   taskDefinition:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -881,7 +880,7 @@ resources:
             - containerPort: 80
   # Create your ECS Service attached to the load balancer targeting the "app" container on port 80
   service:
-    type: awsx:experimental/ecs:Service
+    type: awsx:ecs:Service
     properties:
       clusterArn: ${cluster.arn}
       taskDefinitionArn: ${taskDefinition.taskDefinitionArn}
@@ -943,4 +942,4 @@ resources:
 
 After the initial deployment, the ECS service will manage the weights on the listener rule as part of the progressive deployment. For example, if using a `blue/green` deployment it will change the weight on the `primaryTargetGroup` to `0` and the weight on the `alternateTargetGroup` to `1`. ECS is only able to do this at this grouping level. You can have multiple `ListenerRule + PrimaryTargetGroup + AlternateTargetGroup` pairings, but the same deployment configuration applies across all of them.
 
-For a complete application example and detailed strategy, hook, and timeout settings, see the [Service documentation](./api-docs/experimental/ecs/service/).
+For a complete application example and detailed strategy, hook, and timeout settings, see the [Service documentation](./api-docs/ecs/service/).

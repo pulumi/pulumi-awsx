@@ -26,8 +26,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -71,8 +70,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -80,7 +78,7 @@ import (
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Compatibilities: []experimentalecs.TaskCompatibility{
+//				Compatibilities: []ecs.TaskCompatibility{
 //					ecs.TaskCompatibilityFARGATE,
 //					ecs.TaskCompatibility_MANAGED_INSTANCES,
 //					ecs.TaskCompatibilityEC2,
@@ -116,8 +114,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -127,7 +124,7 @@ import (
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
 //				CpuUnits:  256,
 //				MemoryMiB: 256,
-//				Compatibilities: []experimentalecs.TaskCompatibility{
+//				Compatibilities: []ecs.TaskCompatibility{
 //					ecs.TaskCompatibility_MANAGED_INSTANCES,
 //				},
 //				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
@@ -164,8 +161,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 //
@@ -214,8 +210,7 @@ import (
 // import (
 //
 //	"github.com/pulumi/pulumi-aws-native/sdk/go/aws/secretsmanager"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -270,8 +265,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 //
@@ -320,8 +314,7 @@ import (
 // import (
 //
 //	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudwatch"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -378,8 +371,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 //
@@ -421,8 +413,7 @@ import (
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental"
-//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/experimental/ecs"
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/ecs"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 //

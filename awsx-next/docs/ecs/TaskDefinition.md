@@ -7,11 +7,11 @@ A task definition is a blueprint for your application. It describes the paramete
 ### Basic example
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -33,11 +33,11 @@ Task compatibility defines which compute environments the task can run on:
 Compatibility defaults to `FARGATE`. To support multiple environments, list them in `compatibilities`. AWSX validates the configuration against all selected environments. This does not select _where_ the task runs or provision capacity, it only declares where it _can_ run.
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       compatibilities:
         - FARGATE
@@ -59,11 +59,11 @@ When `FARGATE` is included, AWSX selects a valid Fargate task size from the cont
 This example targets Managed Instances and explicitly sets the task's CPU and memory:
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       cpuUnits: 256
       memoryMiB: 256
@@ -87,7 +87,7 @@ For secret sources, AWSX adds retrieval permissions to the task execution role. 
 ### Pulumi secrets
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 config:
   apiToken:
@@ -95,7 +95,7 @@ config:
     secret: true
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -116,7 +116,7 @@ AWSX creates a Secrets Manager secret for the Pulumi secret value and references
 Reference a secret managed outside the task-definition component. This example creates a JSON secret with a generated password, then injects only its `password` field.
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 resources:
   databaseSecret:
@@ -128,7 +128,7 @@ resources:
         passwordLength: 32
         excludePunctuation: true
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -147,14 +147,14 @@ outputs:
 ### AWS Systems Manager Parameter Store
 
 ```yaml pulumi-example
-name: experimental-task-definition
+name: ecs-task-definition
 runtime: yaml
 config:
   sharedTokenParameterArn:
     type: string
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -184,7 +184,7 @@ resources:
       retentionInDays: 14
 
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -218,7 +218,7 @@ config:
     type: string
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       containers:
         app:
@@ -247,7 +247,7 @@ config:
     type: string
 resources:
   task:
-    type: awsx:experimental/ecs:TaskDefinition
+    type: awsx:ecs:TaskDefinition
     properties:
       cpuUnits: 1024
       memoryMiB: 4096

@@ -575,7 +575,7 @@ class Service(pulumi.ComponentResource):
 
         cluster = aws.ecs.Cluster("cluster")
         vpc = awsx.ec2.Vpc("vpc")
-        task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", containers={
+        task_definition = awsx.ecs.TaskDefinition("taskDefinition", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -583,7 +583,7 @@ class Service(pulumi.ComponentResource):
                 }],
             },
         })
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             task_definition_arn=task_definition.task_definition_arn,
             vpc_subnet_ids=vpc.private_subnet_ids)
@@ -635,7 +635,7 @@ class Service(pulumi.ComponentResource):
             repository_url=repository.repository.repository_url,
             context="./app",
             platform="linux/amd64")
-        task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", containers={
+        task_definition = awsx.ecs.TaskDefinition("taskDefinition", containers={
             "app": {
                 "image": image.image_uri,
                 "port_mappings": [{
@@ -643,7 +643,7 @@ class Service(pulumi.ComponentResource):
                 }],
             },
         })
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             task_definition_arn=task_definition.task_definition_arn,
             vpc_subnet_ids=vpc.private_subnet_ids,
@@ -681,7 +681,7 @@ class Service(pulumi.ComponentResource):
         that matches on hostname and let the backend application handle the URL paths.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -719,7 +719,7 @@ class Service(pulumi.ComponentResource):
         You could also select only specific paths to send to the backend service.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -773,7 +773,7 @@ class Service(pulumi.ComponentResource):
         - External and internal clients reach the same application through different load balancers
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -865,7 +865,7 @@ class Service(pulumi.ComponentResource):
             cidr_ipv4="0.0.0.0/0",
             ip_protocol="-1",
             security_group_id=task_group.id)
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -927,7 +927,7 @@ class Service(pulumi.ComponentResource):
         - One container serves multiple load-balanced ports
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -996,11 +996,11 @@ class Service(pulumi.ComponentResource):
         Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
-                    "failure_action": awsx.experimental.ecs.DeploymentFailureAction.ROLLBACK,
+                    "failure_action": awsx.ecs.DeploymentFailureAction.ROLLBACK,
                 },
             },
             load_balancer_attachments={
@@ -1028,7 +1028,7 @@ class Service(pulumi.ComponentResource):
         Blue/green deployments start a new service revision before shifting all production traffic to it.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "blue_green": {
@@ -1060,7 +1060,7 @@ class Service(pulumi.ComponentResource):
         Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "linear": {
@@ -1096,7 +1096,7 @@ class Service(pulumi.ComponentResource):
         Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1138,7 +1138,7 @@ class Service(pulumi.ComponentResource):
         The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
@@ -1177,12 +1177,12 @@ class Service(pulumi.ComponentResource):
         Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
                     "pause_hooks": [{
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -1214,7 +1214,7 @@ class Service(pulumi.ComponentResource):
         For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1223,11 +1223,11 @@ class Service(pulumi.ComponentResource):
                     "canary_percent": float(10),
                     "lambda_hooks": [{
                         "function_arn": "arn:aws:lambda:us-west-2:123456789012:function:deployment-validation",
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressiveLambdaLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
+                        "lifecycle_stages": [awsx.ecs.ProgressiveLambdaLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
                     }],
                     "pause_hooks": [{
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressivePauseLifecycleStage.PR_E_PRODUCTIO_N_TRAFFI_C_SHIFT],
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "lifecycle_stages": [awsx.ecs.ProgressivePauseLifecycleStage.PR_E_PRODUCTIO_N_TRAFFI_C_SHIFT],
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -1267,14 +1267,14 @@ class Service(pulumi.ComponentResource):
         Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "blue_green": {
                     "bake_time_minutes": float(5),
                     "pause_hooks": [{
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressivePauseLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "lifecycle_stages": [awsx.ecs.ProgressivePauseLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -1314,7 +1314,7 @@ class Service(pulumi.ComponentResource):
         The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_timeout="2h",
             load_balancer_attachments={
@@ -1472,7 +1472,7 @@ class Service(pulumi.ComponentResource):
 
         cluster = aws.ecs.Cluster("cluster")
         vpc = awsx.ec2.Vpc("vpc")
-        task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", containers={
+        task_definition = awsx.ecs.TaskDefinition("taskDefinition", containers={
             "app": {
                 "image": "nginx:stable",
                 "port_mappings": [{
@@ -1480,7 +1480,7 @@ class Service(pulumi.ComponentResource):
                 }],
             },
         })
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             task_definition_arn=task_definition.task_definition_arn,
             vpc_subnet_ids=vpc.private_subnet_ids)
@@ -1532,7 +1532,7 @@ class Service(pulumi.ComponentResource):
             repository_url=repository.repository.repository_url,
             context="./app",
             platform="linux/amd64")
-        task_definition = awsx.experimental.ecs.TaskDefinition("taskDefinition", containers={
+        task_definition = awsx.ecs.TaskDefinition("taskDefinition", containers={
             "app": {
                 "image": image.image_uri,
                 "port_mappings": [{
@@ -1540,7 +1540,7 @@ class Service(pulumi.ComponentResource):
                 }],
             },
         })
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             task_definition_arn=task_definition.task_definition_arn,
             vpc_subnet_ids=vpc.private_subnet_ids,
@@ -1578,7 +1578,7 @@ class Service(pulumi.ComponentResource):
         that matches on hostname and let the backend application handle the URL paths.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1616,7 +1616,7 @@ class Service(pulumi.ComponentResource):
         You could also select only specific paths to send to the backend service.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1670,7 +1670,7 @@ class Service(pulumi.ComponentResource):
         - External and internal clients reach the same application through different load balancers
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1762,7 +1762,7 @@ class Service(pulumi.ComponentResource):
             cidr_ipv4="0.0.0.0/0",
             ip_protocol="-1",
             security_group_id=task_group.id)
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1824,7 +1824,7 @@ class Service(pulumi.ComponentResource):
         - One container serves multiple load-balanced ports
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -1893,11 +1893,11 @@ class Service(pulumi.ComponentResource):
         Rolling deployments replace existing tasks with tasks using the new revision. The basic example above uses rolling deployments. To configure rolling deployment settings explicitly:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
-                    "failure_action": awsx.experimental.ecs.DeploymentFailureAction.ROLLBACK,
+                    "failure_action": awsx.ecs.DeploymentFailureAction.ROLLBACK,
                 },
             },
             load_balancer_attachments={
@@ -1925,7 +1925,7 @@ class Service(pulumi.ComponentResource):
         Blue/green deployments start a new service revision before shifting all production traffic to it.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "blue_green": {
@@ -1957,7 +1957,7 @@ class Service(pulumi.ComponentResource):
         Linear deployments shift production traffic to the new revision in increments. This example shifts traffic in 20% increments, with a 3-minute observation period (`stepBakeTimeMinutes`) between shifts:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "linear": {
@@ -1993,7 +1993,7 @@ class Service(pulumi.ComponentResource):
         Canary deployments send an initial percentage of production traffic to the new revision before shifting the remainder.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -2035,7 +2035,7 @@ class Service(pulumi.ComponentResource):
         The Lambda Function must implement the [ECS Lambda hook contract](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/lambda-lifecycle-hooks.html) and perform the pre-deployment checks your application requires.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
@@ -2074,12 +2074,12 @@ class Service(pulumi.ComponentResource):
         Pause hooks wait for an external workflow to continue or roll back the deployment. This example pauses a rolling deployment before replacement tasks start:
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "rolling": {
                     "pause_hooks": [{
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -2111,7 +2111,7 @@ class Service(pulumi.ComponentResource):
         For blue/green, linear, and canary deployments, you can specify the lifecycle stages where each hook will run. This example uses an existing validation function, adds a header-based test route, and invokes the function after test traffic reaches the new revision.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "canary": {
@@ -2120,11 +2120,11 @@ class Service(pulumi.ComponentResource):
                     "canary_percent": float(10),
                     "lambda_hooks": [{
                         "function_arn": "arn:aws:lambda:us-west-2:123456789012:function:deployment-validation",
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressiveLambdaLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
+                        "lifecycle_stages": [awsx.ecs.ProgressiveLambdaLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
                     }],
                     "pause_hooks": [{
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressivePauseLifecycleStage.PR_E_PRODUCTIO_N_TRAFFI_C_SHIFT],
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "lifecycle_stages": [awsx.ecs.ProgressivePauseLifecycleStage.PR_E_PRODUCTIO_N_TRAFFI_C_SHIFT],
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -2164,14 +2164,14 @@ class Service(pulumi.ComponentResource):
         Use `testTraffic` to route validation requests to the new revision before production traffic shifts. In this example ECS will provision the new revision, shift just the test traffic (all requests with headers matching `X-Deployment-Test`) over to the new revision, and then pause so you can validate the new revision before allowing production traffic to shift.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_strategy={
                 "blue_green": {
                     "bake_time_minutes": float(5),
                     "pause_hooks": [{
-                        "lifecycle_stages": [awsx.experimental.ecs.ProgressivePauseLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
-                        "timeout_action": awsx.experimental.ecs.PauseTimeoutAction.ROLLBACK,
+                        "lifecycle_stages": [awsx.ecs.ProgressivePauseLifecycleStage.POS_T_TES_T_TRAFFI_C_SHIFT],
+                        "timeout_action": awsx.ecs.PauseTimeoutAction.ROLLBACK,
                         "timeout_minutes": float(30),
                     }],
                 },
@@ -2211,7 +2211,7 @@ class Service(pulumi.ComponentResource):
         The component attempts to calculate the timeout based on how the progressive deployments have been configured, but if you need to manually control the timeout you can set `deploymentTimeout`.
 
         ```python
-        service = awsx.experimental.ecs.Service("service",
+        service = awsx.ecs.Service("service",
             cluster_arn=cluster.arn,
             deployment_timeout="2h",
             load_balancer_attachments={
