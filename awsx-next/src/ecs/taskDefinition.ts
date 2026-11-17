@@ -188,7 +188,7 @@ export const fargateTaskDefinitionStandaloneIdentity: ComponentIdentity = {
 };
 
 export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
-  type: 'awsx:experimental/ecs:TaskDefinition',
+  type: 'awsx:ecs:TaskDefinition',
   aliases: [],
 };
 

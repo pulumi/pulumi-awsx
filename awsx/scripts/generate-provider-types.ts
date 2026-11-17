@@ -19,31 +19,53 @@ interface ExternalRef {
 
 type Direction = "Input" | "Output";
 
-const externallyImplementedTokenPrefixes = ["awsx:experimental/ecs:"];
-
-function isExternallyImplementedToken(token: string): boolean {
-  return externallyImplementedTokenPrefixes.some((prefix) => token.startsWith(prefix));
+// The source-based components share the ECS module with legacy implementations.
+// Exclude only their resource roots and reachable local types, not the whole module.
+function getExternallyImplementedTokens(schema: pulumiSchema.PulumiPackageMetaschema): Set<string> {
+  const tokens = new Set(["awsx:ecs:TaskDefinition", "awsx:ecs:Service"]);
+  function visit(value: unknown): void {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+    } else if (value !== null && typeof value === "object") {
+      for (const [key, nested] of Object.entries(value)) {
+        if (key === "$ref" && typeof nested === "string") {
+          const token = nested.match(/^#\/(?:types|resources)\/(.+)$/)?.[1];
+          if (token !== undefined && !tokens.has(token)) {
+            tokens.add(token);
+            visit(schema.types?.[token] ?? schema.resources?.[token]);
+          }
+        } else {
+          visit(nested);
+        }
+      }
+    }
+  }
+  for (const token of tokens) {
+    visit(schema.resources?.[token]);
+  }
+  return tokens;
 }
 
 function excludeExternallyImplemented<T>(
   entries: Record<string, T> | undefined,
+  tokens: Set<string>,
 ): Record<string, T> {
-  return Object.fromEntries(
-    Object.entries(entries ?? {}).filter(([token]) => !isExternallyImplementedToken(token)),
-  );
+  return Object.fromEntries(Object.entries(entries ?? {}).filter(([token]) => !tokens.has(token)));
 }
 
-function findExternallyImplementedRef(value: unknown): string | undefined {
+function findExternallyImplementedRef(value: unknown, tokens: Set<string>): string | undefined {
   if (typeof value === "string") {
     const token = value.match(/^#\/(?:types|resources)\/(.+)$/)?.[1];
-    return token !== undefined && isExternallyImplementedToken(token) ? value : undefined;
+    return token !== undefined && tokens.has(token) ? value : undefined;
   }
   if (Array.isArray(value)) {
-    return value.map(findExternallyImplementedRef).find((ref) => ref !== undefined);
+    return value
+      .map((nested) => findExternallyImplementedRef(nested, tokens))
+      .find((ref) => ref !== undefined);
   }
   if (value !== null && typeof value === "object") {
     return Object.values(value)
-      .map(findExternallyImplementedRef)
+      .map((nested) => findExternallyImplementedRef(nested, tokens))
       .find((ref) => ref !== undefined);
   }
   return undefined;
@@ -52,9 +74,10 @@ function findExternallyImplementedRef(value: unknown): string | undefined {
 function assertNoExternallyImplementedRefs(
   section: string,
   entries: Record<string, unknown>,
+  tokens: Set<string>,
 ): void {
   for (const [token, value] of Object.entries(entries)) {
-    const ref = findExternallyImplementedRef(value);
+    const ref = findExternallyImplementedRef(value, tokens);
     if (ref !== undefined) {
       throw new Error(`${section} ${token} refers to externally implemented schema type ${ref}`);
     }
@@ -552,13 +575,14 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
   const schemaPath = path.resolve(args.schema);
   const schemaText = fs.readFileSync(schemaPath, { encoding: "utf-8" });
   const schema: pulumiSchema.PulumiPackageMetaschema = JSON.parse(schemaText);
-  const resources = excludeExternallyImplemented(schema.resources);
-  const types = excludeExternallyImplemented(schema.types);
-  const functions = excludeExternallyImplemented(schema.functions);
+  const externalTokens = getExternallyImplementedTokens(schema);
+  const resources = excludeExternallyImplemented(schema.resources, externalTokens);
+  const types = excludeExternallyImplemented(schema.types, externalTokens);
+  const functions = excludeExternallyImplemented(schema.functions, externalTokens);
 
-  assertNoExternallyImplementedRefs("resource", resources);
-  assertNoExternallyImplementedRefs("type", types);
-  assertNoExternallyImplementedRefs("function", functions);
+  assertNoExternallyImplementedRefs("resource", resources, externalTokens);
+  assertNoExternallyImplementedRefs("type", types, externalTokens);
+  assertNoExternallyImplementedRefs("function", functions, externalTokens);
 
   const nodes = ts.factory.createNodeArray([
     ts.factory.createJSDocComment(headerWarning),

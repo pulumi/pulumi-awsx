@@ -31,6 +31,12 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
     </a>
 </div>
 
+### ECS task definitions and services
+
+`awsx.ecs.TaskDefinition` and `awsx.ecs.Service` are stable components available through the normal AWSX SDKs. The existing `FargateTaskDefinition`, `EC2TaskDefinition`, `FargateService`, and `EC2Service` components remain available.
+
+See the [task definition examples](./examples/ecs-task-definition) for all supported example languages and the [load-balanced service example](./examples/ecs-service-load-balancer) for service composition. Additional `examples/ecs-service-*` directories cover capacity selection and deployment strategies.
+
 ## Installing
 
 This package is available in many languages in the standard packaging formats.
@@ -76,6 +82,10 @@ dotnet add package Pulumi.Awsx
 ## Configuration
 
 The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
+
+### ECS providers
+
+`TaskDefinition` and the load-balancer rules created by `Service` use AWS Native resources alongside AWS Classic resources. Configure the AWS and AWS Native providers for the same account and region. When using default providers, set `aws-native:region` alongside `aws:region`.
 
 ### Node.js compatibility warnings
 

@@ -25,6 +25,16 @@ export type FargateTaskDefinition = import("./fargateTaskDefinition").FargateTas
 export const FargateTaskDefinition: typeof import("./fargateTaskDefinition").FargateTaskDefinition = null as any;
 utilities.lazyLoad(exports, ["FargateTaskDefinition"], () => require("./fargateTaskDefinition"));
 
+export { ServiceArgs } from "./service";
+export type Service = import("./service").Service;
+export const Service: typeof import("./service").Service = null as any;
+utilities.lazyLoad(exports, ["Service"], () => require("./service"));
+
+export { TaskDefinitionArgs } from "./taskDefinition";
+export type TaskDefinition = import("./taskDefinition").TaskDefinition;
+export const TaskDefinition: typeof import("./taskDefinition").TaskDefinition = null as any;
+utilities.lazyLoad(exports, ["TaskDefinition"], () => require("./taskDefinition"));
+
 
 // Export enums:
 export * from "../types/enums/ecs";
@@ -41,6 +51,10 @@ const _module = {
                 return new FargateService(name, <any>undefined, { urn })
             case "awsx:ecs:FargateTaskDefinition":
                 return new FargateTaskDefinition(name, <any>undefined, { urn })
+            case "awsx:ecs:Service":
+                return new Service(name, <any>undefined, { urn })
+            case "awsx:ecs:TaskDefinition":
+                return new TaskDefinition(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

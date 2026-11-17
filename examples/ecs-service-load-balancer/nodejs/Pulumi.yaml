@@ -1,0 +1,3 @@
+name: ecs-service-load-balancer
+runtime: nodejs
+description: Fargate service attachments to a caller-owned ALB and listener

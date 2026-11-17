@@ -53,7 +53,7 @@ const (
 	packageDir = "awsx"
 )
 
-//go:embed overlays/go/experimental/ecs/containerDefinitionOptions.go.txt
+//go:embed overlays/go/ecs/containerDefinitionOptions.go.txt
 var containerDefinitionOptionsOverlay []byte
 
 // Language is the SDK language.
@@ -228,7 +228,7 @@ func genGo(pkg *schema.Package, outdir string) error {
 	}
 	// The Go generator references ContainerDefinitionOptionsArgs for the plain containers map,
 	// but only declares ContainerDefinitionOptions. Supply the alias until pulumi/pulumi#10077 is fixed.
-	files["awsx/experimental/ecs/containerDefinitionOptions.go"] = containerDefinitionOptionsOverlay
+	files["awsx/ecs/containerDefinitionOptions.go"] = containerDefinitionOptionsOverlay
 	return writeFiles(outdir, files)
 }
 

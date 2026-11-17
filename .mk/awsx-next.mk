@@ -17,13 +17,8 @@ test_provider: .make/awsx_next_install
 	@mkdir -p .make
 	@touch $@
 
-# SDK generators overwrite files but do not remove modules for deleted schema tokens.
-# Clean only the generated experimental surface before regenerating it.
-PRE_GEN_SDK_DOTNET := rm -rf sdk/dotnet/Experimental
-PRE_GEN_SDK_GO := rm -rf sdk/go/awsx/experimental
-PRE_GEN_SDK_JAVA := rm -rf sdk/java/src/main/java/com/pulumi/awsx/experimental_ecs sdk/java/build
-PRE_GEN_SDK_NODEJS := rm -rf sdk/nodejs/experimental sdk/nodejs/types/enums/experimental sdk/nodejs/bin/experimental sdk/nodejs/bin/types/enums/experimental
-PRE_GEN_SDK_PYTHON := rm -rf sdk/python/pulumi_awsx/experimental sdk/python/bin/pulumi_awsx/experimental
+# Clear Gradle output before regenerating the Java SDK.
+PRE_GEN_SDK_JAVA := rm -rf sdk/java/build
 
 generate_sdks: schema
 .make/generate_nodejs .make/generate_python .make/generate_dotnet .make/generate_go .make/generate_java: .make/schema

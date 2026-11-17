@@ -1,10 +1,28 @@
 # AWSX Next
 
-Internal source workspace for the next AWSX component architecture, distributed as a TypeScript
-[source-based plugin package](https://www.pulumi.com/docs/iac/guides/building-extending/packages/source-based-plugin/).
-Components from this workspace are selectively published through the `awsx.experimental` namespace.
-See the [experimental component lifecycle](../docs/experimental-components.md) for stability and
-graduation rules.
+Internal TypeScript implementation workspace for AWSX components. It also supports Pulumi's
+[source-based plugin workflow](https://www.pulumi.com/docs/iac/guides/building-extending/packages/source-based-plugin/)
+for isolated development.
+`TaskDefinition` and `Service` are published as stable components in `awsx.ecs`.
+Users install the normal [AWSX SDKs](../README.md#installing), not this workspace.
+
+## AWSX provider integration
+
+Pulumi infers a schema from the component classes exported by `index.ts` and their
+reachable argument and output types. `provider/pkg/schemagen/next.go` remaps the
+standalone tokens into `awsx:ecs` and merges them with the existing AWSX schema.
+The combined schema generates all language SDKs.
+
+`awsx/resources.ts` dispatches construction requests to these implementations with
+AWSX identities. Standalone source-plugin usage retains its separate identities.
+`awsx/scripts/build.sh` installs both workspaces and compiles this one into
+`awsx/bin/node_modules/@pulumi/awsx-next` before packaging the provider executable.
+The implementation runs inside the provider, not in the user's Node.js process.
+
+The [task examples](../examples/ecs-task-definition) and the separate
+`examples/ecs-service-*` programs consume the normal locally built AWSX SDKs.
+Execution-permission coverage lives in
+[`examples/ecs-task-definition-permissions`](../examples/ecs-task-definition-permissions).
 
 ## Development
 
@@ -31,9 +49,11 @@ including Pulumi schema inference. Tests use Jest 30 with Babel, as in `awsx/`.
 `test:plugin` asks the Pulumi CLI to load the TypeScript entry point and validates the inferred
 package schema. It requires `pulumi` on `PATH`.
 
-## Local consumption
+## Standalone development
 
-From a Pulumi project, add this package by its local path:
+For isolated source-plugin development, add this package to a separate Pulumi
+project by its local path. Repository integration tests use the normal AWSX SDKs
+instead.
 
 ```shell
 pulumi package add ../path/to/pulumi-awsx/awsx-next

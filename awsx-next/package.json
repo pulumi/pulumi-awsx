@@ -2,7 +2,7 @@
   "name": "@pulumi/awsx-next",
   "version": "0.0.1",
   "private": true,
-  "description": "Experimental Pulumi components for AWS.",
+  "description": "Internal implementation workspace for AWSX components.",
   "type": "commonjs",
   "main": "index.ts",
   "scripts": {

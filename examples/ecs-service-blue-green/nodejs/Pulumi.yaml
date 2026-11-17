@@ -1,0 +1,3 @@
+name: ecs-service-blue-green
+runtime: nodejs
+description: Fargate blue/green deployment with a caller-owned ALB

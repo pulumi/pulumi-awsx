@@ -1,7 +1,7 @@
 # Agent Instructions
 
 ## What this repo is
-Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` (TypeScript) and `provider/` (Go schema generation). The repo also contains legacy TypeScript components in `awsx-classic/`. Most files in `sdk/` and several workflow files are generated artifacts.
+Pulumi AWSX provider/component library. TypeScript implementations live in `awsx/` and `awsx-next/`, with Go schema generation in `provider/`. The repo also contains legacy TypeScript components in `awsx-classic/`. Most files in `sdk/` and several workflow files are generated artifacts.
 
 ## Start Here
 - `Makefile` - canonical local command surface.
@@ -34,6 +34,9 @@ Pulumi AWSX provider/component library. Core behavior is implemented in `awsx/` 
 - `provider/pkg/schemagen/` - schema generation logic.
 - `provider/cmd/pulumi-resource-awsx/` - provider schema output and embedding.
 - `awsx/` - TypeScript provider implementation + Jest tests.
+- `awsx-next/` - internal `TaskDefinition` and `Service` implementations, published through the stable AWSX ECS SDKs. See its `README.md` for the inference and packaging flow and its `AGENTS.md` for authoring constraints.
+- `provider/pkg/schemagen/next.go` - merges the inferred AWSX Next schema into AWSX.
+- `.mk/awsx-next.mk` - workspace dependency, regeneration, and provider build hooks.
 - `awsx-classic/` - legacy TypeScript components and compatibility surface.
 - `examples/` - integration/acceptance tests (real AWS resources).
 - `CONTRIBUTING.md` and `DEVELOPMENT.md` - contributor docs.
@@ -128,6 +131,7 @@ change or documented regeneration reason.
 
 ## If You Change...
 - `awsx/**` -> run `make test_provider`
+- `awsx-next/index.ts` or `awsx-next/src/**` -> run `npm --prefix awsx-next run check`; public args or output changes also require `make schema && make generate`
 - `awsx-classic/**` -> run `yarn --cwd awsx-classic lint`
 - `provider/pkg/schemagen/**` -> run `make schema && make generate`
 - `.ci-mgmt.yaml` -> run `make ci-mgmt`
@@ -136,6 +140,8 @@ change or documented regeneration reason.
 
 ## Key Invariants
 - Schema generation changes can affect all language SDKs.
+- `awsx-next` is an internal implementation workspace, not a separate consumer SDK. Its published components have the same stable compatibility requirements as other AWSX components.
+- ECS integration examples consume the normal local AWSX SDKs. Use the existing language-specific install/link setup and the local AWSX provider, not `pulumi package add` against `awsx-next`.
 - `make test` creates real AWS resources and can incur cost.
 - CI/workflow edits should be made via `.ci-mgmt.yaml`, not by hand in generated workflow files.
 - AWSX components are **remote** components (`super(..., true /*remote*/)`): their children are

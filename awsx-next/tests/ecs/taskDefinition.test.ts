@@ -1569,9 +1569,7 @@ describe('TaskDefinition', () => {
         },
       },
     ]);
-    expect(
-      resourcesOfType('awsx:experimental/ecs:ContainerDefinition').map(({ name }) => name),
-    ).toEqual([]);
+    expect(resourcesOfType('awsx:ecs:ContainerDefinition').map(({ name }) => name)).toEqual([]);
     expect(resourcesOfType('awsx-next:index:ContainerDefinition')).toEqual([]);
     expect(resourcesOfType('aws:ecs/taskDefinition:TaskDefinition')).toEqual([]);
   });
