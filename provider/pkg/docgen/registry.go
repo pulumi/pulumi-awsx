@@ -193,7 +193,7 @@ func renderLandingMarkdown(markdown string, generate func(string) (string, error
 }
 
 // GenerateLandingPages builds the registry's fetched pages from docs/source.
-// It is independent of experimental component availability and validates every
+// It is independent of any particular component module and validates every
 // source before replacing any output, so conversion failures preserve old pages.
 func GenerateLandingPages(spec *schema.PackageSpec, root string) error {
 	return GenerateLandingPagesTo(spec, filepath.Join(root, "docs", "source"), filepath.Join(root, "docs"))

@@ -123,7 +123,7 @@ func TestLocalLoaderServesAndCachesRawSchemasWithoutBinding(t *testing.T) {
 		),
 	}
 	spec := schema.PackageSpec{Name: "awsx", Resources: map[string]schema.ResourceSpec{
-		"awsx:experimental/ecs:Thing": {
+		"awsx:ecs:Thing": {
 			ObjectTypeSpec: schema.ObjectTypeSpec{Properties: map[string]schema.PropertySpec{
 				"role": {TypeSpec: schema.TypeSpec{Ref: "/dep/v1.0.0/schema.json#/resources/dep:index:Role"}},
 			}},

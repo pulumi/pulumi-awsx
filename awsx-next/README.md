@@ -99,7 +99,7 @@ retained, and changes to its value alone do not trigger deployment.
 
 ## Documentation
 
-- Component pages live in `docs/<module>/<Component>.md`, such as `docs/experimental/ecs/Service.md`. Input and output descriptions stay in TypeScript JSDoc.
+- Component pages live in `docs/<module>/<Component>.md`, such as `docs/ecs/Service.md`. Input and output descriptions stay in TypeScript JSDoc.
 - Registry overview and installation pages live in the repository's `docs/source/` directory.
 - Use `yaml pulumi-example` fences for complete programs. The build generates the other language variants. Ordinary code fences stay unchanged.
 - To hide shared setup, use `yaml pulumi-example fixture=Service.fixture.yaml`. The adjacent fixture supplies `name`, `runtime: yaml`, and supporting `resources`; the inline block contains only the resources to display.

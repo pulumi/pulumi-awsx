@@ -81,9 +81,9 @@ func TestDiscover(t *testing.T) {
 	root := t.TempDir()
 	for _, name := range []string{
 		"README.md",
-		"experimental/ecs/TaskDefinition.md",
-		"experimental/other/TaskDefinition.md",
-		"experimental/ecs/ignored.txt",
+		"ecs/TaskDefinition.md",
+		"other/ecs/TaskDefinition.md",
+		"ecs/ignored.txt",
 	} {
 		path := filepath.Join(root, name)
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
@@ -100,7 +100,7 @@ func TestDiscover(t *testing.T) {
 	if len(resources) != 2 {
 		t.Fatalf("unexpected discovered docs: %v", resources)
 	}
-	for _, module := range []string{"experimental/ecs", "experimental/other"} {
+	for _, module := range []string{"ecs", "other/ecs"} {
 		if _, ok := resources["awsx:"+module+":TaskDefinition"]; !ok {
 			t.Fatalf("lost module-qualified component in %v", resources)
 		}

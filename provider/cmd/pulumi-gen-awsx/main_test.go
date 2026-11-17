@@ -13,7 +13,7 @@ import (
 
 func TestEnrichComponentDocs(t *testing.T) {
 	root := t.TempDir()
-	directory := filepath.Join(root, "awsx-next", "docs", "experimental", "ecs")
+	directory := filepath.Join(root, "awsx-next", "docs", "ecs")
 	if err := os.MkdirAll(directory, 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -25,13 +25,13 @@ func TestEnrichComponentDocs(t *testing.T) {
 	}}
 	// Missing integration must fail rather than silently skip authored docs.
 	if err := enrichComponentDocs(&spec, root); err == nil ||
-		!strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
+		!strings.Contains(err.Error(), "awsx:ecs:Typo") {
 		t.Fatalf("expected missing component error, got %v", err)
 	}
-	spec.Resources["awsx:experimental/ecs:Service"] = schema.ResourceSpec{}
-	// A misspelled file must still fail when the experimental namespace exists.
+	spec.Resources["awsx:ecs:Service"] = schema.ResourceSpec{}
+	// A misspelled file must still fail when the ECS module exists.
 	if err := enrichComponentDocs(&spec, root); err == nil ||
-		!strings.Contains(err.Error(), "awsx:experimental/ecs:Typo") {
+		!strings.Contains(err.Error(), "awsx:ecs:Typo") {
 		t.Fatalf("expected strict docs validation during generation, got %v", err)
 	}
 }
