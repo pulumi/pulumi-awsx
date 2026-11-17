@@ -9,7 +9,6 @@ import (
 
 	"errors"
 	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/cloudwatch"
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/iam"
 	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -17,8 +16,8 @@ import (
 type TaskDefinition struct {
 	pulumi.ResourceState
 
-	// The Execution Role of the task
-	ExecutionRole iam.RoleOutput `pulumi:"executionRole"`
+	// The ARN of the task execution role.
+	ExecutionRoleArn pulumi.StringOutput `pulumi:"executionRoleArn"`
 	// The family of the registered task definition.
 	Family pulumi.StringOutput `pulumi:"family"`
 	// The shared CloudWatch Logs log group created by the component for containers using CloudWatch
@@ -30,8 +29,8 @@ type TaskDefinition struct {
 	Revision pulumi.Float64Output `pulumi:"revision"`
 	// The ARN of the registered task-definition revision. Pass this to an ECS service or task.
 	TaskDefinitionArn pulumi.StringOutput `pulumi:"taskDefinitionArn"`
-	// The Task Role of the task
-	TaskRole iam.RoleOutput `pulumi:"taskRole"`
+	// The ARN of the task role.
+	TaskRoleArn pulumi.StringOutput `pulumi:"taskRoleArn"`
 }
 
 // NewTaskDefinition registers a new resource with the given unique name, arguments, and options.
@@ -355,9 +354,9 @@ func (o TaskDefinitionOutput) ToTaskDefinitionOutputWithContext(ctx context.Cont
 	return o
 }
 
-// The Execution Role of the task
-func (o TaskDefinitionOutput) ExecutionRole() iam.RoleOutput {
-	return o.ApplyT(func(v *TaskDefinition) iam.RoleOutput { return v.ExecutionRole }).(iam.RoleOutput)
+// The ARN of the task execution role.
+func (o TaskDefinitionOutput) ExecutionRoleArn() pulumi.StringOutput {
+	return o.ApplyT(func(v *TaskDefinition) pulumi.StringOutput { return v.ExecutionRoleArn }).(pulumi.StringOutput)
 }
 
 // The family of the registered task definition.
@@ -386,9 +385,9 @@ func (o TaskDefinitionOutput) TaskDefinitionArn() pulumi.StringOutput {
 	return o.ApplyT(func(v *TaskDefinition) pulumi.StringOutput { return v.TaskDefinitionArn }).(pulumi.StringOutput)
 }
 
-// The Task Role of the task
-func (o TaskDefinitionOutput) TaskRole() iam.RoleOutput {
-	return o.ApplyT(func(v *TaskDefinition) iam.RoleOutput { return v.TaskRole }).(iam.RoleOutput)
+// The ARN of the task role.
+func (o TaskDefinitionOutput) TaskRoleArn() pulumi.StringOutput {
+	return o.ApplyT(func(v *TaskDefinition) pulumi.StringOutput { return v.TaskRoleArn }).(pulumi.StringOutput)
 }
 
 type TaskDefinitionArrayOutput struct{ *pulumi.OutputState }

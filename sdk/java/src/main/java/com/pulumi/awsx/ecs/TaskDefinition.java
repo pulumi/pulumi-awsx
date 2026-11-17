@@ -4,7 +4,6 @@
 package com.pulumi.awsx.ecs;
 
 import com.pulumi.aws.cloudwatch.LogGroup;
-import com.pulumi.aws.iam.Role;
 import com.pulumi.awsx.Utilities;
 import com.pulumi.awsx.ecs.TaskDefinitionArgs;
 import com.pulumi.core.Output;
@@ -19,18 +18,18 @@ import javax.annotation.Nullable;
 @ResourceType(type="awsx:ecs:TaskDefinition")
 public class TaskDefinition extends com.pulumi.resources.ComponentResource {
     /**
-     * The Execution Role of the task
+     * The ARN of the task execution role.
      * 
      */
-    @Export(name="executionRole", refs={Role.class}, tree="[0]")
-    private Output<Role> executionRole;
+    @Export(name="executionRoleArn", refs={String.class}, tree="[0]")
+    private Output<String> executionRoleArn;
 
     /**
-     * @return The Execution Role of the task
+     * @return The ARN of the task execution role.
      * 
      */
-    public Output<Role> executionRole() {
-        return this.executionRole;
+    public Output<String> executionRoleArn() {
+        return this.executionRoleArn;
     }
     /**
      * The family of the registered task definition.
@@ -99,18 +98,18 @@ public class TaskDefinition extends com.pulumi.resources.ComponentResource {
         return this.taskDefinitionArn;
     }
     /**
-     * The Task Role of the task
+     * The ARN of the task role.
      * 
      */
-    @Export(name="taskRole", refs={Role.class}, tree="[0]")
-    private Output<Role> taskRole;
+    @Export(name="taskRoleArn", refs={String.class}, tree="[0]")
+    private Output<String> taskRoleArn;
 
     /**
-     * @return The Task Role of the task
+     * @return The ARN of the task role.
      * 
      */
-    public Output<Role> taskRole() {
-        return this.taskRole;
+    public Output<String> taskRoleArn() {
+        return this.taskRoleArn;
     }
 
     /**

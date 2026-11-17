@@ -529,11 +529,9 @@ class TaskDefinition(pulumi.ComponentResource):
             __props__.__dict__["memory_mi_b"] = memory_mi_b
             __props__.__dict__["region"] = region
             __props__.__dict__["task_role_arn"] = task_role_arn
-            __props__.__dict__["execution_role"] = None
             __props__.__dict__["log_group"] = None
             __props__.__dict__["revision"] = None
             __props__.__dict__["task_definition_arn"] = None
-            __props__.__dict__["task_role"] = None
         super(TaskDefinition, __self__).__init__(
             'awsx:ecs:TaskDefinition',
             resource_name,
@@ -542,12 +540,12 @@ class TaskDefinition(pulumi.ComponentResource):
             remote=True)
 
     @_builtins.property
-    @pulumi.getter(name="executionRole")
-    def execution_role(self) -> pulumi.Output['pulumi_aws.iam.Role']:
+    @pulumi.getter(name="executionRoleArn")
+    def execution_role_arn(self) -> pulumi.Output[_builtins.str]:
         """
-        The Execution Role of the task
+        The ARN of the task execution role.
         """
-        return pulumi.get(self, "execution_role")
+        return pulumi.get(self, "execution_role_arn")
 
     @_builtins.property
     @pulumi.getter
@@ -589,10 +587,10 @@ class TaskDefinition(pulumi.ComponentResource):
         return pulumi.get(self, "task_definition_arn")
 
     @_builtins.property
-    @pulumi.getter(name="taskRole")
-    def task_role(self) -> pulumi.Output['pulumi_aws.iam.Role']:
+    @pulumi.getter(name="taskRoleArn")
+    def task_role_arn(self) -> pulumi.Output[_builtins.str]:
         """
-        The Task Role of the task
+        The ARN of the task role.
         """
-        return pulumi.get(self, "task_role")
+        return pulumi.get(self, "task_role_arn")
 

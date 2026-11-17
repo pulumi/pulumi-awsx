@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as native from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 
 export enum DeploymentStrategy {
@@ -521,43 +522,32 @@ export function createDeploymentLifecycleHooks(
   const readyDependencies: pulumi.Resource[] = [];
   let invocationRoleArn: pulumi.Input<string> | undefined;
   if (functionsWithoutRoles.length > 0) {
-    const invocationRole = new aws.iam.Role(
+    const invocationRole = new native.iam.Role(
       `${name}-lambda-hook-invocation`,
       {
-        assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsPrincipal),
-      },
-      { parent },
-    );
-    const invocationPolicy = new aws.iam.RolePolicy(
-      `${name}-lambda-hook-invoke-policy`,
-      {
-        role: invocationRole.name,
-        policy: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: 'lambda:InvokeFunction',
-              Resource: functionsWithoutRoles,
+        assumeRolePolicyDocument: aws.iam.assumeRolePolicyForPrincipal(
+          aws.iam.Principals.EcsPrincipal,
+        ),
+        policies: [
+          {
+            policyName: 'invoke-hooks',
+            policyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: 'lambda:InvokeFunction',
+                  Resource: functionsWithoutRoles,
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       },
       { parent },
     );
-    readyDependencies.push(invocationPolicy);
-    invocationRoleArn = pulumi
-      .all([invocationRole.arn, invocationRole.createDate, invocationPolicy.id])
-      .apply(async ([arn, createdAt]) => {
-        // ECS can accept CreateService before it can assume a freshly created hook role,
-        // then fail the deployment without retrying the assumption. Wait only for the
-        // remaining creation-time grace period, not on previews or subsequent updates.
-        const remaining = 30_000 - Math.max(0, Date.now() - Date.parse(createdAt));
-        if (!pulumi.runtime.isDryRun() && remaining > 0) {
-          await new Promise<void>((resolve) => setTimeout(resolve, remaining));
-        }
-        return arn;
-      });
+    readyDependencies.push(invocationRole);
+    invocationRoleArn = invocationRole.arn;
   }
 
   const lifecycleHooks: aws.types.input.ecs.ServiceDeploymentConfigurationLifecycleHook[] = [

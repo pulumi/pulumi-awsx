@@ -128,9 +128,9 @@ beforeAll(async () => {
       const state: Record<string, unknown> = { ...args.inputs };
 
       switch (args.type) {
-        case 'aws:iam/role:Role': {
-          const roleName = args.id || args.inputs.name || args.name;
-          state.name = roleName;
+        case 'aws-native:iam:Role': {
+          const roleName = args.id || args.inputs.roleName || args.name;
+          state.roleName = roleName;
           state.arn = `arn:aws:iam::${accountId}:role/${roleName}`;
           break;
         }
@@ -181,7 +181,9 @@ beforeAll(async () => {
       }
 
       return {
-        id: args.id || `${args.name}_id`,
+        id:
+          args.id ||
+          (args.type === 'aws-native:iam:Role' ? (state.roleName as string) : `${args.name}_id`),
         state,
       };
     },
@@ -298,10 +300,10 @@ async function resolveContainers(
  * @returns The parsed policy document.
  */
 function executionRolePolicy(name: string): Record<string, any> {
-  const policies = resourcesOfType('aws:iam/rolePolicy:RolePolicy');
+  const policies = resourcesOfType('aws-native:iam:RolePolicy');
   const policy = policies.find((resource) => resource.name === `${name}-execution-role-policy`);
   expect(policy).toBeDefined();
-  return JSON.parse(policy!.inputs.policy);
+  return policy!.inputs.policyDocument;
 }
 
 describe('ECS container rendering', () => {
@@ -377,21 +379,16 @@ describe('ECS container rendering', () => {
         parent: task,
       },
       {
-        type: 'aws:iam/rolePolicy:RolePolicy',
+        type: 'aws-native:iam:RolePolicy',
         name: 'secret-environment-app-TOKEN-environment-policy',
         parent: task,
       },
     ]);
-    const policy = resourcesOfType('aws:iam/rolePolicy:RolePolicy').find(
+    const policy = resourcesOfType('aws-native:iam:RolePolicy').find(
       ({ name }) => name === 'secret-environment-app-TOKEN-environment-policy',
     )!;
-    expect(policy.inputs.role).toBe('secret-environment-execution-role');
-    expect(
-      resourcesOfType('aws:iam/role:Role').find(
-        ({ name }) => name === 'secret-environment-execution-role',
-      )!.inputs.forceDetachPolicies,
-    ).toBe(true);
-    expect(JSON.parse(policy.inputs.policy)).toEqual({
+    expect(policy.inputs.roleName).toBe('secret-environment-execution-role');
+    expect(policy.inputs.policyDocument).toEqual({
       Version: '2012-10-17',
       Statement: [
         {
@@ -1073,7 +1070,7 @@ describe('TaskDefinition', () => {
     });
     await unwrap(task.taskDefinitionArn);
 
-    const roles = resourcesOfType('aws:iam/role:Role');
+    const roles = resourcesOfType('aws-native:iam:Role');
     expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
       new Set([
         { name: 'roles-execution-role', id: '' },
@@ -1094,7 +1091,7 @@ describe('TaskDefinition', () => {
     });
     await unwrap(task.taskDefinitionArn);
 
-    const roles = resourcesOfType('aws:iam/role:Role');
+    const roles = resourcesOfType('aws-native:iam:Role');
     expect(new Set(roles.map(({ name, id }) => ({ name, id })))).toEqual(
       new Set([
         { name: 'imported-roles-execution-role', id: 'execution' },
@@ -1921,8 +1918,10 @@ describe('TaskDefinition', () => {
 
     expect(task).not.toHaveProperty('name');
     expect(task.region).toBe('us-east-2');
-    expect(task.executionRole).toBeDefined();
-    expect(task.taskRole).toBeDefined();
+    expect(await unwrap(task.executionRoleArn)).toMatch(/:role\/.+-execution-role$/);
+    expect(await unwrap(task.taskRoleArn)).toMatch(/:role\/.+-task-role$/);
+    expect(task).not.toHaveProperty('executionRole');
+    expect(task).not.toHaveProperty('taskRole');
     expect(await unwrap(task.taskDefinitionArn)).toBe(
       `arn:aws:ecs:us-east-2:${accountId}:task-definition/registered-family:7`,
     );

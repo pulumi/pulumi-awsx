@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as native from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 import { getMonitor } from '@pulumi/pulumi/runtime/settings';
 import type { MockMonitor } from '@pulumi/pulumi/runtime/mocks';
@@ -17,8 +18,8 @@ const validationArn = 'arn:aws:lambda:us-west-2:123456789012:function:validate:p
 const testArn = 'arn:aws:lambda:us-west-2:123456789012:function:tests:42';
 const suppliedRoleArn = 'arn:aws:iam::123456789012:role/supplied-hook';
 let provider: aws.Provider;
+let nativeProvider: native.Provider;
 let sequence = 0;
-let roleCreatedAt = '2020-01-01T00:00:00Z';
 
 beforeAll(async () => {
   await pulumi.runtime.setMocks({
@@ -30,7 +31,6 @@ beforeAll(async () => {
           ...args.inputs,
           name: args.inputs.name ?? args.name,
           arn: `arn:mock:${args.name}`,
-          createDate: roleCreatedAt,
         },
       };
     },
@@ -49,13 +49,13 @@ beforeAll(async () => {
     },
   });
   provider = new aws.Provider('service-provider', { region: 'us-west-2' });
-  await resolve(provider.urn);
+  nativeProvider = new native.Provider('native-service-provider', { region: 'us-west-2' });
+  await Promise.all([resolve(provider.urn), resolve(nativeProvider.urn)]);
 });
 
 beforeEach(() => {
   registrations.length = 0;
   constructions.length = 0;
-  roleCreatedAt = '2020-01-01T00:00:00Z';
 });
 
 /**
@@ -105,7 +105,7 @@ function create(
           : undefined,
     },
     {
-      providers: { aws: provider },
+      providers: { aws: provider, 'aws-native': nativeProvider },
       transformations: [
         (args): undefined => {
           constructions.push(args);
@@ -267,7 +267,7 @@ it('preserves pause hooks when the Lambda hook list is empty and uses AWS timeou
   expect(registered.inputs.deploymentConfiguration.lifecycleHooks).toEqual([
     { targetType: 'PAUSE', lifecycleStages: ['PRE_SCALE_UP'] },
   ]);
-  expect(registrations.filter((args) => args.type.startsWith('aws:iam/'))).toHaveLength(0);
+  expect(registrations.filter((args) => args.type.startsWith('aws-native:iam:'))).toHaveLength(0);
 });
 
 it.each<ServiceDeploymentStrategy | undefined>([
@@ -281,7 +281,7 @@ it.each<ServiceDeploymentStrategy | undefined>([
 
   expect(registered.inputs.deploymentConfiguration).toEqual({ strategy: 'ROLLING' });
   expect(registered.inputs.deploymentCircuitBreaker).toEqual({ enable: true, rollback: true });
-  expect(registrations.filter((args) => args.type.startsWith('aws:iam/'))).toHaveLength(0);
+  expect(registrations.filter((args) => args.type.startsWith('aws-native:iam:'))).toHaveLength(0);
   expect(
     constructions.find((args) => args.type === 'aws:ecs/service:Service')!.opts.customTimeouts,
   ).toBeUndefined();
@@ -404,46 +404,7 @@ it('serializes nested hook details and resolves outputs within the entire input 
   });
 });
 
-it.each([0, 20_000])(
-  'holds service registration until a hook role aged %i ms has propagated',
-  async (age) => {
-    jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
-    jest.setSystemTime(new Date('2026-11-17T12:00:00Z'));
-    roleCreatedAt = new Date(Date.now() - age).toISOString();
-    const service = create({ rolling: { lambdaHooks: [{ functionArn: validationArn }] } });
-    try {
-      await jest.advanceTimersByTimeAsync(0);
-      expect(registrations.some((args) => args.type === 'aws:iam/rolePolicy:RolePolicy')).toBe(
-        true,
-      );
-      await jest.advanceTimersByTimeAsync(30_000 - age - 1);
-      expect(registrations.some((args) => args.type === 'aws:ecs/service:Service')).toBe(false);
-      await jest.advanceTimersByTimeAsync(1);
-      const role = registrations.find((args) => args.type === 'aws:iam/role:Role')!;
-      expect((await settle(service)).inputs.deploymentConfiguration.lifecycleHooks[0].roleArn).toBe(
-        `arn:mock:${role.name}`,
-      );
-    } finally {
-      await jest.runOnlyPendingTimersAsync();
-      jest.useRealTimers();
-    }
-  },
-);
-
-it('does not delay preview for a freshly created hook role', async () => {
-  roleCreatedAt = new Date().toISOString();
-  const preview = jest.spyOn(pulumi.runtime, 'isDryRun').mockReturnValue(true);
-  const timer = jest.spyOn(global, 'setTimeout');
-  try {
-    await settle(create({ rolling: { lambdaHooks: [{ functionArn: validationArn }] } }));
-    expect(timer.mock.calls.some(([, delay]) => delay !== undefined && delay > 1_000)).toBe(false);
-  } finally {
-    timer.mockRestore();
-    preview.mockRestore();
-  }
-});
-
-it('shares a scoped invocation role and waits for its policy before creating the service', async () => {
+it('shares a scoped Native invocation role with inline permissions before creating the service', async () => {
   const service = create({
     rolling: {
       lambdaHooks: [
@@ -454,11 +415,10 @@ it('shares a scoped invocation role and waits for its policy before creating the
     },
   });
   const registered = await settle(service);
-  const roles = registrations.filter((args) => args.type === 'aws:iam/role:Role');
-  const policies = registrations.filter((args) => args.type === 'aws:iam/rolePolicy:RolePolicy');
+  const roles = registrations.filter((args) => args.type === 'aws-native:iam:Role');
   expect(roles).toHaveLength(1);
-  expect(policies).toHaveLength(1);
-  expect(roles[0]!.inputs.assumeRolePolicy).toEqual({
+  expect(roles[0]!.inputs.policies).toHaveLength(1);
+  expect(roles[0]!.inputs.assumeRolePolicyDocument).toEqual({
     Version: '2012-10-17',
     Statement: [
       {
@@ -469,13 +429,12 @@ it('shares a scoped invocation role and waits for its policy before creating the
       },
     ],
   });
-  expect(policies[0]!.inputs.policy).toEqual({
+  expect(roles[0]!.inputs.policies[0].policyDocument).toEqual({
     Version: '2012-10-17',
     Statement: [
       { Effect: 'Allow', Action: 'lambda:InvokeFunction', Resource: [validationArn, testArn] },
     ],
   });
-  expect(policies[0]!.inputs.role).toBe(roles[0]!.name);
   const hooks = registered.inputs.deploymentConfiguration.lifecycleHooks;
   expect(hooks.map((hook: { roleArn: string }) => hook.roleArn)).toEqual([
     `arn:mock:${roles[0]!.name}`,
@@ -483,11 +442,10 @@ it('shares a scoped invocation role and waits for its policy before creating the
     suppliedRoleArn,
   ]);
 
-  const policy = constructions.find((args) => args.type === 'aws:iam/rolePolicy:RolePolicy')!;
+  const role = constructions.find((args) => args.type === 'aws-native:iam:Role')!;
   const ecs = constructions.find((args) => args.type === 'aws:ecs/service:Service')!;
-  expect(ecs.opts.dependsOn).toEqual([policy.resource]);
-  expect(policies[0]!.provider).toBe(registered.provider);
-  expect(roles[0]!.provider).toBe(registered.provider);
+  expect(ecs.opts.dependsOn).toEqual([role.resource]);
+  expect(roles[0]!.provider).toContain('native-service-provider');
   expect(registered.provider).toContain('service-provider');
 });
 
@@ -501,7 +459,7 @@ it('uses supplied invocation roles without generating or mutating IAM resources'
   });
   const registered = await settle(service);
   expect(registered.inputs.deploymentConfiguration.lifecycleHooks[0].roleArn).toBe(suppliedRoleArn);
-  expect(registrations.filter((args) => args.type.startsWith('aws:iam/'))).toHaveLength(0);
+  expect(registrations.filter((args) => args.type.startsWith('aws-native:iam:'))).toHaveLength(0);
 });
 
 it('keeps rolling Lambda-only timeout at the provider default', async () => {
@@ -511,7 +469,7 @@ it('keeps rolling Lambda-only timeout at the provider default', async () => {
   ).toBeUndefined();
 });
 
-it('waits for hook IAM as well as progressive routing policies', async () => {
+it('waits for hook IAM as well as progressive routing roles', async () => {
   const service = create({
     canary: {
       bakeTimeMinutes: 0,
@@ -524,11 +482,11 @@ it('waits for hook IAM as well as progressive routing policies', async () => {
     },
   });
   await settle(service);
-  const policies = constructions.filter((args) => args.type === 'aws:iam/rolePolicy:RolePolicy');
-  expect(policies).toHaveLength(2);
+  const roles = constructions.filter((args) => args.type === 'aws-native:iam:Role');
+  expect(roles).toHaveLength(2);
   const dependencies = constructions.find((args) => args.type === 'aws:ecs/service:Service')!.opts
     .dependsOn;
-  for (const policy of policies) expect(dependencies).toContain(policy.resource);
+  for (const role of roles) expect(dependencies).toContain(role.resource);
 });
 
 it('does not create hooks or invocation roles when hydrating an existing component', async () => {
@@ -556,5 +514,5 @@ it('rejects conflicting strategies before creating supporting IAM resources', ()
       canary: { bakeTimeMinutes: 5 },
     }),
   ).toThrow('Only one deployment strategy can be provided; received: rolling, canary');
-  expect(constructions.filter((args) => args.type.startsWith('aws:iam/'))).toHaveLength(0);
+  expect(constructions.filter((args) => args.type.startsWith('aws-native:iam:'))).toHaveLength(0);
 });

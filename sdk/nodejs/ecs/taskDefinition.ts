@@ -25,9 +25,9 @@ export class TaskDefinition extends pulumi.ComponentResource {
     }
 
     /**
-     * The Execution Role of the task
+     * The ARN of the task execution role.
      */
-    declare public /*out*/ readonly executionRole: pulumi.Output<pulumiAws.iam.Role>;
+    declare public readonly executionRoleArn: pulumi.Output<string>;
     /**
      * The family of the registered task definition.
      */
@@ -48,9 +48,9 @@ export class TaskDefinition extends pulumi.ComponentResource {
      */
     declare public /*out*/ readonly taskDefinitionArn: pulumi.Output<string>;
     /**
-     * The Task Role of the task
+     * The ARN of the task role.
      */
-    declare public /*out*/ readonly taskRole: pulumi.Output<pulumiAws.iam.Role>;
+    declare public readonly taskRoleArn: pulumi.Output<string>;
 
     /**
      * Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -76,19 +76,17 @@ export class TaskDefinition extends pulumi.ComponentResource {
             resourceInputs["memoryMiB"] = args?.memoryMiB;
             resourceInputs["region"] = args?.region;
             resourceInputs["taskRoleArn"] = args?.taskRoleArn;
-            resourceInputs["executionRole"] = undefined /*out*/;
             resourceInputs["logGroup"] = undefined /*out*/;
             resourceInputs["revision"] = undefined /*out*/;
             resourceInputs["taskDefinitionArn"] = undefined /*out*/;
-            resourceInputs["taskRole"] = undefined /*out*/;
         } else {
-            resourceInputs["executionRole"] = undefined /*out*/;
+            resourceInputs["executionRoleArn"] = undefined /*out*/;
             resourceInputs["family"] = undefined /*out*/;
             resourceInputs["logGroup"] = undefined /*out*/;
             resourceInputs["region"] = undefined /*out*/;
             resourceInputs["revision"] = undefined /*out*/;
             resourceInputs["taskDefinitionArn"] = undefined /*out*/;
-            resourceInputs["taskRole"] = undefined /*out*/;
+            resourceInputs["taskRoleArn"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(TaskDefinition.__pulumiType, name, resourceInputs, opts, true /*remote*/);

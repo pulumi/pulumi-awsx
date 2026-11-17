@@ -493,54 +493,54 @@ export function createApplicationServiceAttachment(
         )
       : undefined;
   const readyDependencies: pulumi.Resource[] = [productionRule, ...(testRule ? [testRule] : [])];
-  let trafficShiftRole: aws.iam.Role | undefined;
+  let trafficShiftRole: awsNative.iam.Role | undefined;
   let advancedConfiguration:
     | aws.types.input.ecs.ServiceLoadBalancerAdvancedConfiguration
     | undefined;
   if (alternateTargetGroup) {
-    trafficShiftRole = new aws.iam.Role(
+    trafficShiftRole = new awsNative.iam.Role(
       `${resourceName}-traffic-shift-role`,
       {
-        assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(aws.iam.Principals.EcsPrincipal),
+        assumeRolePolicyDocument: aws.iam.assumeRolePolicyForPrincipal(
+          aws.iam.Principals.EcsPrincipal,
+        ),
+        policies: [
+          {
+            policyName: 'traffic-shift',
+            policyDocument: {
+              Version: '2012-10-17',
+              Statement: [
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'elasticloadbalancing:DescribeListeners',
+                    'elasticloadbalancing:DescribeRules',
+                    'elasticloadbalancing:DescribeTargetGroups',
+                    'elasticloadbalancing:DescribeTargetHealth',
+                  ],
+                  Resource: '*',
+                },
+                {
+                  Effect: 'Allow',
+                  Action: [
+                    'elasticloadbalancing:RegisterTargets',
+                    'elasticloadbalancing:DeregisterTargets',
+                  ],
+                  Resource: [targetGroup.arn, alternateTargetGroup.arn],
+                },
+                {
+                  Effect: 'Allow',
+                  Action: 'elasticloadbalancing:ModifyRule',
+                  Resource: [productionRule.ruleArn, ...(testRule ? [testRule.ruleArn] : [])],
+                },
+              ],
+            },
+          },
+        ],
       },
       opts,
     );
-    const policy = new aws.iam.RolePolicy(
-      `${resourceName}-traffic-shift-role-policy`,
-      {
-        role: trafficShiftRole.name,
-        policy: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: [
-                'elasticloadbalancing:DescribeListeners',
-                'elasticloadbalancing:DescribeRules',
-                'elasticloadbalancing:DescribeTargetGroups',
-                'elasticloadbalancing:DescribeTargetHealth',
-              ],
-              Resource: '*',
-            },
-            {
-              Effect: 'Allow',
-              Action: [
-                'elasticloadbalancing:RegisterTargets',
-                'elasticloadbalancing:DeregisterTargets',
-              ],
-              Resource: [targetGroup.arn, alternateTargetGroup.arn],
-            },
-            {
-              Effect: 'Allow',
-              Action: 'elasticloadbalancing:ModifyRule',
-              Resource: [productionRule.ruleArn, ...(testRule ? [testRule.ruleArn] : [])],
-            },
-          ],
-        },
-      },
-      opts,
-    );
-    readyDependencies.push(policy);
+    readyDependencies.push(trafficShiftRole);
     advancedConfiguration = {
       alternateTargetGroupArn: alternateTargetGroup.arn,
       productionListenerRule: productionRule.ruleArn,

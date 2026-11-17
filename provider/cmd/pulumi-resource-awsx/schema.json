@@ -4867,9 +4867,9 @@
         },
         "awsx:ecs:TaskDefinition": {
             "properties": {
-                "executionRole": {
-                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:iam%2Frole:Role",
-                    "description": "The Execution Role of the task"
+                "executionRoleArn": {
+                    "type": "string",
+                    "description": "The ARN of the task execution role."
                 },
                 "family": {
                     "type": "string",
@@ -4890,18 +4890,18 @@
                     "type": "string",
                     "description": "The ARN of the registered task-definition revision. Pass this to an ECS service or task."
                 },
-                "taskRole": {
-                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:iam%2Frole:Role",
-                    "description": "The Task Role of the task"
+                "taskRoleArn": {
+                    "type": "string",
+                    "description": "The ARN of the task role."
                 }
             },
             "type": "object",
             "required": [
-                "executionRole",
+                "executionRoleArn",
                 "family",
                 "revision",
                 "taskDefinitionArn",
-                "taskRole"
+                "taskRoleArn"
             ],
             "inputProperties": {
                 "compatibilities": {

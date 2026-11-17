@@ -193,9 +193,9 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
       ['actions[*].forwardConfig.targetGroups[*].weight'],
       ['actions[*].forwardConfig.targetGroups[*].weight'],
     ]);
-    const role = resources.filter((r) => r.type === 'aws:iam/role:Role');
+    const role = resources.filter((r) => r.type === 'aws-native:iam:Role');
     expect(role).toHaveLength(1);
-    expect(role[0]!.inputs.assumeRolePolicy).toEqual({
+    expect(role[0]!.inputs.assumeRolePolicyDocument).toEqual({
       Version: '2012-10-17',
       Statement: [
         {
@@ -206,9 +206,8 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
         },
       ],
     });
-    const policies = resources.filter((r) => r.type === 'aws:iam/rolePolicy:RolePolicy');
-    expect(policies).toHaveLength(1);
-    expect(policies[0]!.inputs.policy.Statement).toEqual([
+    expect(role[0]!.inputs.policies).toHaveLength(1);
+    expect(role[0]!.inputs.policies[0].policyDocument.Statement).toEqual([
       {
         Effect: 'Allow',
         Action: [
@@ -238,7 +237,7 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
     ).toEqual([
       expect.stringContaining('::progressive-app-listener-rule'),
       expect.stringContaining('::progressive-app-listener-rule-test'),
-      expect.stringContaining('::progressive-app-traffic-shift-role-policy'),
+      expect.stringContaining('::progressive-app-traffic-shift-role'),
     ]);
     const providerReference = `${await resolve(provider.urn)}::${await resolve(provider.id)}`;
     for (const resource of resources.filter((r) => r.type.startsWith('aws:'))) {

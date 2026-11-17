@@ -35,7 +35,7 @@ const task = new awsx.ecs.TaskDefinition("task", {
 });
 
 export const taskDefinitionArn = task.taskDefinitionArn;
-export const executionRoleArn = task.executionRole.arn;
+export const executionRoleArn = task.executionRoleArn;
 export const logGroupName = task.logGroup.apply(group  => group?.name ?? "");
 // Read the registered definition from AWS to verify the engine transform end to end.
 export const containerDefinitions = aws.ecs.getTaskDefinitionOutput({

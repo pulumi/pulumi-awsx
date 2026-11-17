@@ -13,10 +13,10 @@ namespace Pulumi.Awsx.Ecs
     public partial class TaskDefinition : global::Pulumi.ComponentResource
     {
         /// <summary>
-        /// The Execution Role of the task
+        /// The ARN of the task execution role.
         /// </summary>
-        [Output("executionRole")]
-        public Output<Pulumi.Aws.Iam.Role> ExecutionRole { get; private set; } = null!;
+        [Output("executionRoleArn")]
+        public Output<string> ExecutionRoleArn { get; private set; } = null!;
 
         /// <summary>
         /// The family of the registered task definition.
@@ -48,10 +48,10 @@ namespace Pulumi.Awsx.Ecs
         public Output<string> TaskDefinitionArn { get; private set; } = null!;
 
         /// <summary>
-        /// The Task Role of the task
+        /// The ARN of the task role.
         /// </summary>
-        [Output("taskRole")]
-        public Output<Pulumi.Aws.Iam.Role> TaskRole { get; private set; } = null!;
+        [Output("taskRoleArn")]
+        public Output<string> TaskRoleArn { get; private set; } = null!;
 
 
         /// <summary>

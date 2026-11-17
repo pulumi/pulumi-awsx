@@ -124,7 +124,7 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
     },
     { parent: owner, strategy: DeploymentStrategy.CANARY },
   );
-  expect(children).toHaveLength(6);
+  expect(children).toHaveLength(5);
   await Promise.all(children.map((child) => new Promise((done) => child.urn.apply(done))));
   expect(
     new Set(
@@ -139,7 +139,6 @@ it('declares progressive routing and IAM synchronously when ALB metadata is unkn
       'progressive-preview-app-listener-rule',
       'progressive-preview-app-listener-rule-test',
       'progressive-preview-app-traffic-shift-role',
-      'progressive-preview-app-traffic-shift-role-policy',
     ]),
   );
 });
