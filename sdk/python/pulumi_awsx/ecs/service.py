@@ -36,7 +36,7 @@ class ServiceArgs:
                  enable_ecs_managed_tags: Optional[_builtins.bool] = None,
                  force_new_deployment: Optional[_builtins.bool] = None,
                  health_check_grace_period_seconds: Optional[_builtins.float] = None,
-                 load_balancer_attachments: Optional[Mapping[str, 'ServiceLoadBalancerArgs']] = None,
+                 load_balancer_attachments: Optional[Mapping[str, 'ServiceLoadBalancerAttachmentArgs']] = None,
                  manage_ingress: Optional[_builtins.bool] = None,
                  propagate_tags: Optional['PropagateTags'] = None,
                  region: Optional[_builtins.str] = None,
@@ -104,7 +104,7 @@ class ServiceArgs:
                Must be an integer from 0 through 2147483647.
                
                Default - Unset, using the AWS default of 0 seconds.
-        :param Mapping[str, 'ServiceLoadBalancerArgs'] load_balancer_attachments: Attach a load balancer to a specific container running in the service.
+        :param Mapping[str, 'ServiceLoadBalancerAttachmentArgs'] load_balancer_attachments: Attach a load balancer to a specific container running in the service.
                
                - Use one attachment when a single rule can express all routing to a backend, including multiple
                  hostnames or path patterns.
@@ -406,7 +406,7 @@ class ServiceArgs:
 
     @_builtins.property
     @pulumi.getter(name="loadBalancerAttachments")
-    def load_balancer_attachments(self) -> Optional[Mapping[str, 'ServiceLoadBalancerArgs']]:
+    def load_balancer_attachments(self) -> Optional[Mapping[str, 'ServiceLoadBalancerAttachmentArgs']]:
         """
         Attach a load balancer to a specific container running in the service.
 
@@ -423,7 +423,7 @@ class ServiceArgs:
         return pulumi.get(self, "load_balancer_attachments")
 
     @load_balancer_attachments.setter
-    def load_balancer_attachments(self, value: Optional[Mapping[str, 'ServiceLoadBalancerArgs']]):
+    def load_balancer_attachments(self, value: Optional[Mapping[str, 'ServiceLoadBalancerAttachmentArgs']]):
         pulumi.set(self, "load_balancer_attachments", value)
 
     @_builtins.property
@@ -547,7 +547,7 @@ class Service(pulumi.ComponentResource):
                  enable_ecs_managed_tags: Optional[_builtins.bool] = None,
                  force_new_deployment: Optional[_builtins.bool] = None,
                  health_check_grace_period_seconds: Optional[_builtins.float] = None,
-                 load_balancer_attachments: Optional[Mapping[str, Union['ServiceLoadBalancerArgs', 'ServiceLoadBalancerArgsDict']]] = None,
+                 load_balancer_attachments: Optional[Mapping[str, Union['ServiceLoadBalancerAttachmentArgs', 'ServiceLoadBalancerAttachmentArgsDict']]] = None,
                  manage_ingress: Optional[_builtins.bool] = None,
                  propagate_tags: Optional['PropagateTags'] = None,
                  region: Optional[_builtins.str] = None,
@@ -617,7 +617,7 @@ class Service(pulumi.ComponentResource):
                Must be an integer from 0 through 2147483647.
                
                Default - Unset, using the AWS default of 0 seconds.
-        :param Mapping[str, Union['ServiceLoadBalancerArgs', 'ServiceLoadBalancerArgsDict']] load_balancer_attachments: Attach a load balancer to a specific container running in the service.
+        :param Mapping[str, Union['ServiceLoadBalancerAttachmentArgs', 'ServiceLoadBalancerAttachmentArgsDict']] load_balancer_attachments: Attach a load balancer to a specific container running in the service.
                
                - Use one attachment when a single rule can express all routing to a backend, including multiple
                  hostnames or path patterns.
@@ -704,7 +704,7 @@ class Service(pulumi.ComponentResource):
                  enable_ecs_managed_tags: Optional[_builtins.bool] = None,
                  force_new_deployment: Optional[_builtins.bool] = None,
                  health_check_grace_period_seconds: Optional[_builtins.float] = None,
-                 load_balancer_attachments: Optional[Mapping[str, Union['ServiceLoadBalancerArgs', 'ServiceLoadBalancerArgsDict']]] = None,
+                 load_balancer_attachments: Optional[Mapping[str, Union['ServiceLoadBalancerAttachmentArgs', 'ServiceLoadBalancerAttachmentArgsDict']]] = None,
                  manage_ingress: Optional[_builtins.bool] = None,
                  propagate_tags: Optional['PropagateTags'] = None,
                  region: Optional[_builtins.str] = None,

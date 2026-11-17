@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class AwsLogsLogDriverArgs : global::Pulumi.ResourceArgs
+    public sealed class CloudWatchLoggingArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// A multiline start pattern in Python strftime format.
@@ -38,7 +38,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// The delivery mode for log messages.
         /// </summary>
         [Input("mode")]
-        public Pulumi.Awsx.Ecs.AwsLogDriverMode? Mode { get; set; }
+        public Pulumi.Awsx.Ecs.LogDeliveryMode? Mode { get; set; }
 
         /// <summary>
         /// A multiline start pattern expressed as a regular expression.
@@ -54,9 +54,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("streamPrefix")]
         public Input<string>? StreamPrefix { get; set; }
 
-        public AwsLogsLogDriverArgs()
+        public CloudWatchLoggingArgs()
         {
         }
-        public static new AwsLogsLogDriverArgs Empty => new AwsLogsLogDriverArgs();
+        public static new CloudWatchLoggingArgs Empty => new CloudWatchLoggingArgs();
     }
 }

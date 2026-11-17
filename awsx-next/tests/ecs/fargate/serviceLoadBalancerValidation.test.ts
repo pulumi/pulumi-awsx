@@ -104,7 +104,7 @@ it('allows different priorities on one listener and reusing a priority on anothe
   ).not.toThrow();
 });
 
-it.each([ApplicationProtocolVersion.HTTP_2, ApplicationProtocolVersion.GRPC])(
+it.each([ApplicationProtocolVersion.HTTP2, ApplicationProtocolVersion.GRPC])(
   'rejects %s behind an HTTP listener with the attachment input path',
   (version) => {
     expect(() =>
@@ -116,7 +116,7 @@ it.each([ApplicationProtocolVersion.HTTP_2, ApplicationProtocolVersion.GRPC])(
     ).toThrow(
       new pulumi.InputPropertyError({
         propertyPath: 'loadBalancerAttachments.app.application.targetProtocolVersion',
-        reason: 'HTTP_2 and GRPC require an HTTPS listener',
+        reason: 'HTTP2 and GRPC require an HTTPS listener',
       }),
     );
   },
@@ -124,9 +124,9 @@ it.each([ApplicationProtocolVersion.HTTP_2, ApplicationProtocolVersion.GRPC])(
 
 it.each([
   { version: undefined, listenerProtocol: 'HTTP' },
-  { version: ApplicationProtocolVersion.HTTP_1, listenerProtocol: 'HTTP' },
-  { version: ApplicationProtocolVersion.HTTP_1, listenerProtocol: 'HTTPS' },
-  { version: ApplicationProtocolVersion.HTTP_2, listenerProtocol: 'HTTPS' },
+  { version: ApplicationProtocolVersion.HTTP1, listenerProtocol: 'HTTP' },
+  { version: ApplicationProtocolVersion.HTTP1, listenerProtocol: 'HTTPS' },
+  { version: ApplicationProtocolVersion.HTTP2, listenerProtocol: 'HTTPS' },
   { version: ApplicationProtocolVersion.GRPC, listenerProtocol: 'HTTPS' },
 ])('allows backend $version behind $listenerProtocol', ({ version, listenerProtocol }) => {
   expect(() =>

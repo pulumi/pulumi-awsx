@@ -13,9 +13,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class RollingStrategyArgs extends com.pulumi.resources.ResourceArgs {
+public final class RollingDeploymentStrategyArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final RollingStrategyArgs Empty = new RollingStrategyArgs();
+    public static final RollingDeploymentStrategyArgs Empty = new RollingDeploymentStrategyArgs();
 
     /**
      * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -96,9 +96,9 @@ public final class RollingStrategyArgs extends com.pulumi.resources.ResourceArgs
         return Optional.ofNullable(this.pauseHooks);
     }
 
-    private RollingStrategyArgs() {}
+    private RollingDeploymentStrategyArgs() {}
 
-    private RollingStrategyArgs(RollingStrategyArgs $) {
+    private RollingDeploymentStrategyArgs(RollingDeploymentStrategyArgs $) {
         this.failureAction = $.failureAction;
         this.lambdaHooks = $.lambdaHooks;
         this.pauseHooks = $.pauseHooks;
@@ -107,19 +107,19 @@ public final class RollingStrategyArgs extends com.pulumi.resources.ResourceArgs
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(RollingStrategyArgs defaults) {
+    public static Builder builder(RollingDeploymentStrategyArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private RollingStrategyArgs $;
+        private RollingDeploymentStrategyArgs $;
 
         public Builder() {
-            $ = new RollingStrategyArgs();
+            $ = new RollingDeploymentStrategyArgs();
         }
 
-        public Builder(RollingStrategyArgs defaults) {
-            $ = new RollingStrategyArgs(Objects.requireNonNull(defaults));
+        public Builder(RollingDeploymentStrategyArgs defaults) {
+            $ = new RollingDeploymentStrategyArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -203,7 +203,7 @@ public final class RollingStrategyArgs extends com.pulumi.resources.ResourceArgs
             return pauseHooks(List.of(pauseHooks));
         }
 
-        public RollingStrategyArgs build() {
+        public RollingDeploymentStrategyArgs build() {
             return $;
         }
     }

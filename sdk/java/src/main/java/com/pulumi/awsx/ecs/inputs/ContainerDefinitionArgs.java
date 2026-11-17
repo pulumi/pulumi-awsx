@@ -5,11 +5,11 @@ package com.pulumi.awsx.ecs.inputs;
 
 import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
 import com.pulumi.awsx.ecs.inputs.ContainerDependencyArgs;
-import com.pulumi.awsx.ecs.inputs.ContainerLogDriverArgs;
+import com.pulumi.awsx.ecs.inputs.ContainerHealthCheckArgs;
+import com.pulumi.awsx.ecs.inputs.ContainerLoggingArgs;
 import com.pulumi.awsx.ecs.inputs.EnvironmentFileArgs;
 import com.pulumi.awsx.ecs.inputs.EnvironmentVariableArgs;
 import com.pulumi.awsx.ecs.inputs.FargateCredentialSpecArgs;
-import com.pulumi.awsx.ecs.inputs.HealthCheckArgs;
 import com.pulumi.awsx.ecs.inputs.LinuxParametersArgs;
 import com.pulumi.awsx.ecs.inputs.SystemControlArgs;
 import com.pulumi.awsx.ecs.inputs.UlimitArgs;
@@ -27,9 +27,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.ResourceArgs {
+public final class ContainerDefinitionArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final ContainerDefinitionOptionsArgs Empty = new ContainerDefinitionOptionsArgs();
+    public static final ContainerDefinitionArgs Empty = new ContainerDefinitionArgs();
 
     /**
      * The command passed to the container.
@@ -258,7 +258,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
      * 
      */
     @Import(name="healthCheck")
-    private @Nullable HealthCheckArgs healthCheck;
+    private @Nullable ContainerHealthCheckArgs healthCheck;
 
     /**
      * @return The health check command and settings for the container.
@@ -280,7 +280,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
      * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
      * 
      */
-    public Optional<HealthCheckArgs> healthCheck() {
+    public Optional<ContainerHealthCheckArgs> healthCheck() {
         return Optional.ofNullable(this.healthCheck);
     }
 
@@ -340,7 +340,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
      * 
      */
     @Import(name="logging")
-    private @Nullable ContainerLogDriverArgs logging;
+    private @Nullable ContainerLoggingArgs logging;
 
     /**
      * @return Log collection. AWSX grants the execution role access to the configured log group.
@@ -348,7 +348,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
      * Default - CloudWatch logging with a shared log group created by this component.
      * 
      */
-    public Optional<ContainerLogDriverArgs> logging() {
+    public Optional<ContainerLoggingArgs> logging() {
         return Optional.ofNullable(this.logging);
     }
 
@@ -654,9 +654,9 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
         return Optional.ofNullable(this.workingDirectory);
     }
 
-    private ContainerDefinitionOptionsArgs() {}
+    private ContainerDefinitionArgs() {}
 
-    private ContainerDefinitionOptionsArgs(ContainerDefinitionOptionsArgs $) {
+    private ContainerDefinitionArgs(ContainerDefinitionArgs $) {
         this.command = $.command;
         this.cpuUnits = $.cpuUnits;
         this.credentialSpec = $.credentialSpec;
@@ -691,19 +691,19 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(ContainerDefinitionOptionsArgs defaults) {
+    public static Builder builder(ContainerDefinitionArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private ContainerDefinitionOptionsArgs $;
+        private ContainerDefinitionArgs $;
 
         public Builder() {
-            $ = new ContainerDefinitionOptionsArgs();
+            $ = new ContainerDefinitionArgs();
         }
 
-        public Builder(ContainerDefinitionOptionsArgs defaults) {
-            $ = new ContainerDefinitionOptionsArgs(Objects.requireNonNull(defaults));
+        public Builder(ContainerDefinitionArgs defaults) {
+            $ = new ContainerDefinitionArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -915,7 +915,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
          * @return builder
          * 
          */
-        public Builder healthCheck(@Nullable HealthCheckArgs healthCheck) {
+        public Builder healthCheck(@Nullable ContainerHealthCheckArgs healthCheck) {
             $.healthCheck = healthCheck;
             return this;
         }
@@ -973,7 +973,7 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
          * @return builder
          * 
          */
-        public Builder logging(@Nullable ContainerLogDriverArgs logging) {
+        public Builder logging(@Nullable ContainerLoggingArgs logging) {
             $.logging = logging;
             return this;
         }
@@ -1230,9 +1230,9 @@ public final class ContainerDefinitionOptionsArgs extends com.pulumi.resources.R
             return this;
         }
 
-        public ContainerDefinitionOptionsArgs build() {
+        public ContainerDefinitionArgs build() {
             if ($.image == null) {
-                throw new MissingRequiredPropertyException("ContainerDefinitionOptionsArgs", "image");
+                throw new MissingRequiredPropertyException("ContainerDefinitionArgs", "image");
             }
             return $;
         }

@@ -15,9 +15,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class LinearStrategyArgs extends com.pulumi.resources.ResourceArgs {
+public final class LinearDeploymentStrategyArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final LinearStrategyArgs Empty = new LinearStrategyArgs();
+    public static final LinearDeploymentStrategyArgs Empty = new LinearDeploymentStrategyArgs();
 
     /**
      * Number of minutes to keep the previous service revision running after all production traffic
@@ -163,9 +163,9 @@ public final class LinearStrategyArgs extends com.pulumi.resources.ResourceArgs 
         return Optional.ofNullable(this.stepPercent);
     }
 
-    private LinearStrategyArgs() {}
+    private LinearDeploymentStrategyArgs() {}
 
-    private LinearStrategyArgs(LinearStrategyArgs $) {
+    private LinearDeploymentStrategyArgs(LinearDeploymentStrategyArgs $) {
         this.bakeTimeMinutes = $.bakeTimeMinutes;
         this.failureAction = $.failureAction;
         this.lambdaHooks = $.lambdaHooks;
@@ -177,19 +177,19 @@ public final class LinearStrategyArgs extends com.pulumi.resources.ResourceArgs 
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(LinearStrategyArgs defaults) {
+    public static Builder builder(LinearDeploymentStrategyArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private LinearStrategyArgs $;
+        private LinearDeploymentStrategyArgs $;
 
         public Builder() {
-            $ = new LinearStrategyArgs();
+            $ = new LinearDeploymentStrategyArgs();
         }
 
-        public Builder(LinearStrategyArgs defaults) {
-            $ = new LinearStrategyArgs(Objects.requireNonNull(defaults));
+        public Builder(LinearDeploymentStrategyArgs defaults) {
+            $ = new LinearDeploymentStrategyArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -317,9 +317,9 @@ public final class LinearStrategyArgs extends com.pulumi.resources.ResourceArgs 
             return this;
         }
 
-        public LinearStrategyArgs build() {
+        public LinearDeploymentStrategyArgs build() {
             if ($.bakeTimeMinutes == null) {
-                throw new MissingRequiredPropertyException("LinearStrategyArgs", "bakeTimeMinutes");
+                throw new MissingRequiredPropertyException("LinearDeploymentStrategyArgs", "bakeTimeMinutes");
             }
             return $;
         }

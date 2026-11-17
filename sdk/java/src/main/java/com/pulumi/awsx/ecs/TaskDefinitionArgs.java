@@ -5,7 +5,7 @@ package com.pulumi.awsx.ecs;
 
 import com.pulumi.awsx.ecs.enums.CpuArchitecture;
 import com.pulumi.awsx.ecs.enums.TaskCompatibility;
-import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
@@ -56,7 +56,7 @@ public final class TaskDefinitionArgs extends com.pulumi.resources.ResourceArgs 
      * 
      */
     @Import(name="containers", required=true)
-    private Map<String,ContainerDefinitionOptionsArgs> containers;
+    private Map<String,ContainerDefinitionArgs> containers;
 
     /**
      * @return Containers in the task, keyed by container name.
@@ -64,7 +64,7 @@ public final class TaskDefinitionArgs extends com.pulumi.resources.ResourceArgs 
      * AWSX uses each map key as the corresponding ECS container name.
      * 
      */
-    public Map<String,ContainerDefinitionOptionsArgs> containers() {
+    public Map<String,ContainerDefinitionArgs> containers() {
         return this.containers;
     }
 
@@ -414,7 +414,7 @@ public final class TaskDefinitionArgs extends com.pulumi.resources.ResourceArgs 
          * @return builder
          * 
          */
-        public Builder containers(Map<String,ContainerDefinitionOptionsArgs> containers) {
+        public Builder containers(Map<String,ContainerDefinitionArgs> containers) {
             $.containers = containers;
             return this;
         }

@@ -977,37 +977,7 @@
                 }
             ]
         },
-        "awsx:ecs:ApplicationProtocol": {
-            "type": "string",
-            "enum": [
-                {
-                    "name": "HTTP",
-                    "value": "HTTP"
-                },
-                {
-                    "name": "HTTPS",
-                    "value": "HTTPS"
-                }
-            ]
-        },
-        "awsx:ecs:ApplicationProtocolVersion": {
-            "type": "string",
-            "enum": [
-                {
-                    "name": "HTTP_1",
-                    "value": "HTTP1"
-                },
-                {
-                    "name": "HTTP_2",
-                    "value": "HTTP2"
-                },
-                {
-                    "name": "GRPC",
-                    "value": "GRPC"
-                }
-            ]
-        },
-        "awsx:ecs:ApplicationServiceLoadBalancer": {
+        "awsx:ecs:ApplicationLoadBalancerAttachment": {
             "properties": {
                 "containerName": {
                     "type": "string",
@@ -1046,7 +1016,7 @@
                 "targetProtocolVersion": {
                     "$ref": "#/types/awsx:ecs:ApplicationProtocolVersion",
                     "plain": true,
-                    "description": "Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and\nGRPC require an HTTPS listener.\n\nDefault - ApplicationProtocolVersion.HTTP_1"
+                    "description": "Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and\nGRPC require an HTTPS listener.\n\nDefault - ApplicationProtocolVersion.HTTP1"
                 },
                 "testTraffic": {
                     "$ref": "#/types/awsx:ecs:TestTraffic",
@@ -1060,6 +1030,36 @@
                 "containerPort",
                 "listenerArn",
                 "priority"
+            ]
+        },
+        "awsx:ecs:ApplicationProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "HTTP",
+                    "value": "HTTP"
+                },
+                {
+                    "name": "HTTPS",
+                    "value": "HTTPS"
+                }
+            ]
+        },
+        "awsx:ecs:ApplicationProtocolVersion": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "HTTP1",
+                    "value": "HTTP1"
+                },
+                {
+                    "name": "HTTP2",
+                    "value": "HTTP2"
+                },
+                {
+                    "name": "GRPC",
+                    "value": "GRPC"
+                }
             ]
         },
         "awsx:ecs:AvailabilityZoneRebalancing": {
@@ -1076,54 +1076,6 @@
                     "value": "DISABLED"
                 }
             ]
-        },
-        "awsx:ecs:AwsLogDriverMode": {
-            "type": "string",
-            "enum": [
-                {
-                    "name": "BLOCKING",
-                    "description": "Deliver logs synchronously. Application writes can block when logs cannot be delivered.",
-                    "value": "blocking"
-                },
-                {
-                    "name": "NON_BLOCKING",
-                    "description": "Buffer logs in memory so application writes do not block. Logs can be lost when the buffer\nfills.",
-                    "value": "non-blocking"
-                }
-            ]
-        },
-        "awsx:ecs:AwsLogsLogDriver": {
-            "properties": {
-                "datetimeFormat": {
-                    "type": "string",
-                    "plain": true,
-                    "description": "A multiline start pattern in Python strftime format."
-                },
-                "logGroupArn": {
-                    "type": "string",
-                    "description": "The ARN of the log group to log to.\n\nDefault - A log group is created automatically."
-                },
-                "maxBufferSizeBytes": {
-                    "type": "number",
-                    "plain": true,
-                    "description": "Size, in bytes, of the buffer used in non-blocking mode.\n\nDefault - The AWS default of 10 MiB when mode is non-blocking."
-                },
-                "mode": {
-                    "$ref": "#/types/awsx:ecs:AwsLogDriverMode",
-                    "plain": true,
-                    "description": "The delivery mode for log messages."
-                },
-                "multilinePattern": {
-                    "type": "string",
-                    "plain": true,
-                    "description": "A multiline start pattern expressed as a regular expression."
-                },
-                "streamPrefix": {
-                    "type": "string",
-                    "description": "Prefix used for the container's log streams.\n\nDefault - The task component name."
-                }
-            },
-            "type": "object"
         },
         "awsx:ecs:AwsvpcPortMapping": {
             "properties": {
@@ -1155,7 +1107,7 @@
             },
             "type": "object"
         },
-        "awsx:ecs:BlueGreenStrategy": {
+        "awsx:ecs:BlueGreenDeploymentStrategy": {
             "properties": {
                 "bakeTimeMinutes": {
                     "type": "number",
@@ -1191,7 +1143,7 @@
                 "bakeTimeMinutes"
             ]
         },
-        "awsx:ecs:CanaryStrategy": {
+        "awsx:ecs:CanaryDeploymentStrategy": {
             "properties": {
                 "bakeTimeMinutes": {
                     "type": "number",
@@ -1252,7 +1204,40 @@
             },
             "type": "object"
         },
-        "awsx:ecs:ContainerDefinitionOptions": {
+        "awsx:ecs:CloudWatchLogging": {
+            "properties": {
+                "datetimeFormat": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "A multiline start pattern in Python strftime format."
+                },
+                "logGroupArn": {
+                    "type": "string",
+                    "description": "The ARN of the log group to log to.\n\nDefault - A log group is created automatically."
+                },
+                "maxBufferSizeBytes": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "Size, in bytes, of the buffer used in non-blocking mode.\n\nDefault - The AWS default of 10 MiB when mode is non-blocking."
+                },
+                "mode": {
+                    "$ref": "#/types/awsx:ecs:LogDeliveryMode",
+                    "plain": true,
+                    "description": "The delivery mode for log messages."
+                },
+                "multilinePattern": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "A multiline start pattern expressed as a regular expression."
+                },
+                "streamPrefix": {
+                    "type": "string",
+                    "description": "Prefix used for the container's log streams.\n\nDefault - The task component name."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:ContainerDefinition": {
             "properties": {
                 "command": {
                     "type": "array",
@@ -1326,7 +1311,7 @@
                     "description": "Positive whole number of physical GPUs reserved for this container. Does not work with Fargate\ncapability\n\nDefault - No GPUs."
                 },
                 "healthCheck": {
-                    "$ref": "#/types/awsx:ecs:HealthCheck",
+                    "$ref": "#/types/awsx:ecs:ContainerHealthCheck",
                     "plain": true,
                     "description": "The health check command and settings for the container.\n\nUse a health check when the container can remain running while the application is unhealthy,\nsuch as an unresponsive server or a worker that has stopped processing jobs. A health check is\nnot required merely to validate startup configuration if the application exits when that\nvalidation fails.\n\nECS services can replace tasks with unhealthy essential containers. A health check does not\nprovide automatic replacement for standalone tasks.\n\nECS only monitors health checks specified in the task definition. It does not monitor a health\ncheck configured only in the container image.\n\nDefault - No ECS container health check.\n\nFor more information, see [Determine Amazon ECS task health using container health\nchecks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html)."
                 },
@@ -1345,7 +1330,7 @@
                     "description": "Linux capability and init-process settings. Fargate permits adding only SYS_PTRACE."
                 },
                 "logging": {
-                    "$ref": "#/types/awsx:ecs:ContainerLogDriver",
+                    "$ref": "#/types/awsx:ecs:ContainerLogging",
                     "plain": true,
                     "description": "Log collection. AWSX grants the execution role access to the configured log group.\n\nDefault - CloudWatch logging with a shared log group created by this component."
                 },
@@ -1485,10 +1470,47 @@
                 }
             ]
         },
-        "awsx:ecs:ContainerLogDriver": {
+        "awsx:ecs:ContainerHealthCheck": {
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "The command that the container runs to determine whether it is healthy.\n\nThe first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.\n\nExample: [\"CMD-SHELL\", \"curl --fail http://localhost/health || exit 1\"]"
+                },
+                "intervalSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, between health checks. Valid values are from 5 through 300.\n\nDefault - 30 seconds."
+                },
+                "retries": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The number of consecutive failures required before the container becomes unhealthy. Valid\nvalues are from 1 through 10.\n\nDefault - 3."
+                },
+                "startPeriodSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The startup grace period, in seconds, during which failed checks do not count toward the retry\nlimit. Valid values are from 0 through 300.\n\nDefault - No startup grace period."
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "plain": true,
+                    "description": "The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.\n\nDefault - 5 seconds."
+                }
+            },
+            "type": "object",
+            "required": [
+                "command"
+            ]
+        },
+        "awsx:ecs:ContainerLogging": {
             "properties": {
                 "cloudwatch": {
-                    "$ref": "#/types/awsx:ecs:AwsLogsLogDriver",
+                    "$ref": "#/types/awsx:ecs:CloudWatchLogging",
                     "plain": true,
                     "description": "Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.\n\nFor more information, see [CloudWatch\nlogging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html)."
                 },
@@ -1538,12 +1560,12 @@
                 {
                     "name": "ROLLBACK",
                     "description": "On failure restore the last completed deployment",
-                    "value": "Rollback"
+                    "value": "ROLLBACK"
                 },
                 {
                     "name": "STOP",
                     "description": "On failure stop the failed deployment and require manual remediation",
-                    "value": "Stop"
+                    "value": "STOP"
                 }
             ]
         },
@@ -1916,43 +1938,6 @@
                 "name"
             ]
         },
-        "awsx:ecs:HealthCheck": {
-            "properties": {
-                "command": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "The command that the container runs to determine whether it is healthy.\n\nThe first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.\n\nExample: [\"CMD-SHELL\", \"curl --fail http://localhost/health || exit 1\"]"
-                },
-                "intervalSeconds": {
-                    "type": "number",
-                    "plain": true,
-                    "description": "The time, in seconds, between health checks. Valid values are from 5 through 300.\n\nDefault - 30 seconds."
-                },
-                "retries": {
-                    "type": "number",
-                    "plain": true,
-                    "description": "The number of consecutive failures required before the container becomes unhealthy. Valid\nvalues are from 1 through 10.\n\nDefault - 3."
-                },
-                "startPeriodSeconds": {
-                    "type": "number",
-                    "plain": true,
-                    "description": "The startup grace period, in seconds, during which failed checks do not count toward the retry\nlimit. Valid values are from 0 through 300.\n\nDefault - No startup grace period."
-                },
-                "timeoutSeconds": {
-                    "type": "number",
-                    "plain": true,
-                    "description": "The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.\n\nDefault - 5 seconds."
-                }
-            },
-            "type": "object",
-            "required": [
-                "command"
-            ]
-        },
         "awsx:ecs:KernelCapabilities": {
             "properties": {
                 "add": {
@@ -1976,7 +1961,7 @@
             },
             "type": "object"
         },
-        "awsx:ecs:LinearStrategy": {
+        "awsx:ecs:LinearDeploymentStrategy": {
             "properties": {
                 "bakeTimeMinutes": {
                     "type": "number",
@@ -2077,6 +2062,21 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:ecs:LogDeliveryMode": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "BLOCKING",
+                    "description": "Deliver logs synchronously. Application writes can block when logs cannot be delivered.",
+                    "value": "blocking"
+                },
+                {
+                    "name": "NON_BLOCKING",
+                    "description": "Buffer logs in memory so application writes do not block. Logs can be lost when the buffer\nfills.",
+                    "value": "non-blocking"
+                }
+            ]
         },
         "awsx:ecs:PauseTimeoutAction": {
             "type": "string",
@@ -2299,6 +2299,34 @@
                 "value"
             ]
         },
+        "awsx:ecs:RollingDeploymentStrategy": {
+            "properties": {
+                "failureAction": {
+                    "$ref": "#/types/awsx:ecs:DeploymentFailureAction",
+                    "plain": true,
+                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
+                },
+                "lambdaHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:RollingLambdaHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.\n\nLambda and pause hooks run in parallel at this stage, and all must complete before tasks start.\n\nDefault - No Lambda hooks."
+                },
+                "pauseHooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:RollingPauseHook",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an\nexternal workflow has to call ContinueServiceDeployment with the deployment ARN, the pause\nhookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
+                }
+            },
+            "type": "object"
+        },
         "awsx:ecs:RollingLambdaHook": {
             "properties": {
                 "functionArn": {
@@ -2333,34 +2361,6 @@
                     "type": "number",
                     "plain": true,
                     "description": "Number of minutes ECS waits for ContinueServiceDeployment before applying timeoutAction.\n\nValid range: 1-20160 minutes (14 days).\n\nDefault - AWS default of 1440 minutes (24 hours)."
-                }
-            },
-            "type": "object"
-        },
-        "awsx:ecs:RollingStrategy": {
-            "properties": {
-                "failureAction": {
-                    "$ref": "#/types/awsx:ecs:DeploymentFailureAction",
-                    "plain": true,
-                    "description": "Action taken when the deployment circuit breaker detects a failed deployment. The circuit\nbreaker is always enabled.\n\nROLLBACK restores the last successful completed deployment when one is available. STOP marks\nthe deployment as failed without automatic rollback.\n\nDefault - DeploymentFailureAction.ROLLBACK"
-                },
-                "lambdaHooks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/types/awsx:ecs:RollingLambdaHook",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.\n\nLambda and pause hooks run in parallel at this stage, and all must complete before tasks start.\n\nDefault - No Lambda hooks."
-                },
-                "pauseHooks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/types/awsx:ecs:RollingPauseHook",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an\nexternal workflow has to call ContinueServiceDeployment with the deployment ARN, the pause\nhookId, and CONTINUE or ROLLBACK.\n\nIf no ContinueServiceDeployment is received before the timeout then the timeoutAction is\nperformed.\n\nDefault - No pause hooks."
                 }
             },
             "type": "object"
@@ -2433,32 +2433,32 @@
         "awsx:ecs:ServiceDeploymentStrategy": {
             "properties": {
                 "blueGreen": {
-                    "$ref": "#/types/awsx:ecs:BlueGreenStrategy",
+                    "$ref": "#/types/awsx:ecs:BlueGreenDeploymentStrategy",
                     "plain": true,
                     "description": "Configuration for shifting all production traffic to the new revision once it is ready."
                 },
                 "canary": {
-                    "$ref": "#/types/awsx:ecs:CanaryStrategy",
+                    "$ref": "#/types/awsx:ecs:CanaryDeploymentStrategy",
                     "plain": true,
                     "description": "Configuration for testing an initial percentage of production traffic before shifting the rest.\n\nDefault - no canary configuration"
                 },
                 "linear": {
-                    "$ref": "#/types/awsx:ecs:LinearStrategy",
+                    "$ref": "#/types/awsx:ecs:LinearDeploymentStrategy",
                     "plain": true,
                     "description": "Configuration for shifting production traffic in equal increments.\n\nDefault - no linear configuration"
                 },
                 "rolling": {
-                    "$ref": "#/types/awsx:ecs:RollingStrategy",
+                    "$ref": "#/types/awsx:ecs:RollingDeploymentStrategy",
                     "plain": true,
                     "description": "Configuration for the rolling update strategy. This is the default."
                 }
             },
             "type": "object"
         },
-        "awsx:ecs:ServiceLoadBalancer": {
+        "awsx:ecs:ServiceLoadBalancerAttachment": {
             "properties": {
                 "application": {
-                    "$ref": "#/types/awsx:ecs:ApplicationServiceLoadBalancer",
+                    "$ref": "#/types/awsx:ecs:ApplicationLoadBalancerAttachment",
                     "plain": true,
                     "description": "Application Load Balancer attachment for a named service endpoint. Creates target groups and\nforwarding rules on a caller-managed listener.\n\nAn application configuration must be provided for each entry in the service's\nloadBalancerAttachments map."
                 }
@@ -2506,7 +2506,7 @@
         },
         "awsx:ecs:TargetGroupHealthCheck": {
             "properties": {
-                "healthGrpcCodes": {
+                "healthyGrpcCodes": {
                     "type": "string",
                     "plain": true,
                     "description": "The gRPC codes to use when checking for a response from a target. Values can be comma-separated\nindividual values (e.g., \"12,13\") or a range of values (e.g., \"12-15\"). Once the value has been\nset, removing it has no effect. To unset it, set it to an empty string `\"\"`.\n\nValues can be between `0` and `99`.\n\nDefault - `12`."
@@ -4805,7 +4805,7 @@
                 "loadBalancerAttachments": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecs:ServiceLoadBalancer",
+                        "$ref": "#/types/awsx:ecs:ServiceLoadBalancerAttachment",
                         "plain": true
                     },
                     "plain": true,
@@ -4879,9 +4879,6 @@
                     "$ref": "/aws/v7.53.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
                     "description": "The shared CloudWatch Logs log group created by the component for containers using CloudWatch\nlogging (enabled by default) without specifying `logGroupArn`. This output is undefined when\nthe component does not create a default log group"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "region": {
                     "type": "string"
                 },
@@ -4902,7 +4899,6 @@
             "required": [
                 "executionRole",
                 "family",
-                "name",
                 "revision",
                 "taskDefinitionArn",
                 "taskRole"
@@ -4920,7 +4916,7 @@
                 "containers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecs:ContainerDefinitionOptions",
+                        "$ref": "#/types/awsx:ecs:ContainerDefinition",
                         "plain": true
                     },
                     "plain": true,

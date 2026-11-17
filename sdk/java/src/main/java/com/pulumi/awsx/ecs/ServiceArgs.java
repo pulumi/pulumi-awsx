@@ -7,7 +7,7 @@ import com.pulumi.awsx.ecs.enums.AvailabilityZoneRebalancing;
 import com.pulumi.awsx.ecs.enums.PropagateTags;
 import com.pulumi.awsx.ecs.inputs.ServiceCapacityArgs;
 import com.pulumi.awsx.ecs.inputs.ServiceDeploymentStrategyArgs;
-import com.pulumi.awsx.ecs.inputs.ServiceLoadBalancerArgs;
+import com.pulumi.awsx.ecs.inputs.ServiceLoadBalancerAttachmentArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
@@ -306,7 +306,7 @@ public final class ServiceArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="loadBalancerAttachments")
-    private @Nullable Map<String,ServiceLoadBalancerArgs> loadBalancerAttachments;
+    private @Nullable Map<String,ServiceLoadBalancerAttachmentArgs> loadBalancerAttachments;
 
     /**
      * @return Attach a load balancer to a specific container running in the service.
@@ -322,7 +322,7 @@ public final class ServiceArgs extends com.pulumi.resources.ResourceArgs {
      * Default - The ECS service is not attached to a load balancer
      * 
      */
-    public Optional<Map<String,ServiceLoadBalancerArgs>> loadBalancerAttachments() {
+    public Optional<Map<String,ServiceLoadBalancerAttachmentArgs>> loadBalancerAttachments() {
         return Optional.ofNullable(this.loadBalancerAttachments);
     }
 
@@ -757,7 +757,7 @@ public final class ServiceArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder loadBalancerAttachments(@Nullable Map<String,ServiceLoadBalancerArgs> loadBalancerAttachments) {
+        public Builder loadBalancerAttachments(@Nullable Map<String,ServiceLoadBalancerAttachmentArgs> loadBalancerAttachments) {
             $.loadBalancerAttachments = loadBalancerAttachments;
             return this;
         }

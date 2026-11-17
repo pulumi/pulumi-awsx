@@ -16,6 +16,6 @@
 
 package ecs
 
-// ContainerDefinitionOptionsArgs configures a container in TaskDefinitionArgs.Containers.
-// The map key specifies the container name. See ContainerDefinitionOptions for the available settings.
-type ContainerDefinitionOptionsArgs = ContainerDefinitionOptions
+// ContainerDefinitionArgs configures a container in TaskDefinitionArgs.Containers.
+// The map key specifies the container name. See ContainerDefinition for the available settings.
+type ContainerDefinitionArgs = ContainerDefinition

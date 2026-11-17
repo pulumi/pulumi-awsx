@@ -21,8 +21,8 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// 
         /// Default - `12`.
         /// </summary>
-        [Input("healthGrpcCodes")]
-        public string? HealthGrpcCodes { get; set; }
+        [Input("healthyGrpcCodes")]
+        public string? HealthyGrpcCodes { get; set; }
 
         /// <summary>
         /// The HTTP codes to use when checking for a successful response from a target. Values can be

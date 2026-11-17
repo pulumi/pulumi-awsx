@@ -16,7 +16,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// Configuration for shifting all production traffic to the new revision once it is ready.
         /// </summary>
         [Input("blueGreen")]
-        public Inputs.BlueGreenStrategyArgs? BlueGreen { get; set; }
+        public Inputs.BlueGreenDeploymentStrategyArgs? BlueGreen { get; set; }
 
         /// <summary>
         /// Configuration for testing an initial percentage of production traffic before shifting the rest.
@@ -24,7 +24,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// Default - no canary configuration
         /// </summary>
         [Input("canary")]
-        public Inputs.CanaryStrategyArgs? Canary { get; set; }
+        public Inputs.CanaryDeploymentStrategyArgs? Canary { get; set; }
 
         /// <summary>
         /// Configuration for shifting production traffic in equal increments.
@@ -32,13 +32,13 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// Default - no linear configuration
         /// </summary>
         [Input("linear")]
-        public Inputs.LinearStrategyArgs? Linear { get; set; }
+        public Inputs.LinearDeploymentStrategyArgs? Linear { get; set; }
 
         /// <summary>
         /// Configuration for the rolling update strategy. This is the default.
         /// </summary>
         [Input("rolling")]
-        public Inputs.RollingStrategyArgs? Rolling { get; set; }
+        public Inputs.RollingDeploymentStrategyArgs? Rolling { get; set; }
 
         public ServiceDeploymentStrategyArgs()
         {

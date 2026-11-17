@@ -45,8 +45,8 @@ namespace Pulumi.Awsx.Ecs
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        public static ApplicationProtocolVersion HTTP_1 { get; } = new ApplicationProtocolVersion("HTTP1");
-        public static ApplicationProtocolVersion HTTP_2 { get; } = new ApplicationProtocolVersion("HTTP2");
+        public static ApplicationProtocolVersion HTTP1 { get; } = new ApplicationProtocolVersion("HTTP1");
+        public static ApplicationProtocolVersion HTTP2 { get; } = new ApplicationProtocolVersion("HTTP2");
         public static ApplicationProtocolVersion GRPC { get; } = new ApplicationProtocolVersion("GRPC");
 
         public static bool operator ==(ApplicationProtocolVersion left, ApplicationProtocolVersion right) => left.Equals(right);
@@ -91,41 +91,6 @@ namespace Pulumi.Awsx.Ecs
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => obj is AvailabilityZoneRebalancing other && Equals(other);
         public bool Equals(AvailabilityZoneRebalancing other) => string.Equals(_value, other._value, StringComparison.Ordinal);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-
-        public override string ToString() => _value;
-    }
-
-    [EnumType]
-    public readonly struct AwsLogDriverMode : IEquatable<AwsLogDriverMode>
-    {
-        private readonly string _value;
-
-        private AwsLogDriverMode(string value)
-        {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        /// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
-        /// </summary>
-        public static AwsLogDriverMode BLOCKING { get; } = new AwsLogDriverMode("blocking");
-        /// <summary>
-        /// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
-        /// fills.
-        /// </summary>
-        public static AwsLogDriverMode NON_BLOCKING { get; } = new AwsLogDriverMode("non-blocking");
-
-        public static bool operator ==(AwsLogDriverMode left, AwsLogDriverMode right) => left.Equals(right);
-        public static bool operator !=(AwsLogDriverMode left, AwsLogDriverMode right) => !left.Equals(right);
-
-        public static explicit operator string(AwsLogDriverMode value) => value._value;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is AwsLogDriverMode other && Equals(other);
-        public bool Equals(AwsLogDriverMode other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;
@@ -216,11 +181,11 @@ namespace Pulumi.Awsx.Ecs
         /// <summary>
         /// On failure restore the last completed deployment
         /// </summary>
-        public static DeploymentFailureAction ROLLBACK { get; } = new DeploymentFailureAction("Rollback");
+        public static DeploymentFailureAction ROLLBACK { get; } = new DeploymentFailureAction("ROLLBACK");
         /// <summary>
         /// On failure stop the failed deployment and require manual remediation
         /// </summary>
-        public static DeploymentFailureAction STOP { get; } = new DeploymentFailureAction("Stop");
+        public static DeploymentFailureAction STOP { get; } = new DeploymentFailureAction("STOP");
 
         public static bool operator ==(DeploymentFailureAction left, DeploymentFailureAction right) => left.Equals(right);
         public static bool operator !=(DeploymentFailureAction left, DeploymentFailureAction right) => !left.Equals(right);
@@ -230,6 +195,41 @@ namespace Pulumi.Awsx.Ecs
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => obj is DeploymentFailureAction other && Equals(other);
         public bool Equals(DeploymentFailureAction other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct LogDeliveryMode : IEquatable<LogDeliveryMode>
+    {
+        private readonly string _value;
+
+        private LogDeliveryMode(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+        /// </summary>
+        public static LogDeliveryMode BLOCKING { get; } = new LogDeliveryMode("blocking");
+        /// <summary>
+        /// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+        /// fills.
+        /// </summary>
+        public static LogDeliveryMode NON_BLOCKING { get; } = new LogDeliveryMode("non-blocking");
+
+        public static bool operator ==(LogDeliveryMode left, LogDeliveryMode right) => left.Equals(right);
+        public static bool operator !=(LogDeliveryMode left, LogDeliveryMode right) => !left.Equals(right);
+
+        public static explicit operator string(LogDeliveryMode value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is LogDeliveryMode other && Equals(other);
+        public bool Equals(LogDeliveryMode other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;

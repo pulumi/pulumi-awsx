@@ -10,8 +10,8 @@ import java.util.StringJoiner;
 
     @EnumType
     public enum ApplicationProtocolVersion {
-        HTTP_1("HTTP1"),
-        HTTP_2("HTTP2"),
+        HTTP1("HTTP1"),
+        HTTP2("HTTP2"),
         GRPC("GRPC");
 
         private final String value;

@@ -5,7 +5,7 @@ from pulumi_awsx import ecs
 task = ecs.TaskDefinition(
     "task",
     containers={
-        "app": ecs.ContainerDefinitionOptionsArgs(
+        "app": ecs.ContainerDefinitionArgs(
             image="public.ecr.aws/nginx/nginx:latest"
         )
     },

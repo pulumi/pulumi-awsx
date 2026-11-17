@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class ServiceLoadBalancerArgs : global::Pulumi.ResourceArgs
+    public sealed class ServiceLoadBalancerAttachmentArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Application Load Balancer attachment for a named service endpoint. Creates target groups and
@@ -20,11 +20,11 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// loadBalancerAttachments map.
         /// </summary>
         [Input("application", required: true)]
-        public Inputs.ApplicationServiceLoadBalancerArgs Application { get; set; } = null!;
+        public Inputs.ApplicationLoadBalancerAttachmentArgs Application { get; set; } = null!;
 
-        public ServiceLoadBalancerArgs()
+        public ServiceLoadBalancerAttachmentArgs()
         {
         }
-        public static new ServiceLoadBalancerArgs Empty => new ServiceLoadBalancerArgs();
+        public static new ServiceLoadBalancerAttachmentArgs Empty => new ServiceLoadBalancerAttachmentArgs();
     }
 }

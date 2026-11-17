@@ -4,7 +4,7 @@ import * as pulumi from '@pulumi/pulumi';
 import {
   ApplicationProtocol,
   ApplicationProtocolVersion,
-  ApplicationServiceLoadBalancer,
+  ApplicationLoadBalancerAttachment,
   CreatedApplicationServiceAttachment,
   createApplicationServiceAttachment,
 } from '../../../src/ecs/serviceLoadBalancer';
@@ -105,7 +105,7 @@ function parent(): pulumi.ComponentResource {
  *
  * @returns The application attachment configuration.
  */
-function configuration(): ApplicationServiceLoadBalancer {
+function configuration(): ApplicationLoadBalancerAttachment {
   return {
     containerName: 'app',
     containerPort: 3000,
@@ -386,7 +386,7 @@ it('creates only backend resources, keeping health-check and application ports i
 
 it.each<{
   description: string;
-  args: Partial<ApplicationServiceLoadBalancer>;
+  args: Partial<ApplicationLoadBalancerAttachment>;
   expectedHealthCheck: Record<string, unknown>;
 }>([
   { description: 'omitted health check', args: {}, expectedHealthCheck: {} },
@@ -429,7 +429,7 @@ it.each([undefined, 'us-east-2'])(
     const attachment = createApplicationServiceAttachment(
       'service',
       'shared',
-      { ...configuration(), targetProtocolVersion: ApplicationProtocolVersion.HTTP_2 },
+      { ...configuration(), targetProtocolVersion: ApplicationProtocolVersion.HTTP2 },
       { parent: parent(), region },
     );
     await settle(attachment);
@@ -576,7 +576,11 @@ it('gives attachments to the same backend stable, distinct resource names', asyn
   );
 });
 
-it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; property: string }>([
+it.each<{
+  description: string;
+  args: Partial<ApplicationLoadBalancerAttachment>;
+  property: string;
+}>([
   {
     description: 'missing listener ARN',
     args: { containerName: 'app', containerPort: 3000 },
@@ -619,14 +623,14 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
   },
   {
     description: 'gRPC codes with HTTP',
-    args: { ...configuration(), targetHealthCheck: { healthGrpcCodes: '0' } },
-    property: 'targetHealthCheck.healthGrpcCodes',
+    args: { ...configuration(), targetHealthCheck: { healthyGrpcCodes: '0' } },
+    property: 'targetHealthCheck.healthyGrpcCodes',
   },
   {
     description: 'both health code types',
     args: {
       ...configuration(),
-      targetHealthCheck: { healthyHttpCodes: '200', healthGrpcCodes: '0' },
+      targetHealthCheck: { healthyHttpCodes: '200', healthyGrpcCodes: '0' },
     },
     property: 'targetHealthCheck',
   },
@@ -636,7 +640,7 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
     createApplicationServiceAttachment(
       'service',
       'invalid',
-      args as ApplicationServiceLoadBalancer,
+      args as ApplicationLoadBalancerAttachment,
       { parent: owner },
     ),
   ).toThrow(

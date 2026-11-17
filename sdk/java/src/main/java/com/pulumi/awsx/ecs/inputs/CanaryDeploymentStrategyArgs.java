@@ -15,9 +15,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class CanaryStrategyArgs extends com.pulumi.resources.ResourceArgs {
+public final class CanaryDeploymentStrategyArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final CanaryStrategyArgs Empty = new CanaryStrategyArgs();
+    public static final CanaryDeploymentStrategyArgs Empty = new CanaryDeploymentStrategyArgs();
 
     /**
      * Number of minutes to keep the previous service revision running after all production traffic
@@ -165,9 +165,9 @@ public final class CanaryStrategyArgs extends com.pulumi.resources.ResourceArgs 
         return Optional.ofNullable(this.pauseHooks);
     }
 
-    private CanaryStrategyArgs() {}
+    private CanaryDeploymentStrategyArgs() {}
 
-    private CanaryStrategyArgs(CanaryStrategyArgs $) {
+    private CanaryDeploymentStrategyArgs(CanaryDeploymentStrategyArgs $) {
         this.bakeTimeMinutes = $.bakeTimeMinutes;
         this.canaryBakeTimeMinutes = $.canaryBakeTimeMinutes;
         this.canaryPercent = $.canaryPercent;
@@ -179,19 +179,19 @@ public final class CanaryStrategyArgs extends com.pulumi.resources.ResourceArgs 
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(CanaryStrategyArgs defaults) {
+    public static Builder builder(CanaryDeploymentStrategyArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private CanaryStrategyArgs $;
+        private CanaryDeploymentStrategyArgs $;
 
         public Builder() {
-            $ = new CanaryStrategyArgs();
+            $ = new CanaryDeploymentStrategyArgs();
         }
 
-        public Builder(CanaryStrategyArgs defaults) {
-            $ = new CanaryStrategyArgs(Objects.requireNonNull(defaults));
+        public Builder(CanaryDeploymentStrategyArgs defaults) {
+            $ = new CanaryDeploymentStrategyArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -320,9 +320,9 @@ public final class CanaryStrategyArgs extends com.pulumi.resources.ResourceArgs 
             return pauseHooks(List.of(pauseHooks));
         }
 
-        public CanaryStrategyArgs build() {
+        public CanaryDeploymentStrategyArgs build() {
             if ($.bakeTimeMinutes == null) {
-                throw new MissingRequiredPropertyException("CanaryStrategyArgs", "bakeTimeMinutes");
+                throw new MissingRequiredPropertyException("CanaryDeploymentStrategyArgs", "bakeTimeMinutes");
             }
             return $;
         }

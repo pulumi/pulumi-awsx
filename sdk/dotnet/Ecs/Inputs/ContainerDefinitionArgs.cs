@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class ContainerDefinitionOptionsArgs : global::Pulumi.ResourceArgs
+    public sealed class ContainerDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("command")]
         private List<Input<string>>? _command;
@@ -156,7 +156,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
         /// </summary>
         [Input("healthCheck")]
-        public Inputs.HealthCheckArgs? HealthCheck { get; set; }
+        public Inputs.ContainerHealthCheckArgs? HealthCheck { get; set; }
 
         /// <summary>
         /// The image used to start the container.
@@ -184,7 +184,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// Default - CloudWatch logging with a shared log group created by this component.
         /// </summary>
         [Input("logging")]
-        public Inputs.ContainerLogDriverArgs? Logging { get; set; }
+        public Inputs.ContainerLoggingArgs? Logging { get; set; }
 
         /// <summary>
         /// Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed
@@ -340,9 +340,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("workingDirectory")]
         public string? WorkingDirectory { get; set; }
 
-        public ContainerDefinitionOptionsArgs()
+        public ContainerDefinitionArgs()
         {
         }
-        public static new ContainerDefinitionOptionsArgs Empty => new ContainerDefinitionOptionsArgs();
+        public static new ContainerDefinitionArgs Empty => new ContainerDefinitionArgs();
     }
 }

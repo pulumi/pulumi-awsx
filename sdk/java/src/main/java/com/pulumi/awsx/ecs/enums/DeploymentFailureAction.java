@@ -14,12 +14,12 @@ import java.util.StringJoiner;
          * On failure restore the last completed deployment
          * 
          */
-        ROLLBACK("Rollback"),
+        ROLLBACK("ROLLBACK"),
         /**
          * On failure stop the failed deployment and require manual remediation
          * 
          */
-        STOP("Stop");
+        STOP("STOP");
 
         private final String value;
 

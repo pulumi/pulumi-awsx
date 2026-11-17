@@ -13,9 +13,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
+public final class ContainerHealthCheckArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final HealthCheckArgs Empty = new HealthCheckArgs();
+    public static final ContainerHealthCheckArgs Empty = new ContainerHealthCheckArgs();
 
     /**
      * The command that the container runs to determine whether it is healthy.
@@ -120,9 +120,9 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.timeoutSeconds);
     }
 
-    private HealthCheckArgs() {}
+    private ContainerHealthCheckArgs() {}
 
-    private HealthCheckArgs(HealthCheckArgs $) {
+    private ContainerHealthCheckArgs(ContainerHealthCheckArgs $) {
         this.command = $.command;
         this.intervalSeconds = $.intervalSeconds;
         this.retries = $.retries;
@@ -133,19 +133,19 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(HealthCheckArgs defaults) {
+    public static Builder builder(ContainerHealthCheckArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private HealthCheckArgs $;
+        private ContainerHealthCheckArgs $;
 
         public Builder() {
-            $ = new HealthCheckArgs();
+            $ = new ContainerHealthCheckArgs();
         }
 
-        public Builder(HealthCheckArgs defaults) {
-            $ = new HealthCheckArgs(Objects.requireNonNull(defaults));
+        public Builder(ContainerHealthCheckArgs defaults) {
+            $ = new ContainerHealthCheckArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -231,9 +231,9 @@ public final class HealthCheckArgs extends com.pulumi.resources.ResourceArgs {
             return this;
         }
 
-        public HealthCheckArgs build() {
+        public ContainerHealthCheckArgs build() {
             if ($.command == null) {
-                throw new MissingRequiredPropertyException("HealthCheckArgs", "command");
+                throw new MissingRequiredPropertyException("ContainerHealthCheckArgs", "command");
             }
             return $;
         }

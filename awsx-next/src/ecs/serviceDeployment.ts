@@ -223,15 +223,15 @@ export enum DeploymentFailureAction {
   /**
    * On failure restore the last completed deployment
    */
-  ROLLBACK = 'Rollback',
+  ROLLBACK = 'ROLLBACK',
 
   /**
    * On failure stop the failed deployment and require manual remediation
    */
-  STOP = 'Stop',
+  STOP = 'STOP',
 }
 
-export interface RollingStrategy {
+export interface RollingDeploymentStrategy {
   /**
    * Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
    *
@@ -315,13 +315,13 @@ export interface ProgressiveDeploymentSettings {
 /**
  * Shifts all production traffic to the new revision once it is ready.
  */
-export interface BlueGreenStrategy extends ProgressiveDeploymentSettings {}
+export interface BlueGreenDeploymentStrategy extends ProgressiveDeploymentSettings {}
 
 /**
  * Shifts an initial percentage of production traffic to the new revision, then shifts the remaining
  * traffic after an observation period. Requires at least one load-balancer attachment.
  */
-export interface CanaryStrategy extends ProgressiveDeploymentSettings {
+export interface CanaryDeploymentStrategy extends ProgressiveDeploymentSettings {
   /**
    * Initial percentage of production traffic sent to the new service revision during the canary
    * phase. Valid values are multiples of 0.1 from 0.1 to 100.0.
@@ -343,7 +343,7 @@ export interface CanaryStrategy extends ProgressiveDeploymentSettings {
  * Shifts production traffic to the new revision in equal increments, with a wait between
  * increments. Requires at least one load-balancer attachment.
  */
-export interface LinearStrategy extends ProgressiveDeploymentSettings {
+export interface LinearDeploymentStrategy extends ProgressiveDeploymentSettings {
   /**
    * Percentage of production traffic shifted to the new service revision in each increment. Valid
    * values are multiples of 0.1 from 3.0 to 100.0.
@@ -368,26 +368,26 @@ export interface ServiceDeploymentStrategy {
   /**
    * Configuration for the rolling update strategy. This is the default.
    */
-  readonly rolling?: RollingStrategy;
+  readonly rolling?: RollingDeploymentStrategy;
 
   /**
    * Configuration for shifting all production traffic to the new revision once it is ready.
    */
-  readonly blueGreen?: BlueGreenStrategy;
+  readonly blueGreen?: BlueGreenDeploymentStrategy;
 
   /**
    * Configuration for shifting production traffic in equal increments.
    *
    * Default - no linear configuration
    */
-  readonly linear?: LinearStrategy;
+  readonly linear?: LinearDeploymentStrategy;
 
   /**
    * Configuration for testing an initial percentage of production traffic before shifting the rest.
    *
    * Default - no canary configuration
    */
-  readonly canary?: CanaryStrategy;
+  readonly canary?: CanaryDeploymentStrategy;
 }
 
 interface CreatedDeploymentLifecycleHooks {
@@ -398,10 +398,10 @@ interface CreatedDeploymentLifecycleHooks {
 }
 
 export type ResolvedDeploymentStrategy =
-  | { strategy: DeploymentStrategy.ROLLING; config: RollingStrategy }
-  | { strategy: DeploymentStrategy.BLUE_GREEN; config: BlueGreenStrategy }
-  | { strategy: DeploymentStrategy.CANARY; config: CanaryStrategy }
-  | { strategy: DeploymentStrategy.LINEAR; config: LinearStrategy };
+  | { strategy: DeploymentStrategy.ROLLING; config: RollingDeploymentStrategy }
+  | { strategy: DeploymentStrategy.BLUE_GREEN; config: BlueGreenDeploymentStrategy }
+  | { strategy: DeploymentStrategy.CANARY; config: CanaryDeploymentStrategy }
+  | { strategy: DeploymentStrategy.LINEAR; config: LinearDeploymentStrategy };
 
 /**
  * Selects the single deployment strategy requested by the service.

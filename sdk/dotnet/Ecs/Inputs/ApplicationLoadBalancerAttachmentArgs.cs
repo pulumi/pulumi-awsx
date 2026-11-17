@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class ApplicationServiceLoadBalancerArgs : global::Pulumi.ResourceArgs
+    public sealed class ApplicationLoadBalancerAttachmentArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// The name of the container to route traffic to.
@@ -73,10 +73,10 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Pulumi.Awsx.Ecs.ApplicationProtocol? TargetProtocol { get; set; }
 
         /// <summary>
-        /// Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+        /// Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
         /// GRPC require an HTTPS listener.
         /// 
-        /// Default - ApplicationProtocolVersion.HTTP_1
+        /// Default - ApplicationProtocolVersion.HTTP1
         /// </summary>
         [Input("targetProtocolVersion")]
         public Pulumi.Awsx.Ecs.ApplicationProtocolVersion? TargetProtocolVersion { get; set; }
@@ -88,9 +88,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("testTraffic")]
         public Inputs.TestTrafficArgs? TestTraffic { get; set; }
 
-        public ApplicationServiceLoadBalancerArgs()
+        public ApplicationLoadBalancerAttachmentArgs()
         {
         }
-        public static new ApplicationServiceLoadBalancerArgs Empty => new ApplicationServiceLoadBalancerArgs();
+        public static new ApplicationLoadBalancerAttachmentArgs Empty => new ApplicationLoadBalancerAttachmentArgs();
     }
 }

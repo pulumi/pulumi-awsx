@@ -15,7 +15,7 @@
 import * as aws from '@pulumi/aws';
 import * as native from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
-import { AwsLogDriverMode, TaskDefinition } from '../../src/ecs';
+import { LogDeliveryMode, TaskDefinition } from '../../src/ecs';
 import {
   credentialsSecretArnFromSpec,
   renderCredentialSpecConfig,
@@ -1455,7 +1455,7 @@ describe('TaskDefinition', () => {
           logging: {
             cloudwatch: {
               streamPrefix: 'application',
-              mode: AwsLogDriverMode.NON_BLOCKING,
+              mode: LogDeliveryMode.NON_BLOCKING,
               maxBufferSizeBytes: 1048576,
             },
           },
@@ -1919,7 +1919,7 @@ describe('TaskDefinition', () => {
     );
     await unwrap(task.taskDefinitionArn);
 
-    expect(task.name).toBe('outputs');
+    expect(task).not.toHaveProperty('name');
     expect(task.region).toBe('us-east-2');
     expect(task.executionRole).toBeDefined();
     expect(task.taskRole).toBeDefined();

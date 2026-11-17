@@ -10,8 +10,8 @@ export const ApplicationProtocol = {
 export type ApplicationProtocol = (typeof ApplicationProtocol)[keyof typeof ApplicationProtocol];
 
 export const ApplicationProtocolVersion = {
-    HTTP_1: "HTTP1",
-    HTTP_2: "HTTP2",
+    HTTP1: "HTTP1",
+    HTTP2: "HTTP2",
     GRPC: "GRPC",
 } as const;
 
@@ -29,20 +29,6 @@ export const AvailabilityZoneRebalancing = {
 } as const;
 
 export type AvailabilityZoneRebalancing = (typeof AvailabilityZoneRebalancing)[keyof typeof AvailabilityZoneRebalancing];
-
-export const AwsLogDriverMode = {
-    /**
-     * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
-     */
-    BLOCKING: "blocking",
-    /**
-     * Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
-     * fills.
-     */
-    NON_BLOCKING: "non-blocking",
-} as const;
-
-export type AwsLogDriverMode = (typeof AwsLogDriverMode)[keyof typeof AwsLogDriverMode];
 
 export const ContainerDependencyCondition = {
     /**
@@ -76,14 +62,28 @@ export const DeploymentFailureAction = {
     /**
      * On failure restore the last completed deployment
      */
-    ROLLBACK: "Rollback",
+    ROLLBACK: "ROLLBACK",
     /**
      * On failure stop the failed deployment and require manual remediation
      */
-    STOP: "Stop",
+    STOP: "STOP",
 } as const;
 
 export type DeploymentFailureAction = (typeof DeploymentFailureAction)[keyof typeof DeploymentFailureAction];
+
+export const LogDeliveryMode = {
+    /**
+     * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+     */
+    BLOCKING: "blocking",
+    /**
+     * Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+     * fills.
+     */
+    NON_BLOCKING: "non-blocking",
+} as const;
+
+export type LogDeliveryMode = (typeof LogDeliveryMode)[keyof typeof LogDeliveryMode];
 
 export const PauseTimeoutAction = {
     /**

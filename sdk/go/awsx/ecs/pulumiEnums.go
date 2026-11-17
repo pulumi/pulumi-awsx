@@ -178,9 +178,9 @@ func (in *applicationProtocolPtr) ToApplicationProtocolPtrOutputWithContext(ctx 
 type ApplicationProtocolVersion string
 
 const (
-	ApplicationProtocolVersion_HTTP_1 = ApplicationProtocolVersion("HTTP1")
-	ApplicationProtocolVersion_HTTP_2 = ApplicationProtocolVersion("HTTP2")
-	ApplicationProtocolVersionGRPC    = ApplicationProtocolVersion("GRPC")
+	ApplicationProtocolVersionHTTP1 = ApplicationProtocolVersion("HTTP1")
+	ApplicationProtocolVersionHTTP2 = ApplicationProtocolVersion("HTTP2")
+	ApplicationProtocolVersionGRPC  = ApplicationProtocolVersion("GRPC")
 )
 
 func (ApplicationProtocolVersion) ElementType() reflect.Type {
@@ -305,8 +305,8 @@ func (o ApplicationProtocolVersionPtrOutput) ToStringPtrOutputWithContext(ctx co
 // ApplicationProtocolVersionInput is an input type that accepts values of the ApplicationProtocolVersion enum
 // A concrete instance of `ApplicationProtocolVersionInput` can be one of the following:
 //
-//	ApplicationProtocolVersion_HTTP_1
-//	ApplicationProtocolVersion_HTTP_2
+//	ApplicationProtocolVersionHTTP1
+//	ApplicationProtocolVersionHTTP2
 //	ApplicationProtocolVersionGRPC
 type ApplicationProtocolVersionInput interface {
 	pulumi.Input
@@ -350,174 +350,6 @@ const (
 	// Availability zone rebalancing is disabled.
 	AvailabilityZoneRebalancingDISABLED = AvailabilityZoneRebalancing("DISABLED")
 )
-
-type AwsLogDriverMode string
-
-const (
-	// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
-	AwsLogDriverModeBLOCKING = AwsLogDriverMode("blocking")
-	// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
-	// fills.
-	AwsLogDriverMode_NON_BLOCKING = AwsLogDriverMode("non-blocking")
-)
-
-func (AwsLogDriverMode) ElementType() reflect.Type {
-	return reflect.TypeOf((*AwsLogDriverMode)(nil)).Elem()
-}
-
-func (e AwsLogDriverMode) ToAwsLogDriverModeOutput() AwsLogDriverModeOutput {
-	return pulumi.ToOutput(e).(AwsLogDriverModeOutput)
-}
-
-func (e AwsLogDriverMode) ToAwsLogDriverModeOutputWithContext(ctx context.Context) AwsLogDriverModeOutput {
-	return pulumi.ToOutputWithContext(ctx, e).(AwsLogDriverModeOutput)
-}
-
-func (e AwsLogDriverMode) ToAwsLogDriverModePtrOutput() AwsLogDriverModePtrOutput {
-	return e.ToAwsLogDriverModePtrOutputWithContext(context.Background())
-}
-
-func (e AwsLogDriverMode) ToAwsLogDriverModePtrOutputWithContext(ctx context.Context) AwsLogDriverModePtrOutput {
-	return AwsLogDriverMode(e).ToAwsLogDriverModeOutputWithContext(ctx).ToAwsLogDriverModePtrOutputWithContext(ctx)
-}
-
-func (e AwsLogDriverMode) ToStringOutput() pulumi.StringOutput {
-	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
-}
-
-func (e AwsLogDriverMode) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
-	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
-}
-
-func (e AwsLogDriverMode) ToStringPtrOutput() pulumi.StringPtrOutput {
-	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
-}
-
-func (e AwsLogDriverMode) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
-	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
-}
-
-type AwsLogDriverModeOutput struct{ *pulumi.OutputState }
-
-func (AwsLogDriverModeOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*AwsLogDriverMode)(nil)).Elem()
-}
-
-func (o AwsLogDriverModeOutput) ToAwsLogDriverModeOutput() AwsLogDriverModeOutput {
-	return o
-}
-
-func (o AwsLogDriverModeOutput) ToAwsLogDriverModeOutputWithContext(ctx context.Context) AwsLogDriverModeOutput {
-	return o
-}
-
-func (o AwsLogDriverModeOutput) ToAwsLogDriverModePtrOutput() AwsLogDriverModePtrOutput {
-	return o.ToAwsLogDriverModePtrOutputWithContext(context.Background())
-}
-
-func (o AwsLogDriverModeOutput) ToAwsLogDriverModePtrOutputWithContext(ctx context.Context) AwsLogDriverModePtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v AwsLogDriverMode) *AwsLogDriverMode {
-		return &v
-	}).(AwsLogDriverModePtrOutput)
-}
-
-func (o AwsLogDriverModeOutput) ToStringOutput() pulumi.StringOutput {
-	return o.ToStringOutputWithContext(context.Background())
-}
-
-func (o AwsLogDriverModeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e AwsLogDriverMode) string {
-		return string(e)
-	}).(pulumi.StringOutput)
-}
-
-func (o AwsLogDriverModeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
-	return o.ToStringPtrOutputWithContext(context.Background())
-}
-
-func (o AwsLogDriverModeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e AwsLogDriverMode) *string {
-		v := string(e)
-		return &v
-	}).(pulumi.StringPtrOutput)
-}
-
-type AwsLogDriverModePtrOutput struct{ *pulumi.OutputState }
-
-func (AwsLogDriverModePtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**AwsLogDriverMode)(nil)).Elem()
-}
-
-func (o AwsLogDriverModePtrOutput) ToAwsLogDriverModePtrOutput() AwsLogDriverModePtrOutput {
-	return o
-}
-
-func (o AwsLogDriverModePtrOutput) ToAwsLogDriverModePtrOutputWithContext(ctx context.Context) AwsLogDriverModePtrOutput {
-	return o
-}
-
-func (o AwsLogDriverModePtrOutput) Elem() AwsLogDriverModeOutput {
-	return o.ApplyT(func(v *AwsLogDriverMode) AwsLogDriverMode {
-		if v != nil {
-			return *v
-		}
-		var ret AwsLogDriverMode
-		return ret
-	}).(AwsLogDriverModeOutput)
-}
-
-func (o AwsLogDriverModePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
-	return o.ToStringPtrOutputWithContext(context.Background())
-}
-
-func (o AwsLogDriverModePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, e *AwsLogDriverMode) *string {
-		if e == nil {
-			return nil
-		}
-		v := string(*e)
-		return &v
-	}).(pulumi.StringPtrOutput)
-}
-
-// AwsLogDriverModeInput is an input type that accepts values of the AwsLogDriverMode enum
-// A concrete instance of `AwsLogDriverModeInput` can be one of the following:
-//
-//	AwsLogDriverModeBLOCKING
-//	AwsLogDriverMode_NON_BLOCKING
-type AwsLogDriverModeInput interface {
-	pulumi.Input
-
-	ToAwsLogDriverModeOutput() AwsLogDriverModeOutput
-	ToAwsLogDriverModeOutputWithContext(context.Context) AwsLogDriverModeOutput
-}
-
-var awsLogDriverModePtrType = reflect.TypeOf((**AwsLogDriverMode)(nil)).Elem()
-
-type AwsLogDriverModePtrInput interface {
-	pulumi.Input
-
-	ToAwsLogDriverModePtrOutput() AwsLogDriverModePtrOutput
-	ToAwsLogDriverModePtrOutputWithContext(context.Context) AwsLogDriverModePtrOutput
-}
-
-type awsLogDriverModePtr string
-
-func AwsLogDriverModePtr(v string) AwsLogDriverModePtrInput {
-	return (*awsLogDriverModePtr)(&v)
-}
-
-func (*awsLogDriverModePtr) ElementType() reflect.Type {
-	return awsLogDriverModePtrType
-}
-
-func (in *awsLogDriverModePtr) ToAwsLogDriverModePtrOutput() AwsLogDriverModePtrOutput {
-	return pulumi.ToOutput(in).(AwsLogDriverModePtrOutput)
-}
-
-func (in *awsLogDriverModePtr) ToAwsLogDriverModePtrOutputWithContext(ctx context.Context) AwsLogDriverModePtrOutput {
-	return pulumi.ToOutputWithContext(ctx, in).(AwsLogDriverModePtrOutput)
-}
 
 type ContainerDependencyCondition string
 
@@ -703,9 +535,9 @@ type DeploymentFailureAction string
 
 const (
 	// On failure restore the last completed deployment
-	DeploymentFailureActionROLLBACK = DeploymentFailureAction("Rollback")
+	DeploymentFailureActionROLLBACK = DeploymentFailureAction("ROLLBACK")
 	// On failure stop the failed deployment and require manual remediation
-	DeploymentFailureActionSTOP = DeploymentFailureAction("Stop")
+	DeploymentFailureActionSTOP = DeploymentFailureAction("STOP")
 )
 
 func (DeploymentFailureAction) ElementType() reflect.Type {
@@ -864,6 +696,174 @@ func (in *deploymentFailureActionPtr) ToDeploymentFailureActionPtrOutput() Deplo
 
 func (in *deploymentFailureActionPtr) ToDeploymentFailureActionPtrOutputWithContext(ctx context.Context) DeploymentFailureActionPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(DeploymentFailureActionPtrOutput)
+}
+
+type LogDeliveryMode string
+
+const (
+	// Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+	LogDeliveryModeBLOCKING = LogDeliveryMode("blocking")
+	// Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+	// fills.
+	LogDeliveryMode_NON_BLOCKING = LogDeliveryMode("non-blocking")
+)
+
+func (LogDeliveryMode) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogDeliveryMode)(nil)).Elem()
+}
+
+func (e LogDeliveryMode) ToLogDeliveryModeOutput() LogDeliveryModeOutput {
+	return pulumi.ToOutput(e).(LogDeliveryModeOutput)
+}
+
+func (e LogDeliveryMode) ToLogDeliveryModeOutputWithContext(ctx context.Context) LogDeliveryModeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(LogDeliveryModeOutput)
+}
+
+func (e LogDeliveryMode) ToLogDeliveryModePtrOutput() LogDeliveryModePtrOutput {
+	return e.ToLogDeliveryModePtrOutputWithContext(context.Background())
+}
+
+func (e LogDeliveryMode) ToLogDeliveryModePtrOutputWithContext(ctx context.Context) LogDeliveryModePtrOutput {
+	return LogDeliveryMode(e).ToLogDeliveryModeOutputWithContext(ctx).ToLogDeliveryModePtrOutputWithContext(ctx)
+}
+
+func (e LogDeliveryMode) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e LogDeliveryMode) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e LogDeliveryMode) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e LogDeliveryMode) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type LogDeliveryModeOutput struct{ *pulumi.OutputState }
+
+func (LogDeliveryModeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogDeliveryMode)(nil)).Elem()
+}
+
+func (o LogDeliveryModeOutput) ToLogDeliveryModeOutput() LogDeliveryModeOutput {
+	return o
+}
+
+func (o LogDeliveryModeOutput) ToLogDeliveryModeOutputWithContext(ctx context.Context) LogDeliveryModeOutput {
+	return o
+}
+
+func (o LogDeliveryModeOutput) ToLogDeliveryModePtrOutput() LogDeliveryModePtrOutput {
+	return o.ToLogDeliveryModePtrOutputWithContext(context.Background())
+}
+
+func (o LogDeliveryModeOutput) ToLogDeliveryModePtrOutputWithContext(ctx context.Context) LogDeliveryModePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LogDeliveryMode) *LogDeliveryMode {
+		return &v
+	}).(LogDeliveryModePtrOutput)
+}
+
+func (o LogDeliveryModeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o LogDeliveryModeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e LogDeliveryMode) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o LogDeliveryModeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o LogDeliveryModeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e LogDeliveryMode) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type LogDeliveryModePtrOutput struct{ *pulumi.OutputState }
+
+func (LogDeliveryModePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogDeliveryMode)(nil)).Elem()
+}
+
+func (o LogDeliveryModePtrOutput) ToLogDeliveryModePtrOutput() LogDeliveryModePtrOutput {
+	return o
+}
+
+func (o LogDeliveryModePtrOutput) ToLogDeliveryModePtrOutputWithContext(ctx context.Context) LogDeliveryModePtrOutput {
+	return o
+}
+
+func (o LogDeliveryModePtrOutput) Elem() LogDeliveryModeOutput {
+	return o.ApplyT(func(v *LogDeliveryMode) LogDeliveryMode {
+		if v != nil {
+			return *v
+		}
+		var ret LogDeliveryMode
+		return ret
+	}).(LogDeliveryModeOutput)
+}
+
+func (o LogDeliveryModePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o LogDeliveryModePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *LogDeliveryMode) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// LogDeliveryModeInput is an input type that accepts values of the LogDeliveryMode enum
+// A concrete instance of `LogDeliveryModeInput` can be one of the following:
+//
+//	LogDeliveryModeBLOCKING
+//	LogDeliveryMode_NON_BLOCKING
+type LogDeliveryModeInput interface {
+	pulumi.Input
+
+	ToLogDeliveryModeOutput() LogDeliveryModeOutput
+	ToLogDeliveryModeOutputWithContext(context.Context) LogDeliveryModeOutput
+}
+
+var logDeliveryModePtrType = reflect.TypeOf((**LogDeliveryMode)(nil)).Elem()
+
+type LogDeliveryModePtrInput interface {
+	pulumi.Input
+
+	ToLogDeliveryModePtrOutput() LogDeliveryModePtrOutput
+	ToLogDeliveryModePtrOutputWithContext(context.Context) LogDeliveryModePtrOutput
+}
+
+type logDeliveryModePtr string
+
+func LogDeliveryModePtr(v string) LogDeliveryModePtrInput {
+	return (*logDeliveryModePtr)(&v)
+}
+
+func (*logDeliveryModePtr) ElementType() reflect.Type {
+	return logDeliveryModePtrType
+}
+
+func (in *logDeliveryModePtr) ToLogDeliveryModePtrOutput() LogDeliveryModePtrOutput {
+	return pulumi.ToOutput(in).(LogDeliveryModePtrOutput)
+}
+
+func (in *logDeliveryModePtr) ToLogDeliveryModePtrOutputWithContext(ctx context.Context) LogDeliveryModePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(LogDeliveryModePtrOutput)
 }
 
 type PauseTimeoutAction string
@@ -2387,12 +2387,12 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*ApplicationProtocolPtrInput)(nil)).Elem(), ApplicationProtocol("HTTP"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ApplicationProtocolVersionInput)(nil)).Elem(), ApplicationProtocolVersion("HTTP1"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ApplicationProtocolVersionPtrInput)(nil)).Elem(), ApplicationProtocolVersion("HTTP1"))
-	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogDriverModeInput)(nil)).Elem(), AwsLogDriverMode("blocking"))
-	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogDriverModePtrInput)(nil)).Elem(), AwsLogDriverMode("blocking"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyConditionInput)(nil)).Elem(), ContainerDependencyCondition("START"))
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyConditionPtrInput)(nil)).Elem(), ContainerDependencyCondition("START"))
-	pulumi.RegisterInputType(reflect.TypeOf((*DeploymentFailureActionInput)(nil)).Elem(), DeploymentFailureAction("Rollback"))
-	pulumi.RegisterInputType(reflect.TypeOf((*DeploymentFailureActionPtrInput)(nil)).Elem(), DeploymentFailureAction("Rollback"))
+	pulumi.RegisterInputType(reflect.TypeOf((*DeploymentFailureActionInput)(nil)).Elem(), DeploymentFailureAction("ROLLBACK"))
+	pulumi.RegisterInputType(reflect.TypeOf((*DeploymentFailureActionPtrInput)(nil)).Elem(), DeploymentFailureAction("ROLLBACK"))
+	pulumi.RegisterInputType(reflect.TypeOf((*LogDeliveryModeInput)(nil)).Elem(), LogDeliveryMode("blocking"))
+	pulumi.RegisterInputType(reflect.TypeOf((*LogDeliveryModePtrInput)(nil)).Elem(), LogDeliveryMode("blocking"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PauseTimeoutActionInput)(nil)).Elem(), PauseTimeoutAction("ROLLBACK"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PauseTimeoutActionPtrInput)(nil)).Elem(), PauseTimeoutAction("ROLLBACK"))
 	pulumi.RegisterInputType(reflect.TypeOf((*PortMappingAppProtocolInput)(nil)).Elem(), PortMappingAppProtocol("http"))
@@ -2415,12 +2415,12 @@ func init() {
 	pulumi.RegisterOutputType(ApplicationProtocolPtrOutput{})
 	pulumi.RegisterOutputType(ApplicationProtocolVersionOutput{})
 	pulumi.RegisterOutputType(ApplicationProtocolVersionPtrOutput{})
-	pulumi.RegisterOutputType(AwsLogDriverModeOutput{})
-	pulumi.RegisterOutputType(AwsLogDriverModePtrOutput{})
 	pulumi.RegisterOutputType(ContainerDependencyConditionOutput{})
 	pulumi.RegisterOutputType(ContainerDependencyConditionPtrOutput{})
 	pulumi.RegisterOutputType(DeploymentFailureActionOutput{})
 	pulumi.RegisterOutputType(DeploymentFailureActionPtrOutput{})
+	pulumi.RegisterOutputType(LogDeliveryModeOutput{})
+	pulumi.RegisterOutputType(LogDeliveryModePtrOutput{})
 	pulumi.RegisterOutputType(PauseTimeoutActionOutput{})
 	pulumi.RegisterOutputType(PauseTimeoutActionPtrOutput{})
 	pulumi.RegisterOutputType(PortMappingAppProtocolOutput{})

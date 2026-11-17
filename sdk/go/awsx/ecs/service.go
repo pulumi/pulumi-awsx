@@ -138,7 +138,7 @@ type serviceArgs struct {
 	// Each attachment creates its own target group and forwarding rule.
 	//
 	// Default - The ECS service is not attached to a load balancer
-	LoadBalancerAttachments map[string]ServiceLoadBalancer `pulumi:"loadBalancerAttachments"`
+	LoadBalancerAttachments map[string]ServiceLoadBalancerAttachment `pulumi:"loadBalancerAttachments"`
 	// When manageIngress is true, awsx will automatically add ingress rules to the service security
 	// group allowing ingress from any attached load balancers.
 	//
@@ -268,7 +268,7 @@ type ServiceArgs struct {
 	// Each attachment creates its own target group and forwarding rule.
 	//
 	// Default - The ECS service is not attached to a load balancer
-	LoadBalancerAttachments map[string]ServiceLoadBalancerArgs
+	LoadBalancerAttachments map[string]ServiceLoadBalancerAttachmentArgs
 	// When manageIngress is true, awsx will automatically add ingress rules to the service security
 	// group allowing ingress from any attached load balancers.
 	//

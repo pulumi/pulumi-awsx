@@ -11,7 +11,7 @@ return await Deployment.RunAsync(() =>
         MemoryMiB = 512,
         Containers =
         {
-            ["app"] = new ContainerDefinitionOptionsArgs
+            ["app"] = new ContainerDefinitionArgs
             {
                 Image = "public.ecr.aws/nginx/nginx:latest",
             },

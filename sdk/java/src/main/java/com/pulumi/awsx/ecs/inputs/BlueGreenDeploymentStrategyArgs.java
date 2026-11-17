@@ -15,9 +15,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class BlueGreenStrategyArgs extends com.pulumi.resources.ResourceArgs {
+public final class BlueGreenDeploymentStrategyArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final BlueGreenStrategyArgs Empty = new BlueGreenStrategyArgs();
+    public static final BlueGreenDeploymentStrategyArgs Empty = new BlueGreenDeploymentStrategyArgs();
 
     /**
      * Number of minutes to keep the previous service revision running after all production traffic
@@ -123,9 +123,9 @@ public final class BlueGreenStrategyArgs extends com.pulumi.resources.ResourceAr
         return Optional.ofNullable(this.pauseHooks);
     }
 
-    private BlueGreenStrategyArgs() {}
+    private BlueGreenDeploymentStrategyArgs() {}
 
-    private BlueGreenStrategyArgs(BlueGreenStrategyArgs $) {
+    private BlueGreenDeploymentStrategyArgs(BlueGreenDeploymentStrategyArgs $) {
         this.bakeTimeMinutes = $.bakeTimeMinutes;
         this.failureAction = $.failureAction;
         this.lambdaHooks = $.lambdaHooks;
@@ -135,19 +135,19 @@ public final class BlueGreenStrategyArgs extends com.pulumi.resources.ResourceAr
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(BlueGreenStrategyArgs defaults) {
+    public static Builder builder(BlueGreenDeploymentStrategyArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private BlueGreenStrategyArgs $;
+        private BlueGreenDeploymentStrategyArgs $;
 
         public Builder() {
-            $ = new BlueGreenStrategyArgs();
+            $ = new BlueGreenDeploymentStrategyArgs();
         }
 
-        public Builder(BlueGreenStrategyArgs defaults) {
-            $ = new BlueGreenStrategyArgs(Objects.requireNonNull(defaults));
+        public Builder(BlueGreenDeploymentStrategyArgs defaults) {
+            $ = new BlueGreenDeploymentStrategyArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -248,9 +248,9 @@ public final class BlueGreenStrategyArgs extends com.pulumi.resources.ResourceAr
             return pauseHooks(List.of(pauseHooks));
         }
 
-        public BlueGreenStrategyArgs build() {
+        public BlueGreenDeploymentStrategyArgs build() {
             if ($.bakeTimeMinutes == null) {
-                throw new MissingRequiredPropertyException("BlueGreenStrategyArgs", "bakeTimeMinutes");
+                throw new MissingRequiredPropertyException("BlueGreenDeploymentStrategyArgs", "bakeTimeMinutes");
             }
             return $;
         }

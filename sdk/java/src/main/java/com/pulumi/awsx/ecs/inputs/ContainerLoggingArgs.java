@@ -3,7 +3,7 @@
 
 package com.pulumi.awsx.ecs.inputs;
 
-import com.pulumi.awsx.ecs.inputs.AwsLogsLogDriverArgs;
+import com.pulumi.awsx.ecs.inputs.CloudWatchLoggingArgs;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
 import java.util.Objects;
@@ -11,9 +11,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceArgs {
+public final class ContainerLoggingArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final ContainerLogDriverArgs Empty = new ContainerLogDriverArgs();
+    public static final ContainerLoggingArgs Empty = new ContainerLoggingArgs();
 
     /**
      * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
@@ -23,7 +23,7 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
      * 
      */
     @Import(name="cloudwatch")
-    private @Nullable AwsLogsLogDriverArgs cloudwatch;
+    private @Nullable CloudWatchLoggingArgs cloudwatch;
 
     /**
      * @return Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
@@ -32,7 +32,7 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
      * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
      * 
      */
-    public Optional<AwsLogsLogDriverArgs> cloudwatch() {
+    public Optional<CloudWatchLoggingArgs> cloudwatch() {
         return Optional.ofNullable(this.cloudwatch);
     }
 
@@ -57,9 +57,9 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
         return Optional.ofNullable(this.disabled);
     }
 
-    private ContainerLogDriverArgs() {}
+    private ContainerLoggingArgs() {}
 
-    private ContainerLogDriverArgs(ContainerLogDriverArgs $) {
+    private ContainerLoggingArgs(ContainerLoggingArgs $) {
         this.cloudwatch = $.cloudwatch;
         this.disabled = $.disabled;
     }
@@ -67,19 +67,19 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(ContainerLogDriverArgs defaults) {
+    public static Builder builder(ContainerLoggingArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private ContainerLogDriverArgs $;
+        private ContainerLoggingArgs $;
 
         public Builder() {
-            $ = new ContainerLogDriverArgs();
+            $ = new ContainerLoggingArgs();
         }
 
-        public Builder(ContainerLogDriverArgs defaults) {
-            $ = new ContainerLogDriverArgs(Objects.requireNonNull(defaults));
+        public Builder(ContainerLoggingArgs defaults) {
+            $ = new ContainerLoggingArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -91,7 +91,7 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
          * @return builder
          * 
          */
-        public Builder cloudwatch(@Nullable AwsLogsLogDriverArgs cloudwatch) {
+        public Builder cloudwatch(@Nullable CloudWatchLoggingArgs cloudwatch) {
             $.cloudwatch = cloudwatch;
             return this;
         }
@@ -110,7 +110,7 @@ public final class ContainerLogDriverArgs extends com.pulumi.resources.ResourceA
             return this;
         }
 
-        public ContainerLogDriverArgs build() {
+        public ContainerLoggingArgs build() {
             return $;
         }
     }

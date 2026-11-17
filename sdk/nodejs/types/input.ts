@@ -772,7 +772,7 @@ export namespace ecr {
 }
 
 export namespace ecs {
-    export interface ApplicationServiceLoadBalancerArgs {
+    export interface ApplicationLoadBalancerAttachmentArgs {
         /**
          * The name of the container to route traffic to.
          */
@@ -820,10 +820,10 @@ export namespace ecs {
          */
         targetProtocol?: enums.ecs.ApplicationProtocol;
         /**
-         * Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+         * Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
          * GRPC require an HTTPS listener.
          *
-         * Default - ApplicationProtocolVersion.HTTP_1
+         * Default - ApplicationProtocolVersion.HTTP1
          */
         targetProtocolVersion?: enums.ecs.ApplicationProtocolVersion;
         /**
@@ -831,39 +831,6 @@ export namespace ecs {
          * canary, or linear deployments. Omitted means no test route.
          */
         testTraffic?: inputs.ecs.TestTrafficArgs;
-    }
-
-    export interface AwsLogsLogDriverArgs {
-        /**
-         * A multiline start pattern in Python strftime format.
-         */
-        datetimeFormat?: string;
-        /**
-         * The ARN of the log group to log to.
-         *
-         * Default - A log group is created automatically.
-         */
-        logGroupArn?: pulumi.Input<string | undefined>;
-        /**
-         * Size, in bytes, of the buffer used in non-blocking mode.
-         *
-         * Default - The AWS default of 10 MiB when mode is non-blocking.
-         */
-        maxBufferSizeBytes?: number;
-        /**
-         * The delivery mode for log messages.
-         */
-        mode?: enums.ecs.AwsLogDriverMode;
-        /**
-         * A multiline start pattern expressed as a regular expression.
-         */
-        multilinePattern?: string;
-        /**
-         * Prefix used for the container's log streams.
-         *
-         * Default - The task component name.
-         */
-        streamPrefix?: pulumi.Input<string | undefined>;
     }
 
     export interface AwsvpcPortMappingArgs {
@@ -896,7 +863,7 @@ export namespace ecs {
         protocol?: enums.ecs.PortMappingProtocol;
     }
 
-    export interface BlueGreenStrategyArgs {
+    export interface BlueGreenDeploymentStrategyArgs {
         /**
          * Number of minutes to keep the previous service revision running after all production traffic
          * has shifted to the new revision. This is separate from the canary observation period or the
@@ -937,7 +904,7 @@ export namespace ecs {
         pauseHooks?: inputs.ecs.ProgressivePauseHookArgs[];
     }
 
-    export interface CanaryStrategyArgs {
+    export interface CanaryDeploymentStrategyArgs {
         /**
          * Number of minutes to keep the previous service revision running after all production traffic
          * has shifted to the new revision. This is separate from the canary observation period or the
@@ -1009,7 +976,40 @@ export namespace ecs {
         weight?: number;
     }
 
-    export interface ContainerDefinitionOptionsArgs {
+    export interface CloudWatchLoggingArgs {
+        /**
+         * A multiline start pattern in Python strftime format.
+         */
+        datetimeFormat?: string;
+        /**
+         * The ARN of the log group to log to.
+         *
+         * Default - A log group is created automatically.
+         */
+        logGroupArn?: pulumi.Input<string | undefined>;
+        /**
+         * Size, in bytes, of the buffer used in non-blocking mode.
+         *
+         * Default - The AWS default of 10 MiB when mode is non-blocking.
+         */
+        maxBufferSizeBytes?: number;
+        /**
+         * The delivery mode for log messages.
+         */
+        mode?: enums.ecs.LogDeliveryMode;
+        /**
+         * A multiline start pattern expressed as a regular expression.
+         */
+        multilinePattern?: string;
+        /**
+         * Prefix used for the container's log streams.
+         *
+         * Default - The task component name.
+         */
+        streamPrefix?: pulumi.Input<string | undefined>;
+    }
+
+    export interface ContainerDefinitionArgs {
         /**
          * The command passed to the container.
          *
@@ -1097,7 +1097,7 @@ export namespace ecs {
          * For more information, see [Determine Amazon ECS task health using container health
          * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
          */
-        healthCheck?: inputs.ecs.HealthCheckArgs;
+        healthCheck?: inputs.ecs.ContainerHealthCheckArgs;
         /**
          * The image used to start the container.
          */
@@ -1117,7 +1117,7 @@ export namespace ecs {
          *
          * Default - CloudWatch logging with a shared log group created by this component.
          */
-        logging?: inputs.ecs.ContainerLogDriverArgs;
+        logging?: inputs.ecs.ContainerLoggingArgs;
         /**
          * Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed
          * memoryReservationMiB when both are set.
@@ -1233,14 +1233,51 @@ export namespace ecs {
         containerName: string;
     }
 
-    export interface ContainerLogDriverArgs {
+    export interface ContainerHealthCheckArgs {
+        /**
+         * The command that the container runs to determine whether it is healthy.
+         *
+         * The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+         *
+         * Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+         */
+        command: string[];
+        /**
+         * The time, in seconds, between health checks. Valid values are from 5 through 300.
+         *
+         * Default - 30 seconds.
+         */
+        intervalSeconds?: number;
+        /**
+         * The number of consecutive failures required before the container becomes unhealthy. Valid
+         * values are from 1 through 10.
+         *
+         * Default - 3.
+         */
+        retries?: number;
+        /**
+         * The startup grace period, in seconds, during which failed checks do not count toward the retry
+         * limit. Valid values are from 0 through 300.
+         *
+         * Default - No startup grace period.
+         */
+        startPeriodSeconds?: number;
+        /**
+         * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+         *
+         * Default - 5 seconds.
+         */
+        timeoutSeconds?: number;
+    }
+
+    export interface ContainerLoggingArgs {
         /**
          * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
          *
          * For more information, see [CloudWatch
          * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
          */
-        cloudwatch?: inputs.ecs.AwsLogsLogDriverArgs;
+        cloudwatch?: inputs.ecs.CloudWatchLoggingArgs;
         /**
          * Disable collection of this container's stdout and stderr through the log driver. Cannot be
          * combined with `cloudwatch`.
@@ -1614,43 +1651,6 @@ export namespace ecs {
         values?: pulumi.Input<string>[];
     }
 
-    export interface HealthCheckArgs {
-        /**
-         * The command that the container runs to determine whether it is healthy.
-         *
-         * The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-         *
-         * Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-         */
-        command: string[];
-        /**
-         * The time, in seconds, between health checks. Valid values are from 5 through 300.
-         *
-         * Default - 30 seconds.
-         */
-        intervalSeconds?: number;
-        /**
-         * The number of consecutive failures required before the container becomes unhealthy. Valid
-         * values are from 1 through 10.
-         *
-         * Default - 3.
-         */
-        retries?: number;
-        /**
-         * The startup grace period, in seconds, during which failed checks do not count toward the retry
-         * limit. Valid values are from 0 through 300.
-         *
-         * Default - No startup grace period.
-         */
-        startPeriodSeconds?: number;
-        /**
-         * The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-         *
-         * Default - 5 seconds.
-         */
-        timeoutSeconds?: number;
-    }
-
     export interface KernelCapabilitiesArgs {
         /**
          * Linux capabilities to add to the container.
@@ -1664,7 +1664,7 @@ export namespace ecs {
         drop?: string[];
     }
 
-    export interface LinearStrategyArgs {
+    export interface LinearDeploymentStrategyArgs {
         /**
          * Number of minutes to keep the previous service revision running after all production traffic
          * has shifted to the new revision. This is separate from the canary observation period or the
@@ -1838,6 +1838,38 @@ export namespace ecs {
         value: pulumi.Input<string>;
     }
 
+    export interface RollingDeploymentStrategyArgs {
+        /**
+         * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+         * breaker is always enabled.
+         *
+         * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+         * the deployment as failed without automatic rollback.
+         *
+         * Default - DeploymentFailureAction.ROLLBACK
+         */
+        failureAction?: enums.ecs.DeploymentFailureAction;
+        /**
+         * Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+         *
+         * Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+         *
+         * Default - No Lambda hooks.
+         */
+        lambdaHooks?: inputs.ecs.RollingLambdaHookArgs[];
+        /**
+         * Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+         * external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+         * hookId, and CONTINUE or ROLLBACK.
+         *
+         * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+         * performed.
+         *
+         * Default - No pause hooks.
+         */
+        pauseHooks?: inputs.ecs.RollingPauseHookArgs[];
+    }
+
     export interface RollingLambdaHookArgs {
         /**
          * ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function
@@ -1889,38 +1921,6 @@ export namespace ecs {
          * Default - AWS default of 1440 minutes (24 hours).
          */
         timeoutMinutes?: number;
-    }
-
-    export interface RollingStrategyArgs {
-        /**
-         * Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-         * breaker is always enabled.
-         *
-         * ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-         * the deployment as failed without automatic rollback.
-         *
-         * Default - DeploymentFailureAction.ROLLBACK
-         */
-        failureAction?: enums.ecs.DeploymentFailureAction;
-        /**
-         * Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-         *
-         * Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-         *
-         * Default - No Lambda hooks.
-         */
-        lambdaHooks?: inputs.ecs.RollingLambdaHookArgs[];
-        /**
-         * Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-         * external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-         * hookId, and CONTINUE or ROLLBACK.
-         *
-         * If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-         * performed.
-         *
-         * Default - No pause hooks.
-         */
-        pauseHooks?: inputs.ecs.RollingPauseHookArgs[];
     }
 
     export interface SecretsManagerSecretArgs {
@@ -1995,26 +1995,26 @@ export namespace ecs {
         /**
          * Configuration for shifting all production traffic to the new revision once it is ready.
          */
-        blueGreen?: inputs.ecs.BlueGreenStrategyArgs;
+        blueGreen?: inputs.ecs.BlueGreenDeploymentStrategyArgs;
         /**
          * Configuration for testing an initial percentage of production traffic before shifting the rest.
          *
          * Default - no canary configuration
          */
-        canary?: inputs.ecs.CanaryStrategyArgs;
+        canary?: inputs.ecs.CanaryDeploymentStrategyArgs;
         /**
          * Configuration for shifting production traffic in equal increments.
          *
          * Default - no linear configuration
          */
-        linear?: inputs.ecs.LinearStrategyArgs;
+        linear?: inputs.ecs.LinearDeploymentStrategyArgs;
         /**
          * Configuration for the rolling update strategy. This is the default.
          */
-        rolling?: inputs.ecs.RollingStrategyArgs;
+        rolling?: inputs.ecs.RollingDeploymentStrategyArgs;
     }
 
-    export interface ServiceLoadBalancerArgs {
+    export interface ServiceLoadBalancerAttachmentArgs {
         /**
          * Application Load Balancer attachment for a named service endpoint. Creates target groups and
          * forwarding rules on a caller-managed listener.
@@ -2022,7 +2022,7 @@ export namespace ecs {
          * An application configuration must be provided for each entry in the service's
          * loadBalancerAttachments map.
          */
-        application: inputs.ecs.ApplicationServiceLoadBalancerArgs;
+        application: inputs.ecs.ApplicationLoadBalancerAttachmentArgs;
     }
 
     export interface StringMatchArgs {
@@ -2057,7 +2057,7 @@ export namespace ecs {
          *
          * Default - `12`.
          */
-        healthGrpcCodes?: string;
+        healthyGrpcCodes?: string;
         /**
          * The HTTP codes to use when checking for a successful response from a target. Values can be
          * comma-separated individual values (e.g., "200,202") or a range of values (e.g., "200-299").

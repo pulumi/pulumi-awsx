@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class RollingStrategyArgs : global::Pulumi.ResourceArgs
+    public sealed class RollingDeploymentStrategyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -59,9 +59,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
             set => _pauseHooks = value;
         }
 
-        public RollingStrategyArgs()
+        public RollingDeploymentStrategyArgs()
         {
         }
-        public static new RollingStrategyArgs Empty => new RollingStrategyArgs();
+        public static new RollingDeploymentStrategyArgs Empty => new RollingDeploymentStrategyArgs();
     }
 }

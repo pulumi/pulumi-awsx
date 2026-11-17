@@ -10,10 +10,10 @@ __all__ = [
     'ApplicationProtocol',
     'ApplicationProtocolVersion',
     'AvailabilityZoneRebalancing',
-    'AwsLogDriverMode',
     'ContainerDependencyCondition',
     'CpuArchitecture',
     'DeploymentFailureAction',
+    'LogDeliveryMode',
     'PauseTimeoutAction',
     'PortMappingAppProtocol',
     'PortMappingProtocol',
@@ -34,8 +34,8 @@ class ApplicationProtocol(_builtins.str, Enum):
 
 @pulumi.type_token("awsx:ecs:ApplicationProtocolVersion")
 class ApplicationProtocolVersion(_builtins.str, Enum):
-    HTT_P_1 = "HTTP1"
-    HTT_P_2 = "HTTP2"
+    HTTP1 = "HTTP1"
+    HTTP2 = "HTTP2"
     GRPC = "GRPC"
 
 
@@ -48,19 +48,6 @@ class AvailabilityZoneRebalancing(_builtins.str, Enum):
     DISABLED = "DISABLED"
     """
     Availability zone rebalancing is disabled.
-    """
-
-
-@pulumi.type_token("awsx:ecs:AwsLogDriverMode")
-class AwsLogDriverMode(_builtins.str, Enum):
-    BLOCKING = "blocking"
-    """
-    Deliver logs synchronously. Application writes can block when logs cannot be delivered.
-    """
-    NO_N_BLOCKING = "non-blocking"
-    """
-    Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
-    fills.
     """
 
 
@@ -92,13 +79,26 @@ class CpuArchitecture(_builtins.str, Enum):
 
 @pulumi.type_token("awsx:ecs:DeploymentFailureAction")
 class DeploymentFailureAction(_builtins.str, Enum):
-    ROLLBACK = "Rollback"
+    ROLLBACK = "ROLLBACK"
     """
     On failure restore the last completed deployment
     """
-    STOP = "Stop"
+    STOP = "STOP"
     """
     On failure stop the failed deployment and require manual remediation
+    """
+
+
+@pulumi.type_token("awsx:ecs:LogDeliveryMode")
+class LogDeliveryMode(_builtins.str, Enum):
+    BLOCKING = "blocking"
+    """
+    Deliver logs synchronously. Application writes can block when logs cannot be delivered.
+    """
+    NO_N_BLOCKING = "non-blocking"
+    """
+    Buffer logs in memory so application writes do not block. Logs can be lost when the buffer
+    fills.
     """
 
 

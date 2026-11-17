@@ -10,7 +10,7 @@ func main() {
 		task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
 			CpuUnits:  pulumi.Float64Ref(256),
 			MemoryMiB: pulumi.Float64Ref(512),
-			Containers: map[string]ecs.ContainerDefinitionOptionsArgs{
+			Containers: map[string]ecs.ContainerDefinitionArgs{
 				"app": {Image: "public.ecr.aws/nginx/nginx:latest"},
 			},
 		})

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
     @EnumType
-    public enum AwsLogDriverMode {
+    public enum LogDeliveryMode {
         /**
          * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
          * 
@@ -24,7 +24,7 @@ import java.util.StringJoiner;
 
         private final String value;
 
-        AwsLogDriverMode(String value) {
+        LogDeliveryMode(String value) {
             this.value = Objects.requireNonNull(value);
         }
 
@@ -35,7 +35,7 @@ import java.util.StringJoiner;
 
         @Override
         public java.lang.String toString() {
-            return new StringJoiner(", ", "AwsLogDriverMode[", "]")
+            return new StringJoiner(", ", "LogDeliveryMode[", "]")
                 .add("value='" + this.value + "'")
                 .toString();
         }

@@ -38,7 +38,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
      * the component does not create a default log group
      */
     declare public /*out*/ readonly logGroup: pulumi.Output<pulumiAws.cloudwatch.LogGroup | undefined>;
-    declare public /*out*/ readonly name: pulumi.Output<string>;
     declare public readonly region: pulumi.Output<string | undefined>;
     /**
      * The revision number assigned by ECS to the registered task definition.
@@ -79,7 +78,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
             resourceInputs["taskRoleArn"] = args?.taskRoleArn;
             resourceInputs["executionRole"] = undefined /*out*/;
             resourceInputs["logGroup"] = undefined /*out*/;
-            resourceInputs["name"] = undefined /*out*/;
             resourceInputs["revision"] = undefined /*out*/;
             resourceInputs["taskDefinitionArn"] = undefined /*out*/;
             resourceInputs["taskRole"] = undefined /*out*/;
@@ -87,7 +85,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
             resourceInputs["executionRole"] = undefined /*out*/;
             resourceInputs["family"] = undefined /*out*/;
             resourceInputs["logGroup"] = undefined /*out*/;
-            resourceInputs["name"] = undefined /*out*/;
             resourceInputs["region"] = undefined /*out*/;
             resourceInputs["revision"] = undefined /*out*/;
             resourceInputs["taskDefinitionArn"] = undefined /*out*/;
@@ -117,7 +114,7 @@ export interface TaskDefinitionArgs {
      *
      * AWSX uses each map key as the corresponding ECS container name.
      */
-    containers: {[key: string]: inputs.ecs.ContainerDefinitionOptionsArgs};
+    containers: {[key: string]: inputs.ecs.ContainerDefinitionArgs};
     /**
      * The CpuArchitecture of the task.
      *

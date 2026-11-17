@@ -64,12 +64,6 @@ public class TaskDefinition extends com.pulumi.resources.ComponentResource {
     public Output<Optional<LogGroup>> logGroup() {
         return Codegen.optional(this.logGroup);
     }
-    @Export(name="name", refs={String.class}, tree="[0]")
-    private Output<String> name;
-
-    public Output<String> name() {
-        return this.name;
-    }
     @Export(name="region", refs={String.class}, tree="[0]")
     private Output</* @Nullable */ String> region;
 

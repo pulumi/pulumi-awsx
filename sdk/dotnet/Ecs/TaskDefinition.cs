@@ -32,9 +32,6 @@ namespace Pulumi.Awsx.Ecs
         [Output("logGroup")]
         public Output<Pulumi.Aws.CloudWatch.LogGroup?> LogGroup { get; private set; } = null!;
 
-        [Output("name")]
-        public Output<string> Name { get; private set; } = null!;
-
         [Output("region")]
         public Output<string?> Region { get; private set; } = null!;
 
@@ -103,16 +100,16 @@ namespace Pulumi.Awsx.Ecs
         }
 
         [Input("containers", required: true)]
-        private Dictionary<string, Inputs.ContainerDefinitionOptionsArgs>? _containers;
+        private Dictionary<string, Inputs.ContainerDefinitionArgs>? _containers;
 
         /// <summary>
         /// Containers in the task, keyed by container name.
         /// 
         /// AWSX uses each map key as the corresponding ECS container name.
         /// </summary>
-        public Dictionary<string, Inputs.ContainerDefinitionOptionsArgs> Containers
+        public Dictionary<string, Inputs.ContainerDefinitionArgs> Containers
         {
-            get => _containers ?? (_containers = new Dictionary<string, Inputs.ContainerDefinitionOptionsArgs>());
+            get => _containers ?? (_containers = new Dictionary<string, Inputs.ContainerDefinitionArgs>());
             set => _containers = value;
         }
 

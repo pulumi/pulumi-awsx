@@ -209,7 +209,7 @@ export interface ServiceArgs {
      *
      * Default - The ECS service is not attached to a load balancer
      */
-    loadBalancerAttachments?: {[key: string]: inputs.ecs.ServiceLoadBalancerArgs};
+    loadBalancerAttachments?: {[key: string]: inputs.ecs.ServiceLoadBalancerAttachmentArgs};
     /**
      * When manageIngress is true, awsx will automatically add ingress rules to the service security
      * group allowing ingress from any attached load balancers.

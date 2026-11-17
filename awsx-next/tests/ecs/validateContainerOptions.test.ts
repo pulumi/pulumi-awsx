@@ -1,9 +1,9 @@
 import { validateContainerOptions } from '../../src/ecs/validateContainerOptions';
-import type { ContainerDefinitionOptions } from '../../src/ecs/containerDefinition';
+import type { ContainerDefinition } from '../../src/ecs/containerDefinition';
 
 // These invariants used to live on the removed raw ContainerDefinition resource.
 describe('AWSX container validation', () => {
-  test.each<[Partial<ContainerDefinitionOptions>, string]>([
+  test.each<[Partial<ContainerDefinition>, string]>([
     [{ memoryMiB: 128, memoryReservationMiB: 128 }, 'memoryMiB'],
     [{ healthCheck: { command: [] } }, 'healthCheck.command'],
     [{ healthCheck: { command: ['curl'] } }, 'healthCheck.command'],

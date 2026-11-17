@@ -22,7 +22,7 @@ __all__ = ['TaskDefinitionArgs', 'TaskDefinition']
 @pulumi.input_type
 class TaskDefinitionArgs:
     def __init__(__self__, *,
-                 containers: Mapping[str, 'ContainerDefinitionOptionsArgs'],
+                 containers: Mapping[str, 'ContainerDefinitionArgs'],
                  compatibilities: Optional[Sequence['TaskCompatibility']] = None,
                  cpu_architecture: Optional['CpuArchitecture'] = None,
                  cpu_units: Optional[_builtins.float] = None,
@@ -35,7 +35,7 @@ class TaskDefinitionArgs:
         """
         The set of arguments for constructing a TaskDefinition resource.
 
-        :param Mapping[str, 'ContainerDefinitionOptionsArgs'] containers: Containers in the task, keyed by container name.
+        :param Mapping[str, 'ContainerDefinitionArgs'] containers: Containers in the task, keyed by container name.
                
                AWSX uses each map key as the corresponding ECS container name.
         :param Sequence['TaskCompatibility'] compatibilities: Compute environments this task definition must support. When multiple environments are
@@ -152,7 +152,7 @@ class TaskDefinitionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def containers(self) -> Mapping[str, 'ContainerDefinitionOptionsArgs']:
+    def containers(self) -> Mapping[str, 'ContainerDefinitionArgs']:
         """
         Containers in the task, keyed by container name.
 
@@ -161,7 +161,7 @@ class TaskDefinitionArgs:
         return pulumi.get(self, "containers")
 
     @containers.setter
-    def containers(self, value: Mapping[str, 'ContainerDefinitionOptionsArgs']):
+    def containers(self, value: Mapping[str, 'ContainerDefinitionArgs']):
         pulumi.set(self, "containers", value)
 
     @_builtins.property
@@ -362,7 +362,7 @@ class TaskDefinition(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  compatibilities: Optional[Sequence['TaskCompatibility']] = None,
-                 containers: Optional[Mapping[str, Union['ContainerDefinitionOptionsArgs', 'ContainerDefinitionOptionsArgsDict']]] = None,
+                 containers: Optional[Mapping[str, Union['ContainerDefinitionArgs', 'ContainerDefinitionArgsDict']]] = None,
                  cpu_architecture: Optional['CpuArchitecture'] = None,
                  cpu_units: Optional[_builtins.float] = None,
                  ephemeral_storage_gi_b: Optional[_builtins.float] = None,
@@ -384,7 +384,7 @@ class TaskDefinition(pulumi.ComponentResource):
                This does not select where tasks run. Configure capacity separately on the service.
                
                Default - FARGATE.
-        :param Mapping[str, Union['ContainerDefinitionOptionsArgs', 'ContainerDefinitionOptionsArgsDict']] containers: Containers in the task, keyed by container name.
+        :param Mapping[str, Union['ContainerDefinitionArgs', 'ContainerDefinitionArgsDict']] containers: Containers in the task, keyed by container name.
                
                AWSX uses each map key as the corresponding ECS container name.
         :param 'CpuArchitecture' cpu_architecture: The CpuArchitecture of the task.
@@ -497,7 +497,7 @@ class TaskDefinition(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  compatibilities: Optional[Sequence['TaskCompatibility']] = None,
-                 containers: Optional[Mapping[str, Union['ContainerDefinitionOptionsArgs', 'ContainerDefinitionOptionsArgsDict']]] = None,
+                 containers: Optional[Mapping[str, Union['ContainerDefinitionArgs', 'ContainerDefinitionArgsDict']]] = None,
                  cpu_architecture: Optional['CpuArchitecture'] = None,
                  cpu_units: Optional[_builtins.float] = None,
                  ephemeral_storage_gi_b: Optional[_builtins.float] = None,
@@ -531,7 +531,6 @@ class TaskDefinition(pulumi.ComponentResource):
             __props__.__dict__["task_role_arn"] = task_role_arn
             __props__.__dict__["execution_role"] = None
             __props__.__dict__["log_group"] = None
-            __props__.__dict__["name"] = None
             __props__.__dict__["revision"] = None
             __props__.__dict__["task_definition_arn"] = None
             __props__.__dict__["task_role"] = None
@@ -567,11 +566,6 @@ class TaskDefinition(pulumi.ComponentResource):
         the component does not create a default log group
         """
         return pulumi.get(self, "log_group")
-
-    @_builtins.property
-    @pulumi.getter
-    def name(self) -> pulumi.Output[_builtins.str]:
-        return pulumi.get(self, "name")
 
     @_builtins.property
     @pulumi.getter

@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class HealthCheckArgs : global::Pulumi.ResourceArgs
+    public sealed class ContainerHealthCheckArgs : global::Pulumi.ResourceArgs
     {
         [Input("command", required: true)]
         private List<string>? _command;
@@ -62,9 +62,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("timeoutSeconds")]
         public double? TimeoutSeconds { get; set; }
 
-        public HealthCheckArgs()
+        public ContainerHealthCheckArgs()
         {
         }
-        public static new HealthCheckArgs Empty => new HealthCheckArgs();
+        public static new ContainerHealthCheckArgs Empty => new ContainerHealthCheckArgs();
     }
 }

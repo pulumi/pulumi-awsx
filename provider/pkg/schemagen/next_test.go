@@ -41,7 +41,7 @@ func TestNormalizeNextComponents(t *testing.T) {
 						TypeSpec: schema.TypeSpec{
 							Type: "object",
 							AdditionalProperties: &schema.TypeSpec{
-								Ref: "#/types/awsx-next:index:ContainerDefinitionOptions",
+								Ref: "#/types/awsx-next:index:ContainerDefinition",
 							},
 						},
 					},
@@ -52,7 +52,7 @@ func TestNormalizeNextComponents(t *testing.T) {
 			"awsx-next:index:Service": {},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx-next:index:ContainerDefinitionOptions": {
+			"awsx-next:index:ContainerDefinition": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type: "object",
 					Properties: map[string]schema.PropertySpec{
@@ -83,12 +83,12 @@ func TestNormalizeNextComponents(t *testing.T) {
 	assert.Equal(t, []string{"executionRole"}, task.Required)
 	assert.Equal(t, externalRole, task.Properties["executionRole"].Ref)
 	require.NotNil(t, task.InputProperties["containers"].AdditionalProperties)
-	assert.Equal(t, "#/types/awsx:ecs:ContainerDefinitionOptions",
+	assert.Equal(t, "#/types/awsx:ecs:ContainerDefinition",
 		task.InputProperties["containers"].AdditionalProperties.Ref)
 	assert.Contains(t, normalized.Resources, "awsx:ecs:Service")
 	assert.NotContains(t, normalized.Resources, "awsx-next:index:TaskDefinition")
 
-	dependencies := normalized.Types["awsx:ecs:ContainerDefinitionOptions"].Properties["dependencies"]
+	dependencies := normalized.Types["awsx:ecs:ContainerDefinition"].Properties["dependencies"]
 	require.NotNil(t, dependencies.Items)
 	require.Len(t, dependencies.Items.OneOf, 2)
 	assert.Equal(t, "#/types/awsx:ecs:ContainerDependency", dependencies.Items.OneOf[0].Ref)

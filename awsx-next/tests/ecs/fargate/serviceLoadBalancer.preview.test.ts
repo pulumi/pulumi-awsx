@@ -75,7 +75,7 @@ it('declares the target group and rule even when the listener protocol is unknow
     {
       containerName: 'app',
       containerPort: 3000,
-      targetProtocolVersion: ApplicationProtocolVersion.HTTP_2,
+      targetProtocolVersion: ApplicationProtocolVersion.HTTP2,
       listenerArn: 'listener',
       priority: 10,
       match: { methods: ['GET'] },

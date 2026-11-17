@@ -26,8 +26,8 @@ public final class TargetGroupHealthCheckArgs extends com.pulumi.resources.Resou
      * Default - `12`.
      * 
      */
-    @Import(name="healthGrpcCodes")
-    private @Nullable String healthGrpcCodes;
+    @Import(name="healthyGrpcCodes")
+    private @Nullable String healthyGrpcCodes;
 
     /**
      * @return The gRPC codes to use when checking for a response from a target. Values can be comma-separated
@@ -39,8 +39,8 @@ public final class TargetGroupHealthCheckArgs extends com.pulumi.resources.Resou
      * Default - `12`.
      * 
      */
-    public Optional<String> healthGrpcCodes() {
-        return Optional.ofNullable(this.healthGrpcCodes);
+    public Optional<String> healthyGrpcCodes() {
+        return Optional.ofNullable(this.healthyGrpcCodes);
     }
 
     /**
@@ -216,7 +216,7 @@ public final class TargetGroupHealthCheckArgs extends com.pulumi.resources.Resou
     private TargetGroupHealthCheckArgs() {}
 
     private TargetGroupHealthCheckArgs(TargetGroupHealthCheckArgs $) {
-        this.healthGrpcCodes = $.healthGrpcCodes;
+        this.healthyGrpcCodes = $.healthyGrpcCodes;
         this.healthyHttpCodes = $.healthyHttpCodes;
         this.healthyThreshold = $.healthyThreshold;
         this.intervalSeconds = $.intervalSeconds;
@@ -246,7 +246,7 @@ public final class TargetGroupHealthCheckArgs extends com.pulumi.resources.Resou
         }
 
         /**
-         * @param healthGrpcCodes The gRPC codes to use when checking for a response from a target. Values can be comma-separated
+         * @param healthyGrpcCodes The gRPC codes to use when checking for a response from a target. Values can be comma-separated
          * individual values (e.g., &#34;12,13&#34;) or a range of values (e.g., &#34;12-15&#34;). Once the value has been
          * set, removing it has no effect. To unset it, set it to an empty string `&#34;&#34;`.
          * 
@@ -257,8 +257,8 @@ public final class TargetGroupHealthCheckArgs extends com.pulumi.resources.Resou
          * @return builder
          * 
          */
-        public Builder healthGrpcCodes(@Nullable String healthGrpcCodes) {
-            $.healthGrpcCodes = healthGrpcCodes;
+        public Builder healthyGrpcCodes(@Nullable String healthyGrpcCodes) {
+            $.healthyGrpcCodes = healthyGrpcCodes;
             return this;
         }
 

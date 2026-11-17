@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class BlueGreenStrategyArgs : global::Pulumi.ResourceArgs
+    public sealed class LinearDeploymentStrategyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Number of minutes to keep the previous service revision running after all production traffic
@@ -70,9 +70,26 @@ namespace Pulumi.Awsx.Ecs.Inputs
             set => _pauseHooks = value;
         }
 
-        public BlueGreenStrategyArgs()
+        /// <summary>
+        /// Number of minutes to wait between traffic increments. Valid range: 0-1440 minutes (24 hours).
+        /// 
+        /// Default - AWS default of 6 minutes
+        /// </summary>
+        [Input("stepBakeTimeMinutes")]
+        public double? StepBakeTimeMinutes { get; set; }
+
+        /// <summary>
+        /// Percentage of production traffic shifted to the new service revision in each increment. Valid
+        /// values are multiples of 0.1 from 3.0 to 100.0.
+        /// 
+        /// Default - AWS default of 10.0
+        /// </summary>
+        [Input("stepPercent")]
+        public double? StepPercent { get; set; }
+
+        public LinearDeploymentStrategyArgs()
         {
         }
-        public static new BlueGreenStrategyArgs Empty => new BlueGreenStrategyArgs();
+        public static new LinearDeploymentStrategyArgs Empty => new LinearDeploymentStrategyArgs();
     }
 }

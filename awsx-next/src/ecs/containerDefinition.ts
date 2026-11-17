@@ -126,14 +126,14 @@ export interface ContainerPortRange {
 /**
  * Log collection for an ECS container.
  */
-export interface ContainerLogDriver {
+export interface ContainerLogging {
   /**
    * Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
    *
    * For more information, see [CloudWatch
    * logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
    */
-  readonly cloudwatch?: AwsLogsLogDriver;
+  readonly cloudwatch?: CloudWatchLogging;
 
   /**
    * Disable collection of this container's stdout and stderr through the log driver. Cannot be
@@ -184,7 +184,7 @@ export interface ContainerDependency {
 /**
  * Settings for an ECS container health check.
  */
-export interface HealthCheck {
+export interface ContainerHealthCheck {
   /**
    * The command that the container runs to determine whether it is healthy.
    *
@@ -344,7 +344,7 @@ export interface VolumeFrom {
 /**
  * Container configuration shared by Fargate, EC2, and ECS Managed Instances tasks.
  */
-export interface ContainerDefinitionOptions {
+export interface ContainerDefinition {
   /**
    * The image used to start the container.
    */
@@ -444,7 +444,7 @@ export interface ContainerDefinitionOptions {
    *
    * Default - CloudWatch logging with a shared log group created by this component.
    */
-  readonly logging?: ContainerLogDriver;
+  readonly logging?: ContainerLogging;
 
   /**
    * The command passed to the container.
@@ -499,7 +499,7 @@ export interface ContainerDefinitionOptions {
    * For more information, see [Determine Amazon ECS task health using container health
    * checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: ContainerHealthCheck;
 
   /**
    * Whether to keep standard input open for the container when no client is attached.
@@ -591,7 +591,7 @@ export interface ContainerDefinitionOptions {
  * For more information, see [log delivery
  * options](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html#ECS-Type-LogConfiguration-options).
  */
-export enum AwsLogDriverMode {
+export enum LogDeliveryMode {
   /**
    * Deliver logs synchronously. Application writes can block when logs cannot be delivered.
    */
@@ -606,7 +606,7 @@ export enum AwsLogDriverMode {
 /**
  * Properties shared by EC2 and Fargate awslogs configurations.
  */
-export interface AwsLogsLogDriver {
+export interface CloudWatchLogging {
   /**
    * Prefix used for the container's log streams.
    *
@@ -634,7 +634,7 @@ export interface AwsLogsLogDriver {
   /**
    * The delivery mode for log messages.
    */
-  readonly mode?: AwsLogDriverMode;
+  readonly mode?: LogDeliveryMode;
 
   /**
    * Size, in bytes, of the buffer used in non-blocking mode.

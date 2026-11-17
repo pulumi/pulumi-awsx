@@ -16,7 +16,7 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
-type ApplicationServiceLoadBalancer struct {
+type ApplicationLoadBalancerAttachment struct {
 	// The name of the container to route traffic to.
 	ContainerName string `pulumi:"containerName"`
 	// The port that the ECS Service receives traffic from the load balancer. This should be the same
@@ -49,28 +49,28 @@ type ApplicationServiceLoadBalancer struct {
 	//
 	// Default - ApplicationProtocol.HTTP
 	TargetProtocol *ApplicationProtocol `pulumi:"targetProtocol"`
-	// Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+	// Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
 	// GRPC require an HTTPS listener.
 	//
-	// Default - ApplicationProtocolVersion.HTTP_1
+	// Default - ApplicationProtocolVersion.HTTP1
 	TargetProtocolVersion *ApplicationProtocolVersion `pulumi:"targetProtocolVersion"`
 	// Routing for validating a new revision before production traffic shifts. Requires blue/green,
 	// canary, or linear deployments. Omitted means no test route.
 	TestTraffic *TestTraffic `pulumi:"testTraffic"`
 }
 
-// ApplicationServiceLoadBalancerInput is an input type that accepts ApplicationServiceLoadBalancerArgs and ApplicationServiceLoadBalancerOutput values.
-// You can construct a concrete instance of `ApplicationServiceLoadBalancerInput` via:
+// ApplicationLoadBalancerAttachmentInput is an input type that accepts ApplicationLoadBalancerAttachmentArgs and ApplicationLoadBalancerAttachmentOutput values.
+// You can construct a concrete instance of `ApplicationLoadBalancerAttachmentInput` via:
 //
-//	ApplicationServiceLoadBalancerArgs{...}
-type ApplicationServiceLoadBalancerInput interface {
+//	ApplicationLoadBalancerAttachmentArgs{...}
+type ApplicationLoadBalancerAttachmentInput interface {
 	pulumi.Input
 
-	ToApplicationServiceLoadBalancerOutput() ApplicationServiceLoadBalancerOutput
-	ToApplicationServiceLoadBalancerOutputWithContext(context.Context) ApplicationServiceLoadBalancerOutput
+	ToApplicationLoadBalancerAttachmentOutput() ApplicationLoadBalancerAttachmentOutput
+	ToApplicationLoadBalancerAttachmentOutputWithContext(context.Context) ApplicationLoadBalancerAttachmentOutput
 }
 
-type ApplicationServiceLoadBalancerArgs struct {
+type ApplicationLoadBalancerAttachmentArgs struct {
 	// The name of the container to route traffic to.
 	ContainerName string `pulumi:"containerName"`
 	// The port that the ECS Service receives traffic from the load balancer. This should be the same
@@ -103,76 +103,76 @@ type ApplicationServiceLoadBalancerArgs struct {
 	//
 	// Default - ApplicationProtocol.HTTP
 	TargetProtocol *ApplicationProtocol `pulumi:"targetProtocol"`
-	// Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+	// Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
 	// GRPC require an HTTPS listener.
 	//
-	// Default - ApplicationProtocolVersion.HTTP_1
+	// Default - ApplicationProtocolVersion.HTTP1
 	TargetProtocolVersion *ApplicationProtocolVersion `pulumi:"targetProtocolVersion"`
 	// Routing for validating a new revision before production traffic shifts. Requires blue/green,
 	// canary, or linear deployments. Omitted means no test route.
 	TestTraffic *TestTrafficArgs `pulumi:"testTraffic"`
 }
 
-func (ApplicationServiceLoadBalancerArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*ApplicationServiceLoadBalancer)(nil)).Elem()
+func (ApplicationLoadBalancerAttachmentArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ApplicationLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (i ApplicationServiceLoadBalancerArgs) ToApplicationServiceLoadBalancerOutput() ApplicationServiceLoadBalancerOutput {
-	return i.ToApplicationServiceLoadBalancerOutputWithContext(context.Background())
+func (i ApplicationLoadBalancerAttachmentArgs) ToApplicationLoadBalancerAttachmentOutput() ApplicationLoadBalancerAttachmentOutput {
+	return i.ToApplicationLoadBalancerAttachmentOutputWithContext(context.Background())
 }
 
-func (i ApplicationServiceLoadBalancerArgs) ToApplicationServiceLoadBalancerOutputWithContext(ctx context.Context) ApplicationServiceLoadBalancerOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ApplicationServiceLoadBalancerOutput)
+func (i ApplicationLoadBalancerAttachmentArgs) ToApplicationLoadBalancerAttachmentOutputWithContext(ctx context.Context) ApplicationLoadBalancerAttachmentOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ApplicationLoadBalancerAttachmentOutput)
 }
 
-type ApplicationServiceLoadBalancerOutput struct{ *pulumi.OutputState }
+type ApplicationLoadBalancerAttachmentOutput struct{ *pulumi.OutputState }
 
-func (ApplicationServiceLoadBalancerOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*ApplicationServiceLoadBalancer)(nil)).Elem()
+func (ApplicationLoadBalancerAttachmentOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ApplicationLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (o ApplicationServiceLoadBalancerOutput) ToApplicationServiceLoadBalancerOutput() ApplicationServiceLoadBalancerOutput {
+func (o ApplicationLoadBalancerAttachmentOutput) ToApplicationLoadBalancerAttachmentOutput() ApplicationLoadBalancerAttachmentOutput {
 	return o
 }
 
-func (o ApplicationServiceLoadBalancerOutput) ToApplicationServiceLoadBalancerOutputWithContext(ctx context.Context) ApplicationServiceLoadBalancerOutput {
+func (o ApplicationLoadBalancerAttachmentOutput) ToApplicationLoadBalancerAttachmentOutputWithContext(ctx context.Context) ApplicationLoadBalancerAttachmentOutput {
 	return o
 }
 
 // The name of the container to route traffic to.
-func (o ApplicationServiceLoadBalancerOutput) ContainerName() pulumi.StringOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) string { return v.ContainerName }).(pulumi.StringOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) ContainerName() pulumi.StringOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) string { return v.ContainerName }).(pulumi.StringOutput)
 }
 
 // The port that the ECS Service receives traffic from the load balancer. This should be the same
 // port used as the containerPort.
 //
 // Valid values between 1 and 65535
-func (o ApplicationServiceLoadBalancerOutput) ContainerPort() pulumi.Float64Output {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) float64 { return v.ContainerPort }).(pulumi.Float64Output)
+func (o ApplicationLoadBalancerAttachmentOutput) ContainerPort() pulumi.Float64Output {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) float64 { return v.ContainerPort }).(pulumi.Float64Output)
 }
 
 // The ARN of the application listener to attach a production forwarding rule to. The listener's
 // frontend access, certificates, and default action are not modified. Forwarding rules use the
 // inherited AWS Native provider, whose account and region must match the service's AWS account
 // and effective region. Configure aws-native:region or pass a matching aws-native provider.
-func (o ApplicationServiceLoadBalancerOutput) ListenerArn() pulumi.StringOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) string { return v.ListenerArn }).(pulumi.StringOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) ListenerArn() pulumi.StringOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) string { return v.ListenerArn }).(pulumi.StringOutput)
 }
 
 // Conditions selecting production requests. When omitted, a path rule matches all requests. An
 // explicitly empty configuration is not allowed.
 //
 // Default - Match the path pattern `/*`.
-func (o ApplicationServiceLoadBalancerOutput) Match() ListenerConditionsPtrOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) *ListenerConditions { return v.Match }).(ListenerConditionsPtrOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) Match() ListenerConditionsPtrOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) *ListenerConditions { return v.Match }).(ListenerConditionsPtrOutput)
 }
 
 // The available priority for the production rule, from 1 to 50000.
 //
 // If you add multiple load balancer attachments you must ensure the priorities are unique
-func (o ApplicationServiceLoadBalancerOutput) Priority() pulumi.Float64Output {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) float64 { return v.Priority }).(pulumi.Float64Output)
+func (o ApplicationLoadBalancerAttachmentOutput) Priority() pulumi.Float64Output {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) float64 { return v.Priority }).(pulumi.Float64Output)
 }
 
 // Health checks used by the Load Balancer to determine whether the ECS Service target can receive
@@ -181,285 +181,29 @@ func (o ApplicationServiceLoadBalancerOutput) Priority() pulumi.Float64Output {
 // Default - HTTP on the target's traffic port, every 30 seconds with a 5-second timeout. Healthy
 // and unhealthy thresholds are both 3. The default path is `/` with success code `200`, or
 // `/AWS.ALB/healthcheck` with success code `12` for gRPC.
-func (o ApplicationServiceLoadBalancerOutput) TargetHealthCheck() TargetGroupHealthCheckPtrOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) *TargetGroupHealthCheck { return v.TargetHealthCheck }).(TargetGroupHealthCheckPtrOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) TargetHealthCheck() TargetGroupHealthCheckPtrOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) *TargetGroupHealthCheck { return v.TargetHealthCheck }).(TargetGroupHealthCheckPtrOutput)
 }
 
 // Protocol used for requests from the Load Balancer to the ECS Service target.
 //
 // Default - ApplicationProtocol.HTTP
-func (o ApplicationServiceLoadBalancerOutput) TargetProtocol() ApplicationProtocolPtrOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) *ApplicationProtocol { return v.TargetProtocol }).(ApplicationProtocolPtrOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) TargetProtocol() ApplicationProtocolPtrOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) *ApplicationProtocol { return v.TargetProtocol }).(ApplicationProtocolPtrOutput)
 }
 
-// Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+// Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
 // GRPC require an HTTPS listener.
 //
-// Default - ApplicationProtocolVersion.HTTP_1
-func (o ApplicationServiceLoadBalancerOutput) TargetProtocolVersion() ApplicationProtocolVersionPtrOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) *ApplicationProtocolVersion { return v.TargetProtocolVersion }).(ApplicationProtocolVersionPtrOutput)
+// Default - ApplicationProtocolVersion.HTTP1
+func (o ApplicationLoadBalancerAttachmentOutput) TargetProtocolVersion() ApplicationProtocolVersionPtrOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) *ApplicationProtocolVersion { return v.TargetProtocolVersion }).(ApplicationProtocolVersionPtrOutput)
 }
 
 // Routing for validating a new revision before production traffic shifts. Requires blue/green,
 // canary, or linear deployments. Omitted means no test route.
-func (o ApplicationServiceLoadBalancerOutput) TestTraffic() TestTrafficPtrOutput {
-	return o.ApplyT(func(v ApplicationServiceLoadBalancer) *TestTraffic { return v.TestTraffic }).(TestTrafficPtrOutput)
-}
-
-type AwsLogsLogDriver struct {
-	// A multiline start pattern in Python strftime format.
-	DatetimeFormat *string `pulumi:"datetimeFormat"`
-	// The ARN of the log group to log to.
-	//
-	// Default - A log group is created automatically.
-	LogGroupArn *string `pulumi:"logGroupArn"`
-	// Size, in bytes, of the buffer used in non-blocking mode.
-	//
-	// Default - The AWS default of 10 MiB when mode is non-blocking.
-	MaxBufferSizeBytes *float64 `pulumi:"maxBufferSizeBytes"`
-	// The delivery mode for log messages.
-	Mode *AwsLogDriverMode `pulumi:"mode"`
-	// A multiline start pattern expressed as a regular expression.
-	MultilinePattern *string `pulumi:"multilinePattern"`
-	// Prefix used for the container's log streams.
-	//
-	// Default - The task component name.
-	StreamPrefix *string `pulumi:"streamPrefix"`
-}
-
-// AwsLogsLogDriverInput is an input type that accepts AwsLogsLogDriverArgs and AwsLogsLogDriverOutput values.
-// You can construct a concrete instance of `AwsLogsLogDriverInput` via:
-//
-//	AwsLogsLogDriverArgs{...}
-type AwsLogsLogDriverInput interface {
-	pulumi.Input
-
-	ToAwsLogsLogDriverOutput() AwsLogsLogDriverOutput
-	ToAwsLogsLogDriverOutputWithContext(context.Context) AwsLogsLogDriverOutput
-}
-
-type AwsLogsLogDriverArgs struct {
-	// A multiline start pattern in Python strftime format.
-	DatetimeFormat *string `pulumi:"datetimeFormat"`
-	// The ARN of the log group to log to.
-	//
-	// Default - A log group is created automatically.
-	LogGroupArn pulumi.StringPtrInput `pulumi:"logGroupArn"`
-	// Size, in bytes, of the buffer used in non-blocking mode.
-	//
-	// Default - The AWS default of 10 MiB when mode is non-blocking.
-	MaxBufferSizeBytes *float64 `pulumi:"maxBufferSizeBytes"`
-	// The delivery mode for log messages.
-	Mode *AwsLogDriverMode `pulumi:"mode"`
-	// A multiline start pattern expressed as a regular expression.
-	MultilinePattern *string `pulumi:"multilinePattern"`
-	// Prefix used for the container's log streams.
-	//
-	// Default - The task component name.
-	StreamPrefix pulumi.StringPtrInput `pulumi:"streamPrefix"`
-}
-
-func (AwsLogsLogDriverArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*AwsLogsLogDriver)(nil)).Elem()
-}
-
-func (i AwsLogsLogDriverArgs) ToAwsLogsLogDriverOutput() AwsLogsLogDriverOutput {
-	return i.ToAwsLogsLogDriverOutputWithContext(context.Background())
-}
-
-func (i AwsLogsLogDriverArgs) ToAwsLogsLogDriverOutputWithContext(ctx context.Context) AwsLogsLogDriverOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(AwsLogsLogDriverOutput)
-}
-
-func (i AwsLogsLogDriverArgs) ToAwsLogsLogDriverPtrOutput() AwsLogsLogDriverPtrOutput {
-	return i.ToAwsLogsLogDriverPtrOutputWithContext(context.Background())
-}
-
-func (i AwsLogsLogDriverArgs) ToAwsLogsLogDriverPtrOutputWithContext(ctx context.Context) AwsLogsLogDriverPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(AwsLogsLogDriverOutput).ToAwsLogsLogDriverPtrOutputWithContext(ctx)
-}
-
-// AwsLogsLogDriverPtrInput is an input type that accepts AwsLogsLogDriverArgs, AwsLogsLogDriverPtr and AwsLogsLogDriverPtrOutput values.
-// You can construct a concrete instance of `AwsLogsLogDriverPtrInput` via:
-//
-//	        AwsLogsLogDriverArgs{...}
-//
-//	or:
-//
-//	        nil
-type AwsLogsLogDriverPtrInput interface {
-	pulumi.Input
-
-	ToAwsLogsLogDriverPtrOutput() AwsLogsLogDriverPtrOutput
-	ToAwsLogsLogDriverPtrOutputWithContext(context.Context) AwsLogsLogDriverPtrOutput
-}
-
-type awsLogsLogDriverPtrType AwsLogsLogDriverArgs
-
-func AwsLogsLogDriverPtr(v *AwsLogsLogDriverArgs) AwsLogsLogDriverPtrInput {
-	return (*awsLogsLogDriverPtrType)(v)
-}
-
-func (*awsLogsLogDriverPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**AwsLogsLogDriver)(nil)).Elem()
-}
-
-func (i *awsLogsLogDriverPtrType) ToAwsLogsLogDriverPtrOutput() AwsLogsLogDriverPtrOutput {
-	return i.ToAwsLogsLogDriverPtrOutputWithContext(context.Background())
-}
-
-func (i *awsLogsLogDriverPtrType) ToAwsLogsLogDriverPtrOutputWithContext(ctx context.Context) AwsLogsLogDriverPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(AwsLogsLogDriverPtrOutput)
-}
-
-type AwsLogsLogDriverOutput struct{ *pulumi.OutputState }
-
-func (AwsLogsLogDriverOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*AwsLogsLogDriver)(nil)).Elem()
-}
-
-func (o AwsLogsLogDriverOutput) ToAwsLogsLogDriverOutput() AwsLogsLogDriverOutput {
-	return o
-}
-
-func (o AwsLogsLogDriverOutput) ToAwsLogsLogDriverOutputWithContext(ctx context.Context) AwsLogsLogDriverOutput {
-	return o
-}
-
-func (o AwsLogsLogDriverOutput) ToAwsLogsLogDriverPtrOutput() AwsLogsLogDriverPtrOutput {
-	return o.ToAwsLogsLogDriverPtrOutputWithContext(context.Background())
-}
-
-func (o AwsLogsLogDriverOutput) ToAwsLogsLogDriverPtrOutputWithContext(ctx context.Context) AwsLogsLogDriverPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v AwsLogsLogDriver) *AwsLogsLogDriver {
-		return &v
-	}).(AwsLogsLogDriverPtrOutput)
-}
-
-// A multiline start pattern in Python strftime format.
-func (o AwsLogsLogDriverOutput) DatetimeFormat() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *string { return v.DatetimeFormat }).(pulumi.StringPtrOutput)
-}
-
-// The ARN of the log group to log to.
-//
-// Default - A log group is created automatically.
-func (o AwsLogsLogDriverOutput) LogGroupArn() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *string { return v.LogGroupArn }).(pulumi.StringPtrOutput)
-}
-
-// Size, in bytes, of the buffer used in non-blocking mode.
-//
-// Default - The AWS default of 10 MiB when mode is non-blocking.
-func (o AwsLogsLogDriverOutput) MaxBufferSizeBytes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *float64 { return v.MaxBufferSizeBytes }).(pulumi.Float64PtrOutput)
-}
-
-// The delivery mode for log messages.
-func (o AwsLogsLogDriverOutput) Mode() AwsLogDriverModePtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *AwsLogDriverMode { return v.Mode }).(AwsLogDriverModePtrOutput)
-}
-
-// A multiline start pattern expressed as a regular expression.
-func (o AwsLogsLogDriverOutput) MultilinePattern() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *string { return v.MultilinePattern }).(pulumi.StringPtrOutput)
-}
-
-// Prefix used for the container's log streams.
-//
-// Default - The task component name.
-func (o AwsLogsLogDriverOutput) StreamPrefix() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v AwsLogsLogDriver) *string { return v.StreamPrefix }).(pulumi.StringPtrOutput)
-}
-
-type AwsLogsLogDriverPtrOutput struct{ *pulumi.OutputState }
-
-func (AwsLogsLogDriverPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**AwsLogsLogDriver)(nil)).Elem()
-}
-
-func (o AwsLogsLogDriverPtrOutput) ToAwsLogsLogDriverPtrOutput() AwsLogsLogDriverPtrOutput {
-	return o
-}
-
-func (o AwsLogsLogDriverPtrOutput) ToAwsLogsLogDriverPtrOutputWithContext(ctx context.Context) AwsLogsLogDriverPtrOutput {
-	return o
-}
-
-func (o AwsLogsLogDriverPtrOutput) Elem() AwsLogsLogDriverOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) AwsLogsLogDriver {
-		if v != nil {
-			return *v
-		}
-		var ret AwsLogsLogDriver
-		return ret
-	}).(AwsLogsLogDriverOutput)
-}
-
-// A multiline start pattern in Python strftime format.
-func (o AwsLogsLogDriverPtrOutput) DatetimeFormat() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *string {
-		if v == nil {
-			return nil
-		}
-		return v.DatetimeFormat
-	}).(pulumi.StringPtrOutput)
-}
-
-// The ARN of the log group to log to.
-//
-// Default - A log group is created automatically.
-func (o AwsLogsLogDriverPtrOutput) LogGroupArn() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *string {
-		if v == nil {
-			return nil
-		}
-		return v.LogGroupArn
-	}).(pulumi.StringPtrOutput)
-}
-
-// Size, in bytes, of the buffer used in non-blocking mode.
-//
-// Default - The AWS default of 10 MiB when mode is non-blocking.
-func (o AwsLogsLogDriverPtrOutput) MaxBufferSizeBytes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *float64 {
-		if v == nil {
-			return nil
-		}
-		return v.MaxBufferSizeBytes
-	}).(pulumi.Float64PtrOutput)
-}
-
-// The delivery mode for log messages.
-func (o AwsLogsLogDriverPtrOutput) Mode() AwsLogDriverModePtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *AwsLogDriverMode {
-		if v == nil {
-			return nil
-		}
-		return v.Mode
-	}).(AwsLogDriverModePtrOutput)
-}
-
-// A multiline start pattern expressed as a regular expression.
-func (o AwsLogsLogDriverPtrOutput) MultilinePattern() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *string {
-		if v == nil {
-			return nil
-		}
-		return v.MultilinePattern
-	}).(pulumi.StringPtrOutput)
-}
-
-// Prefix used for the container's log streams.
-//
-// Default - The task component name.
-func (o AwsLogsLogDriverPtrOutput) StreamPrefix() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *AwsLogsLogDriver) *string {
-		if v == nil {
-			return nil
-		}
-		return v.StreamPrefix
-	}).(pulumi.StringPtrOutput)
+func (o ApplicationLoadBalancerAttachmentOutput) TestTraffic() TestTrafficPtrOutput {
+	return o.ApplyT(func(v ApplicationLoadBalancerAttachment) *TestTraffic { return v.TestTraffic }).(TestTrafficPtrOutput)
 }
 
 type AwsvpcPortMapping struct {
@@ -616,7 +360,7 @@ func (o AwsvpcPortMappingArrayOutput) Index(i pulumi.IntInput) AwsvpcPortMapping
 	}).(AwsvpcPortMappingOutput)
 }
 
-type BlueGreenStrategy struct {
+type BlueGreenDeploymentStrategy struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -649,18 +393,18 @@ type BlueGreenStrategy struct {
 	PauseHooks []ProgressivePauseHook `pulumi:"pauseHooks"`
 }
 
-// BlueGreenStrategyInput is an input type that accepts BlueGreenStrategyArgs and BlueGreenStrategyOutput values.
-// You can construct a concrete instance of `BlueGreenStrategyInput` via:
+// BlueGreenDeploymentStrategyInput is an input type that accepts BlueGreenDeploymentStrategyArgs and BlueGreenDeploymentStrategyOutput values.
+// You can construct a concrete instance of `BlueGreenDeploymentStrategyInput` via:
 //
-//	BlueGreenStrategyArgs{...}
-type BlueGreenStrategyInput interface {
+//	BlueGreenDeploymentStrategyArgs{...}
+type BlueGreenDeploymentStrategyInput interface {
 	pulumi.Input
 
-	ToBlueGreenStrategyOutput() BlueGreenStrategyOutput
-	ToBlueGreenStrategyOutputWithContext(context.Context) BlueGreenStrategyOutput
+	ToBlueGreenDeploymentStrategyOutput() BlueGreenDeploymentStrategyOutput
+	ToBlueGreenDeploymentStrategyOutputWithContext(context.Context) BlueGreenDeploymentStrategyOutput
 }
 
-type BlueGreenStrategyArgs struct {
+type BlueGreenDeploymentStrategyArgs struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -693,81 +437,81 @@ type BlueGreenStrategyArgs struct {
 	PauseHooks []ProgressivePauseHookArgs `pulumi:"pauseHooks"`
 }
 
-func (BlueGreenStrategyArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*BlueGreenStrategy)(nil)).Elem()
+func (BlueGreenDeploymentStrategyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*BlueGreenDeploymentStrategy)(nil)).Elem()
 }
 
-func (i BlueGreenStrategyArgs) ToBlueGreenStrategyOutput() BlueGreenStrategyOutput {
-	return i.ToBlueGreenStrategyOutputWithContext(context.Background())
+func (i BlueGreenDeploymentStrategyArgs) ToBlueGreenDeploymentStrategyOutput() BlueGreenDeploymentStrategyOutput {
+	return i.ToBlueGreenDeploymentStrategyOutputWithContext(context.Background())
 }
 
-func (i BlueGreenStrategyArgs) ToBlueGreenStrategyOutputWithContext(ctx context.Context) BlueGreenStrategyOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenStrategyOutput)
+func (i BlueGreenDeploymentStrategyArgs) ToBlueGreenDeploymentStrategyOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenDeploymentStrategyOutput)
 }
 
-func (i BlueGreenStrategyArgs) ToBlueGreenStrategyPtrOutput() BlueGreenStrategyPtrOutput {
-	return i.ToBlueGreenStrategyPtrOutputWithContext(context.Background())
+func (i BlueGreenDeploymentStrategyArgs) ToBlueGreenDeploymentStrategyPtrOutput() BlueGreenDeploymentStrategyPtrOutput {
+	return i.ToBlueGreenDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i BlueGreenStrategyArgs) ToBlueGreenStrategyPtrOutputWithContext(ctx context.Context) BlueGreenStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenStrategyOutput).ToBlueGreenStrategyPtrOutputWithContext(ctx)
+func (i BlueGreenDeploymentStrategyArgs) ToBlueGreenDeploymentStrategyPtrOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenDeploymentStrategyOutput).ToBlueGreenDeploymentStrategyPtrOutputWithContext(ctx)
 }
 
-// BlueGreenStrategyPtrInput is an input type that accepts BlueGreenStrategyArgs, BlueGreenStrategyPtr and BlueGreenStrategyPtrOutput values.
-// You can construct a concrete instance of `BlueGreenStrategyPtrInput` via:
+// BlueGreenDeploymentStrategyPtrInput is an input type that accepts BlueGreenDeploymentStrategyArgs, BlueGreenDeploymentStrategyPtr and BlueGreenDeploymentStrategyPtrOutput values.
+// You can construct a concrete instance of `BlueGreenDeploymentStrategyPtrInput` via:
 //
-//	        BlueGreenStrategyArgs{...}
+//	        BlueGreenDeploymentStrategyArgs{...}
 //
 //	or:
 //
 //	        nil
-type BlueGreenStrategyPtrInput interface {
+type BlueGreenDeploymentStrategyPtrInput interface {
 	pulumi.Input
 
-	ToBlueGreenStrategyPtrOutput() BlueGreenStrategyPtrOutput
-	ToBlueGreenStrategyPtrOutputWithContext(context.Context) BlueGreenStrategyPtrOutput
+	ToBlueGreenDeploymentStrategyPtrOutput() BlueGreenDeploymentStrategyPtrOutput
+	ToBlueGreenDeploymentStrategyPtrOutputWithContext(context.Context) BlueGreenDeploymentStrategyPtrOutput
 }
 
-type blueGreenStrategyPtrType BlueGreenStrategyArgs
+type blueGreenDeploymentStrategyPtrType BlueGreenDeploymentStrategyArgs
 
-func BlueGreenStrategyPtr(v *BlueGreenStrategyArgs) BlueGreenStrategyPtrInput {
-	return (*blueGreenStrategyPtrType)(v)
+func BlueGreenDeploymentStrategyPtr(v *BlueGreenDeploymentStrategyArgs) BlueGreenDeploymentStrategyPtrInput {
+	return (*blueGreenDeploymentStrategyPtrType)(v)
 }
 
-func (*blueGreenStrategyPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**BlueGreenStrategy)(nil)).Elem()
+func (*blueGreenDeploymentStrategyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**BlueGreenDeploymentStrategy)(nil)).Elem()
 }
 
-func (i *blueGreenStrategyPtrType) ToBlueGreenStrategyPtrOutput() BlueGreenStrategyPtrOutput {
-	return i.ToBlueGreenStrategyPtrOutputWithContext(context.Background())
+func (i *blueGreenDeploymentStrategyPtrType) ToBlueGreenDeploymentStrategyPtrOutput() BlueGreenDeploymentStrategyPtrOutput {
+	return i.ToBlueGreenDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i *blueGreenStrategyPtrType) ToBlueGreenStrategyPtrOutputWithContext(ctx context.Context) BlueGreenStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenStrategyPtrOutput)
+func (i *blueGreenDeploymentStrategyPtrType) ToBlueGreenDeploymentStrategyPtrOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BlueGreenDeploymentStrategyPtrOutput)
 }
 
-type BlueGreenStrategyOutput struct{ *pulumi.OutputState }
+type BlueGreenDeploymentStrategyOutput struct{ *pulumi.OutputState }
 
-func (BlueGreenStrategyOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*BlueGreenStrategy)(nil)).Elem()
+func (BlueGreenDeploymentStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*BlueGreenDeploymentStrategy)(nil)).Elem()
 }
 
-func (o BlueGreenStrategyOutput) ToBlueGreenStrategyOutput() BlueGreenStrategyOutput {
+func (o BlueGreenDeploymentStrategyOutput) ToBlueGreenDeploymentStrategyOutput() BlueGreenDeploymentStrategyOutput {
 	return o
 }
 
-func (o BlueGreenStrategyOutput) ToBlueGreenStrategyOutputWithContext(ctx context.Context) BlueGreenStrategyOutput {
+func (o BlueGreenDeploymentStrategyOutput) ToBlueGreenDeploymentStrategyOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyOutput {
 	return o
 }
 
-func (o BlueGreenStrategyOutput) ToBlueGreenStrategyPtrOutput() BlueGreenStrategyPtrOutput {
-	return o.ToBlueGreenStrategyPtrOutputWithContext(context.Background())
+func (o BlueGreenDeploymentStrategyOutput) ToBlueGreenDeploymentStrategyPtrOutput() BlueGreenDeploymentStrategyPtrOutput {
+	return o.ToBlueGreenDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (o BlueGreenStrategyOutput) ToBlueGreenStrategyPtrOutputWithContext(ctx context.Context) BlueGreenStrategyPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v BlueGreenStrategy) *BlueGreenStrategy {
+func (o BlueGreenDeploymentStrategyOutput) ToBlueGreenDeploymentStrategyPtrOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v BlueGreenDeploymentStrategy) *BlueGreenDeploymentStrategy {
 		return &v
-	}).(BlueGreenStrategyPtrOutput)
+	}).(BlueGreenDeploymentStrategyPtrOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -775,8 +519,8 @@ func (o BlueGreenStrategyOutput) ToBlueGreenStrategyPtrOutputWithContext(ctx con
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o BlueGreenStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
-	return o.ApplyT(func(v BlueGreenStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
+func (o BlueGreenDeploymentStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
+	return o.ApplyT(func(v BlueGreenDeploymentStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
 }
 
 // Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -786,8 +530,8 @@ func (o BlueGreenStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o BlueGreenStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v BlueGreenStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
+func (o BlueGreenDeploymentStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v BlueGreenDeploymentStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
 }
 
 // Lambda functions invoked at selected deployment stages.
@@ -796,8 +540,8 @@ func (o BlueGreenStrategyOutput) FailureAction() DeploymentFailureActionPtrOutpu
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o BlueGreenStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v BlueGreenStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
+func (o BlueGreenDeploymentStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v BlueGreenDeploymentStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
 }
 
 // Pauses at selected deployment stages for external approval or validation. To continue the
@@ -808,32 +552,32 @@ func (o BlueGreenStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput 
 // performed.
 //
 // Default - No pause hooks.
-func (o BlueGreenStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v BlueGreenStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
+func (o BlueGreenDeploymentStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v BlueGreenDeploymentStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
 }
 
-type BlueGreenStrategyPtrOutput struct{ *pulumi.OutputState }
+type BlueGreenDeploymentStrategyPtrOutput struct{ *pulumi.OutputState }
 
-func (BlueGreenStrategyPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**BlueGreenStrategy)(nil)).Elem()
+func (BlueGreenDeploymentStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**BlueGreenDeploymentStrategy)(nil)).Elem()
 }
 
-func (o BlueGreenStrategyPtrOutput) ToBlueGreenStrategyPtrOutput() BlueGreenStrategyPtrOutput {
+func (o BlueGreenDeploymentStrategyPtrOutput) ToBlueGreenDeploymentStrategyPtrOutput() BlueGreenDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o BlueGreenStrategyPtrOutput) ToBlueGreenStrategyPtrOutputWithContext(ctx context.Context) BlueGreenStrategyPtrOutput {
+func (o BlueGreenDeploymentStrategyPtrOutput) ToBlueGreenDeploymentStrategyPtrOutputWithContext(ctx context.Context) BlueGreenDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o BlueGreenStrategyPtrOutput) Elem() BlueGreenStrategyOutput {
-	return o.ApplyT(func(v *BlueGreenStrategy) BlueGreenStrategy {
+func (o BlueGreenDeploymentStrategyPtrOutput) Elem() BlueGreenDeploymentStrategyOutput {
+	return o.ApplyT(func(v *BlueGreenDeploymentStrategy) BlueGreenDeploymentStrategy {
 		if v != nil {
 			return *v
 		}
-		var ret BlueGreenStrategy
+		var ret BlueGreenDeploymentStrategy
 		return ret
-	}).(BlueGreenStrategyOutput)
+	}).(BlueGreenDeploymentStrategyOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -841,8 +585,8 @@ func (o BlueGreenStrategyPtrOutput) Elem() BlueGreenStrategyOutput {
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o BlueGreenStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *BlueGreenStrategy) *float64 {
+func (o BlueGreenDeploymentStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *BlueGreenDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -857,8 +601,8 @@ func (o BlueGreenStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o BlueGreenStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v *BlueGreenStrategy) *DeploymentFailureAction {
+func (o BlueGreenDeploymentStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v *BlueGreenDeploymentStrategy) *DeploymentFailureAction {
 		if v == nil {
 			return nil
 		}
@@ -872,8 +616,8 @@ func (o BlueGreenStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOu
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o BlueGreenStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v *BlueGreenStrategy) []ProgressiveLambdaHook {
+func (o BlueGreenDeploymentStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v *BlueGreenDeploymentStrategy) []ProgressiveLambdaHook {
 		if v == nil {
 			return nil
 		}
@@ -889,8 +633,8 @@ func (o BlueGreenStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutp
 // performed.
 //
 // Default - No pause hooks.
-func (o BlueGreenStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v *BlueGreenStrategy) []ProgressivePauseHook {
+func (o BlueGreenDeploymentStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v *BlueGreenDeploymentStrategy) []ProgressivePauseHook {
 		if v == nil {
 			return nil
 		}
@@ -898,7 +642,7 @@ func (o BlueGreenStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput
 	}).(ProgressivePauseHookArrayOutput)
 }
 
-type CanaryStrategy struct {
+type CanaryDeploymentStrategy struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -941,18 +685,18 @@ type CanaryStrategy struct {
 	PauseHooks []ProgressivePauseHook `pulumi:"pauseHooks"`
 }
 
-// CanaryStrategyInput is an input type that accepts CanaryStrategyArgs and CanaryStrategyOutput values.
-// You can construct a concrete instance of `CanaryStrategyInput` via:
+// CanaryDeploymentStrategyInput is an input type that accepts CanaryDeploymentStrategyArgs and CanaryDeploymentStrategyOutput values.
+// You can construct a concrete instance of `CanaryDeploymentStrategyInput` via:
 //
-//	CanaryStrategyArgs{...}
-type CanaryStrategyInput interface {
+//	CanaryDeploymentStrategyArgs{...}
+type CanaryDeploymentStrategyInput interface {
 	pulumi.Input
 
-	ToCanaryStrategyOutput() CanaryStrategyOutput
-	ToCanaryStrategyOutputWithContext(context.Context) CanaryStrategyOutput
+	ToCanaryDeploymentStrategyOutput() CanaryDeploymentStrategyOutput
+	ToCanaryDeploymentStrategyOutputWithContext(context.Context) CanaryDeploymentStrategyOutput
 }
 
-type CanaryStrategyArgs struct {
+type CanaryDeploymentStrategyArgs struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -995,81 +739,81 @@ type CanaryStrategyArgs struct {
 	PauseHooks []ProgressivePauseHookArgs `pulumi:"pauseHooks"`
 }
 
-func (CanaryStrategyArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*CanaryStrategy)(nil)).Elem()
+func (CanaryDeploymentStrategyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CanaryDeploymentStrategy)(nil)).Elem()
 }
 
-func (i CanaryStrategyArgs) ToCanaryStrategyOutput() CanaryStrategyOutput {
-	return i.ToCanaryStrategyOutputWithContext(context.Background())
+func (i CanaryDeploymentStrategyArgs) ToCanaryDeploymentStrategyOutput() CanaryDeploymentStrategyOutput {
+	return i.ToCanaryDeploymentStrategyOutputWithContext(context.Background())
 }
 
-func (i CanaryStrategyArgs) ToCanaryStrategyOutputWithContext(ctx context.Context) CanaryStrategyOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(CanaryStrategyOutput)
+func (i CanaryDeploymentStrategyArgs) ToCanaryDeploymentStrategyOutputWithContext(ctx context.Context) CanaryDeploymentStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CanaryDeploymentStrategyOutput)
 }
 
-func (i CanaryStrategyArgs) ToCanaryStrategyPtrOutput() CanaryStrategyPtrOutput {
-	return i.ToCanaryStrategyPtrOutputWithContext(context.Background())
+func (i CanaryDeploymentStrategyArgs) ToCanaryDeploymentStrategyPtrOutput() CanaryDeploymentStrategyPtrOutput {
+	return i.ToCanaryDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i CanaryStrategyArgs) ToCanaryStrategyPtrOutputWithContext(ctx context.Context) CanaryStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(CanaryStrategyOutput).ToCanaryStrategyPtrOutputWithContext(ctx)
+func (i CanaryDeploymentStrategyArgs) ToCanaryDeploymentStrategyPtrOutputWithContext(ctx context.Context) CanaryDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CanaryDeploymentStrategyOutput).ToCanaryDeploymentStrategyPtrOutputWithContext(ctx)
 }
 
-// CanaryStrategyPtrInput is an input type that accepts CanaryStrategyArgs, CanaryStrategyPtr and CanaryStrategyPtrOutput values.
-// You can construct a concrete instance of `CanaryStrategyPtrInput` via:
+// CanaryDeploymentStrategyPtrInput is an input type that accepts CanaryDeploymentStrategyArgs, CanaryDeploymentStrategyPtr and CanaryDeploymentStrategyPtrOutput values.
+// You can construct a concrete instance of `CanaryDeploymentStrategyPtrInput` via:
 //
-//	        CanaryStrategyArgs{...}
+//	        CanaryDeploymentStrategyArgs{...}
 //
 //	or:
 //
 //	        nil
-type CanaryStrategyPtrInput interface {
+type CanaryDeploymentStrategyPtrInput interface {
 	pulumi.Input
 
-	ToCanaryStrategyPtrOutput() CanaryStrategyPtrOutput
-	ToCanaryStrategyPtrOutputWithContext(context.Context) CanaryStrategyPtrOutput
+	ToCanaryDeploymentStrategyPtrOutput() CanaryDeploymentStrategyPtrOutput
+	ToCanaryDeploymentStrategyPtrOutputWithContext(context.Context) CanaryDeploymentStrategyPtrOutput
 }
 
-type canaryStrategyPtrType CanaryStrategyArgs
+type canaryDeploymentStrategyPtrType CanaryDeploymentStrategyArgs
 
-func CanaryStrategyPtr(v *CanaryStrategyArgs) CanaryStrategyPtrInput {
-	return (*canaryStrategyPtrType)(v)
+func CanaryDeploymentStrategyPtr(v *CanaryDeploymentStrategyArgs) CanaryDeploymentStrategyPtrInput {
+	return (*canaryDeploymentStrategyPtrType)(v)
 }
 
-func (*canaryStrategyPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**CanaryStrategy)(nil)).Elem()
+func (*canaryDeploymentStrategyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**CanaryDeploymentStrategy)(nil)).Elem()
 }
 
-func (i *canaryStrategyPtrType) ToCanaryStrategyPtrOutput() CanaryStrategyPtrOutput {
-	return i.ToCanaryStrategyPtrOutputWithContext(context.Background())
+func (i *canaryDeploymentStrategyPtrType) ToCanaryDeploymentStrategyPtrOutput() CanaryDeploymentStrategyPtrOutput {
+	return i.ToCanaryDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i *canaryStrategyPtrType) ToCanaryStrategyPtrOutputWithContext(ctx context.Context) CanaryStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(CanaryStrategyPtrOutput)
+func (i *canaryDeploymentStrategyPtrType) ToCanaryDeploymentStrategyPtrOutputWithContext(ctx context.Context) CanaryDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CanaryDeploymentStrategyPtrOutput)
 }
 
-type CanaryStrategyOutput struct{ *pulumi.OutputState }
+type CanaryDeploymentStrategyOutput struct{ *pulumi.OutputState }
 
-func (CanaryStrategyOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*CanaryStrategy)(nil)).Elem()
+func (CanaryDeploymentStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CanaryDeploymentStrategy)(nil)).Elem()
 }
 
-func (o CanaryStrategyOutput) ToCanaryStrategyOutput() CanaryStrategyOutput {
+func (o CanaryDeploymentStrategyOutput) ToCanaryDeploymentStrategyOutput() CanaryDeploymentStrategyOutput {
 	return o
 }
 
-func (o CanaryStrategyOutput) ToCanaryStrategyOutputWithContext(ctx context.Context) CanaryStrategyOutput {
+func (o CanaryDeploymentStrategyOutput) ToCanaryDeploymentStrategyOutputWithContext(ctx context.Context) CanaryDeploymentStrategyOutput {
 	return o
 }
 
-func (o CanaryStrategyOutput) ToCanaryStrategyPtrOutput() CanaryStrategyPtrOutput {
-	return o.ToCanaryStrategyPtrOutputWithContext(context.Background())
+func (o CanaryDeploymentStrategyOutput) ToCanaryDeploymentStrategyPtrOutput() CanaryDeploymentStrategyPtrOutput {
+	return o.ToCanaryDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (o CanaryStrategyOutput) ToCanaryStrategyPtrOutputWithContext(ctx context.Context) CanaryStrategyPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v CanaryStrategy) *CanaryStrategy {
+func (o CanaryDeploymentStrategyOutput) ToCanaryDeploymentStrategyPtrOutputWithContext(ctx context.Context) CanaryDeploymentStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CanaryDeploymentStrategy) *CanaryDeploymentStrategy {
 		return &v
-	}).(CanaryStrategyPtrOutput)
+	}).(CanaryDeploymentStrategyPtrOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -1077,24 +821,24 @@ func (o CanaryStrategyOutput) ToCanaryStrategyPtrOutputWithContext(ctx context.C
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o CanaryStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
-	return o.ApplyT(func(v CanaryStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
+func (o CanaryDeploymentStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
 }
 
 // Number of minutes to observe the canary before shifting the remaining production traffic to the
 // new revision. Valid range: 0-1440 minutes (24 hours).
 //
 // Default - AWS default of 10 minutes
-func (o CanaryStrategyOutput) CanaryBakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v CanaryStrategy) *float64 { return v.CanaryBakeTimeMinutes }).(pulumi.Float64PtrOutput)
+func (o CanaryDeploymentStrategyOutput) CanaryBakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) *float64 { return v.CanaryBakeTimeMinutes }).(pulumi.Float64PtrOutput)
 }
 
 // Initial percentage of production traffic sent to the new service revision during the canary
 // phase. Valid values are multiples of 0.1 from 0.1 to 100.0.
 //
 // Default - AWS default of 5.0
-func (o CanaryStrategyOutput) CanaryPercent() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v CanaryStrategy) *float64 { return v.CanaryPercent }).(pulumi.Float64PtrOutput)
+func (o CanaryDeploymentStrategyOutput) CanaryPercent() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) *float64 { return v.CanaryPercent }).(pulumi.Float64PtrOutput)
 }
 
 // Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -1104,8 +848,8 @@ func (o CanaryStrategyOutput) CanaryPercent() pulumi.Float64PtrOutput {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o CanaryStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v CanaryStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
+func (o CanaryDeploymentStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
 }
 
 // Lambda functions invoked at selected deployment stages.
@@ -1114,8 +858,8 @@ func (o CanaryStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o CanaryStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v CanaryStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
+func (o CanaryDeploymentStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
 }
 
 // Pauses at selected deployment stages for external approval or validation. To continue the
@@ -1126,32 +870,32 @@ func (o CanaryStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
 // performed.
 //
 // Default - No pause hooks.
-func (o CanaryStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v CanaryStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
+func (o CanaryDeploymentStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v CanaryDeploymentStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
 }
 
-type CanaryStrategyPtrOutput struct{ *pulumi.OutputState }
+type CanaryDeploymentStrategyPtrOutput struct{ *pulumi.OutputState }
 
-func (CanaryStrategyPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**CanaryStrategy)(nil)).Elem()
+func (CanaryDeploymentStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CanaryDeploymentStrategy)(nil)).Elem()
 }
 
-func (o CanaryStrategyPtrOutput) ToCanaryStrategyPtrOutput() CanaryStrategyPtrOutput {
+func (o CanaryDeploymentStrategyPtrOutput) ToCanaryDeploymentStrategyPtrOutput() CanaryDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o CanaryStrategyPtrOutput) ToCanaryStrategyPtrOutputWithContext(ctx context.Context) CanaryStrategyPtrOutput {
+func (o CanaryDeploymentStrategyPtrOutput) ToCanaryDeploymentStrategyPtrOutputWithContext(ctx context.Context) CanaryDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o CanaryStrategyPtrOutput) Elem() CanaryStrategyOutput {
-	return o.ApplyT(func(v *CanaryStrategy) CanaryStrategy {
+func (o CanaryDeploymentStrategyPtrOutput) Elem() CanaryDeploymentStrategyOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) CanaryDeploymentStrategy {
 		if v != nil {
 			return *v
 		}
-		var ret CanaryStrategy
+		var ret CanaryDeploymentStrategy
 		return ret
-	}).(CanaryStrategyOutput)
+	}).(CanaryDeploymentStrategyOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -1159,8 +903,8 @@ func (o CanaryStrategyPtrOutput) Elem() CanaryStrategyOutput {
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o CanaryStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *CanaryStrategy) *float64 {
+func (o CanaryDeploymentStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -1172,8 +916,8 @@ func (o CanaryStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
 // new revision. Valid range: 0-1440 minutes (24 hours).
 //
 // Default - AWS default of 10 minutes
-func (o CanaryStrategyPtrOutput) CanaryBakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *CanaryStrategy) *float64 {
+func (o CanaryDeploymentStrategyPtrOutput) CanaryBakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -1185,8 +929,8 @@ func (o CanaryStrategyPtrOutput) CanaryBakeTimeMinutes() pulumi.Float64PtrOutput
 // phase. Valid values are multiples of 0.1 from 0.1 to 100.0.
 //
 // Default - AWS default of 5.0
-func (o CanaryStrategyPtrOutput) CanaryPercent() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *CanaryStrategy) *float64 {
+func (o CanaryDeploymentStrategyPtrOutput) CanaryPercent() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -1201,8 +945,8 @@ func (o CanaryStrategyPtrOutput) CanaryPercent() pulumi.Float64PtrOutput {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o CanaryStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v *CanaryStrategy) *DeploymentFailureAction {
+func (o CanaryDeploymentStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) *DeploymentFailureAction {
 		if v == nil {
 			return nil
 		}
@@ -1216,8 +960,8 @@ func (o CanaryStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutpu
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o CanaryStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v *CanaryStrategy) []ProgressiveLambdaHook {
+func (o CanaryDeploymentStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) []ProgressiveLambdaHook {
 		if v == nil {
 			return nil
 		}
@@ -1233,8 +977,8 @@ func (o CanaryStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput 
 // performed.
 //
 // Default - No pause hooks.
-func (o CanaryStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v *CanaryStrategy) []ProgressivePauseHook {
+func (o CanaryDeploymentStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v *CanaryDeploymentStrategy) []ProgressivePauseHook {
 		if v == nil {
 			return nil
 		}
@@ -1422,7 +1166,263 @@ func (o CapacityAllocationPtrOutput) Weight() pulumi.Float64PtrOutput {
 	}).(pulumi.Float64PtrOutput)
 }
 
-type ContainerDefinitionOptions struct {
+type CloudWatchLogging struct {
+	// A multiline start pattern in Python strftime format.
+	DatetimeFormat *string `pulumi:"datetimeFormat"`
+	// The ARN of the log group to log to.
+	//
+	// Default - A log group is created automatically.
+	LogGroupArn *string `pulumi:"logGroupArn"`
+	// Size, in bytes, of the buffer used in non-blocking mode.
+	//
+	// Default - The AWS default of 10 MiB when mode is non-blocking.
+	MaxBufferSizeBytes *float64 `pulumi:"maxBufferSizeBytes"`
+	// The delivery mode for log messages.
+	Mode *LogDeliveryMode `pulumi:"mode"`
+	// A multiline start pattern expressed as a regular expression.
+	MultilinePattern *string `pulumi:"multilinePattern"`
+	// Prefix used for the container's log streams.
+	//
+	// Default - The task component name.
+	StreamPrefix *string `pulumi:"streamPrefix"`
+}
+
+// CloudWatchLoggingInput is an input type that accepts CloudWatchLoggingArgs and CloudWatchLoggingOutput values.
+// You can construct a concrete instance of `CloudWatchLoggingInput` via:
+//
+//	CloudWatchLoggingArgs{...}
+type CloudWatchLoggingInput interface {
+	pulumi.Input
+
+	ToCloudWatchLoggingOutput() CloudWatchLoggingOutput
+	ToCloudWatchLoggingOutputWithContext(context.Context) CloudWatchLoggingOutput
+}
+
+type CloudWatchLoggingArgs struct {
+	// A multiline start pattern in Python strftime format.
+	DatetimeFormat *string `pulumi:"datetimeFormat"`
+	// The ARN of the log group to log to.
+	//
+	// Default - A log group is created automatically.
+	LogGroupArn pulumi.StringPtrInput `pulumi:"logGroupArn"`
+	// Size, in bytes, of the buffer used in non-blocking mode.
+	//
+	// Default - The AWS default of 10 MiB when mode is non-blocking.
+	MaxBufferSizeBytes *float64 `pulumi:"maxBufferSizeBytes"`
+	// The delivery mode for log messages.
+	Mode *LogDeliveryMode `pulumi:"mode"`
+	// A multiline start pattern expressed as a regular expression.
+	MultilinePattern *string `pulumi:"multilinePattern"`
+	// Prefix used for the container's log streams.
+	//
+	// Default - The task component name.
+	StreamPrefix pulumi.StringPtrInput `pulumi:"streamPrefix"`
+}
+
+func (CloudWatchLoggingArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CloudWatchLogging)(nil)).Elem()
+}
+
+func (i CloudWatchLoggingArgs) ToCloudWatchLoggingOutput() CloudWatchLoggingOutput {
+	return i.ToCloudWatchLoggingOutputWithContext(context.Background())
+}
+
+func (i CloudWatchLoggingArgs) ToCloudWatchLoggingOutputWithContext(ctx context.Context) CloudWatchLoggingOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CloudWatchLoggingOutput)
+}
+
+func (i CloudWatchLoggingArgs) ToCloudWatchLoggingPtrOutput() CloudWatchLoggingPtrOutput {
+	return i.ToCloudWatchLoggingPtrOutputWithContext(context.Background())
+}
+
+func (i CloudWatchLoggingArgs) ToCloudWatchLoggingPtrOutputWithContext(ctx context.Context) CloudWatchLoggingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CloudWatchLoggingOutput).ToCloudWatchLoggingPtrOutputWithContext(ctx)
+}
+
+// CloudWatchLoggingPtrInput is an input type that accepts CloudWatchLoggingArgs, CloudWatchLoggingPtr and CloudWatchLoggingPtrOutput values.
+// You can construct a concrete instance of `CloudWatchLoggingPtrInput` via:
+//
+//	        CloudWatchLoggingArgs{...}
+//
+//	or:
+//
+//	        nil
+type CloudWatchLoggingPtrInput interface {
+	pulumi.Input
+
+	ToCloudWatchLoggingPtrOutput() CloudWatchLoggingPtrOutput
+	ToCloudWatchLoggingPtrOutputWithContext(context.Context) CloudWatchLoggingPtrOutput
+}
+
+type cloudWatchLoggingPtrType CloudWatchLoggingArgs
+
+func CloudWatchLoggingPtr(v *CloudWatchLoggingArgs) CloudWatchLoggingPtrInput {
+	return (*cloudWatchLoggingPtrType)(v)
+}
+
+func (*cloudWatchLoggingPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**CloudWatchLogging)(nil)).Elem()
+}
+
+func (i *cloudWatchLoggingPtrType) ToCloudWatchLoggingPtrOutput() CloudWatchLoggingPtrOutput {
+	return i.ToCloudWatchLoggingPtrOutputWithContext(context.Background())
+}
+
+func (i *cloudWatchLoggingPtrType) ToCloudWatchLoggingPtrOutputWithContext(ctx context.Context) CloudWatchLoggingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CloudWatchLoggingPtrOutput)
+}
+
+type CloudWatchLoggingOutput struct{ *pulumi.OutputState }
+
+func (CloudWatchLoggingOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CloudWatchLogging)(nil)).Elem()
+}
+
+func (o CloudWatchLoggingOutput) ToCloudWatchLoggingOutput() CloudWatchLoggingOutput {
+	return o
+}
+
+func (o CloudWatchLoggingOutput) ToCloudWatchLoggingOutputWithContext(ctx context.Context) CloudWatchLoggingOutput {
+	return o
+}
+
+func (o CloudWatchLoggingOutput) ToCloudWatchLoggingPtrOutput() CloudWatchLoggingPtrOutput {
+	return o.ToCloudWatchLoggingPtrOutputWithContext(context.Background())
+}
+
+func (o CloudWatchLoggingOutput) ToCloudWatchLoggingPtrOutputWithContext(ctx context.Context) CloudWatchLoggingPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v CloudWatchLogging) *CloudWatchLogging {
+		return &v
+	}).(CloudWatchLoggingPtrOutput)
+}
+
+// A multiline start pattern in Python strftime format.
+func (o CloudWatchLoggingOutput) DatetimeFormat() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *string { return v.DatetimeFormat }).(pulumi.StringPtrOutput)
+}
+
+// The ARN of the log group to log to.
+//
+// Default - A log group is created automatically.
+func (o CloudWatchLoggingOutput) LogGroupArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *string { return v.LogGroupArn }).(pulumi.StringPtrOutput)
+}
+
+// Size, in bytes, of the buffer used in non-blocking mode.
+//
+// Default - The AWS default of 10 MiB when mode is non-blocking.
+func (o CloudWatchLoggingOutput) MaxBufferSizeBytes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *float64 { return v.MaxBufferSizeBytes }).(pulumi.Float64PtrOutput)
+}
+
+// The delivery mode for log messages.
+func (o CloudWatchLoggingOutput) Mode() LogDeliveryModePtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *LogDeliveryMode { return v.Mode }).(LogDeliveryModePtrOutput)
+}
+
+// A multiline start pattern expressed as a regular expression.
+func (o CloudWatchLoggingOutput) MultilinePattern() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *string { return v.MultilinePattern }).(pulumi.StringPtrOutput)
+}
+
+// Prefix used for the container's log streams.
+//
+// Default - The task component name.
+func (o CloudWatchLoggingOutput) StreamPrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v CloudWatchLogging) *string { return v.StreamPrefix }).(pulumi.StringPtrOutput)
+}
+
+type CloudWatchLoggingPtrOutput struct{ *pulumi.OutputState }
+
+func (CloudWatchLoggingPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**CloudWatchLogging)(nil)).Elem()
+}
+
+func (o CloudWatchLoggingPtrOutput) ToCloudWatchLoggingPtrOutput() CloudWatchLoggingPtrOutput {
+	return o
+}
+
+func (o CloudWatchLoggingPtrOutput) ToCloudWatchLoggingPtrOutputWithContext(ctx context.Context) CloudWatchLoggingPtrOutput {
+	return o
+}
+
+func (o CloudWatchLoggingPtrOutput) Elem() CloudWatchLoggingOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) CloudWatchLogging {
+		if v != nil {
+			return *v
+		}
+		var ret CloudWatchLogging
+		return ret
+	}).(CloudWatchLoggingOutput)
+}
+
+// A multiline start pattern in Python strftime format.
+func (o CloudWatchLoggingPtrOutput) DatetimeFormat() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *string {
+		if v == nil {
+			return nil
+		}
+		return v.DatetimeFormat
+	}).(pulumi.StringPtrOutput)
+}
+
+// The ARN of the log group to log to.
+//
+// Default - A log group is created automatically.
+func (o CloudWatchLoggingPtrOutput) LogGroupArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *string {
+		if v == nil {
+			return nil
+		}
+		return v.LogGroupArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Size, in bytes, of the buffer used in non-blocking mode.
+//
+// Default - The AWS default of 10 MiB when mode is non-blocking.
+func (o CloudWatchLoggingPtrOutput) MaxBufferSizeBytes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.MaxBufferSizeBytes
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The delivery mode for log messages.
+func (o CloudWatchLoggingPtrOutput) Mode() LogDeliveryModePtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *LogDeliveryMode {
+		if v == nil {
+			return nil
+		}
+		return v.Mode
+	}).(LogDeliveryModePtrOutput)
+}
+
+// A multiline start pattern expressed as a regular expression.
+func (o CloudWatchLoggingPtrOutput) MultilinePattern() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *string {
+		if v == nil {
+			return nil
+		}
+		return v.MultilinePattern
+	}).(pulumi.StringPtrOutput)
+}
+
+// Prefix used for the container's log streams.
+//
+// Default - The task component name.
+func (o CloudWatchLoggingPtrOutput) StreamPrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudWatchLogging) *string {
+		if v == nil {
+			return nil
+		}
+		return v.StreamPrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+type ContainerDefinition struct {
 	// The command passed to the container.
 	//
 	// Default - The command configured in the container image.
@@ -1488,7 +1488,7 @@ type ContainerDefinitionOptions struct {
 	//
 	// For more information, see [Determine Amazon ECS task health using container health
 	// checks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/healthcheck.html).
-	HealthCheck *HealthCheck `pulumi:"healthCheck"`
+	HealthCheck *ContainerHealthCheck `pulumi:"healthCheck"`
 	// The image used to start the container.
 	Image string `pulumi:"image"`
 	// Whether to keep standard input open for the container when no client is attached.
@@ -1500,7 +1500,7 @@ type ContainerDefinitionOptions struct {
 	// Log collection. AWSX grants the execution role access to the configured log group.
 	//
 	// Default - CloudWatch logging with a shared log group created by this component.
-	Logging *ContainerLogDriver `pulumi:"logging"`
+	Logging *ContainerLogging `pulumi:"logging"`
 	// Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed
 	// memoryReservationMiB when both are set.
 	//
@@ -1683,179 +1683,448 @@ func (o ContainerDependencyArrayOutput) Index(i pulumi.IntInput) ContainerDepend
 	}).(ContainerDependencyOutput)
 }
 
-type ContainerLogDriver struct {
-	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+type ContainerHealthCheck struct {
+	// The command that the container runs to determine whether it is healthy.
 	//
-	// For more information, see [CloudWatch
-	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
-	Cloudwatch *AwsLogsLogDriver `pulumi:"cloudwatch"`
-	// Disable collection of this container's stdout and stderr through the log driver. Cannot be
-	// combined with `cloudwatch`.
+	// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
 	//
-	// Default - false; logs are sent to CloudWatch Logs.
-	Disabled *bool `pulumi:"disabled"`
+	// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+	Command []string `pulumi:"command"`
+	// The time, in seconds, between health checks. Valid values are from 5 through 300.
+	//
+	// Default - 30 seconds.
+	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
+	// The number of consecutive failures required before the container becomes unhealthy. Valid
+	// values are from 1 through 10.
+	//
+	// Default - 3.
+	Retries *float64 `pulumi:"retries"`
+	// The startup grace period, in seconds, during which failed checks do not count toward the retry
+	// limit. Valid values are from 0 through 300.
+	//
+	// Default - No startup grace period.
+	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
+	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+	//
+	// Default - 5 seconds.
+	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
 }
 
-// ContainerLogDriverInput is an input type that accepts ContainerLogDriverArgs and ContainerLogDriverOutput values.
-// You can construct a concrete instance of `ContainerLogDriverInput` via:
+// ContainerHealthCheckInput is an input type that accepts ContainerHealthCheckArgs and ContainerHealthCheckOutput values.
+// You can construct a concrete instance of `ContainerHealthCheckInput` via:
 //
-//	ContainerLogDriverArgs{...}
-type ContainerLogDriverInput interface {
+//	ContainerHealthCheckArgs{...}
+type ContainerHealthCheckInput interface {
 	pulumi.Input
 
-	ToContainerLogDriverOutput() ContainerLogDriverOutput
-	ToContainerLogDriverOutputWithContext(context.Context) ContainerLogDriverOutput
+	ToContainerHealthCheckOutput() ContainerHealthCheckOutput
+	ToContainerHealthCheckOutputWithContext(context.Context) ContainerHealthCheckOutput
 }
 
-type ContainerLogDriverArgs struct {
-	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+type ContainerHealthCheckArgs struct {
+	// The command that the container runs to determine whether it is healthy.
 	//
-	// For more information, see [CloudWatch
-	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
-	Cloudwatch *AwsLogsLogDriverArgs `pulumi:"cloudwatch"`
-	// Disable collection of this container's stdout and stderr through the log driver. Cannot be
-	// combined with `cloudwatch`.
+	// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
 	//
-	// Default - false; logs are sent to CloudWatch Logs.
-	Disabled *bool `pulumi:"disabled"`
+	// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+	Command []string `pulumi:"command"`
+	// The time, in seconds, between health checks. Valid values are from 5 through 300.
+	//
+	// Default - 30 seconds.
+	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
+	// The number of consecutive failures required before the container becomes unhealthy. Valid
+	// values are from 1 through 10.
+	//
+	// Default - 3.
+	Retries *float64 `pulumi:"retries"`
+	// The startup grace period, in seconds, during which failed checks do not count toward the retry
+	// limit. Valid values are from 0 through 300.
+	//
+	// Default - No startup grace period.
+	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
+	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+	//
+	// Default - 5 seconds.
+	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
 }
 
-func (ContainerLogDriverArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*ContainerLogDriver)(nil)).Elem()
+func (ContainerHealthCheckArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerHealthCheck)(nil)).Elem()
 }
 
-func (i ContainerLogDriverArgs) ToContainerLogDriverOutput() ContainerLogDriverOutput {
-	return i.ToContainerLogDriverOutputWithContext(context.Background())
+func (i ContainerHealthCheckArgs) ToContainerHealthCheckOutput() ContainerHealthCheckOutput {
+	return i.ToContainerHealthCheckOutputWithContext(context.Background())
 }
 
-func (i ContainerLogDriverArgs) ToContainerLogDriverOutputWithContext(ctx context.Context) ContainerLogDriverOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ContainerLogDriverOutput)
+func (i ContainerHealthCheckArgs) ToContainerHealthCheckOutputWithContext(ctx context.Context) ContainerHealthCheckOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerHealthCheckOutput)
 }
 
-func (i ContainerLogDriverArgs) ToContainerLogDriverPtrOutput() ContainerLogDriverPtrOutput {
-	return i.ToContainerLogDriverPtrOutputWithContext(context.Background())
+func (i ContainerHealthCheckArgs) ToContainerHealthCheckPtrOutput() ContainerHealthCheckPtrOutput {
+	return i.ToContainerHealthCheckPtrOutputWithContext(context.Background())
 }
 
-func (i ContainerLogDriverArgs) ToContainerLogDriverPtrOutputWithContext(ctx context.Context) ContainerLogDriverPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ContainerLogDriverOutput).ToContainerLogDriverPtrOutputWithContext(ctx)
+func (i ContainerHealthCheckArgs) ToContainerHealthCheckPtrOutputWithContext(ctx context.Context) ContainerHealthCheckPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerHealthCheckOutput).ToContainerHealthCheckPtrOutputWithContext(ctx)
 }
 
-// ContainerLogDriverPtrInput is an input type that accepts ContainerLogDriverArgs, ContainerLogDriverPtr and ContainerLogDriverPtrOutput values.
-// You can construct a concrete instance of `ContainerLogDriverPtrInput` via:
+// ContainerHealthCheckPtrInput is an input type that accepts ContainerHealthCheckArgs, ContainerHealthCheckPtr and ContainerHealthCheckPtrOutput values.
+// You can construct a concrete instance of `ContainerHealthCheckPtrInput` via:
 //
-//	        ContainerLogDriverArgs{...}
+//	        ContainerHealthCheckArgs{...}
 //
 //	or:
 //
 //	        nil
-type ContainerLogDriverPtrInput interface {
+type ContainerHealthCheckPtrInput interface {
 	pulumi.Input
 
-	ToContainerLogDriverPtrOutput() ContainerLogDriverPtrOutput
-	ToContainerLogDriverPtrOutputWithContext(context.Context) ContainerLogDriverPtrOutput
+	ToContainerHealthCheckPtrOutput() ContainerHealthCheckPtrOutput
+	ToContainerHealthCheckPtrOutputWithContext(context.Context) ContainerHealthCheckPtrOutput
 }
 
-type containerLogDriverPtrType ContainerLogDriverArgs
+type containerHealthCheckPtrType ContainerHealthCheckArgs
 
-func ContainerLogDriverPtr(v *ContainerLogDriverArgs) ContainerLogDriverPtrInput {
-	return (*containerLogDriverPtrType)(v)
+func ContainerHealthCheckPtr(v *ContainerHealthCheckArgs) ContainerHealthCheckPtrInput {
+	return (*containerHealthCheckPtrType)(v)
 }
 
-func (*containerLogDriverPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**ContainerLogDriver)(nil)).Elem()
+func (*containerHealthCheckPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerHealthCheck)(nil)).Elem()
 }
 
-func (i *containerLogDriverPtrType) ToContainerLogDriverPtrOutput() ContainerLogDriverPtrOutput {
-	return i.ToContainerLogDriverPtrOutputWithContext(context.Background())
+func (i *containerHealthCheckPtrType) ToContainerHealthCheckPtrOutput() ContainerHealthCheckPtrOutput {
+	return i.ToContainerHealthCheckPtrOutputWithContext(context.Background())
 }
 
-func (i *containerLogDriverPtrType) ToContainerLogDriverPtrOutputWithContext(ctx context.Context) ContainerLogDriverPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ContainerLogDriverPtrOutput)
+func (i *containerHealthCheckPtrType) ToContainerHealthCheckPtrOutputWithContext(ctx context.Context) ContainerHealthCheckPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerHealthCheckPtrOutput)
 }
 
-type ContainerLogDriverOutput struct{ *pulumi.OutputState }
+type ContainerHealthCheckOutput struct{ *pulumi.OutputState }
 
-func (ContainerLogDriverOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*ContainerLogDriver)(nil)).Elem()
+func (ContainerHealthCheckOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerHealthCheck)(nil)).Elem()
 }
 
-func (o ContainerLogDriverOutput) ToContainerLogDriverOutput() ContainerLogDriverOutput {
+func (o ContainerHealthCheckOutput) ToContainerHealthCheckOutput() ContainerHealthCheckOutput {
 	return o
 }
 
-func (o ContainerLogDriverOutput) ToContainerLogDriverOutputWithContext(ctx context.Context) ContainerLogDriverOutput {
+func (o ContainerHealthCheckOutput) ToContainerHealthCheckOutputWithContext(ctx context.Context) ContainerHealthCheckOutput {
 	return o
 }
 
-func (o ContainerLogDriverOutput) ToContainerLogDriverPtrOutput() ContainerLogDriverPtrOutput {
-	return o.ToContainerLogDriverPtrOutputWithContext(context.Background())
+func (o ContainerHealthCheckOutput) ToContainerHealthCheckPtrOutput() ContainerHealthCheckPtrOutput {
+	return o.ToContainerHealthCheckPtrOutputWithContext(context.Background())
 }
 
-func (o ContainerLogDriverOutput) ToContainerLogDriverPtrOutputWithContext(ctx context.Context) ContainerLogDriverPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerLogDriver) *ContainerLogDriver {
+func (o ContainerHealthCheckOutput) ToContainerHealthCheckPtrOutputWithContext(ctx context.Context) ContainerHealthCheckPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerHealthCheck) *ContainerHealthCheck {
 		return &v
-	}).(ContainerLogDriverPtrOutput)
+	}).(ContainerHealthCheckPtrOutput)
+}
+
+// The command that the container runs to determine whether it is healthy.
+//
+// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+//
+// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+func (o ContainerHealthCheckOutput) Command() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v ContainerHealthCheck) []string { return v.Command }).(pulumi.StringArrayOutput)
+}
+
+// The time, in seconds, between health checks. Valid values are from 5 through 300.
+//
+// Default - 30 seconds.
+func (o ContainerHealthCheckOutput) IntervalSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerHealthCheck) *float64 { return v.IntervalSeconds }).(pulumi.Float64PtrOutput)
+}
+
+// The number of consecutive failures required before the container becomes unhealthy. Valid
+// values are from 1 through 10.
+//
+// Default - 3.
+func (o ContainerHealthCheckOutput) Retries() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerHealthCheck) *float64 { return v.Retries }).(pulumi.Float64PtrOutput)
+}
+
+// The startup grace period, in seconds, during which failed checks do not count toward the retry
+// limit. Valid values are from 0 through 300.
+//
+// Default - No startup grace period.
+func (o ContainerHealthCheckOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerHealthCheck) *float64 { return v.StartPeriodSeconds }).(pulumi.Float64PtrOutput)
+}
+
+// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+//
+// Default - 5 seconds.
+func (o ContainerHealthCheckOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v ContainerHealthCheck) *float64 { return v.TimeoutSeconds }).(pulumi.Float64PtrOutput)
+}
+
+type ContainerHealthCheckPtrOutput struct{ *pulumi.OutputState }
+
+func (ContainerHealthCheckPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerHealthCheck)(nil)).Elem()
+}
+
+func (o ContainerHealthCheckPtrOutput) ToContainerHealthCheckPtrOutput() ContainerHealthCheckPtrOutput {
+	return o
+}
+
+func (o ContainerHealthCheckPtrOutput) ToContainerHealthCheckPtrOutputWithContext(ctx context.Context) ContainerHealthCheckPtrOutput {
+	return o
+}
+
+func (o ContainerHealthCheckPtrOutput) Elem() ContainerHealthCheckOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) ContainerHealthCheck {
+		if v != nil {
+			return *v
+		}
+		var ret ContainerHealthCheck
+		return ret
+	}).(ContainerHealthCheckOutput)
+}
+
+// The command that the container runs to determine whether it is healthy.
+//
+// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+//
+// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+func (o ContainerHealthCheckPtrOutput) Command() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) []string {
+		if v == nil {
+			return nil
+		}
+		return v.Command
+	}).(pulumi.StringArrayOutput)
+}
+
+// The time, in seconds, between health checks. Valid values are from 5 through 300.
+//
+// Default - 30 seconds.
+func (o ContainerHealthCheckPtrOutput) IntervalSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.IntervalSeconds
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The number of consecutive failures required before the container becomes unhealthy. Valid
+// values are from 1 through 10.
+//
+// Default - 3.
+func (o ContainerHealthCheckPtrOutput) Retries() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.Retries
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The startup grace period, in seconds, during which failed checks do not count toward the retry
+// limit. Valid values are from 0 through 300.
+//
+// Default - No startup grace period.
+func (o ContainerHealthCheckPtrOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.StartPeriodSeconds
+	}).(pulumi.Float64PtrOutput)
+}
+
+// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+//
+// Default - 5 seconds.
+func (o ContainerHealthCheckPtrOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *ContainerHealthCheck) *float64 {
+		if v == nil {
+			return nil
+		}
+		return v.TimeoutSeconds
+	}).(pulumi.Float64PtrOutput)
+}
+
+type ContainerLogging struct {
+	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+	//
+	// For more information, see [CloudWatch
+	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+	Cloudwatch *CloudWatchLogging `pulumi:"cloudwatch"`
+	// Disable collection of this container's stdout and stderr through the log driver. Cannot be
+	// combined with `cloudwatch`.
+	//
+	// Default - false; logs are sent to CloudWatch Logs.
+	Disabled *bool `pulumi:"disabled"`
+}
+
+// ContainerLoggingInput is an input type that accepts ContainerLoggingArgs and ContainerLoggingOutput values.
+// You can construct a concrete instance of `ContainerLoggingInput` via:
+//
+//	ContainerLoggingArgs{...}
+type ContainerLoggingInput interface {
+	pulumi.Input
+
+	ToContainerLoggingOutput() ContainerLoggingOutput
+	ToContainerLoggingOutputWithContext(context.Context) ContainerLoggingOutput
+}
+
+type ContainerLoggingArgs struct {
+	// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+	//
+	// For more information, see [CloudWatch
+	// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
+	Cloudwatch *CloudWatchLoggingArgs `pulumi:"cloudwatch"`
+	// Disable collection of this container's stdout and stderr through the log driver. Cannot be
+	// combined with `cloudwatch`.
+	//
+	// Default - false; logs are sent to CloudWatch Logs.
+	Disabled *bool `pulumi:"disabled"`
+}
+
+func (ContainerLoggingArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerLogging)(nil)).Elem()
+}
+
+func (i ContainerLoggingArgs) ToContainerLoggingOutput() ContainerLoggingOutput {
+	return i.ToContainerLoggingOutputWithContext(context.Background())
+}
+
+func (i ContainerLoggingArgs) ToContainerLoggingOutputWithContext(ctx context.Context) ContainerLoggingOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerLoggingOutput)
+}
+
+func (i ContainerLoggingArgs) ToContainerLoggingPtrOutput() ContainerLoggingPtrOutput {
+	return i.ToContainerLoggingPtrOutputWithContext(context.Background())
+}
+
+func (i ContainerLoggingArgs) ToContainerLoggingPtrOutputWithContext(ctx context.Context) ContainerLoggingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerLoggingOutput).ToContainerLoggingPtrOutputWithContext(ctx)
+}
+
+// ContainerLoggingPtrInput is an input type that accepts ContainerLoggingArgs, ContainerLoggingPtr and ContainerLoggingPtrOutput values.
+// You can construct a concrete instance of `ContainerLoggingPtrInput` via:
+//
+//	        ContainerLoggingArgs{...}
+//
+//	or:
+//
+//	        nil
+type ContainerLoggingPtrInput interface {
+	pulumi.Input
+
+	ToContainerLoggingPtrOutput() ContainerLoggingPtrOutput
+	ToContainerLoggingPtrOutputWithContext(context.Context) ContainerLoggingPtrOutput
+}
+
+type containerLoggingPtrType ContainerLoggingArgs
+
+func ContainerLoggingPtr(v *ContainerLoggingArgs) ContainerLoggingPtrInput {
+	return (*containerLoggingPtrType)(v)
+}
+
+func (*containerLoggingPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerLogging)(nil)).Elem()
+}
+
+func (i *containerLoggingPtrType) ToContainerLoggingPtrOutput() ContainerLoggingPtrOutput {
+	return i.ToContainerLoggingPtrOutputWithContext(context.Background())
+}
+
+func (i *containerLoggingPtrType) ToContainerLoggingPtrOutputWithContext(ctx context.Context) ContainerLoggingPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ContainerLoggingPtrOutput)
+}
+
+type ContainerLoggingOutput struct{ *pulumi.OutputState }
+
+func (ContainerLoggingOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ContainerLogging)(nil)).Elem()
+}
+
+func (o ContainerLoggingOutput) ToContainerLoggingOutput() ContainerLoggingOutput {
+	return o
+}
+
+func (o ContainerLoggingOutput) ToContainerLoggingOutputWithContext(ctx context.Context) ContainerLoggingOutput {
+	return o
+}
+
+func (o ContainerLoggingOutput) ToContainerLoggingPtrOutput() ContainerLoggingPtrOutput {
+	return o.ToContainerLoggingPtrOutputWithContext(context.Background())
+}
+
+func (o ContainerLoggingOutput) ToContainerLoggingPtrOutputWithContext(ctx context.Context) ContainerLoggingPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ContainerLogging) *ContainerLogging {
+		return &v
+	}).(ContainerLoggingPtrOutput)
 }
 
 // Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
 //
 // For more information, see [CloudWatch
 // logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
-func (o ContainerLogDriverOutput) Cloudwatch() AwsLogsLogDriverPtrOutput {
-	return o.ApplyT(func(v ContainerLogDriver) *AwsLogsLogDriver { return v.Cloudwatch }).(AwsLogsLogDriverPtrOutput)
+func (o ContainerLoggingOutput) Cloudwatch() CloudWatchLoggingPtrOutput {
+	return o.ApplyT(func(v ContainerLogging) *CloudWatchLogging { return v.Cloudwatch }).(CloudWatchLoggingPtrOutput)
 }
 
 // Disable collection of this container's stdout and stderr through the log driver. Cannot be
 // combined with `cloudwatch`.
 //
 // Default - false; logs are sent to CloudWatch Logs.
-func (o ContainerLogDriverOutput) Disabled() pulumi.BoolPtrOutput {
-	return o.ApplyT(func(v ContainerLogDriver) *bool { return v.Disabled }).(pulumi.BoolPtrOutput)
+func (o ContainerLoggingOutput) Disabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v ContainerLogging) *bool { return v.Disabled }).(pulumi.BoolPtrOutput)
 }
 
-type ContainerLogDriverPtrOutput struct{ *pulumi.OutputState }
+type ContainerLoggingPtrOutput struct{ *pulumi.OutputState }
 
-func (ContainerLogDriverPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**ContainerLogDriver)(nil)).Elem()
+func (ContainerLoggingPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ContainerLogging)(nil)).Elem()
 }
 
-func (o ContainerLogDriverPtrOutput) ToContainerLogDriverPtrOutput() ContainerLogDriverPtrOutput {
+func (o ContainerLoggingPtrOutput) ToContainerLoggingPtrOutput() ContainerLoggingPtrOutput {
 	return o
 }
 
-func (o ContainerLogDriverPtrOutput) ToContainerLogDriverPtrOutputWithContext(ctx context.Context) ContainerLogDriverPtrOutput {
+func (o ContainerLoggingPtrOutput) ToContainerLoggingPtrOutputWithContext(ctx context.Context) ContainerLoggingPtrOutput {
 	return o
 }
 
-func (o ContainerLogDriverPtrOutput) Elem() ContainerLogDriverOutput {
-	return o.ApplyT(func(v *ContainerLogDriver) ContainerLogDriver {
+func (o ContainerLoggingPtrOutput) Elem() ContainerLoggingOutput {
+	return o.ApplyT(func(v *ContainerLogging) ContainerLogging {
 		if v != nil {
 			return *v
 		}
-		var ret ContainerLogDriver
+		var ret ContainerLogging
 		return ret
-	}).(ContainerLogDriverOutput)
+	}).(ContainerLoggingOutput)
 }
 
 // Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
 //
 // For more information, see [CloudWatch
 // logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
-func (o ContainerLogDriverPtrOutput) Cloudwatch() AwsLogsLogDriverPtrOutput {
-	return o.ApplyT(func(v *ContainerLogDriver) *AwsLogsLogDriver {
+func (o ContainerLoggingPtrOutput) Cloudwatch() CloudWatchLoggingPtrOutput {
+	return o.ApplyT(func(v *ContainerLogging) *CloudWatchLogging {
 		if v == nil {
 			return nil
 		}
 		return v.Cloudwatch
-	}).(AwsLogsLogDriverPtrOutput)
+	}).(CloudWatchLoggingPtrOutput)
 }
 
 // Disable collection of this container's stdout and stderr through the log driver. Cannot be
 // combined with `cloudwatch`.
 //
 // Default - false; logs are sent to CloudWatch Logs.
-func (o ContainerLogDriverPtrOutput) Disabled() pulumi.BoolPtrOutput {
-	return o.ApplyT(func(v *ContainerLogDriver) *bool {
+func (o ContainerLoggingPtrOutput) Disabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *ContainerLogging) *bool {
 		if v == nil {
 			return nil
 		}
@@ -4256,275 +4525,6 @@ func (o HeaderConditionArrayOutput) Index(i pulumi.IntInput) HeaderConditionOutp
 	}).(HeaderConditionOutput)
 }
 
-type HealthCheck struct {
-	// The command that the container runs to determine whether it is healthy.
-	//
-	// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-	//
-	// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-	Command []string `pulumi:"command"`
-	// The time, in seconds, between health checks. Valid values are from 5 through 300.
-	//
-	// Default - 30 seconds.
-	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
-	// The number of consecutive failures required before the container becomes unhealthy. Valid
-	// values are from 1 through 10.
-	//
-	// Default - 3.
-	Retries *float64 `pulumi:"retries"`
-	// The startup grace period, in seconds, during which failed checks do not count toward the retry
-	// limit. Valid values are from 0 through 300.
-	//
-	// Default - No startup grace period.
-	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
-	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-	//
-	// Default - 5 seconds.
-	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
-}
-
-// HealthCheckInput is an input type that accepts HealthCheckArgs and HealthCheckOutput values.
-// You can construct a concrete instance of `HealthCheckInput` via:
-//
-//	HealthCheckArgs{...}
-type HealthCheckInput interface {
-	pulumi.Input
-
-	ToHealthCheckOutput() HealthCheckOutput
-	ToHealthCheckOutputWithContext(context.Context) HealthCheckOutput
-}
-
-type HealthCheckArgs struct {
-	// The command that the container runs to determine whether it is healthy.
-	//
-	// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-	//
-	// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-	Command []string `pulumi:"command"`
-	// The time, in seconds, between health checks. Valid values are from 5 through 300.
-	//
-	// Default - 30 seconds.
-	IntervalSeconds *float64 `pulumi:"intervalSeconds"`
-	// The number of consecutive failures required before the container becomes unhealthy. Valid
-	// values are from 1 through 10.
-	//
-	// Default - 3.
-	Retries *float64 `pulumi:"retries"`
-	// The startup grace period, in seconds, during which failed checks do not count toward the retry
-	// limit. Valid values are from 0 through 300.
-	//
-	// Default - No startup grace period.
-	StartPeriodSeconds *float64 `pulumi:"startPeriodSeconds"`
-	// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-	//
-	// Default - 5 seconds.
-	TimeoutSeconds *float64 `pulumi:"timeoutSeconds"`
-}
-
-func (HealthCheckArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*HealthCheck)(nil)).Elem()
-}
-
-func (i HealthCheckArgs) ToHealthCheckOutput() HealthCheckOutput {
-	return i.ToHealthCheckOutputWithContext(context.Background())
-}
-
-func (i HealthCheckArgs) ToHealthCheckOutputWithContext(ctx context.Context) HealthCheckOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HealthCheckOutput)
-}
-
-func (i HealthCheckArgs) ToHealthCheckPtrOutput() HealthCheckPtrOutput {
-	return i.ToHealthCheckPtrOutputWithContext(context.Background())
-}
-
-func (i HealthCheckArgs) ToHealthCheckPtrOutputWithContext(ctx context.Context) HealthCheckPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HealthCheckOutput).ToHealthCheckPtrOutputWithContext(ctx)
-}
-
-// HealthCheckPtrInput is an input type that accepts HealthCheckArgs, HealthCheckPtr and HealthCheckPtrOutput values.
-// You can construct a concrete instance of `HealthCheckPtrInput` via:
-//
-//	        HealthCheckArgs{...}
-//
-//	or:
-//
-//	        nil
-type HealthCheckPtrInput interface {
-	pulumi.Input
-
-	ToHealthCheckPtrOutput() HealthCheckPtrOutput
-	ToHealthCheckPtrOutputWithContext(context.Context) HealthCheckPtrOutput
-}
-
-type healthCheckPtrType HealthCheckArgs
-
-func HealthCheckPtr(v *HealthCheckArgs) HealthCheckPtrInput {
-	return (*healthCheckPtrType)(v)
-}
-
-func (*healthCheckPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**HealthCheck)(nil)).Elem()
-}
-
-func (i *healthCheckPtrType) ToHealthCheckPtrOutput() HealthCheckPtrOutput {
-	return i.ToHealthCheckPtrOutputWithContext(context.Background())
-}
-
-func (i *healthCheckPtrType) ToHealthCheckPtrOutputWithContext(ctx context.Context) HealthCheckPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HealthCheckPtrOutput)
-}
-
-type HealthCheckOutput struct{ *pulumi.OutputState }
-
-func (HealthCheckOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*HealthCheck)(nil)).Elem()
-}
-
-func (o HealthCheckOutput) ToHealthCheckOutput() HealthCheckOutput {
-	return o
-}
-
-func (o HealthCheckOutput) ToHealthCheckOutputWithContext(ctx context.Context) HealthCheckOutput {
-	return o
-}
-
-func (o HealthCheckOutput) ToHealthCheckPtrOutput() HealthCheckPtrOutput {
-	return o.ToHealthCheckPtrOutputWithContext(context.Background())
-}
-
-func (o HealthCheckOutput) ToHealthCheckPtrOutputWithContext(ctx context.Context) HealthCheckPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v HealthCheck) *HealthCheck {
-		return &v
-	}).(HealthCheckPtrOutput)
-}
-
-// The command that the container runs to determine whether it is healthy.
-//
-// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-//
-// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-func (o HealthCheckOutput) Command() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v HealthCheck) []string { return v.Command }).(pulumi.StringArrayOutput)
-}
-
-// The time, in seconds, between health checks. Valid values are from 5 through 300.
-//
-// Default - 30 seconds.
-func (o HealthCheckOutput) IntervalSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.IntervalSeconds }).(pulumi.Float64PtrOutput)
-}
-
-// The number of consecutive failures required before the container becomes unhealthy. Valid
-// values are from 1 through 10.
-//
-// Default - 3.
-func (o HealthCheckOutput) Retries() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.Retries }).(pulumi.Float64PtrOutput)
-}
-
-// The startup grace period, in seconds, during which failed checks do not count toward the retry
-// limit. Valid values are from 0 through 300.
-//
-// Default - No startup grace period.
-func (o HealthCheckOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.StartPeriodSeconds }).(pulumi.Float64PtrOutput)
-}
-
-// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-//
-// Default - 5 seconds.
-func (o HealthCheckOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v HealthCheck) *float64 { return v.TimeoutSeconds }).(pulumi.Float64PtrOutput)
-}
-
-type HealthCheckPtrOutput struct{ *pulumi.OutputState }
-
-func (HealthCheckPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**HealthCheck)(nil)).Elem()
-}
-
-func (o HealthCheckPtrOutput) ToHealthCheckPtrOutput() HealthCheckPtrOutput {
-	return o
-}
-
-func (o HealthCheckPtrOutput) ToHealthCheckPtrOutputWithContext(ctx context.Context) HealthCheckPtrOutput {
-	return o
-}
-
-func (o HealthCheckPtrOutput) Elem() HealthCheckOutput {
-	return o.ApplyT(func(v *HealthCheck) HealthCheck {
-		if v != nil {
-			return *v
-		}
-		var ret HealthCheck
-		return ret
-	}).(HealthCheckOutput)
-}
-
-// The command that the container runs to determine whether it is healthy.
-//
-// The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-//
-// Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-func (o HealthCheckPtrOutput) Command() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *HealthCheck) []string {
-		if v == nil {
-			return nil
-		}
-		return v.Command
-	}).(pulumi.StringArrayOutput)
-}
-
-// The time, in seconds, between health checks. Valid values are from 5 through 300.
-//
-// Default - 30 seconds.
-func (o HealthCheckPtrOutput) IntervalSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *HealthCheck) *float64 {
-		if v == nil {
-			return nil
-		}
-		return v.IntervalSeconds
-	}).(pulumi.Float64PtrOutput)
-}
-
-// The number of consecutive failures required before the container becomes unhealthy. Valid
-// values are from 1 through 10.
-//
-// Default - 3.
-func (o HealthCheckPtrOutput) Retries() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *HealthCheck) *float64 {
-		if v == nil {
-			return nil
-		}
-		return v.Retries
-	}).(pulumi.Float64PtrOutput)
-}
-
-// The startup grace period, in seconds, during which failed checks do not count toward the retry
-// limit. Valid values are from 0 through 300.
-//
-// Default - No startup grace period.
-func (o HealthCheckPtrOutput) StartPeriodSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *HealthCheck) *float64 {
-		if v == nil {
-			return nil
-		}
-		return v.StartPeriodSeconds
-	}).(pulumi.Float64PtrOutput)
-}
-
-// The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-//
-// Default - 5 seconds.
-func (o HealthCheckPtrOutput) TimeoutSeconds() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *HealthCheck) *float64 {
-		if v == nil {
-			return nil
-		}
-		return v.TimeoutSeconds
-	}).(pulumi.Float64PtrOutput)
-}
-
 type KernelCapabilities struct {
 	// Linux capabilities to add to the container.
 	//
@@ -4689,7 +4689,7 @@ func (o KernelCapabilitiesPtrOutput) Drop() pulumi.StringArrayOutput {
 	}).(pulumi.StringArrayOutput)
 }
 
-type LinearStrategy struct {
+type LinearDeploymentStrategy struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -4731,18 +4731,18 @@ type LinearStrategy struct {
 	StepPercent *float64 `pulumi:"stepPercent"`
 }
 
-// LinearStrategyInput is an input type that accepts LinearStrategyArgs and LinearStrategyOutput values.
-// You can construct a concrete instance of `LinearStrategyInput` via:
+// LinearDeploymentStrategyInput is an input type that accepts LinearDeploymentStrategyArgs and LinearDeploymentStrategyOutput values.
+// You can construct a concrete instance of `LinearDeploymentStrategyInput` via:
 //
-//	LinearStrategyArgs{...}
-type LinearStrategyInput interface {
+//	LinearDeploymentStrategyArgs{...}
+type LinearDeploymentStrategyInput interface {
 	pulumi.Input
 
-	ToLinearStrategyOutput() LinearStrategyOutput
-	ToLinearStrategyOutputWithContext(context.Context) LinearStrategyOutput
+	ToLinearDeploymentStrategyOutput() LinearDeploymentStrategyOutput
+	ToLinearDeploymentStrategyOutputWithContext(context.Context) LinearDeploymentStrategyOutput
 }
 
-type LinearStrategyArgs struct {
+type LinearDeploymentStrategyArgs struct {
 	// Number of minutes to keep the previous service revision running after all production traffic
 	// has shifted to the new revision. This is separate from the canary observation period or the
 	// waits between linear traffic increments.
@@ -4784,81 +4784,81 @@ type LinearStrategyArgs struct {
 	StepPercent *float64 `pulumi:"stepPercent"`
 }
 
-func (LinearStrategyArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*LinearStrategy)(nil)).Elem()
+func (LinearDeploymentStrategyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LinearDeploymentStrategy)(nil)).Elem()
 }
 
-func (i LinearStrategyArgs) ToLinearStrategyOutput() LinearStrategyOutput {
-	return i.ToLinearStrategyOutputWithContext(context.Background())
+func (i LinearDeploymentStrategyArgs) ToLinearDeploymentStrategyOutput() LinearDeploymentStrategyOutput {
+	return i.ToLinearDeploymentStrategyOutputWithContext(context.Background())
 }
 
-func (i LinearStrategyArgs) ToLinearStrategyOutputWithContext(ctx context.Context) LinearStrategyOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(LinearStrategyOutput)
+func (i LinearDeploymentStrategyArgs) ToLinearDeploymentStrategyOutputWithContext(ctx context.Context) LinearDeploymentStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinearDeploymentStrategyOutput)
 }
 
-func (i LinearStrategyArgs) ToLinearStrategyPtrOutput() LinearStrategyPtrOutput {
-	return i.ToLinearStrategyPtrOutputWithContext(context.Background())
+func (i LinearDeploymentStrategyArgs) ToLinearDeploymentStrategyPtrOutput() LinearDeploymentStrategyPtrOutput {
+	return i.ToLinearDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i LinearStrategyArgs) ToLinearStrategyPtrOutputWithContext(ctx context.Context) LinearStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(LinearStrategyOutput).ToLinearStrategyPtrOutputWithContext(ctx)
+func (i LinearDeploymentStrategyArgs) ToLinearDeploymentStrategyPtrOutputWithContext(ctx context.Context) LinearDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinearDeploymentStrategyOutput).ToLinearDeploymentStrategyPtrOutputWithContext(ctx)
 }
 
-// LinearStrategyPtrInput is an input type that accepts LinearStrategyArgs, LinearStrategyPtr and LinearStrategyPtrOutput values.
-// You can construct a concrete instance of `LinearStrategyPtrInput` via:
+// LinearDeploymentStrategyPtrInput is an input type that accepts LinearDeploymentStrategyArgs, LinearDeploymentStrategyPtr and LinearDeploymentStrategyPtrOutput values.
+// You can construct a concrete instance of `LinearDeploymentStrategyPtrInput` via:
 //
-//	        LinearStrategyArgs{...}
+//	        LinearDeploymentStrategyArgs{...}
 //
 //	or:
 //
 //	        nil
-type LinearStrategyPtrInput interface {
+type LinearDeploymentStrategyPtrInput interface {
 	pulumi.Input
 
-	ToLinearStrategyPtrOutput() LinearStrategyPtrOutput
-	ToLinearStrategyPtrOutputWithContext(context.Context) LinearStrategyPtrOutput
+	ToLinearDeploymentStrategyPtrOutput() LinearDeploymentStrategyPtrOutput
+	ToLinearDeploymentStrategyPtrOutputWithContext(context.Context) LinearDeploymentStrategyPtrOutput
 }
 
-type linearStrategyPtrType LinearStrategyArgs
+type linearDeploymentStrategyPtrType LinearDeploymentStrategyArgs
 
-func LinearStrategyPtr(v *LinearStrategyArgs) LinearStrategyPtrInput {
-	return (*linearStrategyPtrType)(v)
+func LinearDeploymentStrategyPtr(v *LinearDeploymentStrategyArgs) LinearDeploymentStrategyPtrInput {
+	return (*linearDeploymentStrategyPtrType)(v)
 }
 
-func (*linearStrategyPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**LinearStrategy)(nil)).Elem()
+func (*linearDeploymentStrategyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**LinearDeploymentStrategy)(nil)).Elem()
 }
 
-func (i *linearStrategyPtrType) ToLinearStrategyPtrOutput() LinearStrategyPtrOutput {
-	return i.ToLinearStrategyPtrOutputWithContext(context.Background())
+func (i *linearDeploymentStrategyPtrType) ToLinearDeploymentStrategyPtrOutput() LinearDeploymentStrategyPtrOutput {
+	return i.ToLinearDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (i *linearStrategyPtrType) ToLinearStrategyPtrOutputWithContext(ctx context.Context) LinearStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(LinearStrategyPtrOutput)
+func (i *linearDeploymentStrategyPtrType) ToLinearDeploymentStrategyPtrOutputWithContext(ctx context.Context) LinearDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LinearDeploymentStrategyPtrOutput)
 }
 
-type LinearStrategyOutput struct{ *pulumi.OutputState }
+type LinearDeploymentStrategyOutput struct{ *pulumi.OutputState }
 
-func (LinearStrategyOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*LinearStrategy)(nil)).Elem()
+func (LinearDeploymentStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LinearDeploymentStrategy)(nil)).Elem()
 }
 
-func (o LinearStrategyOutput) ToLinearStrategyOutput() LinearStrategyOutput {
+func (o LinearDeploymentStrategyOutput) ToLinearDeploymentStrategyOutput() LinearDeploymentStrategyOutput {
 	return o
 }
 
-func (o LinearStrategyOutput) ToLinearStrategyOutputWithContext(ctx context.Context) LinearStrategyOutput {
+func (o LinearDeploymentStrategyOutput) ToLinearDeploymentStrategyOutputWithContext(ctx context.Context) LinearDeploymentStrategyOutput {
 	return o
 }
 
-func (o LinearStrategyOutput) ToLinearStrategyPtrOutput() LinearStrategyPtrOutput {
-	return o.ToLinearStrategyPtrOutputWithContext(context.Background())
+func (o LinearDeploymentStrategyOutput) ToLinearDeploymentStrategyPtrOutput() LinearDeploymentStrategyPtrOutput {
+	return o.ToLinearDeploymentStrategyPtrOutputWithContext(context.Background())
 }
 
-func (o LinearStrategyOutput) ToLinearStrategyPtrOutputWithContext(ctx context.Context) LinearStrategyPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v LinearStrategy) *LinearStrategy {
+func (o LinearDeploymentStrategyOutput) ToLinearDeploymentStrategyPtrOutputWithContext(ctx context.Context) LinearDeploymentStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LinearDeploymentStrategy) *LinearDeploymentStrategy {
 		return &v
-	}).(LinearStrategyPtrOutput)
+	}).(LinearDeploymentStrategyPtrOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -4866,8 +4866,8 @@ func (o LinearStrategyOutput) ToLinearStrategyPtrOutputWithContext(ctx context.C
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o LinearStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
-	return o.ApplyT(func(v LinearStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
+func (o LinearDeploymentStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
+	return o.ApplyT(func(v LinearDeploymentStrategy) float64 { return v.BakeTimeMinutes }).(pulumi.Float64Output)
 }
 
 // Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -4877,8 +4877,8 @@ func (o LinearStrategyOutput) BakeTimeMinutes() pulumi.Float64Output {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o LinearStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v LinearStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
+func (o LinearDeploymentStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v LinearDeploymentStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
 }
 
 // Lambda functions invoked at selected deployment stages.
@@ -4887,8 +4887,8 @@ func (o LinearStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o LinearStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v LinearStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
+func (o LinearDeploymentStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v LinearDeploymentStrategy) []ProgressiveLambdaHook { return v.LambdaHooks }).(ProgressiveLambdaHookArrayOutput)
 }
 
 // Pauses at selected deployment stages for external approval or validation. To continue the
@@ -4899,47 +4899,47 @@ func (o LinearStrategyOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
 // performed.
 //
 // Default - No pause hooks.
-func (o LinearStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v LinearStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
+func (o LinearDeploymentStrategyOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v LinearDeploymentStrategy) []ProgressivePauseHook { return v.PauseHooks }).(ProgressivePauseHookArrayOutput)
 }
 
 // Number of minutes to wait between traffic increments. Valid range: 0-1440 minutes (24 hours).
 //
 // Default - AWS default of 6 minutes
-func (o LinearStrategyOutput) StepBakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v LinearStrategy) *float64 { return v.StepBakeTimeMinutes }).(pulumi.Float64PtrOutput)
+func (o LinearDeploymentStrategyOutput) StepBakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LinearDeploymentStrategy) *float64 { return v.StepBakeTimeMinutes }).(pulumi.Float64PtrOutput)
 }
 
 // Percentage of production traffic shifted to the new service revision in each increment. Valid
 // values are multiples of 0.1 from 3.0 to 100.0.
 //
 // Default - AWS default of 10.0
-func (o LinearStrategyOutput) StepPercent() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v LinearStrategy) *float64 { return v.StepPercent }).(pulumi.Float64PtrOutput)
+func (o LinearDeploymentStrategyOutput) StepPercent() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LinearDeploymentStrategy) *float64 { return v.StepPercent }).(pulumi.Float64PtrOutput)
 }
 
-type LinearStrategyPtrOutput struct{ *pulumi.OutputState }
+type LinearDeploymentStrategyPtrOutput struct{ *pulumi.OutputState }
 
-func (LinearStrategyPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**LinearStrategy)(nil)).Elem()
+func (LinearDeploymentStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LinearDeploymentStrategy)(nil)).Elem()
 }
 
-func (o LinearStrategyPtrOutput) ToLinearStrategyPtrOutput() LinearStrategyPtrOutput {
+func (o LinearDeploymentStrategyPtrOutput) ToLinearDeploymentStrategyPtrOutput() LinearDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o LinearStrategyPtrOutput) ToLinearStrategyPtrOutputWithContext(ctx context.Context) LinearStrategyPtrOutput {
+func (o LinearDeploymentStrategyPtrOutput) ToLinearDeploymentStrategyPtrOutputWithContext(ctx context.Context) LinearDeploymentStrategyPtrOutput {
 	return o
 }
 
-func (o LinearStrategyPtrOutput) Elem() LinearStrategyOutput {
-	return o.ApplyT(func(v *LinearStrategy) LinearStrategy {
+func (o LinearDeploymentStrategyPtrOutput) Elem() LinearDeploymentStrategyOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) LinearDeploymentStrategy {
 		if v != nil {
 			return *v
 		}
-		var ret LinearStrategy
+		var ret LinearDeploymentStrategy
 		return ret
-	}).(LinearStrategyOutput)
+	}).(LinearDeploymentStrategyOutput)
 }
 
 // Number of minutes to keep the previous service revision running after all production traffic
@@ -4947,8 +4947,8 @@ func (o LinearStrategyPtrOutput) Elem() LinearStrategyOutput {
 // waits between linear traffic increments.
 //
 // Valid range: 0-1440 minutes.
-func (o LinearStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *LinearStrategy) *float64 {
+func (o LinearDeploymentStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -4963,8 +4963,8 @@ func (o LinearStrategyPtrOutput) BakeTimeMinutes() pulumi.Float64PtrOutput {
 // the deployment as failed without automatic rollback.
 //
 // Default - DeploymentFailureAction.ROLLBACK
-func (o LinearStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v *LinearStrategy) *DeploymentFailureAction {
+func (o LinearDeploymentStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) *DeploymentFailureAction {
 		if v == nil {
 			return nil
 		}
@@ -4978,8 +4978,8 @@ func (o LinearStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutpu
 // deployment proceeds.
 //
 // Default - No Lambda hooks.
-func (o LinearStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
-	return o.ApplyT(func(v *LinearStrategy) []ProgressiveLambdaHook {
+func (o LinearDeploymentStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) []ProgressiveLambdaHook {
 		if v == nil {
 			return nil
 		}
@@ -4995,8 +4995,8 @@ func (o LinearStrategyPtrOutput) LambdaHooks() ProgressiveLambdaHookArrayOutput 
 // performed.
 //
 // Default - No pause hooks.
-func (o LinearStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
-	return o.ApplyT(func(v *LinearStrategy) []ProgressivePauseHook {
+func (o LinearDeploymentStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) []ProgressivePauseHook {
 		if v == nil {
 			return nil
 		}
@@ -5007,8 +5007,8 @@ func (o LinearStrategyPtrOutput) PauseHooks() ProgressivePauseHookArrayOutput {
 // Number of minutes to wait between traffic increments. Valid range: 0-1440 minutes (24 hours).
 //
 // Default - AWS default of 6 minutes
-func (o LinearStrategyPtrOutput) StepBakeTimeMinutes() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *LinearStrategy) *float64 {
+func (o LinearDeploymentStrategyPtrOutput) StepBakeTimeMinutes() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -5020,8 +5020,8 @@ func (o LinearStrategyPtrOutput) StepBakeTimeMinutes() pulumi.Float64PtrOutput {
 // values are multiples of 0.1 from 3.0 to 100.0.
 //
 // Default - AWS default of 10.0
-func (o LinearStrategyPtrOutput) StepPercent() pulumi.Float64PtrOutput {
-	return o.ApplyT(func(v *LinearStrategy) *float64 {
+func (o LinearDeploymentStrategyPtrOutput) StepPercent() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v *LinearDeploymentStrategy) *float64 {
 		if v == nil {
 			return nil
 		}
@@ -5870,6 +5870,249 @@ func (o QueryStringConditionArrayOutput) Index(i pulumi.IntInput) QueryStringCon
 	}).(QueryStringConditionOutput)
 }
 
+type RollingDeploymentStrategy struct {
+	// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+	// breaker is always enabled.
+	//
+	// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+	// the deployment as failed without automatic rollback.
+	//
+	// Default - DeploymentFailureAction.ROLLBACK
+	FailureAction *DeploymentFailureAction `pulumi:"failureAction"`
+	// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+	//
+	// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+	//
+	// Default - No Lambda hooks.
+	LambdaHooks []RollingLambdaHook `pulumi:"lambdaHooks"`
+	// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+	// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+	// hookId, and CONTINUE or ROLLBACK.
+	//
+	// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+	// performed.
+	//
+	// Default - No pause hooks.
+	PauseHooks []RollingPauseHook `pulumi:"pauseHooks"`
+}
+
+// RollingDeploymentStrategyInput is an input type that accepts RollingDeploymentStrategyArgs and RollingDeploymentStrategyOutput values.
+// You can construct a concrete instance of `RollingDeploymentStrategyInput` via:
+//
+//	RollingDeploymentStrategyArgs{...}
+type RollingDeploymentStrategyInput interface {
+	pulumi.Input
+
+	ToRollingDeploymentStrategyOutput() RollingDeploymentStrategyOutput
+	ToRollingDeploymentStrategyOutputWithContext(context.Context) RollingDeploymentStrategyOutput
+}
+
+type RollingDeploymentStrategyArgs struct {
+	// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+	// breaker is always enabled.
+	//
+	// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+	// the deployment as failed without automatic rollback.
+	//
+	// Default - DeploymentFailureAction.ROLLBACK
+	FailureAction *DeploymentFailureAction `pulumi:"failureAction"`
+	// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+	//
+	// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+	//
+	// Default - No Lambda hooks.
+	LambdaHooks []RollingLambdaHookArgs `pulumi:"lambdaHooks"`
+	// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+	// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+	// hookId, and CONTINUE or ROLLBACK.
+	//
+	// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+	// performed.
+	//
+	// Default - No pause hooks.
+	PauseHooks []RollingPauseHookArgs `pulumi:"pauseHooks"`
+}
+
+func (RollingDeploymentStrategyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RollingDeploymentStrategy)(nil)).Elem()
+}
+
+func (i RollingDeploymentStrategyArgs) ToRollingDeploymentStrategyOutput() RollingDeploymentStrategyOutput {
+	return i.ToRollingDeploymentStrategyOutputWithContext(context.Background())
+}
+
+func (i RollingDeploymentStrategyArgs) ToRollingDeploymentStrategyOutputWithContext(ctx context.Context) RollingDeploymentStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RollingDeploymentStrategyOutput)
+}
+
+func (i RollingDeploymentStrategyArgs) ToRollingDeploymentStrategyPtrOutput() RollingDeploymentStrategyPtrOutput {
+	return i.ToRollingDeploymentStrategyPtrOutputWithContext(context.Background())
+}
+
+func (i RollingDeploymentStrategyArgs) ToRollingDeploymentStrategyPtrOutputWithContext(ctx context.Context) RollingDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RollingDeploymentStrategyOutput).ToRollingDeploymentStrategyPtrOutputWithContext(ctx)
+}
+
+// RollingDeploymentStrategyPtrInput is an input type that accepts RollingDeploymentStrategyArgs, RollingDeploymentStrategyPtr and RollingDeploymentStrategyPtrOutput values.
+// You can construct a concrete instance of `RollingDeploymentStrategyPtrInput` via:
+//
+//	        RollingDeploymentStrategyArgs{...}
+//
+//	or:
+//
+//	        nil
+type RollingDeploymentStrategyPtrInput interface {
+	pulumi.Input
+
+	ToRollingDeploymentStrategyPtrOutput() RollingDeploymentStrategyPtrOutput
+	ToRollingDeploymentStrategyPtrOutputWithContext(context.Context) RollingDeploymentStrategyPtrOutput
+}
+
+type rollingDeploymentStrategyPtrType RollingDeploymentStrategyArgs
+
+func RollingDeploymentStrategyPtr(v *RollingDeploymentStrategyArgs) RollingDeploymentStrategyPtrInput {
+	return (*rollingDeploymentStrategyPtrType)(v)
+}
+
+func (*rollingDeploymentStrategyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**RollingDeploymentStrategy)(nil)).Elem()
+}
+
+func (i *rollingDeploymentStrategyPtrType) ToRollingDeploymentStrategyPtrOutput() RollingDeploymentStrategyPtrOutput {
+	return i.ToRollingDeploymentStrategyPtrOutputWithContext(context.Background())
+}
+
+func (i *rollingDeploymentStrategyPtrType) ToRollingDeploymentStrategyPtrOutputWithContext(ctx context.Context) RollingDeploymentStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RollingDeploymentStrategyPtrOutput)
+}
+
+type RollingDeploymentStrategyOutput struct{ *pulumi.OutputState }
+
+func (RollingDeploymentStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RollingDeploymentStrategy)(nil)).Elem()
+}
+
+func (o RollingDeploymentStrategyOutput) ToRollingDeploymentStrategyOutput() RollingDeploymentStrategyOutput {
+	return o
+}
+
+func (o RollingDeploymentStrategyOutput) ToRollingDeploymentStrategyOutputWithContext(ctx context.Context) RollingDeploymentStrategyOutput {
+	return o
+}
+
+func (o RollingDeploymentStrategyOutput) ToRollingDeploymentStrategyPtrOutput() RollingDeploymentStrategyPtrOutput {
+	return o.ToRollingDeploymentStrategyPtrOutputWithContext(context.Background())
+}
+
+func (o RollingDeploymentStrategyOutput) ToRollingDeploymentStrategyPtrOutputWithContext(ctx context.Context) RollingDeploymentStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v RollingDeploymentStrategy) *RollingDeploymentStrategy {
+		return &v
+	}).(RollingDeploymentStrategyPtrOutput)
+}
+
+// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+// breaker is always enabled.
+//
+// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+// the deployment as failed without automatic rollback.
+//
+// Default - DeploymentFailureAction.ROLLBACK
+func (o RollingDeploymentStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v RollingDeploymentStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
+}
+
+// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+//
+// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+//
+// Default - No Lambda hooks.
+func (o RollingDeploymentStrategyOutput) LambdaHooks() RollingLambdaHookArrayOutput {
+	return o.ApplyT(func(v RollingDeploymentStrategy) []RollingLambdaHook { return v.LambdaHooks }).(RollingLambdaHookArrayOutput)
+}
+
+// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+// hookId, and CONTINUE or ROLLBACK.
+//
+// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+// performed.
+//
+// Default - No pause hooks.
+func (o RollingDeploymentStrategyOutput) PauseHooks() RollingPauseHookArrayOutput {
+	return o.ApplyT(func(v RollingDeploymentStrategy) []RollingPauseHook { return v.PauseHooks }).(RollingPauseHookArrayOutput)
+}
+
+type RollingDeploymentStrategyPtrOutput struct{ *pulumi.OutputState }
+
+func (RollingDeploymentStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**RollingDeploymentStrategy)(nil)).Elem()
+}
+
+func (o RollingDeploymentStrategyPtrOutput) ToRollingDeploymentStrategyPtrOutput() RollingDeploymentStrategyPtrOutput {
+	return o
+}
+
+func (o RollingDeploymentStrategyPtrOutput) ToRollingDeploymentStrategyPtrOutputWithContext(ctx context.Context) RollingDeploymentStrategyPtrOutput {
+	return o
+}
+
+func (o RollingDeploymentStrategyPtrOutput) Elem() RollingDeploymentStrategyOutput {
+	return o.ApplyT(func(v *RollingDeploymentStrategy) RollingDeploymentStrategy {
+		if v != nil {
+			return *v
+		}
+		var ret RollingDeploymentStrategy
+		return ret
+	}).(RollingDeploymentStrategyOutput)
+}
+
+// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+// breaker is always enabled.
+//
+// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+// the deployment as failed without automatic rollback.
+//
+// Default - DeploymentFailureAction.ROLLBACK
+func (o RollingDeploymentStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
+	return o.ApplyT(func(v *RollingDeploymentStrategy) *DeploymentFailureAction {
+		if v == nil {
+			return nil
+		}
+		return v.FailureAction
+	}).(DeploymentFailureActionPtrOutput)
+}
+
+// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+//
+// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+//
+// Default - No Lambda hooks.
+func (o RollingDeploymentStrategyPtrOutput) LambdaHooks() RollingLambdaHookArrayOutput {
+	return o.ApplyT(func(v *RollingDeploymentStrategy) []RollingLambdaHook {
+		if v == nil {
+			return nil
+		}
+		return v.LambdaHooks
+	}).(RollingLambdaHookArrayOutput)
+}
+
+// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+// hookId, and CONTINUE or ROLLBACK.
+//
+// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+// performed.
+//
+// Default - No pause hooks.
+func (o RollingDeploymentStrategyPtrOutput) PauseHooks() RollingPauseHookArrayOutput {
+	return o.ApplyT(func(v *RollingDeploymentStrategy) []RollingPauseHook {
+		if v == nil {
+			return nil
+		}
+		return v.PauseHooks
+	}).(RollingPauseHookArrayOutput)
+}
+
 type RollingLambdaHook struct {
 	// ARN of the Lambda function to invoke. A version or alias ARN can be used to select the function
 	// revision that handles the hook.
@@ -6170,249 +6413,6 @@ func (o RollingPauseHookArrayOutput) Index(i pulumi.IntInput) RollingPauseHookOu
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) RollingPauseHook {
 		return vs[0].([]RollingPauseHook)[vs[1].(int)]
 	}).(RollingPauseHookOutput)
-}
-
-type RollingStrategy struct {
-	// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-	// breaker is always enabled.
-	//
-	// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-	// the deployment as failed without automatic rollback.
-	//
-	// Default - DeploymentFailureAction.ROLLBACK
-	FailureAction *DeploymentFailureAction `pulumi:"failureAction"`
-	// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-	//
-	// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-	//
-	// Default - No Lambda hooks.
-	LambdaHooks []RollingLambdaHook `pulumi:"lambdaHooks"`
-	// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-	// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-	// hookId, and CONTINUE or ROLLBACK.
-	//
-	// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-	// performed.
-	//
-	// Default - No pause hooks.
-	PauseHooks []RollingPauseHook `pulumi:"pauseHooks"`
-}
-
-// RollingStrategyInput is an input type that accepts RollingStrategyArgs and RollingStrategyOutput values.
-// You can construct a concrete instance of `RollingStrategyInput` via:
-//
-//	RollingStrategyArgs{...}
-type RollingStrategyInput interface {
-	pulumi.Input
-
-	ToRollingStrategyOutput() RollingStrategyOutput
-	ToRollingStrategyOutputWithContext(context.Context) RollingStrategyOutput
-}
-
-type RollingStrategyArgs struct {
-	// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-	// breaker is always enabled.
-	//
-	// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-	// the deployment as failed without automatic rollback.
-	//
-	// Default - DeploymentFailureAction.ROLLBACK
-	FailureAction *DeploymentFailureAction `pulumi:"failureAction"`
-	// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-	//
-	// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-	//
-	// Default - No Lambda hooks.
-	LambdaHooks []RollingLambdaHookArgs `pulumi:"lambdaHooks"`
-	// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-	// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-	// hookId, and CONTINUE or ROLLBACK.
-	//
-	// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-	// performed.
-	//
-	// Default - No pause hooks.
-	PauseHooks []RollingPauseHookArgs `pulumi:"pauseHooks"`
-}
-
-func (RollingStrategyArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*RollingStrategy)(nil)).Elem()
-}
-
-func (i RollingStrategyArgs) ToRollingStrategyOutput() RollingStrategyOutput {
-	return i.ToRollingStrategyOutputWithContext(context.Background())
-}
-
-func (i RollingStrategyArgs) ToRollingStrategyOutputWithContext(ctx context.Context) RollingStrategyOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(RollingStrategyOutput)
-}
-
-func (i RollingStrategyArgs) ToRollingStrategyPtrOutput() RollingStrategyPtrOutput {
-	return i.ToRollingStrategyPtrOutputWithContext(context.Background())
-}
-
-func (i RollingStrategyArgs) ToRollingStrategyPtrOutputWithContext(ctx context.Context) RollingStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(RollingStrategyOutput).ToRollingStrategyPtrOutputWithContext(ctx)
-}
-
-// RollingStrategyPtrInput is an input type that accepts RollingStrategyArgs, RollingStrategyPtr and RollingStrategyPtrOutput values.
-// You can construct a concrete instance of `RollingStrategyPtrInput` via:
-//
-//	        RollingStrategyArgs{...}
-//
-//	or:
-//
-//	        nil
-type RollingStrategyPtrInput interface {
-	pulumi.Input
-
-	ToRollingStrategyPtrOutput() RollingStrategyPtrOutput
-	ToRollingStrategyPtrOutputWithContext(context.Context) RollingStrategyPtrOutput
-}
-
-type rollingStrategyPtrType RollingStrategyArgs
-
-func RollingStrategyPtr(v *RollingStrategyArgs) RollingStrategyPtrInput {
-	return (*rollingStrategyPtrType)(v)
-}
-
-func (*rollingStrategyPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**RollingStrategy)(nil)).Elem()
-}
-
-func (i *rollingStrategyPtrType) ToRollingStrategyPtrOutput() RollingStrategyPtrOutput {
-	return i.ToRollingStrategyPtrOutputWithContext(context.Background())
-}
-
-func (i *rollingStrategyPtrType) ToRollingStrategyPtrOutputWithContext(ctx context.Context) RollingStrategyPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(RollingStrategyPtrOutput)
-}
-
-type RollingStrategyOutput struct{ *pulumi.OutputState }
-
-func (RollingStrategyOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*RollingStrategy)(nil)).Elem()
-}
-
-func (o RollingStrategyOutput) ToRollingStrategyOutput() RollingStrategyOutput {
-	return o
-}
-
-func (o RollingStrategyOutput) ToRollingStrategyOutputWithContext(ctx context.Context) RollingStrategyOutput {
-	return o
-}
-
-func (o RollingStrategyOutput) ToRollingStrategyPtrOutput() RollingStrategyPtrOutput {
-	return o.ToRollingStrategyPtrOutputWithContext(context.Background())
-}
-
-func (o RollingStrategyOutput) ToRollingStrategyPtrOutputWithContext(ctx context.Context) RollingStrategyPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v RollingStrategy) *RollingStrategy {
-		return &v
-	}).(RollingStrategyPtrOutput)
-}
-
-// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-// breaker is always enabled.
-//
-// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-// the deployment as failed without automatic rollback.
-//
-// Default - DeploymentFailureAction.ROLLBACK
-func (o RollingStrategyOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v RollingStrategy) *DeploymentFailureAction { return v.FailureAction }).(DeploymentFailureActionPtrOutput)
-}
-
-// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-//
-// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-//
-// Default - No Lambda hooks.
-func (o RollingStrategyOutput) LambdaHooks() RollingLambdaHookArrayOutput {
-	return o.ApplyT(func(v RollingStrategy) []RollingLambdaHook { return v.LambdaHooks }).(RollingLambdaHookArrayOutput)
-}
-
-// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-// hookId, and CONTINUE or ROLLBACK.
-//
-// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-// performed.
-//
-// Default - No pause hooks.
-func (o RollingStrategyOutput) PauseHooks() RollingPauseHookArrayOutput {
-	return o.ApplyT(func(v RollingStrategy) []RollingPauseHook { return v.PauseHooks }).(RollingPauseHookArrayOutput)
-}
-
-type RollingStrategyPtrOutput struct{ *pulumi.OutputState }
-
-func (RollingStrategyPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**RollingStrategy)(nil)).Elem()
-}
-
-func (o RollingStrategyPtrOutput) ToRollingStrategyPtrOutput() RollingStrategyPtrOutput {
-	return o
-}
-
-func (o RollingStrategyPtrOutput) ToRollingStrategyPtrOutputWithContext(ctx context.Context) RollingStrategyPtrOutput {
-	return o
-}
-
-func (o RollingStrategyPtrOutput) Elem() RollingStrategyOutput {
-	return o.ApplyT(func(v *RollingStrategy) RollingStrategy {
-		if v != nil {
-			return *v
-		}
-		var ret RollingStrategy
-		return ret
-	}).(RollingStrategyOutput)
-}
-
-// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-// breaker is always enabled.
-//
-// ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-// the deployment as failed without automatic rollback.
-//
-// Default - DeploymentFailureAction.ROLLBACK
-func (o RollingStrategyPtrOutput) FailureAction() DeploymentFailureActionPtrOutput {
-	return o.ApplyT(func(v *RollingStrategy) *DeploymentFailureAction {
-		if v == nil {
-			return nil
-		}
-		return v.FailureAction
-	}).(DeploymentFailureActionPtrOutput)
-}
-
-// Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-//
-// Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-//
-// Default - No Lambda hooks.
-func (o RollingStrategyPtrOutput) LambdaHooks() RollingLambdaHookArrayOutput {
-	return o.ApplyT(func(v *RollingStrategy) []RollingLambdaHook {
-		if v == nil {
-			return nil
-		}
-		return v.LambdaHooks
-	}).(RollingLambdaHookArrayOutput)
-}
-
-// Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-// external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-// hookId, and CONTINUE or ROLLBACK.
-//
-// If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-// performed.
-//
-// Default - No pause hooks.
-func (o RollingStrategyPtrOutput) PauseHooks() RollingPauseHookArrayOutput {
-	return o.ApplyT(func(v *RollingStrategy) []RollingPauseHook {
-		if v == nil {
-			return nil
-		}
-		return v.PauseHooks
-	}).(RollingPauseHookArrayOutput)
 }
 
 type SecretsManagerSecret struct {
@@ -6966,17 +6966,17 @@ func (o ServiceCapacityProviderArrayOutput) Index(i pulumi.IntInput) ServiceCapa
 
 type ServiceDeploymentStrategy struct {
 	// Configuration for shifting all production traffic to the new revision once it is ready.
-	BlueGreen *BlueGreenStrategy `pulumi:"blueGreen"`
+	BlueGreen *BlueGreenDeploymentStrategy `pulumi:"blueGreen"`
 	// Configuration for testing an initial percentage of production traffic before shifting the rest.
 	//
 	// Default - no canary configuration
-	Canary *CanaryStrategy `pulumi:"canary"`
+	Canary *CanaryDeploymentStrategy `pulumi:"canary"`
 	// Configuration for shifting production traffic in equal increments.
 	//
 	// Default - no linear configuration
-	Linear *LinearStrategy `pulumi:"linear"`
+	Linear *LinearDeploymentStrategy `pulumi:"linear"`
 	// Configuration for the rolling update strategy. This is the default.
-	Rolling *RollingStrategy `pulumi:"rolling"`
+	Rolling *RollingDeploymentStrategy `pulumi:"rolling"`
 }
 
 // ServiceDeploymentStrategyInput is an input type that accepts ServiceDeploymentStrategyArgs and ServiceDeploymentStrategyOutput values.
@@ -6992,17 +6992,17 @@ type ServiceDeploymentStrategyInput interface {
 
 type ServiceDeploymentStrategyArgs struct {
 	// Configuration for shifting all production traffic to the new revision once it is ready.
-	BlueGreen *BlueGreenStrategyArgs `pulumi:"blueGreen"`
+	BlueGreen *BlueGreenDeploymentStrategyArgs `pulumi:"blueGreen"`
 	// Configuration for testing an initial percentage of production traffic before shifting the rest.
 	//
 	// Default - no canary configuration
-	Canary *CanaryStrategyArgs `pulumi:"canary"`
+	Canary *CanaryDeploymentStrategyArgs `pulumi:"canary"`
 	// Configuration for shifting production traffic in equal increments.
 	//
 	// Default - no linear configuration
-	Linear *LinearStrategyArgs `pulumi:"linear"`
+	Linear *LinearDeploymentStrategyArgs `pulumi:"linear"`
 	// Configuration for the rolling update strategy. This is the default.
-	Rolling *RollingStrategyArgs `pulumi:"rolling"`
+	Rolling *RollingDeploymentStrategyArgs `pulumi:"rolling"`
 }
 
 func (ServiceDeploymentStrategyArgs) ElementType() reflect.Type {
@@ -7083,27 +7083,27 @@ func (o ServiceDeploymentStrategyOutput) ToServiceDeploymentStrategyPtrOutputWit
 }
 
 // Configuration for shifting all production traffic to the new revision once it is ready.
-func (o ServiceDeploymentStrategyOutput) BlueGreen() BlueGreenStrategyPtrOutput {
-	return o.ApplyT(func(v ServiceDeploymentStrategy) *BlueGreenStrategy { return v.BlueGreen }).(BlueGreenStrategyPtrOutput)
+func (o ServiceDeploymentStrategyOutput) BlueGreen() BlueGreenDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v ServiceDeploymentStrategy) *BlueGreenDeploymentStrategy { return v.BlueGreen }).(BlueGreenDeploymentStrategyPtrOutput)
 }
 
 // Configuration for testing an initial percentage of production traffic before shifting the rest.
 //
 // Default - no canary configuration
-func (o ServiceDeploymentStrategyOutput) Canary() CanaryStrategyPtrOutput {
-	return o.ApplyT(func(v ServiceDeploymentStrategy) *CanaryStrategy { return v.Canary }).(CanaryStrategyPtrOutput)
+func (o ServiceDeploymentStrategyOutput) Canary() CanaryDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v ServiceDeploymentStrategy) *CanaryDeploymentStrategy { return v.Canary }).(CanaryDeploymentStrategyPtrOutput)
 }
 
 // Configuration for shifting production traffic in equal increments.
 //
 // Default - no linear configuration
-func (o ServiceDeploymentStrategyOutput) Linear() LinearStrategyPtrOutput {
-	return o.ApplyT(func(v ServiceDeploymentStrategy) *LinearStrategy { return v.Linear }).(LinearStrategyPtrOutput)
+func (o ServiceDeploymentStrategyOutput) Linear() LinearDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v ServiceDeploymentStrategy) *LinearDeploymentStrategy { return v.Linear }).(LinearDeploymentStrategyPtrOutput)
 }
 
 // Configuration for the rolling update strategy. This is the default.
-func (o ServiceDeploymentStrategyOutput) Rolling() RollingStrategyPtrOutput {
-	return o.ApplyT(func(v ServiceDeploymentStrategy) *RollingStrategy { return v.Rolling }).(RollingStrategyPtrOutput)
+func (o ServiceDeploymentStrategyOutput) Rolling() RollingDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v ServiceDeploymentStrategy) *RollingDeploymentStrategy { return v.Rolling }).(RollingDeploymentStrategyPtrOutput)
 }
 
 type ServiceDeploymentStrategyPtrOutput struct{ *pulumi.OutputState }
@@ -7131,126 +7131,126 @@ func (o ServiceDeploymentStrategyPtrOutput) Elem() ServiceDeploymentStrategyOutp
 }
 
 // Configuration for shifting all production traffic to the new revision once it is ready.
-func (o ServiceDeploymentStrategyPtrOutput) BlueGreen() BlueGreenStrategyPtrOutput {
-	return o.ApplyT(func(v *ServiceDeploymentStrategy) *BlueGreenStrategy {
+func (o ServiceDeploymentStrategyPtrOutput) BlueGreen() BlueGreenDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v *ServiceDeploymentStrategy) *BlueGreenDeploymentStrategy {
 		if v == nil {
 			return nil
 		}
 		return v.BlueGreen
-	}).(BlueGreenStrategyPtrOutput)
+	}).(BlueGreenDeploymentStrategyPtrOutput)
 }
 
 // Configuration for testing an initial percentage of production traffic before shifting the rest.
 //
 // Default - no canary configuration
-func (o ServiceDeploymentStrategyPtrOutput) Canary() CanaryStrategyPtrOutput {
-	return o.ApplyT(func(v *ServiceDeploymentStrategy) *CanaryStrategy {
+func (o ServiceDeploymentStrategyPtrOutput) Canary() CanaryDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v *ServiceDeploymentStrategy) *CanaryDeploymentStrategy {
 		if v == nil {
 			return nil
 		}
 		return v.Canary
-	}).(CanaryStrategyPtrOutput)
+	}).(CanaryDeploymentStrategyPtrOutput)
 }
 
 // Configuration for shifting production traffic in equal increments.
 //
 // Default - no linear configuration
-func (o ServiceDeploymentStrategyPtrOutput) Linear() LinearStrategyPtrOutput {
-	return o.ApplyT(func(v *ServiceDeploymentStrategy) *LinearStrategy {
+func (o ServiceDeploymentStrategyPtrOutput) Linear() LinearDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v *ServiceDeploymentStrategy) *LinearDeploymentStrategy {
 		if v == nil {
 			return nil
 		}
 		return v.Linear
-	}).(LinearStrategyPtrOutput)
+	}).(LinearDeploymentStrategyPtrOutput)
 }
 
 // Configuration for the rolling update strategy. This is the default.
-func (o ServiceDeploymentStrategyPtrOutput) Rolling() RollingStrategyPtrOutput {
-	return o.ApplyT(func(v *ServiceDeploymentStrategy) *RollingStrategy {
+func (o ServiceDeploymentStrategyPtrOutput) Rolling() RollingDeploymentStrategyPtrOutput {
+	return o.ApplyT(func(v *ServiceDeploymentStrategy) *RollingDeploymentStrategy {
 		if v == nil {
 			return nil
 		}
 		return v.Rolling
-	}).(RollingStrategyPtrOutput)
+	}).(RollingDeploymentStrategyPtrOutput)
 }
 
-type ServiceLoadBalancer struct {
+type ServiceLoadBalancerAttachment struct {
 	// Application Load Balancer attachment for a named service endpoint. Creates target groups and
 	// forwarding rules on a caller-managed listener.
 	//
 	// An application configuration must be provided for each entry in the service's
 	// loadBalancerAttachments map.
-	Application ApplicationServiceLoadBalancer `pulumi:"application"`
+	Application ApplicationLoadBalancerAttachment `pulumi:"application"`
 }
 
-// ServiceLoadBalancerInput is an input type that accepts ServiceLoadBalancerArgs and ServiceLoadBalancerOutput values.
-// You can construct a concrete instance of `ServiceLoadBalancerInput` via:
+// ServiceLoadBalancerAttachmentInput is an input type that accepts ServiceLoadBalancerAttachmentArgs and ServiceLoadBalancerAttachmentOutput values.
+// You can construct a concrete instance of `ServiceLoadBalancerAttachmentInput` via:
 //
-//	ServiceLoadBalancerArgs{...}
-type ServiceLoadBalancerInput interface {
+//	ServiceLoadBalancerAttachmentArgs{...}
+type ServiceLoadBalancerAttachmentInput interface {
 	pulumi.Input
 
-	ToServiceLoadBalancerOutput() ServiceLoadBalancerOutput
-	ToServiceLoadBalancerOutputWithContext(context.Context) ServiceLoadBalancerOutput
+	ToServiceLoadBalancerAttachmentOutput() ServiceLoadBalancerAttachmentOutput
+	ToServiceLoadBalancerAttachmentOutputWithContext(context.Context) ServiceLoadBalancerAttachmentOutput
 }
 
-type ServiceLoadBalancerArgs struct {
+type ServiceLoadBalancerAttachmentArgs struct {
 	// Application Load Balancer attachment for a named service endpoint. Creates target groups and
 	// forwarding rules on a caller-managed listener.
 	//
 	// An application configuration must be provided for each entry in the service's
 	// loadBalancerAttachments map.
-	Application ApplicationServiceLoadBalancerArgs `pulumi:"application"`
+	Application ApplicationLoadBalancerAttachmentArgs `pulumi:"application"`
 }
 
-func (ServiceLoadBalancerArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*ServiceLoadBalancer)(nil)).Elem()
+func (ServiceLoadBalancerAttachmentArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ServiceLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (i ServiceLoadBalancerArgs) ToServiceLoadBalancerOutput() ServiceLoadBalancerOutput {
-	return i.ToServiceLoadBalancerOutputWithContext(context.Background())
+func (i ServiceLoadBalancerAttachmentArgs) ToServiceLoadBalancerAttachmentOutput() ServiceLoadBalancerAttachmentOutput {
+	return i.ToServiceLoadBalancerAttachmentOutputWithContext(context.Background())
 }
 
-func (i ServiceLoadBalancerArgs) ToServiceLoadBalancerOutputWithContext(ctx context.Context) ServiceLoadBalancerOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ServiceLoadBalancerOutput)
+func (i ServiceLoadBalancerAttachmentArgs) ToServiceLoadBalancerAttachmentOutputWithContext(ctx context.Context) ServiceLoadBalancerAttachmentOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ServiceLoadBalancerAttachmentOutput)
 }
 
-// ServiceLoadBalancerMapInput is an input type that accepts ServiceLoadBalancerMap and ServiceLoadBalancerMapOutput values.
-// You can construct a concrete instance of `ServiceLoadBalancerMapInput` via:
+// ServiceLoadBalancerAttachmentMapInput is an input type that accepts ServiceLoadBalancerAttachmentMap and ServiceLoadBalancerAttachmentMapOutput values.
+// You can construct a concrete instance of `ServiceLoadBalancerAttachmentMapInput` via:
 //
-//	ServiceLoadBalancerMap{ "key": ServiceLoadBalancerArgs{...} }
-type ServiceLoadBalancerMapInput interface {
+//	ServiceLoadBalancerAttachmentMap{ "key": ServiceLoadBalancerAttachmentArgs{...} }
+type ServiceLoadBalancerAttachmentMapInput interface {
 	pulumi.Input
 
-	ToServiceLoadBalancerMapOutput() ServiceLoadBalancerMapOutput
-	ToServiceLoadBalancerMapOutputWithContext(context.Context) ServiceLoadBalancerMapOutput
+	ToServiceLoadBalancerAttachmentMapOutput() ServiceLoadBalancerAttachmentMapOutput
+	ToServiceLoadBalancerAttachmentMapOutputWithContext(context.Context) ServiceLoadBalancerAttachmentMapOutput
 }
 
-type ServiceLoadBalancerMap map[string]ServiceLoadBalancerInput
+type ServiceLoadBalancerAttachmentMap map[string]ServiceLoadBalancerAttachmentInput
 
-func (ServiceLoadBalancerMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]ServiceLoadBalancer)(nil)).Elem()
+func (ServiceLoadBalancerAttachmentMap) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]ServiceLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (i ServiceLoadBalancerMap) ToServiceLoadBalancerMapOutput() ServiceLoadBalancerMapOutput {
-	return i.ToServiceLoadBalancerMapOutputWithContext(context.Background())
+func (i ServiceLoadBalancerAttachmentMap) ToServiceLoadBalancerAttachmentMapOutput() ServiceLoadBalancerAttachmentMapOutput {
+	return i.ToServiceLoadBalancerAttachmentMapOutputWithContext(context.Background())
 }
 
-func (i ServiceLoadBalancerMap) ToServiceLoadBalancerMapOutputWithContext(ctx context.Context) ServiceLoadBalancerMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ServiceLoadBalancerMapOutput)
+func (i ServiceLoadBalancerAttachmentMap) ToServiceLoadBalancerAttachmentMapOutputWithContext(ctx context.Context) ServiceLoadBalancerAttachmentMapOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ServiceLoadBalancerAttachmentMapOutput)
 }
 
-type ServiceLoadBalancerOutput struct{ *pulumi.OutputState }
+type ServiceLoadBalancerAttachmentOutput struct{ *pulumi.OutputState }
 
-func (ServiceLoadBalancerOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*ServiceLoadBalancer)(nil)).Elem()
+func (ServiceLoadBalancerAttachmentOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ServiceLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (o ServiceLoadBalancerOutput) ToServiceLoadBalancerOutput() ServiceLoadBalancerOutput {
+func (o ServiceLoadBalancerAttachmentOutput) ToServiceLoadBalancerAttachmentOutput() ServiceLoadBalancerAttachmentOutput {
 	return o
 }
 
-func (o ServiceLoadBalancerOutput) ToServiceLoadBalancerOutputWithContext(ctx context.Context) ServiceLoadBalancerOutput {
+func (o ServiceLoadBalancerAttachmentOutput) ToServiceLoadBalancerAttachmentOutputWithContext(ctx context.Context) ServiceLoadBalancerAttachmentOutput {
 	return o
 }
 
@@ -7259,28 +7259,28 @@ func (o ServiceLoadBalancerOutput) ToServiceLoadBalancerOutputWithContext(ctx co
 //
 // An application configuration must be provided for each entry in the service's
 // loadBalancerAttachments map.
-func (o ServiceLoadBalancerOutput) Application() ApplicationServiceLoadBalancerOutput {
-	return o.ApplyT(func(v ServiceLoadBalancer) ApplicationServiceLoadBalancer { return v.Application }).(ApplicationServiceLoadBalancerOutput)
+func (o ServiceLoadBalancerAttachmentOutput) Application() ApplicationLoadBalancerAttachmentOutput {
+	return o.ApplyT(func(v ServiceLoadBalancerAttachment) ApplicationLoadBalancerAttachment { return v.Application }).(ApplicationLoadBalancerAttachmentOutput)
 }
 
-type ServiceLoadBalancerMapOutput struct{ *pulumi.OutputState }
+type ServiceLoadBalancerAttachmentMapOutput struct{ *pulumi.OutputState }
 
-func (ServiceLoadBalancerMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]ServiceLoadBalancer)(nil)).Elem()
+func (ServiceLoadBalancerAttachmentMapOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]ServiceLoadBalancerAttachment)(nil)).Elem()
 }
 
-func (o ServiceLoadBalancerMapOutput) ToServiceLoadBalancerMapOutput() ServiceLoadBalancerMapOutput {
+func (o ServiceLoadBalancerAttachmentMapOutput) ToServiceLoadBalancerAttachmentMapOutput() ServiceLoadBalancerAttachmentMapOutput {
 	return o
 }
 
-func (o ServiceLoadBalancerMapOutput) ToServiceLoadBalancerMapOutputWithContext(ctx context.Context) ServiceLoadBalancerMapOutput {
+func (o ServiceLoadBalancerAttachmentMapOutput) ToServiceLoadBalancerAttachmentMapOutputWithContext(ctx context.Context) ServiceLoadBalancerAttachmentMapOutput {
 	return o
 }
 
-func (o ServiceLoadBalancerMapOutput) MapIndex(k pulumi.StringInput) ServiceLoadBalancerOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) ServiceLoadBalancer {
-		return vs[0].(map[string]ServiceLoadBalancer)[vs[1].(string)]
-	}).(ServiceLoadBalancerOutput)
+func (o ServiceLoadBalancerAttachmentMapOutput) MapIndex(k pulumi.StringInput) ServiceLoadBalancerAttachmentOutput {
+	return pulumi.All(o, k).ApplyT(func(vs []interface{}) ServiceLoadBalancerAttachment {
+		return vs[0].(map[string]ServiceLoadBalancerAttachment)[vs[1].(string)]
+	}).(ServiceLoadBalancerAttachmentOutput)
 }
 
 type StringMatch struct {
@@ -7553,7 +7553,7 @@ type TargetGroupHealthCheck struct {
 	// Values can be between `0` and `99`.
 	//
 	// Default - `12`.
-	HealthGrpcCodes *string `pulumi:"healthGrpcCodes"`
+	HealthyGrpcCodes *string `pulumi:"healthyGrpcCodes"`
 	// The HTTP codes to use when checking for a successful response from a target. Values can be
 	// comma-separated individual values (e.g., "200,202") or a range of values (e.g., "200-299").
 	// Once the value has been set, removing it has no effect. To unset it, set it to an empty string
@@ -7616,7 +7616,7 @@ type TargetGroupHealthCheckArgs struct {
 	// Values can be between `0` and `99`.
 	//
 	// Default - `12`.
-	HealthGrpcCodes *string `pulumi:"healthGrpcCodes"`
+	HealthyGrpcCodes *string `pulumi:"healthyGrpcCodes"`
 	// The HTTP codes to use when checking for a successful response from a target. Values can be
 	// comma-separated individual values (e.g., "200,202") or a range of values (e.g., "200-299").
 	// Once the value has been set, removing it has no effect. To unset it, set it to an empty string
@@ -7744,8 +7744,8 @@ func (o TargetGroupHealthCheckOutput) ToTargetGroupHealthCheckPtrOutputWithConte
 // Values can be between `0` and `99`.
 //
 // Default - `12`.
-func (o TargetGroupHealthCheckOutput) HealthGrpcCodes() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v TargetGroupHealthCheck) *string { return v.HealthGrpcCodes }).(pulumi.StringPtrOutput)
+func (o TargetGroupHealthCheckOutput) HealthyGrpcCodes() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroupHealthCheck) *string { return v.HealthyGrpcCodes }).(pulumi.StringPtrOutput)
 }
 
 // The HTTP codes to use when checking for a successful response from a target. Values can be
@@ -7844,12 +7844,12 @@ func (o TargetGroupHealthCheckPtrOutput) Elem() TargetGroupHealthCheckOutput {
 // Values can be between `0` and `99`.
 //
 // Default - `12`.
-func (o TargetGroupHealthCheckPtrOutput) HealthGrpcCodes() pulumi.StringPtrOutput {
+func (o TargetGroupHealthCheckPtrOutput) HealthyGrpcCodes() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroupHealthCheck) *string {
 		if v == nil {
 			return nil
 		}
-		return v.HealthGrpcCodes
+		return v.HealthyGrpcCodes
 	}).(pulumi.StringPtrOutput)
 }
 
@@ -11545,21 +11545,23 @@ func (o VolumeFromArrayOutput) Index(i pulumi.IntInput) VolumeFromOutput {
 }
 
 func init() {
-	pulumi.RegisterInputType(reflect.TypeOf((*ApplicationServiceLoadBalancerInput)(nil)).Elem(), ApplicationServiceLoadBalancerArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogsLogDriverInput)(nil)).Elem(), AwsLogsLogDriverArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*AwsLogsLogDriverPtrInput)(nil)).Elem(), AwsLogsLogDriverArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ApplicationLoadBalancerAttachmentInput)(nil)).Elem(), ApplicationLoadBalancerAttachmentArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*AwsvpcPortMappingInput)(nil)).Elem(), AwsvpcPortMappingArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*AwsvpcPortMappingArrayInput)(nil)).Elem(), AwsvpcPortMappingArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*BlueGreenStrategyInput)(nil)).Elem(), BlueGreenStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*BlueGreenStrategyPtrInput)(nil)).Elem(), BlueGreenStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*CanaryStrategyInput)(nil)).Elem(), CanaryStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*CanaryStrategyPtrInput)(nil)).Elem(), CanaryStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*BlueGreenDeploymentStrategyInput)(nil)).Elem(), BlueGreenDeploymentStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*BlueGreenDeploymentStrategyPtrInput)(nil)).Elem(), BlueGreenDeploymentStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CanaryDeploymentStrategyInput)(nil)).Elem(), CanaryDeploymentStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CanaryDeploymentStrategyPtrInput)(nil)).Elem(), CanaryDeploymentStrategyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*CapacityAllocationInput)(nil)).Elem(), CapacityAllocationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*CapacityAllocationPtrInput)(nil)).Elem(), CapacityAllocationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CloudWatchLoggingInput)(nil)).Elem(), CloudWatchLoggingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*CloudWatchLoggingPtrInput)(nil)).Elem(), CloudWatchLoggingArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyInput)(nil)).Elem(), ContainerDependencyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerDependencyArrayInput)(nil)).Elem(), ContainerDependencyArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*ContainerLogDriverInput)(nil)).Elem(), ContainerLogDriverArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*ContainerLogDriverPtrInput)(nil)).Elem(), ContainerLogDriverArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerHealthCheckInput)(nil)).Elem(), ContainerHealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerHealthCheckPtrInput)(nil)).Elem(), ContainerHealthCheckArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerLoggingInput)(nil)).Elem(), ContainerLoggingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ContainerLoggingPtrInput)(nil)).Elem(), ContainerLoggingArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerPortRangeInput)(nil)).Elem(), ContainerPortRangeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ContainerPortRangePtrInput)(nil)).Elem(), ContainerPortRangeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*EC2ServiceTaskDefinitionInput)(nil)).Elem(), EC2ServiceTaskDefinitionArgs{})
@@ -11578,12 +11580,10 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*FargateServiceTaskDefinitionPtrInput)(nil)).Elem(), FargateServiceTaskDefinitionArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HeaderConditionInput)(nil)).Elem(), HeaderConditionArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HeaderConditionArrayInput)(nil)).Elem(), HeaderConditionArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckInput)(nil)).Elem(), HealthCheckArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HealthCheckPtrInput)(nil)).Elem(), HealthCheckArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*KernelCapabilitiesInput)(nil)).Elem(), KernelCapabilitiesArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*KernelCapabilitiesPtrInput)(nil)).Elem(), KernelCapabilitiesArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*LinearStrategyInput)(nil)).Elem(), LinearStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*LinearStrategyPtrInput)(nil)).Elem(), LinearStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LinearDeploymentStrategyInput)(nil)).Elem(), LinearDeploymentStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LinearDeploymentStrategyPtrInput)(nil)).Elem(), LinearDeploymentStrategyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*LinuxParametersInput)(nil)).Elem(), LinuxParametersArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*LinuxParametersPtrInput)(nil)).Elem(), LinuxParametersArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ListenerConditionsInput)(nil)).Elem(), ListenerConditionsArgs{})
@@ -11594,12 +11594,12 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*ProgressivePauseHookArrayInput)(nil)).Elem(), ProgressivePauseHookArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*QueryStringConditionInput)(nil)).Elem(), QueryStringConditionArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*QueryStringConditionArrayInput)(nil)).Elem(), QueryStringConditionArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RollingDeploymentStrategyInput)(nil)).Elem(), RollingDeploymentStrategyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RollingDeploymentStrategyPtrInput)(nil)).Elem(), RollingDeploymentStrategyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RollingLambdaHookInput)(nil)).Elem(), RollingLambdaHookArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RollingLambdaHookArrayInput)(nil)).Elem(), RollingLambdaHookArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RollingPauseHookInput)(nil)).Elem(), RollingPauseHookArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RollingPauseHookArrayInput)(nil)).Elem(), RollingPauseHookArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*RollingStrategyInput)(nil)).Elem(), RollingStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*RollingStrategyPtrInput)(nil)).Elem(), RollingStrategyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SecretsManagerSecretInput)(nil)).Elem(), SecretsManagerSecretArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SecretsManagerSecretPtrInput)(nil)).Elem(), SecretsManagerSecretArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ServiceCapacityInput)(nil)).Elem(), ServiceCapacityArgs{})
@@ -11608,8 +11608,8 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*ServiceCapacityProviderArrayInput)(nil)).Elem(), ServiceCapacityProviderArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ServiceDeploymentStrategyInput)(nil)).Elem(), ServiceDeploymentStrategyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ServiceDeploymentStrategyPtrInput)(nil)).Elem(), ServiceDeploymentStrategyArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*ServiceLoadBalancerInput)(nil)).Elem(), ServiceLoadBalancerArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*ServiceLoadBalancerMapInput)(nil)).Elem(), ServiceLoadBalancerMap{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ServiceLoadBalancerAttachmentInput)(nil)).Elem(), ServiceLoadBalancerAttachmentArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ServiceLoadBalancerAttachmentMapInput)(nil)).Elem(), ServiceLoadBalancerAttachmentMap{})
 	pulumi.RegisterInputType(reflect.TypeOf((*StringMatchInput)(nil)).Elem(), StringMatchArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*StringMatchPtrInput)(nil)).Elem(), StringMatchArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*SystemControlInput)(nil)).Elem(), SystemControlArgs{})
@@ -11663,21 +11663,23 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*UlimitArrayInput)(nil)).Elem(), UlimitArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*VolumeFromInput)(nil)).Elem(), VolumeFromArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*VolumeFromArrayInput)(nil)).Elem(), VolumeFromArray{})
-	pulumi.RegisterOutputType(ApplicationServiceLoadBalancerOutput{})
-	pulumi.RegisterOutputType(AwsLogsLogDriverOutput{})
-	pulumi.RegisterOutputType(AwsLogsLogDriverPtrOutput{})
+	pulumi.RegisterOutputType(ApplicationLoadBalancerAttachmentOutput{})
 	pulumi.RegisterOutputType(AwsvpcPortMappingOutput{})
 	pulumi.RegisterOutputType(AwsvpcPortMappingArrayOutput{})
-	pulumi.RegisterOutputType(BlueGreenStrategyOutput{})
-	pulumi.RegisterOutputType(BlueGreenStrategyPtrOutput{})
-	pulumi.RegisterOutputType(CanaryStrategyOutput{})
-	pulumi.RegisterOutputType(CanaryStrategyPtrOutput{})
+	pulumi.RegisterOutputType(BlueGreenDeploymentStrategyOutput{})
+	pulumi.RegisterOutputType(BlueGreenDeploymentStrategyPtrOutput{})
+	pulumi.RegisterOutputType(CanaryDeploymentStrategyOutput{})
+	pulumi.RegisterOutputType(CanaryDeploymentStrategyPtrOutput{})
 	pulumi.RegisterOutputType(CapacityAllocationOutput{})
 	pulumi.RegisterOutputType(CapacityAllocationPtrOutput{})
+	pulumi.RegisterOutputType(CloudWatchLoggingOutput{})
+	pulumi.RegisterOutputType(CloudWatchLoggingPtrOutput{})
 	pulumi.RegisterOutputType(ContainerDependencyOutput{})
 	pulumi.RegisterOutputType(ContainerDependencyArrayOutput{})
-	pulumi.RegisterOutputType(ContainerLogDriverOutput{})
-	pulumi.RegisterOutputType(ContainerLogDriverPtrOutput{})
+	pulumi.RegisterOutputType(ContainerHealthCheckOutput{})
+	pulumi.RegisterOutputType(ContainerHealthCheckPtrOutput{})
+	pulumi.RegisterOutputType(ContainerLoggingOutput{})
+	pulumi.RegisterOutputType(ContainerLoggingPtrOutput{})
 	pulumi.RegisterOutputType(ContainerPortRangeOutput{})
 	pulumi.RegisterOutputType(ContainerPortRangePtrOutput{})
 	pulumi.RegisterOutputType(EC2ServiceTaskDefinitionOutput{})
@@ -11696,12 +11698,10 @@ func init() {
 	pulumi.RegisterOutputType(FargateServiceTaskDefinitionPtrOutput{})
 	pulumi.RegisterOutputType(HeaderConditionOutput{})
 	pulumi.RegisterOutputType(HeaderConditionArrayOutput{})
-	pulumi.RegisterOutputType(HealthCheckOutput{})
-	pulumi.RegisterOutputType(HealthCheckPtrOutput{})
 	pulumi.RegisterOutputType(KernelCapabilitiesOutput{})
 	pulumi.RegisterOutputType(KernelCapabilitiesPtrOutput{})
-	pulumi.RegisterOutputType(LinearStrategyOutput{})
-	pulumi.RegisterOutputType(LinearStrategyPtrOutput{})
+	pulumi.RegisterOutputType(LinearDeploymentStrategyOutput{})
+	pulumi.RegisterOutputType(LinearDeploymentStrategyPtrOutput{})
 	pulumi.RegisterOutputType(LinuxParametersOutput{})
 	pulumi.RegisterOutputType(LinuxParametersPtrOutput{})
 	pulumi.RegisterOutputType(ListenerConditionsOutput{})
@@ -11712,12 +11712,12 @@ func init() {
 	pulumi.RegisterOutputType(ProgressivePauseHookArrayOutput{})
 	pulumi.RegisterOutputType(QueryStringConditionOutput{})
 	pulumi.RegisterOutputType(QueryStringConditionArrayOutput{})
+	pulumi.RegisterOutputType(RollingDeploymentStrategyOutput{})
+	pulumi.RegisterOutputType(RollingDeploymentStrategyPtrOutput{})
 	pulumi.RegisterOutputType(RollingLambdaHookOutput{})
 	pulumi.RegisterOutputType(RollingLambdaHookArrayOutput{})
 	pulumi.RegisterOutputType(RollingPauseHookOutput{})
 	pulumi.RegisterOutputType(RollingPauseHookArrayOutput{})
-	pulumi.RegisterOutputType(RollingStrategyOutput{})
-	pulumi.RegisterOutputType(RollingStrategyPtrOutput{})
 	pulumi.RegisterOutputType(SecretsManagerSecretOutput{})
 	pulumi.RegisterOutputType(SecretsManagerSecretPtrOutput{})
 	pulumi.RegisterOutputType(ServiceCapacityOutput{})
@@ -11726,8 +11726,8 @@ func init() {
 	pulumi.RegisterOutputType(ServiceCapacityProviderArrayOutput{})
 	pulumi.RegisterOutputType(ServiceDeploymentStrategyOutput{})
 	pulumi.RegisterOutputType(ServiceDeploymentStrategyPtrOutput{})
-	pulumi.RegisterOutputType(ServiceLoadBalancerOutput{})
-	pulumi.RegisterOutputType(ServiceLoadBalancerMapOutput{})
+	pulumi.RegisterOutputType(ServiceLoadBalancerAttachmentOutput{})
+	pulumi.RegisterOutputType(ServiceLoadBalancerAttachmentMapOutput{})
 	pulumi.RegisterOutputType(StringMatchOutput{})
 	pulumi.RegisterOutputType(StringMatchPtrOutput{})
 	pulumi.RegisterOutputType(SystemControlOutput{})

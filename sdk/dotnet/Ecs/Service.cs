@@ -184,7 +184,7 @@ namespace Pulumi.Awsx.Ecs
         public double? HealthCheckGracePeriodSeconds { get; set; }
 
         [Input("loadBalancerAttachments")]
-        private Dictionary<string, Inputs.ServiceLoadBalancerArgs>? _loadBalancerAttachments;
+        private Dictionary<string, Inputs.ServiceLoadBalancerAttachmentArgs>? _loadBalancerAttachments;
 
         /// <summary>
         /// Attach a load balancer to a specific container running in the service.
@@ -199,9 +199,9 @@ namespace Pulumi.Awsx.Ecs
         /// 
         /// Default - The ECS service is not attached to a load balancer
         /// </summary>
-        public Dictionary<string, Inputs.ServiceLoadBalancerArgs> LoadBalancerAttachments
+        public Dictionary<string, Inputs.ServiceLoadBalancerAttachmentArgs> LoadBalancerAttachments
         {
-            get => _loadBalancerAttachments ?? (_loadBalancerAttachments = new Dictionary<string, Inputs.ServiceLoadBalancerArgs>());
+            get => _loadBalancerAttachments ?? (_loadBalancerAttachments = new Dictionary<string, Inputs.ServiceLoadBalancerAttachmentArgs>());
             set => _loadBalancerAttachments = value;
         }
 

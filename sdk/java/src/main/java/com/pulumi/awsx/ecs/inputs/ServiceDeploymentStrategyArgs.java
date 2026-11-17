@@ -3,10 +3,10 @@
 
 package com.pulumi.awsx.ecs.inputs;
 
-import com.pulumi.awsx.ecs.inputs.BlueGreenStrategyArgs;
-import com.pulumi.awsx.ecs.inputs.CanaryStrategyArgs;
-import com.pulumi.awsx.ecs.inputs.LinearStrategyArgs;
-import com.pulumi.awsx.ecs.inputs.RollingStrategyArgs;
+import com.pulumi.awsx.ecs.inputs.BlueGreenDeploymentStrategyArgs;
+import com.pulumi.awsx.ecs.inputs.CanaryDeploymentStrategyArgs;
+import com.pulumi.awsx.ecs.inputs.LinearDeploymentStrategyArgs;
+import com.pulumi.awsx.ecs.inputs.RollingDeploymentStrategyArgs;
 import com.pulumi.core.annotations.Import;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,13 +22,13 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * 
      */
     @Import(name="blueGreen")
-    private @Nullable BlueGreenStrategyArgs blueGreen;
+    private @Nullable BlueGreenDeploymentStrategyArgs blueGreen;
 
     /**
      * @return Configuration for shifting all production traffic to the new revision once it is ready.
      * 
      */
-    public Optional<BlueGreenStrategyArgs> blueGreen() {
+    public Optional<BlueGreenDeploymentStrategyArgs> blueGreen() {
         return Optional.ofNullable(this.blueGreen);
     }
 
@@ -39,7 +39,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * 
      */
     @Import(name="canary")
-    private @Nullable CanaryStrategyArgs canary;
+    private @Nullable CanaryDeploymentStrategyArgs canary;
 
     /**
      * @return Configuration for testing an initial percentage of production traffic before shifting the rest.
@@ -47,7 +47,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * Default - no canary configuration
      * 
      */
-    public Optional<CanaryStrategyArgs> canary() {
+    public Optional<CanaryDeploymentStrategyArgs> canary() {
         return Optional.ofNullable(this.canary);
     }
 
@@ -58,7 +58,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * 
      */
     @Import(name="linear")
-    private @Nullable LinearStrategyArgs linear;
+    private @Nullable LinearDeploymentStrategyArgs linear;
 
     /**
      * @return Configuration for shifting production traffic in equal increments.
@@ -66,7 +66,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * Default - no linear configuration
      * 
      */
-    public Optional<LinearStrategyArgs> linear() {
+    public Optional<LinearDeploymentStrategyArgs> linear() {
         return Optional.ofNullable(this.linear);
     }
 
@@ -75,13 +75,13 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
      * 
      */
     @Import(name="rolling")
-    private @Nullable RollingStrategyArgs rolling;
+    private @Nullable RollingDeploymentStrategyArgs rolling;
 
     /**
      * @return Configuration for the rolling update strategy. This is the default.
      * 
      */
-    public Optional<RollingStrategyArgs> rolling() {
+    public Optional<RollingDeploymentStrategyArgs> rolling() {
         return Optional.ofNullable(this.rolling);
     }
 
@@ -118,7 +118,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
          * @return builder
          * 
          */
-        public Builder blueGreen(@Nullable BlueGreenStrategyArgs blueGreen) {
+        public Builder blueGreen(@Nullable BlueGreenDeploymentStrategyArgs blueGreen) {
             $.blueGreen = blueGreen;
             return this;
         }
@@ -131,7 +131,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
          * @return builder
          * 
          */
-        public Builder canary(@Nullable CanaryStrategyArgs canary) {
+        public Builder canary(@Nullable CanaryDeploymentStrategyArgs canary) {
             $.canary = canary;
             return this;
         }
@@ -144,7 +144,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
          * @return builder
          * 
          */
-        public Builder linear(@Nullable LinearStrategyArgs linear) {
+        public Builder linear(@Nullable LinearDeploymentStrategyArgs linear) {
             $.linear = linear;
             return this;
         }
@@ -155,7 +155,7 @@ public final class ServiceDeploymentStrategyArgs extends com.pulumi.resources.Re
          * @return builder
          * 
          */
-        public Builder rolling(@Nullable RollingStrategyArgs rolling) {
+        public Builder rolling(@Nullable RollingDeploymentStrategyArgs rolling) {
             $.rolling = rolling;
             return this;
         }

@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class ContainerLogDriverArgs : global::Pulumi.ResourceArgs
+    public sealed class ContainerLoggingArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
@@ -19,7 +19,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
         /// </summary>
         [Input("cloudwatch")]
-        public Inputs.AwsLogsLogDriverArgs? Cloudwatch { get; set; }
+        public Inputs.CloudWatchLoggingArgs? Cloudwatch { get; set; }
 
         /// <summary>
         /// Disable collection of this container's stdout and stderr through the log driver. Cannot be
@@ -30,9 +30,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("disabled")]
         public bool? Disabled { get; set; }
 
-        public ContainerLogDriverArgs()
+        public ContainerLoggingArgs()
         {
         }
-        public static new ContainerLogDriverArgs Empty => new ContainerLogDriverArgs();
+        public static new ContainerLoggingArgs Empty => new ContainerLoggingArgs();
     }
 }

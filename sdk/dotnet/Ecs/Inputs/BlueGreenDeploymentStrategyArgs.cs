@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class CanaryStrategyArgs : global::Pulumi.ResourceArgs
+    public sealed class BlueGreenDeploymentStrategyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Number of minutes to keep the previous service revision running after all production traffic
@@ -21,24 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// </summary>
         [Input("bakeTimeMinutes", required: true)]
         public double BakeTimeMinutes { get; set; }
-
-        /// <summary>
-        /// Number of minutes to observe the canary before shifting the remaining production traffic to the
-        /// new revision. Valid range: 0-1440 minutes (24 hours).
-        /// 
-        /// Default - AWS default of 10 minutes
-        /// </summary>
-        [Input("canaryBakeTimeMinutes")]
-        public double? CanaryBakeTimeMinutes { get; set; }
-
-        /// <summary>
-        /// Initial percentage of production traffic sent to the new service revision during the canary
-        /// phase. Valid values are multiples of 0.1 from 0.1 to 100.0.
-        /// 
-        /// Default - AWS default of 5.0
-        /// </summary>
-        [Input("canaryPercent")]
-        public double? CanaryPercent { get; set; }
 
         /// <summary>
         /// Action taken when the deployment circuit breaker detects a failed deployment. The circuit
@@ -88,9 +70,9 @@ namespace Pulumi.Awsx.Ecs.Inputs
             set => _pauseHooks = value;
         }
 
-        public CanaryStrategyArgs()
+        public BlueGreenDeploymentStrategyArgs()
         {
         }
-        public static new CanaryStrategyArgs Empty => new CanaryStrategyArgs();
+        public static new BlueGreenDeploymentStrategyArgs Empty => new BlueGreenDeploymentStrategyArgs();
     }
 }

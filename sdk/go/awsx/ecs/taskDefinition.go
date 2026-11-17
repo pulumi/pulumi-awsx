@@ -25,7 +25,6 @@ type TaskDefinition struct {
 	// logging (enabled by default) without specifying `logGroupArn`. This output is undefined when
 	// the component does not create a default log group
 	LogGroup cloudwatch.LogGroupOutput `pulumi:"logGroup"`
-	Name     pulumi.StringOutput       `pulumi:"name"`
 	Region   pulumi.StringPtrOutput    `pulumi:"region"`
 	// The revision number assigned by ECS to the registered task definition.
 	Revision pulumi.Float64Output `pulumi:"revision"`
@@ -66,7 +65,7 @@ type taskDefinitionArgs struct {
 	// Containers in the task, keyed by container name.
 	//
 	// AWSX uses each map key as the corresponding ECS container name.
-	Containers map[string]ContainerDefinitionOptions `pulumi:"containers"`
+	Containers map[string]ContainerDefinition `pulumi:"containers"`
 	// The CpuArchitecture of the task.
 	//
 	// Default - AWS default of X86_64 for Fargate. EC2 and Managed Instances default is based on the
@@ -174,7 +173,7 @@ type TaskDefinitionArgs struct {
 	// Containers in the task, keyed by container name.
 	//
 	// AWSX uses each map key as the corresponding ECS container name.
-	Containers map[string]ContainerDefinitionOptionsArgs
+	Containers map[string]ContainerDefinitionArgs
 	// The CpuArchitecture of the task.
 	//
 	// Default - AWS default of X86_64 for Fargate. EC2 and Managed Instances default is based on the
@@ -371,10 +370,6 @@ func (o TaskDefinitionOutput) Family() pulumi.StringOutput {
 // the component does not create a default log group
 func (o TaskDefinitionOutput) LogGroup() cloudwatch.LogGroupOutput {
 	return o.ApplyT(func(v *TaskDefinition) cloudwatch.LogGroupOutput { return v.LogGroup }).(cloudwatch.LogGroupOutput)
-}
-
-func (o TaskDefinitionOutput) Name() pulumi.StringOutput {
-	return o.ApplyT(func(v *TaskDefinition) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
 }
 
 func (o TaskDefinitionOutput) Region() pulumi.StringPtrOutput {

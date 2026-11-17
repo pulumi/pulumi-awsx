@@ -131,7 +131,7 @@ export interface TargetGroupHealthCheck {
    *
    * Default - `12`.
    */
-  readonly healthGrpcCodes?: string;
+  readonly healthyGrpcCodes?: string;
 
   /**
    * Destination for the health check request. Once the value has been set, removing it has no
@@ -174,12 +174,12 @@ export interface TargetGroupHealthCheck {
 }
 
 export enum ApplicationProtocolVersion {
-  HTTP_1 = 'HTTP1',
-  HTTP_2 = 'HTTP2',
+  HTTP1 = 'HTTP1',
+  HTTP2 = 'HTTP2',
   GRPC = 'GRPC',
 }
 
-export interface ApplicationServiceLoadBalancer {
+export interface ApplicationLoadBalancerAttachment {
   /**
    * The port that the ECS Service receives traffic from the load balancer. This should be the same
    * port used as the containerPort.
@@ -227,10 +227,10 @@ export interface ApplicationServiceLoadBalancer {
   readonly targetHealthCheck?: TargetGroupHealthCheck;
 
   /**
-   * Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+   * Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
    * GRPC require an HTTPS listener.
    *
-   * Default - ApplicationProtocolVersion.HTTP_1
+   * Default - ApplicationProtocolVersion.HTTP1
    */
   readonly targetProtocolVersion?: ApplicationProtocolVersion;
 
@@ -248,7 +248,7 @@ export interface ApplicationServiceLoadBalancer {
   readonly testTraffic?: TestTraffic;
 }
 
-export interface ServiceLoadBalancer {
+export interface ServiceLoadBalancerAttachment {
   /**
    * Application Load Balancer attachment for a named service endpoint. Creates target groups and
    * forwarding rules on a caller-managed listener.
@@ -256,7 +256,7 @@ export interface ServiceLoadBalancer {
    * An application configuration must be provided for each entry in the service's
    * loadBalancerAttachments map.
    */
-  readonly application: ApplicationServiceLoadBalancer;
+  readonly application: ApplicationLoadBalancerAttachment;
 }
 
 export interface ApplicationServiceAttachmentContext {
@@ -306,7 +306,7 @@ export interface CreatedApplicationServiceAttachment {
 export function createApplicationServiceAttachment(
   name: string,
   attachmentName: string,
-  args: ApplicationServiceLoadBalancer,
+  args: ApplicationLoadBalancerAttachment,
   context: ApplicationServiceAttachmentContext,
 ): CreatedApplicationServiceAttachment {
   const resourceName = `${name}-${attachmentName}`;
@@ -350,17 +350,20 @@ export function createApplicationServiceAttachment(
 
   const healthCheck = args.targetHealthCheck;
   const grpc = args.targetProtocolVersion === ApplicationProtocolVersion.GRPC;
-  if (healthCheck?.healthyHttpCodes !== undefined && healthCheck.healthGrpcCodes !== undefined) {
-    fail('targetHealthCheck', 'Only one of healthyHttpCodes or healthGrpcCodes can be provided');
+  if (healthCheck?.healthyHttpCodes !== undefined && healthCheck.healthyGrpcCodes !== undefined) {
+    fail('targetHealthCheck', 'Only one of healthyHttpCodes or healthyGrpcCodes can be provided');
   }
   if (grpc && healthCheck?.healthyHttpCodes !== undefined) {
     fail(
       'targetHealthCheck.healthyHttpCodes',
-      'Use healthGrpcCodes with the GRPC protocol version',
+      'Use healthyGrpcCodes with the GRPC protocol version',
     );
   }
-  if (!grpc && healthCheck?.healthGrpcCodes !== undefined) {
-    fail('targetHealthCheck.healthGrpcCodes', 'healthGrpcCodes requires the GRPC protocol version');
+  if (!grpc && healthCheck?.healthyGrpcCodes !== undefined) {
+    fail(
+      'targetHealthCheck.healthyGrpcCodes',
+      'healthyGrpcCodes requires the GRPC protocol version',
+    );
   }
 
   if (!Number.isInteger(args.priority) || args.priority < 1 || args.priority > 50000) {
@@ -409,7 +412,7 @@ export function createApplicationServiceAttachment(
       unhealthyThreshold: healthCheck?.unhealthyThreshold,
       interval: healthCheck?.intervalSeconds,
       timeout: healthCheck?.timeoutSeconds,
-      matcher: healthCheck?.healthyHttpCodes ?? healthCheck?.healthGrpcCodes,
+      matcher: healthCheck?.healthyHttpCodes ?? healthCheck?.healthyGrpcCodes,
       path: healthCheck?.path,
       port: healthCheck?.port === undefined ? undefined : `${healthCheck.port}`,
     },
@@ -669,7 +672,7 @@ export function validateTargetProtocolVersion(
   if ((version === 'HTTP2' || version === 'GRPC') && listenerProtocol !== 'HTTPS') {
     throw new pulumi.InputPropertyError({
       propertyPath,
-      reason: 'HTTP_2 and GRPC require an HTTPS listener',
+      reason: 'HTTP2 and GRPC require an HTTPS listener',
     });
   }
 }

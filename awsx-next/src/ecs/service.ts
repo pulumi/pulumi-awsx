@@ -6,7 +6,7 @@ import {
   createApplicationServiceAttachment,
   validateListenerRulePriorities,
   resolveIngressSourceGroup,
-  ServiceLoadBalancer,
+  ServiceLoadBalancerAttachment,
 } from './serviceLoadBalancer';
 
 import {
@@ -119,7 +119,7 @@ export interface ServiceArgs {
    *
    * Default - The ECS service is not attached to a load balancer
    */
-  readonly loadBalancerAttachments?: Record<string, ServiceLoadBalancer>;
+  readonly loadBalancerAttachments?: Record<string, ServiceLoadBalancerAttachment>;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.

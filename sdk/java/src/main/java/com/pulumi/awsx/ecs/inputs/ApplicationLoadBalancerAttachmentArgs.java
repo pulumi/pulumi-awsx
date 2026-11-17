@@ -18,9 +18,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resources.ResourceArgs {
+public final class ApplicationLoadBalancerAttachmentArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final ApplicationServiceLoadBalancerArgs Empty = new ApplicationServiceLoadBalancerArgs();
+    public static final ApplicationLoadBalancerAttachmentArgs Empty = new ApplicationLoadBalancerAttachmentArgs();
 
     /**
      * The name of the container to route traffic to.
@@ -164,20 +164,20 @@ public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resourc
     }
 
     /**
-     * Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+     * Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
      * GRPC require an HTTPS listener.
      * 
-     * Default - ApplicationProtocolVersion.HTTP_1
+     * Default - ApplicationProtocolVersion.HTTP1
      * 
      */
     @Import(name="targetProtocolVersion")
     private @Nullable ApplicationProtocolVersion targetProtocolVersion;
 
     /**
-     * @return Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+     * @return Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
      * GRPC require an HTTPS listener.
      * 
-     * Default - ApplicationProtocolVersion.HTTP_1
+     * Default - ApplicationProtocolVersion.HTTP1
      * 
      */
     public Optional<ApplicationProtocolVersion> targetProtocolVersion() {
@@ -201,9 +201,9 @@ public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resourc
         return Optional.ofNullable(this.testTraffic);
     }
 
-    private ApplicationServiceLoadBalancerArgs() {}
+    private ApplicationLoadBalancerAttachmentArgs() {}
 
-    private ApplicationServiceLoadBalancerArgs(ApplicationServiceLoadBalancerArgs $) {
+    private ApplicationLoadBalancerAttachmentArgs(ApplicationLoadBalancerAttachmentArgs $) {
         this.containerName = $.containerName;
         this.containerPort = $.containerPort;
         this.listenerArn = $.listenerArn;
@@ -218,19 +218,19 @@ public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resourc
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(ApplicationServiceLoadBalancerArgs defaults) {
+    public static Builder builder(ApplicationLoadBalancerAttachmentArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private ApplicationServiceLoadBalancerArgs $;
+        private ApplicationLoadBalancerAttachmentArgs $;
 
         public Builder() {
-            $ = new ApplicationServiceLoadBalancerArgs();
+            $ = new ApplicationLoadBalancerAttachmentArgs();
         }
 
-        public Builder(ApplicationServiceLoadBalancerArgs defaults) {
-            $ = new ApplicationServiceLoadBalancerArgs(Objects.requireNonNull(defaults));
+        public Builder(ApplicationLoadBalancerAttachmentArgs defaults) {
+            $ = new ApplicationLoadBalancerAttachmentArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -342,10 +342,10 @@ public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resourc
         }
 
         /**
-         * @param targetProtocolVersion Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+         * @param targetProtocolVersion Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
          * GRPC require an HTTPS listener.
          * 
-         * Default - ApplicationProtocolVersion.HTTP_1
+         * Default - ApplicationProtocolVersion.HTTP1
          * 
          * @return builder
          * 
@@ -367,18 +367,18 @@ public final class ApplicationServiceLoadBalancerArgs extends com.pulumi.resourc
             return this;
         }
 
-        public ApplicationServiceLoadBalancerArgs build() {
+        public ApplicationLoadBalancerAttachmentArgs build() {
             if ($.containerName == null) {
-                throw new MissingRequiredPropertyException("ApplicationServiceLoadBalancerArgs", "containerName");
+                throw new MissingRequiredPropertyException("ApplicationLoadBalancerAttachmentArgs", "containerName");
             }
             if ($.containerPort == null) {
-                throw new MissingRequiredPropertyException("ApplicationServiceLoadBalancerArgs", "containerPort");
+                throw new MissingRequiredPropertyException("ApplicationLoadBalancerAttachmentArgs", "containerPort");
             }
             if ($.listenerArn == null) {
-                throw new MissingRequiredPropertyException("ApplicationServiceLoadBalancerArgs", "listenerArn");
+                throw new MissingRequiredPropertyException("ApplicationLoadBalancerAttachmentArgs", "listenerArn");
             }
             if ($.priority == null) {
-                throw new MissingRequiredPropertyException("ApplicationServiceLoadBalancerArgs", "priority");
+                throw new MissingRequiredPropertyException("ApplicationLoadBalancerAttachmentArgs", "priority");
             }
             return $;
         }

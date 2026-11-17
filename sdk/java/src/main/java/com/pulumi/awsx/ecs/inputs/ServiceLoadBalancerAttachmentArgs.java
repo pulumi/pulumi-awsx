@@ -3,15 +3,15 @@
 
 package com.pulumi.awsx.ecs.inputs;
 
-import com.pulumi.awsx.ecs.inputs.ApplicationServiceLoadBalancerArgs;
+import com.pulumi.awsx.ecs.inputs.ApplicationLoadBalancerAttachmentArgs;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
 import java.util.Objects;
 
 
-public final class ServiceLoadBalancerArgs extends com.pulumi.resources.ResourceArgs {
+public final class ServiceLoadBalancerAttachmentArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final ServiceLoadBalancerArgs Empty = new ServiceLoadBalancerArgs();
+    public static final ServiceLoadBalancerAttachmentArgs Empty = new ServiceLoadBalancerAttachmentArgs();
 
     /**
      * Application Load Balancer attachment for a named service endpoint. Creates target groups and
@@ -22,7 +22,7 @@ public final class ServiceLoadBalancerArgs extends com.pulumi.resources.Resource
      * 
      */
     @Import(name="application", required=true)
-    private ApplicationServiceLoadBalancerArgs application;
+    private ApplicationLoadBalancerAttachmentArgs application;
 
     /**
      * @return Application Load Balancer attachment for a named service endpoint. Creates target groups and
@@ -32,32 +32,32 @@ public final class ServiceLoadBalancerArgs extends com.pulumi.resources.Resource
      * loadBalancerAttachments map.
      * 
      */
-    public ApplicationServiceLoadBalancerArgs application() {
+    public ApplicationLoadBalancerAttachmentArgs application() {
         return this.application;
     }
 
-    private ServiceLoadBalancerArgs() {}
+    private ServiceLoadBalancerAttachmentArgs() {}
 
-    private ServiceLoadBalancerArgs(ServiceLoadBalancerArgs $) {
+    private ServiceLoadBalancerAttachmentArgs(ServiceLoadBalancerAttachmentArgs $) {
         this.application = $.application;
     }
 
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(ServiceLoadBalancerArgs defaults) {
+    public static Builder builder(ServiceLoadBalancerAttachmentArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private ServiceLoadBalancerArgs $;
+        private ServiceLoadBalancerAttachmentArgs $;
 
         public Builder() {
-            $ = new ServiceLoadBalancerArgs();
+            $ = new ServiceLoadBalancerAttachmentArgs();
         }
 
-        public Builder(ServiceLoadBalancerArgs defaults) {
-            $ = new ServiceLoadBalancerArgs(Objects.requireNonNull(defaults));
+        public Builder(ServiceLoadBalancerAttachmentArgs defaults) {
+            $ = new ServiceLoadBalancerAttachmentArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -70,14 +70,14 @@ public final class ServiceLoadBalancerArgs extends com.pulumi.resources.Resource
          * @return builder
          * 
          */
-        public Builder application(ApplicationServiceLoadBalancerArgs application) {
+        public Builder application(ApplicationLoadBalancerAttachmentArgs application) {
             $.application = application;
             return this;
         }
 
-        public ServiceLoadBalancerArgs build() {
+        public ServiceLoadBalancerAttachmentArgs build() {
             if ($.application == null) {
-                throw new MissingRequiredPropertyException("ServiceLoadBalancerArgs", "application");
+                throw new MissingRequiredPropertyException("ServiceLoadBalancerAttachmentArgs", "application");
             }
             return $;
         }

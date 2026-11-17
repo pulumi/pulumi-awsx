@@ -18,24 +18,26 @@ from ._enums import *
 import pulumi_aws
 
 __all__ = [
-    'ApplicationServiceLoadBalancerArgs',
-    'ApplicationServiceLoadBalancerArgsDict',
-    'AwsLogsLogDriverArgs',
-    'AwsLogsLogDriverArgsDict',
+    'ApplicationLoadBalancerAttachmentArgs',
+    'ApplicationLoadBalancerAttachmentArgsDict',
     'AwsvpcPortMappingArgs',
     'AwsvpcPortMappingArgsDict',
-    'BlueGreenStrategyArgs',
-    'BlueGreenStrategyArgsDict',
-    'CanaryStrategyArgs',
-    'CanaryStrategyArgsDict',
+    'BlueGreenDeploymentStrategyArgs',
+    'BlueGreenDeploymentStrategyArgsDict',
+    'CanaryDeploymentStrategyArgs',
+    'CanaryDeploymentStrategyArgsDict',
     'CapacityAllocationArgs',
     'CapacityAllocationArgsDict',
-    'ContainerDefinitionOptionsArgs',
-    'ContainerDefinitionOptionsArgsDict',
+    'CloudWatchLoggingArgs',
+    'CloudWatchLoggingArgsDict',
+    'ContainerDefinitionArgs',
+    'ContainerDefinitionArgsDict',
     'ContainerDependencyArgs',
     'ContainerDependencyArgsDict',
-    'ContainerLogDriverArgs',
-    'ContainerLogDriverArgsDict',
+    'ContainerHealthCheckArgs',
+    'ContainerHealthCheckArgsDict',
+    'ContainerLoggingArgs',
+    'ContainerLoggingArgsDict',
     'ContainerPortRangeArgs',
     'ContainerPortRangeArgsDict',
     'EC2ServiceTaskDefinitionArgs',
@@ -54,12 +56,10 @@ __all__ = [
     'FargateServiceTaskDefinitionArgsDict',
     'HeaderConditionArgs',
     'HeaderConditionArgsDict',
-    'HealthCheckArgs',
-    'HealthCheckArgsDict',
     'KernelCapabilitiesArgs',
     'KernelCapabilitiesArgsDict',
-    'LinearStrategyArgs',
-    'LinearStrategyArgsDict',
+    'LinearDeploymentStrategyArgs',
+    'LinearDeploymentStrategyArgsDict',
     'LinuxParametersArgs',
     'LinuxParametersArgsDict',
     'ListenerConditionsArgs',
@@ -70,12 +70,12 @@ __all__ = [
     'ProgressivePauseHookArgsDict',
     'QueryStringConditionArgs',
     'QueryStringConditionArgsDict',
+    'RollingDeploymentStrategyArgs',
+    'RollingDeploymentStrategyArgsDict',
     'RollingLambdaHookArgs',
     'RollingLambdaHookArgsDict',
     'RollingPauseHookArgs',
     'RollingPauseHookArgsDict',
-    'RollingStrategyArgs',
-    'RollingStrategyArgsDict',
     'SecretsManagerSecretArgs',
     'SecretsManagerSecretArgsDict',
     'ServiceCapacityArgs',
@@ -84,8 +84,8 @@ __all__ = [
     'ServiceCapacityProviderArgsDict',
     'ServiceDeploymentStrategyArgs',
     'ServiceDeploymentStrategyArgsDict',
-    'ServiceLoadBalancerArgs',
-    'ServiceLoadBalancerArgsDict',
+    'ServiceLoadBalancerAttachmentArgs',
+    'ServiceLoadBalancerAttachmentArgsDict',
     'StringMatchArgs',
     'StringMatchArgsDict',
     'SystemControlArgs',
@@ -140,7 +140,7 @@ __all__ = [
     'VolumeFromArgsDict',
 ]
 
-class ApplicationServiceLoadBalancerArgsDict(TypedDict):
+class ApplicationLoadBalancerAttachmentArgsDict(TypedDict):
     container_name: _builtins.str
     """
     The name of the container to route traffic to.
@@ -189,10 +189,10 @@ class ApplicationServiceLoadBalancerArgsDict(TypedDict):
     """
     target_protocol_version: NotRequired['ApplicationProtocolVersion']
     """
-    Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+    Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
     GRPC require an HTTPS listener.
 
-    Default - ApplicationProtocolVersion.HTTP_1
+    Default - ApplicationProtocolVersion.HTTP1
     """
     test_traffic: NotRequired['TestTrafficArgsDict']
     """
@@ -201,7 +201,7 @@ class ApplicationServiceLoadBalancerArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class ApplicationServiceLoadBalancerArgs:
+class ApplicationLoadBalancerAttachmentArgs:
     def __init__(__self__, *,
                  container_name: _builtins.str,
                  container_port: _builtins.float,
@@ -238,10 +238,10 @@ class ApplicationServiceLoadBalancerArgs:
         :param 'ApplicationProtocol' target_protocol: Protocol used for requests from the Load Balancer to the ECS Service target.
                
                Default - ApplicationProtocol.HTTP
-        :param 'ApplicationProtocolVersion' target_protocol_version: Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+        :param 'ApplicationProtocolVersion' target_protocol_version: Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
                GRPC require an HTTPS listener.
                
-               Default - ApplicationProtocolVersion.HTTP_1
+               Default - ApplicationProtocolVersion.HTTP1
         :param 'TestTrafficArgs' test_traffic: Routing for validating a new revision before production traffic shifts. Requires blue/green,
                canary, or linear deployments. Omitted means no test route.
         """
@@ -366,10 +366,10 @@ class ApplicationServiceLoadBalancerArgs:
     @pulumi.getter(name="targetProtocolVersion")
     def target_protocol_version(self) -> Optional['ApplicationProtocolVersion']:
         """
-        Protocol version used for requests from the load balancer to the ECS Service target. HTTP_2 and
+        Protocol version used for requests from the load balancer to the ECS Service target. HTTP2 and
         GRPC require an HTTPS listener.
 
-        Default - ApplicationProtocolVersion.HTTP_1
+        Default - ApplicationProtocolVersion.HTTP1
         """
         return pulumi.get(self, "target_protocol_version")
 
@@ -389,153 +389,6 @@ class ApplicationServiceLoadBalancerArgs:
     @test_traffic.setter
     def test_traffic(self, value: Optional['TestTrafficArgs']):
         pulumi.set(self, "test_traffic", value)
-
-
-class AwsLogsLogDriverArgsDict(TypedDict):
-    datetime_format: NotRequired[_builtins.str]
-    """
-    A multiline start pattern in Python strftime format.
-    """
-    log_group_arn: NotRequired[pulumi.Input[Optional[_builtins.str]]]
-    """
-    The ARN of the log group to log to.
-
-    Default - A log group is created automatically.
-    """
-    max_buffer_size_bytes: NotRequired[_builtins.float]
-    """
-    Size, in bytes, of the buffer used in non-blocking mode.
-
-    Default - The AWS default of 10 MiB when mode is non-blocking.
-    """
-    mode: NotRequired['AwsLogDriverMode']
-    """
-    The delivery mode for log messages.
-    """
-    multiline_pattern: NotRequired[_builtins.str]
-    """
-    A multiline start pattern expressed as a regular expression.
-    """
-    stream_prefix: NotRequired[pulumi.Input[Optional[_builtins.str]]]
-    """
-    Prefix used for the container's log streams.
-
-    Default - The task component name.
-    """
-
-@pulumi.input_type
-class AwsLogsLogDriverArgs:
-    def __init__(__self__, *,
-                 datetime_format: Optional[_builtins.str] = None,
-                 log_group_arn: pulumi.Input[Optional[_builtins.str]] = None,
-                 max_buffer_size_bytes: Optional[_builtins.float] = None,
-                 mode: Optional['AwsLogDriverMode'] = None,
-                 multiline_pattern: Optional[_builtins.str] = None,
-                 stream_prefix: pulumi.Input[Optional[_builtins.str]] = None):
-        """
-        :param _builtins.str datetime_format: A multiline start pattern in Python strftime format.
-        :param pulumi.Input[_builtins.str] log_group_arn: The ARN of the log group to log to.
-               
-               Default - A log group is created automatically.
-        :param _builtins.float max_buffer_size_bytes: Size, in bytes, of the buffer used in non-blocking mode.
-               
-               Default - The AWS default of 10 MiB when mode is non-blocking.
-        :param 'AwsLogDriverMode' mode: The delivery mode for log messages.
-        :param _builtins.str multiline_pattern: A multiline start pattern expressed as a regular expression.
-        :param pulumi.Input[_builtins.str] stream_prefix: Prefix used for the container's log streams.
-               
-               Default - The task component name.
-        """
-        if datetime_format is not None:
-            pulumi.set(__self__, "datetime_format", datetime_format)
-        if log_group_arn is not None:
-            pulumi.set(__self__, "log_group_arn", log_group_arn)
-        if max_buffer_size_bytes is not None:
-            pulumi.set(__self__, "max_buffer_size_bytes", max_buffer_size_bytes)
-        if mode is not None:
-            pulumi.set(__self__, "mode", mode)
-        if multiline_pattern is not None:
-            pulumi.set(__self__, "multiline_pattern", multiline_pattern)
-        if stream_prefix is not None:
-            pulumi.set(__self__, "stream_prefix", stream_prefix)
-
-    @_builtins.property
-    @pulumi.getter(name="datetimeFormat")
-    def datetime_format(self) -> Optional[_builtins.str]:
-        """
-        A multiline start pattern in Python strftime format.
-        """
-        return pulumi.get(self, "datetime_format")
-
-    @datetime_format.setter
-    def datetime_format(self, value: Optional[_builtins.str]):
-        pulumi.set(self, "datetime_format", value)
-
-    @_builtins.property
-    @pulumi.getter(name="logGroupArn")
-    def log_group_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        The ARN of the log group to log to.
-
-        Default - A log group is created automatically.
-        """
-        return pulumi.get(self, "log_group_arn")
-
-    @log_group_arn.setter
-    def log_group_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "log_group_arn", value)
-
-    @_builtins.property
-    @pulumi.getter(name="maxBufferSizeBytes")
-    def max_buffer_size_bytes(self) -> Optional[_builtins.float]:
-        """
-        Size, in bytes, of the buffer used in non-blocking mode.
-
-        Default - The AWS default of 10 MiB when mode is non-blocking.
-        """
-        return pulumi.get(self, "max_buffer_size_bytes")
-
-    @max_buffer_size_bytes.setter
-    def max_buffer_size_bytes(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "max_buffer_size_bytes", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def mode(self) -> Optional['AwsLogDriverMode']:
-        """
-        The delivery mode for log messages.
-        """
-        return pulumi.get(self, "mode")
-
-    @mode.setter
-    def mode(self, value: Optional['AwsLogDriverMode']):
-        pulumi.set(self, "mode", value)
-
-    @_builtins.property
-    @pulumi.getter(name="multilinePattern")
-    def multiline_pattern(self) -> Optional[_builtins.str]:
-        """
-        A multiline start pattern expressed as a regular expression.
-        """
-        return pulumi.get(self, "multiline_pattern")
-
-    @multiline_pattern.setter
-    def multiline_pattern(self, value: Optional[_builtins.str]):
-        pulumi.set(self, "multiline_pattern", value)
-
-    @_builtins.property
-    @pulumi.getter(name="streamPrefix")
-    def stream_prefix(self) -> pulumi.Input[Optional[_builtins.str]]:
-        """
-        Prefix used for the container's log streams.
-
-        Default - The task component name.
-        """
-        return pulumi.get(self, "stream_prefix")
-
-    @stream_prefix.setter
-    def stream_prefix(self, value: pulumi.Input[Optional[_builtins.str]]):
-        pulumi.set(self, "stream_prefix", value)
 
 
 class AwsvpcPortMappingArgsDict(TypedDict):
@@ -668,7 +521,7 @@ class AwsvpcPortMappingArgs:
         pulumi.set(self, "protocol", value)
 
 
-class BlueGreenStrategyArgsDict(TypedDict):
+class BlueGreenDeploymentStrategyArgsDict(TypedDict):
     bake_time_minutes: _builtins.float
     """
     Number of minutes to keep the previous service revision running after all production traffic
@@ -709,7 +562,7 @@ class BlueGreenStrategyArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class BlueGreenStrategyArgs:
+class BlueGreenDeploymentStrategyArgs:
     def __init__(__self__, *,
                  bake_time_minutes: _builtins.float,
                  failure_action: Optional['DeploymentFailureAction'] = None,
@@ -822,7 +675,7 @@ class BlueGreenStrategyArgs:
         pulumi.set(self, "pause_hooks", value)
 
 
-class CanaryStrategyArgsDict(TypedDict):
+class CanaryDeploymentStrategyArgsDict(TypedDict):
     bake_time_minutes: _builtins.float
     """
     Number of minutes to keep the previous service revision running after all production traffic
@@ -877,7 +730,7 @@ class CanaryStrategyArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class CanaryStrategyArgs:
+class CanaryDeploymentStrategyArgs:
     def __init__(__self__, *,
                  bake_time_minutes: _builtins.float,
                  canary_bake_time_minutes: Optional[_builtins.float] = None,
@@ -1101,7 +954,154 @@ class CapacityAllocationArgs:
         pulumi.set(self, "weight", value)
 
 
-class ContainerDefinitionOptionsArgsDict(TypedDict):
+class CloudWatchLoggingArgsDict(TypedDict):
+    datetime_format: NotRequired[_builtins.str]
+    """
+    A multiline start pattern in Python strftime format.
+    """
+    log_group_arn: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    The ARN of the log group to log to.
+
+    Default - A log group is created automatically.
+    """
+    max_buffer_size_bytes: NotRequired[_builtins.float]
+    """
+    Size, in bytes, of the buffer used in non-blocking mode.
+
+    Default - The AWS default of 10 MiB when mode is non-blocking.
+    """
+    mode: NotRequired['LogDeliveryMode']
+    """
+    The delivery mode for log messages.
+    """
+    multiline_pattern: NotRequired[_builtins.str]
+    """
+    A multiline start pattern expressed as a regular expression.
+    """
+    stream_prefix: NotRequired[pulumi.Input[Optional[_builtins.str]]]
+    """
+    Prefix used for the container's log streams.
+
+    Default - The task component name.
+    """
+
+@pulumi.input_type
+class CloudWatchLoggingArgs:
+    def __init__(__self__, *,
+                 datetime_format: Optional[_builtins.str] = None,
+                 log_group_arn: pulumi.Input[Optional[_builtins.str]] = None,
+                 max_buffer_size_bytes: Optional[_builtins.float] = None,
+                 mode: Optional['LogDeliveryMode'] = None,
+                 multiline_pattern: Optional[_builtins.str] = None,
+                 stream_prefix: pulumi.Input[Optional[_builtins.str]] = None):
+        """
+        :param _builtins.str datetime_format: A multiline start pattern in Python strftime format.
+        :param pulumi.Input[_builtins.str] log_group_arn: The ARN of the log group to log to.
+               
+               Default - A log group is created automatically.
+        :param _builtins.float max_buffer_size_bytes: Size, in bytes, of the buffer used in non-blocking mode.
+               
+               Default - The AWS default of 10 MiB when mode is non-blocking.
+        :param 'LogDeliveryMode' mode: The delivery mode for log messages.
+        :param _builtins.str multiline_pattern: A multiline start pattern expressed as a regular expression.
+        :param pulumi.Input[_builtins.str] stream_prefix: Prefix used for the container's log streams.
+               
+               Default - The task component name.
+        """
+        if datetime_format is not None:
+            pulumi.set(__self__, "datetime_format", datetime_format)
+        if log_group_arn is not None:
+            pulumi.set(__self__, "log_group_arn", log_group_arn)
+        if max_buffer_size_bytes is not None:
+            pulumi.set(__self__, "max_buffer_size_bytes", max_buffer_size_bytes)
+        if mode is not None:
+            pulumi.set(__self__, "mode", mode)
+        if multiline_pattern is not None:
+            pulumi.set(__self__, "multiline_pattern", multiline_pattern)
+        if stream_prefix is not None:
+            pulumi.set(__self__, "stream_prefix", stream_prefix)
+
+    @_builtins.property
+    @pulumi.getter(name="datetimeFormat")
+    def datetime_format(self) -> Optional[_builtins.str]:
+        """
+        A multiline start pattern in Python strftime format.
+        """
+        return pulumi.get(self, "datetime_format")
+
+    @datetime_format.setter
+    def datetime_format(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "datetime_format", value)
+
+    @_builtins.property
+    @pulumi.getter(name="logGroupArn")
+    def log_group_arn(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        The ARN of the log group to log to.
+
+        Default - A log group is created automatically.
+        """
+        return pulumi.get(self, "log_group_arn")
+
+    @log_group_arn.setter
+    def log_group_arn(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "log_group_arn", value)
+
+    @_builtins.property
+    @pulumi.getter(name="maxBufferSizeBytes")
+    def max_buffer_size_bytes(self) -> Optional[_builtins.float]:
+        """
+        Size, in bytes, of the buffer used in non-blocking mode.
+
+        Default - The AWS default of 10 MiB when mode is non-blocking.
+        """
+        return pulumi.get(self, "max_buffer_size_bytes")
+
+    @max_buffer_size_bytes.setter
+    def max_buffer_size_bytes(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "max_buffer_size_bytes", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def mode(self) -> Optional['LogDeliveryMode']:
+        """
+        The delivery mode for log messages.
+        """
+        return pulumi.get(self, "mode")
+
+    @mode.setter
+    def mode(self, value: Optional['LogDeliveryMode']):
+        pulumi.set(self, "mode", value)
+
+    @_builtins.property
+    @pulumi.getter(name="multilinePattern")
+    def multiline_pattern(self) -> Optional[_builtins.str]:
+        """
+        A multiline start pattern expressed as a regular expression.
+        """
+        return pulumi.get(self, "multiline_pattern")
+
+    @multiline_pattern.setter
+    def multiline_pattern(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "multiline_pattern", value)
+
+    @_builtins.property
+    @pulumi.getter(name="streamPrefix")
+    def stream_prefix(self) -> pulumi.Input[Optional[_builtins.str]]:
+        """
+        Prefix used for the container's log streams.
+
+        Default - The task component name.
+        """
+        return pulumi.get(self, "stream_prefix")
+
+    @stream_prefix.setter
+    def stream_prefix(self, value: pulumi.Input[Optional[_builtins.str]]):
+        pulumi.set(self, "stream_prefix", value)
+
+
+class ContainerDefinitionArgsDict(TypedDict):
     image: pulumi.Input[_builtins.str]
     """
     The image used to start the container.
@@ -1174,7 +1174,7 @@ class ContainerDefinitionOptionsArgsDict(TypedDict):
 
     Default - No GPUs.
     """
-    health_check: NotRequired['HealthCheckArgsDict']
+    health_check: NotRequired['ContainerHealthCheckArgsDict']
     """
     The health check command and settings for the container.
 
@@ -1204,7 +1204,7 @@ class ContainerDefinitionOptionsArgsDict(TypedDict):
     """
     Linux capability and init-process settings. Fargate permits adding only SYS_PTRACE.
     """
-    logging: NotRequired['ContainerLogDriverArgsDict']
+    logging: NotRequired['ContainerLoggingArgsDict']
     """
     Log collection. AWSX grants the execution role access to the configured log group.
 
@@ -1314,7 +1314,7 @@ class ContainerDefinitionOptionsArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class ContainerDefinitionOptionsArgs:
+class ContainerDefinitionArgs:
     def __init__(__self__, *,
                  image: pulumi.Input[_builtins.str],
                  command: Optional[Sequence[pulumi.Input[_builtins.str]]] = None,
@@ -1327,10 +1327,10 @@ class ContainerDefinitionOptionsArgs:
                  environment_files: Optional[Sequence['EnvironmentFileArgs']] = None,
                  essential: Optional[_builtins.bool] = None,
                  gpu_count: Optional[_builtins.float] = None,
-                 health_check: Optional['HealthCheckArgs'] = None,
+                 health_check: Optional['ContainerHealthCheckArgs'] = None,
                  interactive: Optional[_builtins.bool] = None,
                  linux_parameters: Optional['LinuxParametersArgs'] = None,
-                 logging: Optional['ContainerLogDriverArgs'] = None,
+                 logging: Optional['ContainerLoggingArgs'] = None,
                  memory_mi_b: Optional[_builtins.float] = None,
                  memory_reservation_mi_b: Optional[_builtins.float] = None,
                  port_mappings: Optional[Sequence['AwsvpcPortMappingArgs']] = None,
@@ -1385,7 +1385,7 @@ class ContainerDefinitionOptionsArgs:
                capability
                
                Default - No GPUs.
-        :param 'HealthCheckArgs' health_check: The health check command and settings for the container.
+        :param 'ContainerHealthCheckArgs' health_check: The health check command and settings for the container.
                
                Use a health check when the container can remain running while the application is unhealthy,
                such as an unresponsive server or a worker that has stopped processing jobs. A health check is
@@ -1406,7 +1406,7 @@ class ContainerDefinitionOptionsArgs:
                
                Default - `false`.
         :param 'LinuxParametersArgs' linux_parameters: Linux capability and init-process settings. Fargate permits adding only SYS_PTRACE.
-        :param 'ContainerLogDriverArgs' logging: Log collection. AWSX grants the execution role access to the configured log group.
+        :param 'ContainerLoggingArgs' logging: Log collection. AWSX grants the execution role access to the configured log group.
                
                Default - CloudWatch logging with a shared log group created by this component.
         :param _builtins.float memory_mi_b: Hard memory limit in MiB. ECS stops the container if it exceeds this limit. Must exceed
@@ -1690,7 +1690,7 @@ class ContainerDefinitionOptionsArgs:
 
     @_builtins.property
     @pulumi.getter(name="healthCheck")
-    def health_check(self) -> Optional['HealthCheckArgs']:
+    def health_check(self) -> Optional['ContainerHealthCheckArgs']:
         """
         The health check command and settings for the container.
 
@@ -1713,7 +1713,7 @@ class ContainerDefinitionOptionsArgs:
         return pulumi.get(self, "health_check")
 
     @health_check.setter
-    def health_check(self, value: Optional['HealthCheckArgs']):
+    def health_check(self, value: Optional['ContainerHealthCheckArgs']):
         pulumi.set(self, "health_check", value)
 
     @_builtins.property
@@ -1744,7 +1744,7 @@ class ContainerDefinitionOptionsArgs:
 
     @_builtins.property
     @pulumi.getter
-    def logging(self) -> Optional['ContainerLogDriverArgs']:
+    def logging(self) -> Optional['ContainerLoggingArgs']:
         """
         Log collection. AWSX grants the execution role access to the configured log group.
 
@@ -1753,7 +1753,7 @@ class ContainerDefinitionOptionsArgs:
         return pulumi.get(self, "logging")
 
     @logging.setter
-    def logging(self, value: Optional['ContainerLogDriverArgs']):
+    def logging(self, value: Optional['ContainerLoggingArgs']):
         pulumi.set(self, "logging", value)
 
     @_builtins.property
@@ -2018,8 +2018,158 @@ class ContainerDependencyArgs:
         pulumi.set(self, "container_name", value)
 
 
-class ContainerLogDriverArgsDict(TypedDict):
-    cloudwatch: NotRequired['AwsLogsLogDriverArgsDict']
+class ContainerHealthCheckArgsDict(TypedDict):
+    command: Sequence[_builtins.str]
+    """
+    The command that the container runs to determine whether it is healthy.
+
+    The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+
+    Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+    """
+    interval_seconds: NotRequired[_builtins.float]
+    """
+    The time, in seconds, between health checks. Valid values are from 5 through 300.
+
+    Default - 30 seconds.
+    """
+    retries: NotRequired[_builtins.float]
+    """
+    The number of consecutive failures required before the container becomes unhealthy. Valid
+    values are from 1 through 10.
+
+    Default - 3.
+    """
+    start_period_seconds: NotRequired[_builtins.float]
+    """
+    The startup grace period, in seconds, during which failed checks do not count toward the retry
+    limit. Valid values are from 0 through 300.
+
+    Default - No startup grace period.
+    """
+    timeout_seconds: NotRequired[_builtins.float]
+    """
+    The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+
+    Default - 5 seconds.
+    """
+
+@pulumi.input_type
+class ContainerHealthCheckArgs:
+    def __init__(__self__, *,
+                 command: Sequence[_builtins.str],
+                 interval_seconds: Optional[_builtins.float] = None,
+                 retries: Optional[_builtins.float] = None,
+                 start_period_seconds: Optional[_builtins.float] = None,
+                 timeout_seconds: Optional[_builtins.float] = None):
+        """
+        :param Sequence[_builtins.str] command: The command that the container runs to determine whether it is healthy.
+               
+               The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+               
+               Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+        :param _builtins.float interval_seconds: The time, in seconds, between health checks. Valid values are from 5 through 300.
+               
+               Default - 30 seconds.
+        :param _builtins.float retries: The number of consecutive failures required before the container becomes unhealthy. Valid
+               values are from 1 through 10.
+               
+               Default - 3.
+        :param _builtins.float start_period_seconds: The startup grace period, in seconds, during which failed checks do not count toward the retry
+               limit. Valid values are from 0 through 300.
+               
+               Default - No startup grace period.
+        :param _builtins.float timeout_seconds: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+               
+               Default - 5 seconds.
+        """
+        pulumi.set(__self__, "command", command)
+        if interval_seconds is not None:
+            pulumi.set(__self__, "interval_seconds", interval_seconds)
+        if retries is not None:
+            pulumi.set(__self__, "retries", retries)
+        if start_period_seconds is not None:
+            pulumi.set(__self__, "start_period_seconds", start_period_seconds)
+        if timeout_seconds is not None:
+            pulumi.set(__self__, "timeout_seconds", timeout_seconds)
+
+    @_builtins.property
+    @pulumi.getter
+    def command(self) -> Sequence[_builtins.str]:
+        """
+        The command that the container runs to determine whether it is healthy.
+
+        The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
+
+        Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
+        """
+        return pulumi.get(self, "command")
+
+    @command.setter
+    def command(self, value: Sequence[_builtins.str]):
+        pulumi.set(self, "command", value)
+
+    @_builtins.property
+    @pulumi.getter(name="intervalSeconds")
+    def interval_seconds(self) -> Optional[_builtins.float]:
+        """
+        The time, in seconds, between health checks. Valid values are from 5 through 300.
+
+        Default - 30 seconds.
+        """
+        return pulumi.get(self, "interval_seconds")
+
+    @interval_seconds.setter
+    def interval_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "interval_seconds", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def retries(self) -> Optional[_builtins.float]:
+        """
+        The number of consecutive failures required before the container becomes unhealthy. Valid
+        values are from 1 through 10.
+
+        Default - 3.
+        """
+        return pulumi.get(self, "retries")
+
+    @retries.setter
+    def retries(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "retries", value)
+
+    @_builtins.property
+    @pulumi.getter(name="startPeriodSeconds")
+    def start_period_seconds(self) -> Optional[_builtins.float]:
+        """
+        The startup grace period, in seconds, during which failed checks do not count toward the retry
+        limit. Valid values are from 0 through 300.
+
+        Default - No startup grace period.
+        """
+        return pulumi.get(self, "start_period_seconds")
+
+    @start_period_seconds.setter
+    def start_period_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "start_period_seconds", value)
+
+    @_builtins.property
+    @pulumi.getter(name="timeoutSeconds")
+    def timeout_seconds(self) -> Optional[_builtins.float]:
+        """
+        The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
+
+        Default - 5 seconds.
+        """
+        return pulumi.get(self, "timeout_seconds")
+
+    @timeout_seconds.setter
+    def timeout_seconds(self, value: Optional[_builtins.float]):
+        pulumi.set(self, "timeout_seconds", value)
+
+
+class ContainerLoggingArgsDict(TypedDict):
+    cloudwatch: NotRequired['CloudWatchLoggingArgsDict']
     """
     Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
 
@@ -2035,12 +2185,12 @@ class ContainerLogDriverArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class ContainerLogDriverArgs:
+class ContainerLoggingArgs:
     def __init__(__self__, *,
-                 cloudwatch: Optional['AwsLogsLogDriverArgs'] = None,
+                 cloudwatch: Optional['CloudWatchLoggingArgs'] = None,
                  disabled: Optional[_builtins.bool] = None):
         """
-        :param 'AwsLogsLogDriverArgs' cloudwatch: Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
+        :param 'CloudWatchLoggingArgs' cloudwatch: Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
                
                For more information, see [CloudWatch
                logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html).
@@ -2056,7 +2206,7 @@ class ContainerLogDriverArgs:
 
     @_builtins.property
     @pulumi.getter
-    def cloudwatch(self) -> Optional['AwsLogsLogDriverArgs']:
+    def cloudwatch(self) -> Optional['CloudWatchLoggingArgs']:
         """
         Settings for sending container logs to CloudWatch Logs with the `awslogs` driver.
 
@@ -2066,7 +2216,7 @@ class ContainerLogDriverArgs:
         return pulumi.get(self, "cloudwatch")
 
     @cloudwatch.setter
-    def cloudwatch(self, value: Optional['AwsLogsLogDriverArgs']):
+    def cloudwatch(self, value: Optional['CloudWatchLoggingArgs']):
         pulumi.set(self, "cloudwatch", value)
 
     @_builtins.property
@@ -3657,156 +3807,6 @@ class HeaderConditionArgs:
         pulumi.set(self, "values", value)
 
 
-class HealthCheckArgsDict(TypedDict):
-    command: Sequence[_builtins.str]
-    """
-    The command that the container runs to determine whether it is healthy.
-
-    The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-
-    Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-    """
-    interval_seconds: NotRequired[_builtins.float]
-    """
-    The time, in seconds, between health checks. Valid values are from 5 through 300.
-
-    Default - 30 seconds.
-    """
-    retries: NotRequired[_builtins.float]
-    """
-    The number of consecutive failures required before the container becomes unhealthy. Valid
-    values are from 1 through 10.
-
-    Default - 3.
-    """
-    start_period_seconds: NotRequired[_builtins.float]
-    """
-    The startup grace period, in seconds, during which failed checks do not count toward the retry
-    limit. Valid values are from 0 through 300.
-
-    Default - No startup grace period.
-    """
-    timeout_seconds: NotRequired[_builtins.float]
-    """
-    The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-
-    Default - 5 seconds.
-    """
-
-@pulumi.input_type
-class HealthCheckArgs:
-    def __init__(__self__, *,
-                 command: Sequence[_builtins.str],
-                 interval_seconds: Optional[_builtins.float] = None,
-                 retries: Optional[_builtins.float] = None,
-                 start_period_seconds: Optional[_builtins.float] = None,
-                 timeout_seconds: Optional[_builtins.float] = None):
-        """
-        :param Sequence[_builtins.str] command: The command that the container runs to determine whether it is healthy.
-               
-               The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-               
-               Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-        :param _builtins.float interval_seconds: The time, in seconds, between health checks. Valid values are from 5 through 300.
-               
-               Default - 30 seconds.
-        :param _builtins.float retries: The number of consecutive failures required before the container becomes unhealthy. Valid
-               values are from 1 through 10.
-               
-               Default - 3.
-        :param _builtins.float start_period_seconds: The startup grace period, in seconds, during which failed checks do not count toward the retry
-               limit. Valid values are from 0 through 300.
-               
-               Default - No startup grace period.
-        :param _builtins.float timeout_seconds: The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-               
-               Default - 5 seconds.
-        """
-        pulumi.set(__self__, "command", command)
-        if interval_seconds is not None:
-            pulumi.set(__self__, "interval_seconds", interval_seconds)
-        if retries is not None:
-            pulumi.set(__self__, "retries", retries)
-        if start_period_seconds is not None:
-            pulumi.set(__self__, "start_period_seconds", start_period_seconds)
-        if timeout_seconds is not None:
-            pulumi.set(__self__, "timeout_seconds", timeout_seconds)
-
-    @_builtins.property
-    @pulumi.getter
-    def command(self) -> Sequence[_builtins.str]:
-        """
-        The command that the container runs to determine whether it is healthy.
-
-        The first value must be `CMD` or `CMD-SHELL`. An exit code of zero indicates success.
-
-        Example: ["CMD-SHELL", "curl --fail http://localhost/health || exit 1"]
-        """
-        return pulumi.get(self, "command")
-
-    @command.setter
-    def command(self, value: Sequence[_builtins.str]):
-        pulumi.set(self, "command", value)
-
-    @_builtins.property
-    @pulumi.getter(name="intervalSeconds")
-    def interval_seconds(self) -> Optional[_builtins.float]:
-        """
-        The time, in seconds, between health checks. Valid values are from 5 through 300.
-
-        Default - 30 seconds.
-        """
-        return pulumi.get(self, "interval_seconds")
-
-    @interval_seconds.setter
-    def interval_seconds(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "interval_seconds", value)
-
-    @_builtins.property
-    @pulumi.getter
-    def retries(self) -> Optional[_builtins.float]:
-        """
-        The number of consecutive failures required before the container becomes unhealthy. Valid
-        values are from 1 through 10.
-
-        Default - 3.
-        """
-        return pulumi.get(self, "retries")
-
-    @retries.setter
-    def retries(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "retries", value)
-
-    @_builtins.property
-    @pulumi.getter(name="startPeriodSeconds")
-    def start_period_seconds(self) -> Optional[_builtins.float]:
-        """
-        The startup grace period, in seconds, during which failed checks do not count toward the retry
-        limit. Valid values are from 0 through 300.
-
-        Default - No startup grace period.
-        """
-        return pulumi.get(self, "start_period_seconds")
-
-    @start_period_seconds.setter
-    def start_period_seconds(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "start_period_seconds", value)
-
-    @_builtins.property
-    @pulumi.getter(name="timeoutSeconds")
-    def timeout_seconds(self) -> Optional[_builtins.float]:
-        """
-        The time, in seconds, to wait for a health check to succeed. Valid values are from 2 through 60.
-
-        Default - 5 seconds.
-        """
-        return pulumi.get(self, "timeout_seconds")
-
-    @timeout_seconds.setter
-    def timeout_seconds(self, value: Optional[_builtins.float]):
-        pulumi.set(self, "timeout_seconds", value)
-
-
 class KernelCapabilitiesArgsDict(TypedDict):
     add: NotRequired[Sequence[_builtins.str]]
     """
@@ -3862,7 +3862,7 @@ class KernelCapabilitiesArgs:
         pulumi.set(self, "drop", value)
 
 
-class LinearStrategyArgsDict(TypedDict):
+class LinearDeploymentStrategyArgsDict(TypedDict):
     bake_time_minutes: _builtins.float
     """
     Number of minutes to keep the previous service revision running after all production traffic
@@ -3916,7 +3916,7 @@ class LinearStrategyArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class LinearStrategyArgs:
+class LinearDeploymentStrategyArgs:
     def __init__(__self__, *,
                  bake_time_minutes: _builtins.float,
                  failure_action: Optional['DeploymentFailureAction'] = None,
@@ -4555,6 +4555,126 @@ class QueryStringConditionArgs:
         pulumi.set(self, "key", value)
 
 
+class RollingDeploymentStrategyArgsDict(TypedDict):
+    failure_action: NotRequired['DeploymentFailureAction']
+    """
+    Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+    breaker is always enabled.
+
+    ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+    the deployment as failed without automatic rollback.
+
+    Default - DeploymentFailureAction.ROLLBACK
+    """
+    lambda_hooks: NotRequired[Sequence['RollingLambdaHookArgsDict']]
+    """
+    Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+
+    Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+
+    Default - No Lambda hooks.
+    """
+    pause_hooks: NotRequired[Sequence['RollingPauseHookArgsDict']]
+    """
+    Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+    external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+    hookId, and CONTINUE or ROLLBACK.
+
+    If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+    performed.
+
+    Default - No pause hooks.
+    """
+
+@pulumi.input_type
+class RollingDeploymentStrategyArgs:
+    def __init__(__self__, *,
+                 failure_action: Optional['DeploymentFailureAction'] = None,
+                 lambda_hooks: Optional[Sequence['RollingLambdaHookArgs']] = None,
+                 pause_hooks: Optional[Sequence['RollingPauseHookArgs']] = None):
+        """
+        :param 'DeploymentFailureAction' failure_action: Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+               breaker is always enabled.
+               
+               ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+               the deployment as failed without automatic rollback.
+               
+               Default - DeploymentFailureAction.ROLLBACK
+        :param Sequence['RollingLambdaHookArgs'] lambda_hooks: Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+               
+               Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+               
+               Default - No Lambda hooks.
+        :param Sequence['RollingPauseHookArgs'] pause_hooks: Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+               external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+               hookId, and CONTINUE or ROLLBACK.
+               
+               If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+               performed.
+               
+               Default - No pause hooks.
+        """
+        if failure_action is not None:
+            pulumi.set(__self__, "failure_action", failure_action)
+        if lambda_hooks is not None:
+            pulumi.set(__self__, "lambda_hooks", lambda_hooks)
+        if pause_hooks is not None:
+            pulumi.set(__self__, "pause_hooks", pause_hooks)
+
+    @_builtins.property
+    @pulumi.getter(name="failureAction")
+    def failure_action(self) -> Optional['DeploymentFailureAction']:
+        """
+        Action taken when the deployment circuit breaker detects a failed deployment. The circuit
+        breaker is always enabled.
+
+        ROLLBACK restores the last successful completed deployment when one is available. STOP marks
+        the deployment as failed without automatic rollback.
+
+        Default - DeploymentFailureAction.ROLLBACK
+        """
+        return pulumi.get(self, "failure_action")
+
+    @failure_action.setter
+    def failure_action(self, value: Optional['DeploymentFailureAction']):
+        pulumi.set(self, "failure_action", value)
+
+    @_builtins.property
+    @pulumi.getter(name="lambdaHooks")
+    def lambda_hooks(self) -> Optional[Sequence['RollingLambdaHookArgs']]:
+        """
+        Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
+
+        Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
+
+        Default - No Lambda hooks.
+        """
+        return pulumi.get(self, "lambda_hooks")
+
+    @lambda_hooks.setter
+    def lambda_hooks(self, value: Optional[Sequence['RollingLambdaHookArgs']]):
+        pulumi.set(self, "lambda_hooks", value)
+
+    @_builtins.property
+    @pulumi.getter(name="pauseHooks")
+    def pause_hooks(self) -> Optional[Sequence['RollingPauseHookArgs']]:
+        """
+        Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
+        external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
+        hookId, and CONTINUE or ROLLBACK.
+
+        If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
+        performed.
+
+        Default - No pause hooks.
+        """
+        return pulumi.get(self, "pause_hooks")
+
+    @pause_hooks.setter
+    def pause_hooks(self, value: Optional[Sequence['RollingPauseHookArgs']]):
+        pulumi.set(self, "pause_hooks", value)
+
+
 class RollingLambdaHookArgsDict(TypedDict):
     function_arn: pulumi.Input[_builtins.str]
     """
@@ -4751,126 +4871,6 @@ class RollingPauseHookArgs:
     @timeout_minutes.setter
     def timeout_minutes(self, value: Optional[_builtins.float]):
         pulumi.set(self, "timeout_minutes", value)
-
-
-class RollingStrategyArgsDict(TypedDict):
-    failure_action: NotRequired['DeploymentFailureAction']
-    """
-    Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-    breaker is always enabled.
-
-    ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-    the deployment as failed without automatic rollback.
-
-    Default - DeploymentFailureAction.ROLLBACK
-    """
-    lambda_hooks: NotRequired[Sequence['RollingLambdaHookArgsDict']]
-    """
-    Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-
-    Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-
-    Default - No Lambda hooks.
-    """
-    pause_hooks: NotRequired[Sequence['RollingPauseHookArgsDict']]
-    """
-    Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-    external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-    hookId, and CONTINUE or ROLLBACK.
-
-    If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-    performed.
-
-    Default - No pause hooks.
-    """
-
-@pulumi.input_type
-class RollingStrategyArgs:
-    def __init__(__self__, *,
-                 failure_action: Optional['DeploymentFailureAction'] = None,
-                 lambda_hooks: Optional[Sequence['RollingLambdaHookArgs']] = None,
-                 pause_hooks: Optional[Sequence['RollingPauseHookArgs']] = None):
-        """
-        :param 'DeploymentFailureAction' failure_action: Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-               breaker is always enabled.
-               
-               ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-               the deployment as failed without automatic rollback.
-               
-               Default - DeploymentFailureAction.ROLLBACK
-        :param Sequence['RollingLambdaHookArgs'] lambda_hooks: Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-               
-               Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-               
-               Default - No Lambda hooks.
-        :param Sequence['RollingPauseHookArgs'] pause_hooks: Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-               external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-               hookId, and CONTINUE or ROLLBACK.
-               
-               If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-               performed.
-               
-               Default - No pause hooks.
-        """
-        if failure_action is not None:
-            pulumi.set(__self__, "failure_action", failure_action)
-        if lambda_hooks is not None:
-            pulumi.set(__self__, "lambda_hooks", lambda_hooks)
-        if pause_hooks is not None:
-            pulumi.set(__self__, "pause_hooks", pause_hooks)
-
-    @_builtins.property
-    @pulumi.getter(name="failureAction")
-    def failure_action(self) -> Optional['DeploymentFailureAction']:
-        """
-        Action taken when the deployment circuit breaker detects a failed deployment. The circuit
-        breaker is always enabled.
-
-        ROLLBACK restores the last successful completed deployment when one is available. STOP marks
-        the deployment as failed without automatic rollback.
-
-        Default - DeploymentFailureAction.ROLLBACK
-        """
-        return pulumi.get(self, "failure_action")
-
-    @failure_action.setter
-    def failure_action(self, value: Optional['DeploymentFailureAction']):
-        pulumi.set(self, "failure_action", value)
-
-    @_builtins.property
-    @pulumi.getter(name="lambdaHooks")
-    def lambda_hooks(self) -> Optional[Sequence['RollingLambdaHookArgs']]:
-        """
-        Lambda functions invoked at PRE_SCALE_UP before rolling replacement tasks start.
-
-        Lambda and pause hooks run in parallel at this stage, and all must complete before tasks start.
-
-        Default - No Lambda hooks.
-        """
-        return pulumi.get(self, "lambda_hooks")
-
-    @lambda_hooks.setter
-    def lambda_hooks(self, value: Optional[Sequence['RollingLambdaHookArgs']]):
-        pulumi.set(self, "lambda_hooks", value)
-
-    @_builtins.property
-    @pulumi.getter(name="pauseHooks")
-    def pause_hooks(self) -> Optional[Sequence['RollingPauseHookArgs']]:
-        """
-        Pauses at PRE_SCALE_UP before rolling replacement tasks start. To continue the deployment an
-        external workflow has to call ContinueServiceDeployment with the deployment ARN, the pause
-        hookId, and CONTINUE or ROLLBACK.
-
-        If no ContinueServiceDeployment is received before the timeout then the timeoutAction is
-        performed.
-
-        Default - No pause hooks.
-        """
-        return pulumi.get(self, "pause_hooks")
-
-    @pause_hooks.setter
-    def pause_hooks(self, value: Optional[Sequence['RollingPauseHookArgs']]):
-        pulumi.set(self, "pause_hooks", value)
 
 
 class SecretsManagerSecretArgsDict(TypedDict):
@@ -5148,23 +5148,23 @@ class ServiceCapacityProviderArgs:
 
 
 class ServiceDeploymentStrategyArgsDict(TypedDict):
-    blue_green: NotRequired['BlueGreenStrategyArgsDict']
+    blue_green: NotRequired['BlueGreenDeploymentStrategyArgsDict']
     """
     Configuration for shifting all production traffic to the new revision once it is ready.
     """
-    canary: NotRequired['CanaryStrategyArgsDict']
+    canary: NotRequired['CanaryDeploymentStrategyArgsDict']
     """
     Configuration for testing an initial percentage of production traffic before shifting the rest.
 
     Default - no canary configuration
     """
-    linear: NotRequired['LinearStrategyArgsDict']
+    linear: NotRequired['LinearDeploymentStrategyArgsDict']
     """
     Configuration for shifting production traffic in equal increments.
 
     Default - no linear configuration
     """
-    rolling: NotRequired['RollingStrategyArgsDict']
+    rolling: NotRequired['RollingDeploymentStrategyArgsDict']
     """
     Configuration for the rolling update strategy. This is the default.
     """
@@ -5172,19 +5172,19 @@ class ServiceDeploymentStrategyArgsDict(TypedDict):
 @pulumi.input_type
 class ServiceDeploymentStrategyArgs:
     def __init__(__self__, *,
-                 blue_green: Optional['BlueGreenStrategyArgs'] = None,
-                 canary: Optional['CanaryStrategyArgs'] = None,
-                 linear: Optional['LinearStrategyArgs'] = None,
-                 rolling: Optional['RollingStrategyArgs'] = None):
+                 blue_green: Optional['BlueGreenDeploymentStrategyArgs'] = None,
+                 canary: Optional['CanaryDeploymentStrategyArgs'] = None,
+                 linear: Optional['LinearDeploymentStrategyArgs'] = None,
+                 rolling: Optional['RollingDeploymentStrategyArgs'] = None):
         """
-        :param 'BlueGreenStrategyArgs' blue_green: Configuration for shifting all production traffic to the new revision once it is ready.
-        :param 'CanaryStrategyArgs' canary: Configuration for testing an initial percentage of production traffic before shifting the rest.
+        :param 'BlueGreenDeploymentStrategyArgs' blue_green: Configuration for shifting all production traffic to the new revision once it is ready.
+        :param 'CanaryDeploymentStrategyArgs' canary: Configuration for testing an initial percentage of production traffic before shifting the rest.
                
                Default - no canary configuration
-        :param 'LinearStrategyArgs' linear: Configuration for shifting production traffic in equal increments.
+        :param 'LinearDeploymentStrategyArgs' linear: Configuration for shifting production traffic in equal increments.
                
                Default - no linear configuration
-        :param 'RollingStrategyArgs' rolling: Configuration for the rolling update strategy. This is the default.
+        :param 'RollingDeploymentStrategyArgs' rolling: Configuration for the rolling update strategy. This is the default.
         """
         if blue_green is not None:
             pulumi.set(__self__, "blue_green", blue_green)
@@ -5197,19 +5197,19 @@ class ServiceDeploymentStrategyArgs:
 
     @_builtins.property
     @pulumi.getter(name="blueGreen")
-    def blue_green(self) -> Optional['BlueGreenStrategyArgs']:
+    def blue_green(self) -> Optional['BlueGreenDeploymentStrategyArgs']:
         """
         Configuration for shifting all production traffic to the new revision once it is ready.
         """
         return pulumi.get(self, "blue_green")
 
     @blue_green.setter
-    def blue_green(self, value: Optional['BlueGreenStrategyArgs']):
+    def blue_green(self, value: Optional['BlueGreenDeploymentStrategyArgs']):
         pulumi.set(self, "blue_green", value)
 
     @_builtins.property
     @pulumi.getter
-    def canary(self) -> Optional['CanaryStrategyArgs']:
+    def canary(self) -> Optional['CanaryDeploymentStrategyArgs']:
         """
         Configuration for testing an initial percentage of production traffic before shifting the rest.
 
@@ -5218,12 +5218,12 @@ class ServiceDeploymentStrategyArgs:
         return pulumi.get(self, "canary")
 
     @canary.setter
-    def canary(self, value: Optional['CanaryStrategyArgs']):
+    def canary(self, value: Optional['CanaryDeploymentStrategyArgs']):
         pulumi.set(self, "canary", value)
 
     @_builtins.property
     @pulumi.getter
-    def linear(self) -> Optional['LinearStrategyArgs']:
+    def linear(self) -> Optional['LinearDeploymentStrategyArgs']:
         """
         Configuration for shifting production traffic in equal increments.
 
@@ -5232,24 +5232,24 @@ class ServiceDeploymentStrategyArgs:
         return pulumi.get(self, "linear")
 
     @linear.setter
-    def linear(self, value: Optional['LinearStrategyArgs']):
+    def linear(self, value: Optional['LinearDeploymentStrategyArgs']):
         pulumi.set(self, "linear", value)
 
     @_builtins.property
     @pulumi.getter
-    def rolling(self) -> Optional['RollingStrategyArgs']:
+    def rolling(self) -> Optional['RollingDeploymentStrategyArgs']:
         """
         Configuration for the rolling update strategy. This is the default.
         """
         return pulumi.get(self, "rolling")
 
     @rolling.setter
-    def rolling(self, value: Optional['RollingStrategyArgs']):
+    def rolling(self, value: Optional['RollingDeploymentStrategyArgs']):
         pulumi.set(self, "rolling", value)
 
 
-class ServiceLoadBalancerArgsDict(TypedDict):
-    application: 'ApplicationServiceLoadBalancerArgsDict'
+class ServiceLoadBalancerAttachmentArgsDict(TypedDict):
+    application: 'ApplicationLoadBalancerAttachmentArgsDict'
     """
     Application Load Balancer attachment for a named service endpoint. Creates target groups and
     forwarding rules on a caller-managed listener.
@@ -5259,11 +5259,11 @@ class ServiceLoadBalancerArgsDict(TypedDict):
     """
 
 @pulumi.input_type
-class ServiceLoadBalancerArgs:
+class ServiceLoadBalancerAttachmentArgs:
     def __init__(__self__, *,
-                 application: 'ApplicationServiceLoadBalancerArgs'):
+                 application: 'ApplicationLoadBalancerAttachmentArgs'):
         """
-        :param 'ApplicationServiceLoadBalancerArgs' application: Application Load Balancer attachment for a named service endpoint. Creates target groups and
+        :param 'ApplicationLoadBalancerAttachmentArgs' application: Application Load Balancer attachment for a named service endpoint. Creates target groups and
                forwarding rules on a caller-managed listener.
                
                An application configuration must be provided for each entry in the service's
@@ -5273,7 +5273,7 @@ class ServiceLoadBalancerArgs:
 
     @_builtins.property
     @pulumi.getter
-    def application(self) -> 'ApplicationServiceLoadBalancerArgs':
+    def application(self) -> 'ApplicationLoadBalancerAttachmentArgs':
         """
         Application Load Balancer attachment for a named service endpoint. Creates target groups and
         forwarding rules on a caller-managed listener.
@@ -5284,7 +5284,7 @@ class ServiceLoadBalancerArgs:
         return pulumi.get(self, "application")
 
     @application.setter
-    def application(self, value: 'ApplicationServiceLoadBalancerArgs'):
+    def application(self, value: 'ApplicationLoadBalancerAttachmentArgs'):
         pulumi.set(self, "application", value)
 
 
@@ -5387,7 +5387,7 @@ class SystemControlArgs:
 
 
 class TargetGroupHealthCheckArgsDict(TypedDict):
-    health_grpc_codes: NotRequired[_builtins.str]
+    healthy_grpc_codes: NotRequired[_builtins.str]
     """
     The gRPC codes to use when checking for a response from a target. Values can be comma-separated
     individual values (e.g., "12,13") or a range of values (e.g., "12-15"). Once the value has been
@@ -5458,7 +5458,7 @@ class TargetGroupHealthCheckArgsDict(TypedDict):
 @pulumi.input_type
 class TargetGroupHealthCheckArgs:
     def __init__(__self__, *,
-                 health_grpc_codes: Optional[_builtins.str] = None,
+                 healthy_grpc_codes: Optional[_builtins.str] = None,
                  healthy_http_codes: Optional[_builtins.str] = None,
                  healthy_threshold: Optional[_builtins.float] = None,
                  interval_seconds: Optional[_builtins.float] = None,
@@ -5468,7 +5468,7 @@ class TargetGroupHealthCheckArgs:
                  timeout_seconds: Optional[_builtins.float] = None,
                  unhealthy_threshold: Optional[_builtins.float] = None):
         """
-        :param _builtins.str health_grpc_codes: The gRPC codes to use when checking for a response from a target. Values can be comma-separated
+        :param _builtins.str healthy_grpc_codes: The gRPC codes to use when checking for a response from a target. Values can be comma-separated
                individual values (e.g., "12,13") or a range of values (e.g., "12-15"). Once the value has been
                set, removing it has no effect. To unset it, set it to an empty string `""`.
                
@@ -5509,8 +5509,8 @@ class TargetGroupHealthCheckArgs:
                
                Default - 3.
         """
-        if health_grpc_codes is not None:
-            pulumi.set(__self__, "health_grpc_codes", health_grpc_codes)
+        if healthy_grpc_codes is not None:
+            pulumi.set(__self__, "healthy_grpc_codes", healthy_grpc_codes)
         if healthy_http_codes is not None:
             pulumi.set(__self__, "healthy_http_codes", healthy_http_codes)
         if healthy_threshold is not None:
@@ -5529,8 +5529,8 @@ class TargetGroupHealthCheckArgs:
             pulumi.set(__self__, "unhealthy_threshold", unhealthy_threshold)
 
     @_builtins.property
-    @pulumi.getter(name="healthGrpcCodes")
-    def health_grpc_codes(self) -> Optional[_builtins.str]:
+    @pulumi.getter(name="healthyGrpcCodes")
+    def healthy_grpc_codes(self) -> Optional[_builtins.str]:
         """
         The gRPC codes to use when checking for a response from a target. Values can be comma-separated
         individual values (e.g., "12,13") or a range of values (e.g., "12-15"). Once the value has been
@@ -5540,11 +5540,11 @@ class TargetGroupHealthCheckArgs:
 
         Default - `12`.
         """
-        return pulumi.get(self, "health_grpc_codes")
+        return pulumi.get(self, "healthy_grpc_codes")
 
-    @health_grpc_codes.setter
-    def health_grpc_codes(self, value: Optional[_builtins.str]):
-        pulumi.set(self, "health_grpc_codes", value)
+    @healthy_grpc_codes.setter
+    def healthy_grpc_codes(self, value: Optional[_builtins.str]):
+        pulumi.set(self, "healthy_grpc_codes", value)
 
     @_builtins.property
     @pulumi.getter(name="healthyHttpCodes")

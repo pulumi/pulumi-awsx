@@ -3,7 +3,7 @@
 
 package com.pulumi.awsx.ecs.inputs;
 
-import com.pulumi.awsx.ecs.enums.AwsLogDriverMode;
+import com.pulumi.awsx.ecs.enums.LogDeliveryMode;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Double;
@@ -13,9 +13,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
-public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArgs {
+public final class CloudWatchLoggingArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final AwsLogsLogDriverArgs Empty = new AwsLogsLogDriverArgs();
+    public static final CloudWatchLoggingArgs Empty = new CloudWatchLoggingArgs();
 
     /**
      * A multiline start pattern in Python strftime format.
@@ -75,13 +75,13 @@ public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArg
      * 
      */
     @Import(name="mode")
-    private @Nullable AwsLogDriverMode mode;
+    private @Nullable LogDeliveryMode mode;
 
     /**
      * @return The delivery mode for log messages.
      * 
      */
-    public Optional<AwsLogDriverMode> mode() {
+    public Optional<LogDeliveryMode> mode() {
         return Optional.ofNullable(this.mode);
     }
 
@@ -119,9 +119,9 @@ public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArg
         return Optional.ofNullable(this.streamPrefix);
     }
 
-    private AwsLogsLogDriverArgs() {}
+    private CloudWatchLoggingArgs() {}
 
-    private AwsLogsLogDriverArgs(AwsLogsLogDriverArgs $) {
+    private CloudWatchLoggingArgs(CloudWatchLoggingArgs $) {
         this.datetimeFormat = $.datetimeFormat;
         this.logGroupArn = $.logGroupArn;
         this.maxBufferSizeBytes = $.maxBufferSizeBytes;
@@ -133,19 +133,19 @@ public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArg
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(AwsLogsLogDriverArgs defaults) {
+    public static Builder builder(CloudWatchLoggingArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private AwsLogsLogDriverArgs $;
+        private CloudWatchLoggingArgs $;
 
         public Builder() {
-            $ = new AwsLogsLogDriverArgs();
+            $ = new CloudWatchLoggingArgs();
         }
 
-        public Builder(AwsLogsLogDriverArgs defaults) {
-            $ = new AwsLogsLogDriverArgs(Objects.requireNonNull(defaults));
+        public Builder(CloudWatchLoggingArgs defaults) {
+            $ = new CloudWatchLoggingArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -203,7 +203,7 @@ public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArg
          * @return builder
          * 
          */
-        public Builder mode(@Nullable AwsLogDriverMode mode) {
+        public Builder mode(@Nullable LogDeliveryMode mode) {
             $.mode = mode;
             return this;
         }
@@ -244,7 +244,7 @@ public final class AwsLogsLogDriverArgs extends com.pulumi.resources.ResourceArg
             return streamPrefix(Output.of(streamPrefix));
         }
 
-        public AwsLogsLogDriverArgs build() {
+        public CloudWatchLoggingArgs build() {
             return $;
         }
     }

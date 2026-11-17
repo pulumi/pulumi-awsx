@@ -5,9 +5,9 @@ import type { ecs } from '@pulumi/aws-native/types/input';
 import { validateContainerOptions } from './validateContainerOptions';
 import type { input } from '@pulumi/aws/types';
 import type {
-  AwsLogsLogDriver,
+  CloudWatchLogging,
   AwsvpcPortMapping,
-  ContainerDefinitionOptions,
+  ContainerDefinition,
   EnvironmentFile,
   EnvironmentVariable,
   SecretsManagerSecret,
@@ -45,7 +45,7 @@ export interface TaskDefinitionArgs {
    *
    * AWSX uses each map key as the corresponding ECS container name.
    */
-  containers: Record<string, ContainerDefinitionOptions>;
+  containers: Record<string, ContainerDefinition>;
 
   /**
    * Compute environments this task definition must support. When multiple environments are
@@ -194,6 +194,7 @@ export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
 
 // Keep implementation-only state out of inferred component outputs.
 const providerRegions = new WeakMap<pulumi.ComponentResource, pulumi.Output<string>>();
+const componentNames = new WeakMap<TaskDefinition, string>();
 
 export class TaskDefinition extends pulumi.ComponentResource {
   /**
@@ -228,8 +229,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
    */
   public logGroup?: aws.cloudwatch.LogGroup;
 
-  public readonly name!: string;
-
   public readonly region?: string;
 
   constructor(
@@ -253,7 +252,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
           revision: undefined,
           logGroup: undefined,
           region: undefined,
-          name: undefined,
         }
       : args;
     super(
@@ -269,7 +267,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     }
     this.region = args.region;
 
-    this.name = name;
+    componentNames.set(this, name);
 
     const compatibilities = [...new Set(args.compatibilities ?? [TaskCompatibility.FARGATE])];
     if (
@@ -368,7 +366,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     const family = args.family ?? name;
     if (args.executionRoleArn) {
       this.executionRole = aws.iam.Role.get(
-        `${this.name}-execution-role`,
+        `${componentNames.get(this)!}-execution-role`,
         roleNameFromArn(args.executionRoleArn, this),
         undefined,
         {
@@ -391,7 +389,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
 
     if (args.taskRoleArn) {
       this.taskRole = aws.iam.Role.get(
-        `${this.name}-task-role`,
+        `${componentNames.get(this)!}-task-role`,
         roleNameFromArn(args.taskRoleArn, this),
         undefined,
         {
@@ -526,7 +524,6 @@ export class TaskDefinition extends pulumi.ComponentResource {
       family: this.family,
       revision: this.revision,
       logGroup: this.logGroup,
-      name: this.name,
       region: this.region,
     });
   }
@@ -554,7 +551,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
   private obtainDefaultLogGroup(): aws.cloudwatch.LogGroup {
     if (!this.logGroup) {
       this.logGroup = new aws.cloudwatch.LogGroup(
-        `${this.name}-log-group`,
+        `${componentNames.get(this)!}-log-group`,
         {
           region: this.region,
         },
@@ -684,7 +681,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
         reason: 'Specify exactly one of key or config for the credential specification',
       });
     }
-    const name = `${this.name}-${containerName}-credential-spec`;
+    const name = `${componentNames.get(this)!}-${containerName}-credential-spec`;
     const bucketName = Arn.split(spec.bucketArn, ArnFormat.NO_RESOURCE_NAME, this).apply(
       (parts) => parts.resource,
     );
@@ -879,7 +876,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     name: string,
     value: pulumi.Output<string>,
   ): pulumi.Output<ecs.TaskDefinitionSecretArgs> {
-    const resourceName = `${this.name}-${containerName}-${name}-environment`;
+    const resourceName = `${componentNames.get(this)!}-${containerName}-${name}-environment`;
     const opts = { parent: this, retainOnDelete: true };
     const secret = new aws.secretsmanager.Secret(resourceName, { region: this.region }, opts);
     const version = new aws.secretsmanager.SecretVersion(
@@ -941,7 +938,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       },
     );
     const secret = aws.secretsmanager.Secret.get(
-      `${this.name}-${containerName}-${name}-secret`,
+      `${componentNames.get(this)!}-${containerName}-${name}-secret`,
       source.secretArn,
       { region: secretRegion },
       { parent: this },
@@ -986,7 +983,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     parameterArn: pulumi.Input<string>,
   ): Rendered<ecs.TaskDefinitionSecretArgs> {
     const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-secret-${name}-param`,
+      `${componentNames.get(this)!}-${containerName}-secret-${name}-param`,
       parameterNameFromArn(parameterArn, this.getProviderRegion(), this),
       undefined,
       { parent: this },
@@ -1091,7 +1088,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
    */
   private renderCloudWatchLogDriver(
     containerName: string,
-    driver?: AwsLogsLogDriver,
+    driver?: CloudWatchLogging,
   ): Rendered<ecs.TaskDefinitionLogConfigurationArgs> | undefined {
     if (!driver) {
       return;
@@ -1106,7 +1103,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     let logGroup: aws.cloudwatch.LogGroup | undefined = undefined;
     if (driver.logGroupArn) {
       logGroup = aws.cloudwatch.LogGroup.get(
-        `${this.name}-${containerName}-log-group`,
+        `${componentNames.get(this)!}-${containerName}-log-group`,
         logGroupNameFromArn(driver.logGroupArn, this.getProviderRegion(), this),
         undefined,
         {
@@ -1119,7 +1116,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       .all([
         logGroup.name,
         logGroup.region,
-        driver.streamPrefix ?? this.name,
+        driver.streamPrefix ?? componentNames.get(this)!,
         driver.datetimeFormat,
         driver.multilinePattern,
         driver.mode,
@@ -1175,7 +1172,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
   private toContainerDefinition(
     containerName: string,
     options: Omit<
-      ContainerDefinitionOptions,
+      ContainerDefinition,
       'credentialSpec' | 'environmentFiles' | 'environment' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
@@ -1382,10 +1379,7 @@ function logGroupNameFromArn(
  * @param options The container configuration.
  * @param path The input property path.
  */
-export function validateFargateContainerOptions(
-  options: ContainerDefinitionOptions,
-  path: string,
-): void {
+export function validateFargateContainerOptions(options: ContainerDefinition, path: string): void {
   options.linuxParameters?.capabilities?.add?.forEach((capability, index) => {
     if (capability !== 'SYS_PTRACE') {
       throw new pulumi.InputPropertyError({
