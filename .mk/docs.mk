@@ -5,5 +5,5 @@ AWSX_DOCGEN_SOURCES := $(shell find provider/pkg/docgen provider/cmd/pulumi-gen-
 
 bin/$(CODEGEN): $(AWSX_DOCGEN_SOURCES)
 
-.make/schema .make/generate_nodejs .make/generate_python .make/generate_dotnet .make/generate_go .make/generate_java: $(AWSX_COMPONENT_DOCS) $(AWSX_LANDING_DOCS) .mk/docs.mk
+.make/schema: $(AWSX_COMPONENT_DOCS) $(AWSX_LANDING_DOCS) .mk/docs.mk
 

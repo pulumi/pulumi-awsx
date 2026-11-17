@@ -130,11 +130,11 @@ func rootCmd() *cobra.Command {
 }
 
 func generate(language Language, cwd, outDir, docsOutDir string) error {
-	pkgSpec := gen.GenerateSchema(filepath.Join(cwd, packageDir))
-	if err := enrichComponentDocs(&pkgSpec, cwd); err != nil {
-		return err
-	}
 	if language == Schema {
+		pkgSpec := gen.GenerateSchema(filepath.Join(cwd, packageDir))
+		if err := enrichComponentDocs(&pkgSpec, cwd); err != nil {
+			return err
+		}
 		if docsOutDir == "" {
 			docsOutDir = filepath.Join(cwd, "docs")
 		}
@@ -144,8 +144,19 @@ func generate(language Language, cwd, outDir, docsOutDir string) error {
 		return writePulumiSchema(pkgSpec, outDir)
 	}
 
-	// The checked-in schema is the all-language docs source of truth. Filter it per SDK target
-	// before generation so chooser blocks and inflected identifiers don't leak into every SDK.
+	// Make refreshes this schema before generating SDKs. Reuse its inferred types and converted
+	// examples instead of repeating inference and every documentation conversion for each SDK.
+	schemaPath := filepath.Join(cwd, "provider", "cmd", "pulumi-resource-awsx", "schema.json")
+	raw, err := os.ReadFile(schemaPath)
+	if err != nil {
+		return fmt.Errorf("read generated schema, run make schema first: %w", err)
+	}
+	var pkgSpec schema.PackageSpec
+	if err := json.Unmarshal(raw, &pkgSpec); err != nil {
+		return fmt.Errorf("parse generated schema %s: %w", schemaPath, err)
+	}
+
+	// Filter the all-language docs per SDK so chooser blocks and inflected identifiers don't leak.
 	filteredSpec, filteredSchemaJSON, err := filterSchema(pkgSpec, version.Version, language)
 	if err != nil {
 		return err
