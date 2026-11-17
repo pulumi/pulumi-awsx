@@ -18,6 +18,7 @@ const testArn = 'arn:aws:lambda:us-west-2:123456789012:function:tests:42';
 const suppliedRoleArn = 'arn:aws:iam::123456789012:role/supplied-hook';
 let provider: aws.Provider;
 let sequence = 0;
+let roleCreatedAt = '2020-01-01T00:00:00Z';
 
 beforeAll(async () => {
   await pulumi.runtime.setMocks({
@@ -29,6 +30,7 @@ beforeAll(async () => {
           ...args.inputs,
           name: args.inputs.name ?? args.name,
           arn: `arn:mock:${args.name}`,
+          createDate: roleCreatedAt,
         },
       };
     },
@@ -53,6 +55,7 @@ beforeAll(async () => {
 beforeEach(() => {
   registrations.length = 0;
   constructions.length = 0;
+  roleCreatedAt = '2020-01-01T00:00:00Z';
 });
 
 /**
@@ -399,6 +402,45 @@ it('serializes nested hook details and resolves outputs within the entire input 
     suites: ['checkout', 'payments'],
     options: { endpoint: 'https://example.com', optional: null },
   });
+});
+
+it.each([0, 20_000])(
+  'holds service registration until a hook role aged %i ms has propagated',
+  async (age) => {
+    jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate'] });
+    jest.setSystemTime(new Date('2026-11-17T12:00:00Z'));
+    roleCreatedAt = new Date(Date.now() - age).toISOString();
+    const service = create({ rolling: { lambdaHooks: [{ functionArn: validationArn }] } });
+    try {
+      await jest.advanceTimersByTimeAsync(0);
+      expect(registrations.some((args) => args.type === 'aws:iam/rolePolicy:RolePolicy')).toBe(
+        true,
+      );
+      await jest.advanceTimersByTimeAsync(30_000 - age - 1);
+      expect(registrations.some((args) => args.type === 'aws:ecs/service:Service')).toBe(false);
+      await jest.advanceTimersByTimeAsync(1);
+      const role = registrations.find((args) => args.type === 'aws:iam/role:Role')!;
+      expect((await settle(service)).inputs.deploymentConfiguration.lifecycleHooks[0].roleArn).toBe(
+        `arn:mock:${role.name}`,
+      );
+    } finally {
+      await jest.runOnlyPendingTimersAsync();
+      jest.useRealTimers();
+    }
+  },
+);
+
+it('does not delay preview for a freshly created hook role', async () => {
+  roleCreatedAt = new Date().toISOString();
+  const preview = jest.spyOn(pulumi.runtime, 'isDryRun').mockReturnValue(true);
+  const timer = jest.spyOn(global, 'setTimeout');
+  try {
+    await settle(create({ rolling: { lambdaHooks: [{ functionArn: validationArn }] } }));
+    expect(timer.mock.calls.some(([, delay]) => delay !== undefined && delay > 1_000)).toBe(false);
+  } finally {
+    timer.mockRestore();
+    preview.mockRestore();
+  }
 });
 
 it('shares a scoped invocation role and waits for its policy before creating the service', async () => {

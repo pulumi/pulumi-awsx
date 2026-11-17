@@ -89,7 +89,7 @@ component replay or snapshot fixture strategy.
 - Lint: `make lint`
 - AWSX TypeScript/Jest tests (fast): `make test_provider`
 - Full integration suite (AWS-backed, CI-only locally): `make test`
-- Targeted integration tests: `GOTESTARGS="-run TestName" make test`
+- Targeted integration tests: `make test GOTESTARGS="-run TestName"`. Pass `GOTESTARGS` as a Make argument, since the Makefile overrides environment assignments.
 - Regenerate workflows/Makefile from ci-mgmt: `make ci-mgmt`
 
 Prefer the `make` targets. If you must regenerate without the `mise`/`upstream`

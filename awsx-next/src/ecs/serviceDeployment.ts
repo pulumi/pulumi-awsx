@@ -546,7 +546,18 @@ export function createDeploymentLifecycleHooks(
       { parent },
     );
     readyDependencies.push(invocationPolicy);
-    invocationRoleArn = invocationRole.arn;
+    invocationRoleArn = pulumi
+      .all([invocationRole.arn, invocationRole.createDate, invocationPolicy.id])
+      .apply(async ([arn, createdAt]) => {
+        // ECS can accept CreateService before it can assume a freshly created hook role,
+        // then fail the deployment without retrying the assumption. Wait only for the
+        // remaining creation-time grace period, not on previews or subsequent updates.
+        const remaining = 30_000 - Math.max(0, Date.now() - Date.parse(createdAt));
+        if (!pulumi.runtime.isDryRun() && remaining > 0) {
+          await new Promise<void>((resolve) => setTimeout(resolve, remaining));
+        }
+        return arn;
+      });
   }
 
   const lifecycleHooks: aws.types.input.ecs.ServiceDeploymentConfigurationLifecycleHook[] = [
