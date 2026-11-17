@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
  *                     .containerPort(80.0)
@@ -82,7 +82,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
@@ -102,7 +102,7 @@ import javax.annotation.Nullable;
  *                 "FARGATE",
  *                 "MANAGED_INSTANCES",
  *                 "EC2")
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
  *                     .containerPort(80.0)
@@ -130,7 +130,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
@@ -149,7 +149,7 @@ import javax.annotation.Nullable;
  *             .cpuUnits(256.0)
  *             .memoryMiB(256.0)
  *             .compatibilities("MANAGED_INSTANCES")
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
  *                     .containerPort(80.0)
@@ -180,7 +180,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.EnvironmentVariableArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
  * import java.util.ArrayList;
@@ -199,7 +199,7 @@ import javax.annotation.Nullable;
  *         final var config = ctx.config();
  *         final var apiToken = config.requireSecret("apiToken");
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .environment(Map.of("API_TOKEN", EnvironmentVariableArgs.builder()
  *                     .value(apiToken)
@@ -234,7 +234,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.awsnative.secretsmanager.inputs.SecretGenerateSecretStringArgs;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.EnvironmentVariableArgs;
  * import com.pulumi.awsx.ecs.inputs.SecretsManagerSecretArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
@@ -261,7 +261,7 @@ import javax.annotation.Nullable;
  *             .build());
  * 
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .environment(Map.of("DATABASE_PASSWORD", EnvironmentVariableArgs.builder()
  *                     .secretsManager(SecretsManagerSecretArgs.builder()
@@ -292,7 +292,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.EnvironmentVariableArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
  * import java.util.ArrayList;
@@ -311,7 +311,7 @@ import javax.annotation.Nullable;
  *         final var config = ctx.config();
  *         final var sharedTokenParameterArn = config.require("sharedTokenParameterArn");
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .environment(Map.of("SHARED_TOKEN", EnvironmentVariableArgs.builder()
  *                     .ssmParameterArn(sharedTokenParameterArn)
@@ -345,10 +345,10 @@ import javax.annotation.Nullable;
  * import com.pulumi.aws.cloudwatch.LogGroupArgs;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerLogDriverArgs;
- * import com.pulumi.awsx.ecs.inputs.AwsLogsLogDriverArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerLoggingArgs;
+ * import com.pulumi.awsx.ecs.inputs.CloudWatchLoggingArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
  * import java.util.Map;
@@ -367,13 +367,13 @@ import javax.annotation.Nullable;
  *             .build());
  * 
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
  *                     .containerPort(80.0)
  *                     .build())
- *                 .logging(ContainerLogDriverArgs.builder()
- *                     .cloudwatch(AwsLogsLogDriverArgs.builder()
+ *                 .logging(ContainerLoggingArgs.builder()
+ *                     .cloudwatch(CloudWatchLoggingArgs.builder()
  *                         .logGroupArn(applicationLogs.arn())
  *                         .streamPrefix("app")
  *                         .build())
@@ -407,7 +407,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
  * import java.util.Map;
@@ -424,7 +424,7 @@ import javax.annotation.Nullable;
  *         final var config = ctx.config();
  *         final var applicationImage = config.require("applicationImage");
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
- *             .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+ *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image(applicationImage)
  *                 .cpuUnits(512.0)
  *                 .memoryMiB(1024.0)
@@ -454,7 +454,7 @@ import javax.annotation.Nullable;
  * import com.pulumi.core.Output;
  * import com.pulumi.awsx.ecs.TaskDefinition;
  * import com.pulumi.awsx.ecs.TaskDefinitionArgs;
- * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+ * import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
  * import java.util.ArrayList;
  * import java.util.Arrays;
  * import java.util.Map;
@@ -475,13 +475,13 @@ import javax.annotation.Nullable;
  *             .cpuUnits(1024.0)
  *             .memoryMiB(4096.0)
  *             .containers(Map.ofEntries(
- *                 Map.entry("worker", ContainerDefinitionOptionsArgs.builder()
+ *                 Map.entry("worker", ContainerDefinitionArgs.builder()
  *                     .image(workerImage)
  *                     .cpuUnits(768.0)
  *                     .memoryReservationMiB(1024.0)
  *                     .memoryMiB(3072.0)
  *                     .build()),
- *                 Map.entry("telemetry", ContainerDefinitionOptionsArgs.builder()
+ *                 Map.entry("telemetry", ContainerDefinitionArgs.builder()
  *                     .image(telemetryImage)
  *                     .cpuUnits(256.0)
  *                     .memoryReservationMiB(256.0)

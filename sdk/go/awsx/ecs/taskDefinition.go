@@ -34,8 +34,8 @@ import (
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
@@ -83,8 +83,8 @@ import (
 //					ecs.TaskCompatibility_MANAGED_INSTANCES,
 //					ecs.TaskCompatibilityEC2,
 //				},
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
@@ -127,8 +127,8 @@ import (
 //				Compatibilities: []ecs.TaskCompatibility{
 //					ecs.TaskCompatibility_MANAGED_INSTANCES,
 //				},
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
@@ -172,8 +172,8 @@ import (
 //			cfg := config.New(ctx, "")
 //			apiToken := cfg.RequireSecret("apiToken")
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
 //							"API_TOKEN": ecs.EnvironmentVariableArgs{
@@ -229,8 +229,8 @@ import (
 //				return err
 //			}
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
 //							"DATABASE_PASSWORD": ecs.EnvironmentVariableArgs{
@@ -276,8 +276,8 @@ import (
 //			cfg := config.New(ctx, "")
 //			sharedTokenParameterArn := cfg.Require("sharedTokenParameterArn")
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
 //							"SHARED_TOKEN": ecs.EnvironmentVariableArgs{
@@ -328,16 +328,16 @@ import (
 //				return err
 //			}
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
 //								ContainerPort: 80,
 //							},
 //						},
-//						Logging: ecs.ContainerLogDriverArgs{
-//							Cloudwatch: ecs.AwsLogsLogDriverArgs{
+//						Logging: ecs.ContainerLoggingArgs{
+//							Cloudwatch: ecs.CloudWatchLoggingArgs{
 //								LogGroupArn:  applicationLogs.Arn,
 //								StreamPrefix: pulumi.String("app"),
 //							},
@@ -382,8 +382,8 @@ import (
 //			cfg := config.New(ctx, "")
 //			applicationImage := cfg.Require("applicationImage")
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image:     pulumi.String(applicationImage),
 //						CpuUnits:  512,
 //						MemoryMiB: 1024,
@@ -427,14 +427,14 @@ import (
 //			task, err := ecs.NewTaskDefinition(ctx, "task", &ecs.TaskDefinitionArgs{
 //				CpuUnits:  1024,
 //				MemoryMiB: 4096,
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"worker": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"worker": ecs.ContainerDefinitionArgs{
 //						Image:                pulumi.String(workerImage),
 //						CpuUnits:             768,
 //						MemoryReservationMiB: 1024,
 //						MemoryMiB:            3072,
 //					},
-//					"telemetry": ecs.ContainerDefinitionOptionsArgs{
+//					"telemetry": ecs.ContainerDefinitionArgs{
 //						Image:                pulumi.String(telemetryImage),
 //						CpuUnits:             256,
 //						MemoryReservationMiB: 256,

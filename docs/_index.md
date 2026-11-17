@@ -476,8 +476,8 @@ func main() {
 			return err
 		}
 		taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
-			Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-				"app": ecs.ContainerDefinitionOptionsArgs{
+			Containers: map[string]*ecs.ContainerDefinitionArgs{
+				"app": ecs.ContainerDefinitionArgs{
 					Image: image.ImageUri,
 					PortMappings: []ecs.AwsvpcPortMappingArgs{
 						{
@@ -494,9 +494,9 @@ func main() {
 			ClusterArn:        cluster.Arn,
 			TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 			VpcSubnetIds:      vpc2.PrivateSubnetIds,
-			LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-				"app": ecs.ServiceLoadBalancerArgs{
-					Application: ecs.ApplicationServiceLoadBalancerArgs{
+			LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+				"app": ecs.ServiceLoadBalancerAttachmentArgs{
+					Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 						ContainerName: "app",
 						ContainerPort: 80,
 						ListenerArn:   listener.Arn,
@@ -609,7 +609,7 @@ return await Deployment.RunAsync(() =>
     {
         Containers = 
         {
-            { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+            { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
             {
                 Image = image.ImageUri,
                 PortMappings = new()
@@ -630,9 +630,9 @@ return await Deployment.RunAsync(() =>
         VpcSubnetIds = vpc.PrivateSubnetIds,
         LoadBalancerAttachments = 
         {
-            { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+            { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
             {
-                Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+                Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
                 {
                     ContainerName = "app",
                     ContainerPort = 80.0,
@@ -692,12 +692,12 @@ import com.pulumi.awsx.ecr.Image;
 import com.pulumi.awsx.ecr.ImageArgs;
 import com.pulumi.awsx.ecs.TaskDefinition;
 import com.pulumi.awsx.ecs.TaskDefinitionArgs;
-import com.pulumi.awsx.ecs.inputs.ContainerDefinitionOptionsArgs;
+import com.pulumi.awsx.ecs.inputs.ContainerDefinitionArgs;
 import com.pulumi.awsx.ecs.inputs.AwsvpcPortMappingArgs;
 import com.pulumi.awsx.ecs.Service;
 import com.pulumi.awsx.ecs.ServiceArgs;
-import com.pulumi.awsx.ecs.inputs.ServiceLoadBalancerArgs;
-import com.pulumi.awsx.ecs.inputs.ApplicationServiceLoadBalancerArgs;
+import com.pulumi.awsx.ecs.inputs.ServiceLoadBalancerAttachmentArgs;
+import com.pulumi.awsx.ecs.inputs.ApplicationLoadBalancerAttachmentArgs;
 import com.pulumi.awsx.ecs.inputs.TargetGroupHealthCheckArgs;
 import com.pulumi.resources.CustomResourceOptions;
 import java.util.ArrayList;
@@ -768,7 +768,7 @@ public class App {
             .build());
 
         var taskDefinition = new TaskDefinition("taskDefinition", TaskDefinitionArgs.builder()
-            .containers(Map.of("app", ContainerDefinitionOptionsArgs.builder()
+            .containers(Map.of("app", ContainerDefinitionArgs.builder()
                 .image(image.imageUri())
                 .portMappings(AwsvpcPortMappingArgs.builder()
                     .containerPort(80.0)
@@ -780,8 +780,8 @@ public class App {
             .clusterArn(cluster.arn())
             .taskDefinitionArn(taskDefinition.taskDefinitionArn())
             .vpcSubnetIds(vpc.privateSubnetIds())
-            .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerArgs.builder()
-                .application(ApplicationServiceLoadBalancerArgs.builder()
+            .loadBalancerAttachments(Map.of("app", ServiceLoadBalancerAttachmentArgs.builder()
+                .application(ApplicationLoadBalancerAttachmentArgs.builder()
                     .containerName("app")
                     .containerPort(80.0)
                     .listenerArn(listener.arn())

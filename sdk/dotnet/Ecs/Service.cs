@@ -37,7 +37,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 PortMappings = new()
@@ -148,7 +148,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = image.ImageUri,
     ///                 PortMappings = new()
@@ -169,9 +169,9 @@ namespace Pulumi.Awsx.Ecs
     ///         VpcSubnetIds = vpc.PrivateSubnetIds,
     ///         LoadBalancerAttachments = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///             {
-    ///                 Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///                 Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///                 {
     ///                     ContainerName = "app",
     ///                     ContainerPort = 80.0,
@@ -219,7 +219,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -228,9 +228,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -273,7 +273,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -282,9 +282,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -345,7 +345,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -354,9 +354,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "admin", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "admin", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -385,9 +385,9 @@ namespace Pulumi.Awsx.Ecs
     ///                 },
     ///             },
     ///         } },
-    ///         { "api", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "api", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -482,7 +482,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -491,9 +491,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "private", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "private", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -511,9 +511,9 @@ namespace Pulumi.Awsx.Ecs
     ///                 Priority = 50.0,
     ///             },
     ///         } },
-    ///         { "public", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "public", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -569,7 +569,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -578,9 +578,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "api", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "api", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "api",
     ///                 ContainerPort = 8080.0,
@@ -602,9 +602,9 @@ namespace Pulumi.Awsx.Ecs
     ///                 },
     ///             },
     ///         } },
-    ///         { "ui", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "ui", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "ui",
     ///                 ContainerPort = 3000.0,
@@ -662,16 +662,16 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Rolling = new Awsx.Ecs.Inputs.RollingStrategyArgs
+    ///         Rolling = new Awsx.Ecs.Inputs.RollingDeploymentStrategyArgs
     ///         {
     ///             FailureAction = Awsx.Ecs.DeploymentFailureAction.ROLLBACK,
     ///         },
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -704,16 +704,16 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         BlueGreen = new Awsx.Ecs.Inputs.BlueGreenStrategyArgs
+    ///         BlueGreen = new Awsx.Ecs.Inputs.BlueGreenDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///         },
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -746,7 +746,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Linear = new Awsx.Ecs.Inputs.LinearStrategyArgs
+    ///         Linear = new Awsx.Ecs.Inputs.LinearDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             StepBakeTimeMinutes = 3.0,
@@ -755,9 +755,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -792,7 +792,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -801,9 +801,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -844,7 +844,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Rolling = new Awsx.Ecs.Inputs.RollingStrategyArgs
+    ///         Rolling = new Awsx.Ecs.Inputs.RollingDeploymentStrategyArgs
     ///         {
     ///             LambdaHooks = new()
     ///             {
@@ -861,9 +861,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -898,7 +898,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Rolling = new Awsx.Ecs.Inputs.RollingStrategyArgs
+    ///         Rolling = new Awsx.Ecs.Inputs.RollingDeploymentStrategyArgs
     ///         {
     ///             PauseHooks = new()
     ///             {
@@ -912,9 +912,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -949,7 +949,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         Canary = new Awsx.Ecs.Inputs.CanaryStrategyArgs
+    ///         Canary = new Awsx.Ecs.Inputs.CanaryDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             CanaryBakeTimeMinutes = 10.0,
@@ -981,9 +981,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -1035,7 +1035,7 @@ namespace Pulumi.Awsx.Ecs
     ///     ClusterArn = cluster.Arn,
     ///     DeploymentStrategy = new Awsx.Ecs.Inputs.ServiceDeploymentStrategyArgs
     ///     {
-    ///         BlueGreen = new Awsx.Ecs.Inputs.BlueGreenStrategyArgs
+    ///         BlueGreen = new Awsx.Ecs.Inputs.BlueGreenDeploymentStrategyArgs
     ///         {
     ///             BakeTimeMinutes = 5.0,
     ///             PauseHooks = new()
@@ -1054,9 +1054,9 @@ namespace Pulumi.Awsx.Ecs
     ///     },
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,
@@ -1109,9 +1109,9 @@ namespace Pulumi.Awsx.Ecs
     ///     DeploymentTimeout = "2h",
     ///     LoadBalancerAttachments = 
     ///     {
-    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerArgs
+    ///         { "app", new Awsx.Ecs.Inputs.ServiceLoadBalancerAttachmentArgs
     ///         {
-    ///             Application = new Awsx.Ecs.Inputs.ApplicationServiceLoadBalancerArgs
+    ///             Application = new Awsx.Ecs.Inputs.ApplicationLoadBalancerAttachmentArgs
     ///             {
     ///                 ContainerName = "app",
     ///                 ContainerPort = 80.0,

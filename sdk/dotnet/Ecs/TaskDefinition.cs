@@ -30,7 +30,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 PortMappings = new()
@@ -79,7 +79,7 @@ namespace Pulumi.Awsx.Ecs
     ///         },
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 PortMappings = new()
@@ -120,7 +120,7 @@ namespace Pulumi.Awsx.Ecs
     ///         },
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 PortMappings = new()
@@ -163,7 +163,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 Environment = 
@@ -221,7 +221,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 Environment = 
@@ -269,7 +269,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 Environment = 
@@ -321,7 +321,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = "nginx:stable",
     ///                 PortMappings = new()
@@ -331,9 +331,9 @@ namespace Pulumi.Awsx.Ecs
     ///                         ContainerPort = 80.0,
     ///                     },
     ///                 },
-    ///                 Logging = new Awsx.Ecs.Inputs.ContainerLogDriverArgs
+    ///                 Logging = new Awsx.Ecs.Inputs.ContainerLoggingArgs
     ///                 {
-    ///                     Cloudwatch = new Awsx.Ecs.Inputs.AwsLogsLogDriverArgs
+    ///                     Cloudwatch = new Awsx.Ecs.Inputs.CloudWatchLoggingArgs
     ///                     {
     ///                         LogGroupArn = applicationLogs.Arn,
     ///                         StreamPrefix = "app",
@@ -375,7 +375,7 @@ namespace Pulumi.Awsx.Ecs
     ///     {
     ///         Containers = 
     ///         {
-    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "app", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = applicationImage,
     ///                 CpuUnits = 512.0,
@@ -416,14 +416,14 @@ namespace Pulumi.Awsx.Ecs
     ///         MemoryMiB = 4096.0,
     ///         Containers = 
     ///         {
-    ///             { "worker", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "worker", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = workerImage,
     ///                 CpuUnits = 768.0,
     ///                 MemoryReservationMiB = 1024.0,
     ///                 MemoryMiB = 3072.0,
     ///             } },
-    ///             { "telemetry", new Awsx.Ecs.Inputs.ContainerDefinitionOptionsArgs
+    ///             { "telemetry", new Awsx.Ecs.Inputs.ContainerDefinitionArgs
     ///             {
     ///                 Image = telemetryImage,
     ///                 CpuUnits = 256.0,

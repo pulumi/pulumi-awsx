@@ -46,8 +46,8 @@ import (
 //				return err
 //			}
 //			taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
@@ -180,8 +180,8 @@ import (
 //				return err
 //			}
 //			taskDefinition, err := awsxecs.NewTaskDefinition(ctx, "taskDefinition", &awsxecs.TaskDefinitionArgs{
-//				Containers: map[string]*ecs.ContainerDefinitionOptionsArgs{
-//					"app": ecs.ContainerDefinitionOptionsArgs{
+//				Containers: map[string]*ecs.ContainerDefinitionArgs{
+//					"app": ecs.ContainerDefinitionArgs{
 //						Image: image.ImageUri,
 //						PortMappings: []ecs.AwsvpcPortMappingArgs{
 //							{
@@ -198,9 +198,9 @@ import (
 //				ClusterArn:        cluster.Arn,
 //				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 //				VpcSubnetIds:      vpc2.PrivateSubnetIds,
-//				LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//					"app": ecs.ServiceLoadBalancerArgs{
-//						Application: ecs.ApplicationServiceLoadBalancerArgs{
+//				LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//					"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//						Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //							ContainerName: "app",
 //							ContainerPort: 80,
 //							ListenerArn:   listener.Arn,
@@ -245,15 +245,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -292,15 +292,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -355,15 +355,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"admin": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"admin": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -385,8 +385,8 @@ import (
 //					},
 //				},
 //			},
-//			"api": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//			"api": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -487,15 +487,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"private": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"private": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   privateListener.Arn,
@@ -509,8 +509,8 @@ import (
 //					Priority: 50,
 //				},
 //			},
-//			"public": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//			"public": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -562,15 +562,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"api": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"api": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "api",
 //					ContainerPort: 8080,
 //					ListenerArn:   listener.Arn,
@@ -587,8 +587,8 @@ import (
 //					},
 //				},
 //			},
-//			"ui": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//			"ui": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "ui",
 //					ContainerPort: 3000,
 //					ListenerArn:   listener.Arn,
@@ -642,13 +642,13 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingStrategyArgs{
+//			Rolling: ecs.RollingDeploymentStrategyArgs{
 //				FailureAction: awsxecs.DeploymentFailureActionROLLBACK,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -681,13 +681,13 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			BlueGreen: ecs.BlueGreenStrategyArgs{
+//			BlueGreen: ecs.BlueGreenDeploymentStrategyArgs{
 //				BakeTimeMinutes: 5,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -720,15 +720,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Linear: ecs.LinearStrategyArgs{
+//			Linear: ecs.LinearDeploymentStrategyArgs{
 //				BakeTimeMinutes:     5,
 //				StepBakeTimeMinutes: 3,
 //				StepPercent:         20,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -763,15 +763,15 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -812,7 +812,7 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingStrategyArgs{
+//			Rolling: ecs.RollingDeploymentStrategyArgs{
 //				LambdaHooks: []ecs.RollingLambdaHookArgs{
 //					{
 //						FunctionArn: pulumi.String("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation"),
@@ -823,9 +823,9 @@ import (
 //				},
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -860,7 +860,7 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingStrategyArgs{
+//			Rolling: ecs.RollingDeploymentStrategyArgs{
 //				PauseHooks: []ecs.RollingPauseHookArgs{
 //					{
 //						TimeoutAction:  awsxecs.PauseTimeoutActionROLLBACK,
@@ -869,9 +869,9 @@ import (
 //				},
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -906,7 +906,7 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryStrategyArgs{
+//			Canary: ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
@@ -929,9 +929,9 @@ import (
 //				},
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -978,7 +978,7 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
 //		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			BlueGreen: ecs.BlueGreenStrategyArgs{
+//			BlueGreen: ecs.BlueGreenDeploymentStrategyArgs{
 //				BakeTimeMinutes: 5,
 //				PauseHooks: []ecs.ProgressivePauseHookArgs{
 //					{
@@ -991,9 +991,9 @@ import (
 //				},
 //			},
 //		},
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -1040,9 +1040,9 @@ import (
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn:        cluster.Arn,
 //		DeploymentTimeout: "2h",
-//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerArgs{
-//			"app": ecs.ServiceLoadBalancerArgs{
-//				Application: ecs.ApplicationServiceLoadBalancerArgs{
+//		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
+//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,

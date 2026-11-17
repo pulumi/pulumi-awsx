@@ -448,7 +448,7 @@ resources:
             priority: 10
       deploymentStrategy:
         rolling:
-          failureAction: Rollback
+          failureAction: ROLLBACK
     options:
       dependsOn:
         - ${frontendHttp}
