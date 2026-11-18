@@ -1,0 +1,3 @@
+name: ecs-task-definition-dotnet
+runtime: dotnet
+description: AWSX ECS task definition SDK acceptance test

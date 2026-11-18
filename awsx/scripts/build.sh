@@ -45,8 +45,12 @@ TARGET="node${NODE_VERSION}-${NODEOS}-${NODEARCH}"
 VERSION=$(jq -r .version "${SCHEMA}")
 
 npm ci
+npm --prefix ../awsx-next ci
 npm run gen-types
 npm run tsc
+# Compile the linked source workspace into the provider's packaged module tree.
+rm -rf bin/node_modules/@pulumi/awsx-next
+npm --prefix ../awsx-next run emit
 cp ${SCHEMA} bin/schema.json
 cp package.json bin/package.json
 cp node-runtime-policy.json bin/node-runtime-policy.json

@@ -2,7 +2,7 @@ import * as aws from '@pulumi/aws';
 import * as awsNative from '@pulumi/aws-native';
 import * as pulumi from '@pulumi/pulumi';
 import { Service, ServiceArgs } from '../../../src/ecs/service';
-import { ServiceLoadBalancer } from '../../../src/ecs/serviceLoadBalancer';
+import { ServiceLoadBalancerAttachment } from '../../../src/ecs/serviceLoadBalancer';
 import * as serviceLoadBalancer from '../../../src/ecs/serviceLoadBalancer';
 import * as serviceCapacity from '../../../src/ecs/serviceCapacity';
 
@@ -56,7 +56,7 @@ test.each([
     expect(await Promise.all(dependencies.map((r) => unwrap(r.urn)))).toEqual(
       expect.arrayContaining([
         expect.stringContaining(`::${name}-app-listener-rule`),
-        expect.stringContaining(`::${name}-app-traffic-shift-role-policy`),
+        expect.stringContaining(`::${name}-app-traffic-shift-role`),
       ]),
     );
   },
@@ -292,7 +292,7 @@ function applicationAttachment(
   containerPort: number,
   priority: number,
   healthPort: number = containerPort,
-): ServiceLoadBalancer {
+): ServiceLoadBalancerAttachment {
   return {
     application: {
       listenerArn,

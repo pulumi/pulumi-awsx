@@ -68,7 +68,9 @@ _utilities.register(
    "awsx:ecs:EC2Service": "EC2Service",
    "awsx:ecs:EC2TaskDefinition": "EC2TaskDefinition",
    "awsx:ecs:FargateService": "FargateService",
-   "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition"
+   "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition",
+   "awsx:ecs:Service": "Service",
+   "awsx:ecs:TaskDefinition": "TaskDefinition"
   }
  },
  {

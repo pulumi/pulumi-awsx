@@ -13,10 +13,10 @@
 // limitations under the License.
 import * as pulumi from '@pulumi/pulumi';
 import { InputPropertyErrorDetails } from '@pulumi/pulumi';
-import type { ContainerDefinitionOptions } from '../containerDefinition';
+import type { ContainerDefinition } from '../containerDefinition';
 
 export type FargateContainerMemoryAndCpu = Pick<
-  ContainerDefinitionOptions,
+  ContainerDefinition,
   'cpuUnits' | 'memoryMiB' | 'memoryReservationMiB'
 >;
 

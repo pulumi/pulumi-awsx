@@ -87,11 +87,10 @@ func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestAccEcsExperimentalStandalone(t *testing.T) {
-	pt := newExperimentalPackageTest(t, "nodejs")
+func TestAccEcsTaskDefinitionTs(t *testing.T) {
+	pt := newEcsNodeTest(t, "ecs-task-definition")
 	result := pt.Up(t)
 
-	require.Equal(t, "task", result.Outputs["componentName"].Value)
 	require.NotEmptyf(t, result.Outputs["taskDefinitionArn"].Value, "taskDefinitionArn empty")
 	require.Equal(t, "task", result.Outputs["family"].Value)
 	require.Positive(t, result.Outputs["revision"].Value)
@@ -119,7 +118,7 @@ func TestAccEcsServiceEC2(t *testing.T) {
 func testEcsServiceCapacity(t *testing.T, capacityType string) {
 	t.Helper()
 	getEnvRegion(t)
-	pt := newExperimentalPackageTest(t, "service-capacity-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-capacity")
 	pt.SetConfig(t, "capacityType", capacityType)
 	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-capacity-%s-%d", capacityType, time.Now().UnixNano()))
 	pt.Up(t)
@@ -129,7 +128,7 @@ func testEcsServiceCapacity(t *testing.T, capacityType string) {
 func TestAccEcsServiceWithLoadBalancer(t *testing.T) {
 	// Check before constructing a Pulumi test, so an unconfigured local run creates no stack.
 	getEnvRegion(t)
-	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-load-balancer")
 	result := pt.Up(t)
 
 	url, ok := result.Outputs["url"].Value.(string)
@@ -175,7 +174,7 @@ func TestAccEcsServiceRejectsMismatchedProviderRegion(t *testing.T) {
 	if nativeRegion == region {
 		nativeRegion = "us-west-2"
 	}
-	pt := newExperimentalPackageTest(t, "service-load-balancer-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-load-balancer")
 	pt.SetConfig(t, "aws-native:region", nativeRegion)
 	// Use a raw AWS task definition so its ARN stays unknown during preview. This bypasses the
 	// task component's provider check without triggering Service's lookup of a fabricated ARN.
@@ -191,7 +190,7 @@ func TestAccEcsServiceRejectsMismatchedProviderRegion(t *testing.T) {
 func TestAccEcsServiceBlueGreenDeployment(t *testing.T) {
 	getEnvRegion(t)
 	t.Parallel()
-	pt := newExperimentalPackageTest(t, "service-blue-green-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-blue-green")
 	// ECS rejects concurrent revision registrations within the same family.
 	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-blueGreen-%d", time.Now().UnixNano()))
 	pt.SetConfig(t, "revision", "v1")
@@ -209,7 +208,7 @@ func TestAccEcsServiceBlueGreenDeployment(t *testing.T) {
 func TestAccEcsServiceCanaryDeployment(t *testing.T) {
 	getEnvRegion(t)
 	t.Parallel()
-	pt := newExperimentalPackageTest(t, "service-canary-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-canary")
 	// ECS rejects concurrent revision registrations within the same family.
 	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-canary-%d", time.Now().UnixNano()))
 	pt.SetConfig(t, "revision", "v1")
@@ -237,7 +236,7 @@ func TestAccEcsServiceCanaryDeployment(t *testing.T) {
 func TestAccEcsServiceLinearDeployment(t *testing.T) {
 	getEnvRegion(t)
 	t.Parallel()
-	pt := newExperimentalPackageTest(t, "service-linear-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-linear")
 	// ECS rejects concurrent revision registrations within the same family.
 	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-progressive-linear-%d", time.Now().UnixNano()))
 	pt.SetConfig(t, "revision", "v1")
@@ -286,7 +285,7 @@ func assertEcsServiceHTTP(t *testing.T, url, revision string, testRoute bool) {
 
 func TestAccEcsServiceRollingLifecycleHook(t *testing.T) {
 	getEnvRegion(t)
-	pt := newExperimentalPackageTest(t, "service-rolling-lifecycle-hook-nodejs")
+	pt := newEcsNodeTest(t, "ecs-service-rolling-lifecycle-hook")
 	pt.SetConfig(t, "taskDefinitionFamily", fmt.Sprintf("awsx-hook-rolling-%d", time.Now().UnixNano()))
 	pt.SetConfig(t, "revision", "v1")
 	initial := pt.Up(t)
@@ -346,8 +345,8 @@ func ecsServiceHTTP(ctx context.Context, client *http.Client, url string, testTr
 	return response.StatusCode, string(body), err
 }
 
-func TestAccEcsExperimentalPermissions(t *testing.T) {
-	pt := newExperimentalExampleTest(t, "ecs-experimental-permissions", "nodejs")
+func TestAccEcsTaskDefinitionPermissions(t *testing.T) {
+	pt := newEcsNodeTest(t, "ecs-task-definition-permissions")
 	// The service waits for a stable running task. Failed image pulls, secret/environment-file loading,
 	// or application checks prevent the deployment from reaching steady state.
 	result := pt.Up(t)

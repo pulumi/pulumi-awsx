@@ -11,4 +11,6 @@ from .ec2_service import *
 from .ec2_task_definition import *
 from .fargate_service import *
 from .fargate_task_definition import *
+from .service import *
+from .task_definition import *
 from ._inputs import *

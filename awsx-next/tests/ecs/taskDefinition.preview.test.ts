@@ -167,7 +167,7 @@ test('declares version-pinned storage for an unknown secret during preview', asy
   expect(options.filter(({ opts }) => opts.retainOnDelete).map(({ type }) => type)).toEqual([
     'aws:secretsmanager/secret:Secret',
     'aws:secretsmanager/secretVersion:SecretVersion',
-    'aws:iam/rolePolicy:RolePolicy',
+    'aws-native:iam:RolePolicy',
   ]);
 });
 

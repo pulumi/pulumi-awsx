@@ -19,6 +19,71 @@ interface ExternalRef {
 
 type Direction = "Input" | "Output";
 
+// The source-based components share the ECS module with legacy implementations.
+// Exclude only their resource roots and reachable local types, not the whole module.
+function getExternallyImplementedTokens(schema: pulumiSchema.PulumiPackageMetaschema): Set<string> {
+  const tokens = new Set(["awsx:ecs:TaskDefinition", "awsx:ecs:Service"]);
+  function visit(value: unknown): void {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+    } else if (value !== null && typeof value === "object") {
+      for (const [key, nested] of Object.entries(value)) {
+        if (key === "$ref" && typeof nested === "string") {
+          const token = nested.match(/^#\/(?:types|resources)\/(.+)$/)?.[1];
+          if (token !== undefined && !tokens.has(token)) {
+            tokens.add(token);
+            visit(schema.types?.[token] ?? schema.resources?.[token]);
+          }
+        } else {
+          visit(nested);
+        }
+      }
+    }
+  }
+  for (const token of tokens) {
+    visit(schema.resources?.[token]);
+  }
+  return tokens;
+}
+
+function excludeExternallyImplemented<T>(
+  entries: Record<string, T> | undefined,
+  tokens: Set<string>,
+): Record<string, T> {
+  return Object.fromEntries(Object.entries(entries ?? {}).filter(([token]) => !tokens.has(token)));
+}
+
+function findExternallyImplementedRef(value: unknown, tokens: Set<string>): string | undefined {
+  if (typeof value === "string") {
+    const token = value.match(/^#\/(?:types|resources)\/(.+)$/)?.[1];
+    return token !== undefined && tokens.has(token) ? value : undefined;
+  }
+  if (Array.isArray(value)) {
+    return value
+      .map((nested) => findExternallyImplementedRef(nested, tokens))
+      .find((ref) => ref !== undefined);
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.values(value)
+      .map((nested) => findExternallyImplementedRef(nested, tokens))
+      .find((ref) => ref !== undefined);
+  }
+  return undefined;
+}
+
+function assertNoExternallyImplementedRefs(
+  section: string,
+  entries: Record<string, unknown>,
+  tokens: Set<string>,
+): void {
+  for (const [token, value] of Object.entries(entries)) {
+    const ref = findExternallyImplementedRef(value, tokens);
+    if (ref !== undefined) {
+      throw new Error(`${section} ${token} refers to externally implemented schema type ${ref}`);
+    }
+  }
+}
+
 const externalRefs = (() => {
   const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
 
@@ -510,6 +575,14 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
   const schemaPath = path.resolve(args.schema);
   const schemaText = fs.readFileSync(schemaPath, { encoding: "utf-8" });
   const schema: pulumiSchema.PulumiPackageMetaschema = JSON.parse(schemaText);
+  const externalTokens = getExternallyImplementedTokens(schema);
+  const resources = excludeExternallyImplemented(schema.resources, externalTokens);
+  const types = excludeExternallyImplemented(schema.types, externalTokens);
+  const functions = excludeExternallyImplemented(schema.functions, externalTokens);
+
+  assertNoExternallyImplementedRefs("resource", resources, externalTokens);
+  assertNoExternallyImplementedRefs("type", types, externalTokens);
+  assertNoExternallyImplementedRefs("function", functions, externalTokens);
 
   const nodes = ts.factory.createNodeArray([
     ts.factory.createJSDocComment(headerWarning),
@@ -519,8 +592,8 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
       ts.factory.createStringLiteral("@pulumi/pulumi"),
     ),
     resourceConstructorType(),
-    genResourceConstructors(schema.resources),
-    genFunctionCallsType(schema.functions),
+    genResourceConstructors(resources),
+    genFunctionCallsType(functions),
     ...Object.values(externalRefs).map((externalRef) =>
       ts.factory.createImportDeclaration(
         undefined,
@@ -532,9 +605,9 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
         ts.factory.createStringLiteral(externalRef.import),
       ),
     ),
-    ...genResources(schema.resources),
-    ...genTypes(schema.types),
-    ...genFunctions(schema.functions),
+    ...genResources(resources),
+    ...genTypes(types),
+    ...genFunctions(functions),
   ]);
   const sourceFile = ts.createSourceFile(
     "provider-types.d.ts",

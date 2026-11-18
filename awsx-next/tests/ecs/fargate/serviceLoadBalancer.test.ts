@@ -4,7 +4,7 @@ import * as pulumi from '@pulumi/pulumi';
 import {
   ApplicationProtocol,
   ApplicationProtocolVersion,
-  ApplicationServiceLoadBalancer,
+  ApplicationLoadBalancerAttachment,
   CreatedApplicationServiceAttachment,
   createApplicationServiceAttachment,
 } from '../../../src/ecs/serviceLoadBalancer';
@@ -105,7 +105,7 @@ function parent(): pulumi.ComponentResource {
  *
  * @returns The application attachment configuration.
  */
-function configuration(): ApplicationServiceLoadBalancer {
+function configuration(): ApplicationLoadBalancerAttachment {
   return {
     containerName: 'app',
     containerPort: 3000,
@@ -193,9 +193,9 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
       ['actions[*].forwardConfig.targetGroups[*].weight'],
       ['actions[*].forwardConfig.targetGroups[*].weight'],
     ]);
-    const role = resources.filter((r) => r.type === 'aws:iam/role:Role');
+    const role = resources.filter((r) => r.type === 'aws-native:iam:Role');
     expect(role).toHaveLength(1);
-    expect(role[0]!.inputs.assumeRolePolicy).toEqual({
+    expect(role[0]!.inputs.assumeRolePolicyDocument).toEqual({
       Version: '2012-10-17',
       Statement: [
         {
@@ -206,9 +206,8 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
         },
       ],
     });
-    const policies = resources.filter((r) => r.type === 'aws:iam/rolePolicy:RolePolicy');
-    expect(policies).toHaveLength(1);
-    expect(policies[0]!.inputs.policy.Statement).toEqual([
+    expect(role[0]!.inputs.policies).toHaveLength(1);
+    expect(role[0]!.inputs.policies[0].policyDocument.Statement).toEqual([
       {
         Effect: 'Allow',
         Action: [
@@ -238,7 +237,7 @@ it.each([DeploymentStrategy.BLUE_GREEN, DeploymentStrategy.CANARY, DeploymentStr
     ).toEqual([
       expect.stringContaining('::progressive-app-listener-rule'),
       expect.stringContaining('::progressive-app-listener-rule-test'),
-      expect.stringContaining('::progressive-app-traffic-shift-role-policy'),
+      expect.stringContaining('::progressive-app-traffic-shift-role'),
     ]);
     const providerReference = `${await resolve(provider.urn)}::${await resolve(provider.id)}`;
     for (const resource of resources.filter((r) => r.type.startsWith('aws:'))) {
@@ -386,7 +385,7 @@ it('creates only backend resources, keeping health-check and application ports i
 
 it.each<{
   description: string;
-  args: Partial<ApplicationServiceLoadBalancer>;
+  args: Partial<ApplicationLoadBalancerAttachment>;
   expectedHealthCheck: Record<string, unknown>;
 }>([
   { description: 'omitted health check', args: {}, expectedHealthCheck: {} },
@@ -429,7 +428,7 @@ it.each([undefined, 'us-east-2'])(
     const attachment = createApplicationServiceAttachment(
       'service',
       'shared',
-      { ...configuration(), targetProtocolVersion: ApplicationProtocolVersion.HTTP_2 },
+      { ...configuration(), targetProtocolVersion: ApplicationProtocolVersion.HTTP2 },
       { parent: parent(), region },
     );
     await settle(attachment);
@@ -576,7 +575,11 @@ it('gives attachments to the same backend stable, distinct resource names', asyn
   );
 });
 
-it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; property: string }>([
+it.each<{
+  description: string;
+  args: Partial<ApplicationLoadBalancerAttachment>;
+  property: string;
+}>([
   {
     description: 'missing listener ARN',
     args: { containerName: 'app', containerPort: 3000 },
@@ -619,14 +622,14 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
   },
   {
     description: 'gRPC codes with HTTP',
-    args: { ...configuration(), targetHealthCheck: { healthGrpcCodes: '0' } },
-    property: 'targetHealthCheck.healthGrpcCodes',
+    args: { ...configuration(), targetHealthCheck: { healthyGrpcCodes: '0' } },
+    property: 'targetHealthCheck.healthyGrpcCodes',
   },
   {
     description: 'both health code types',
     args: {
       ...configuration(),
-      targetHealthCheck: { healthyHttpCodes: '200', healthGrpcCodes: '0' },
+      targetHealthCheck: { healthyHttpCodes: '200', healthyGrpcCodes: '0' },
     },
     property: 'targetHealthCheck',
   },
@@ -636,7 +639,7 @@ it.each<{ description: string; args: Partial<ApplicationServiceLoadBalancer>; pr
     createApplicationServiceAttachment(
       'service',
       'invalid',
-      args as ApplicationServiceLoadBalancer,
+      args as ApplicationLoadBalancerAttachment,
       { parent: owner },
     ),
   ).toThrow(

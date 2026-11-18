@@ -1,0 +1,3 @@
+name: ecs-task-definition-python
+runtime: python
+description: AWSX ECS task definition SDK acceptance test

@@ -124,6 +124,8 @@
         "ecs/fargateService.ts",
         "ecs/fargateTaskDefinition.ts",
         "ecs/index.ts",
+        "ecs/service.ts",
+        "ecs/taskDefinition.ts",
         "index.ts",
         "lb/applicationLoadBalancer.ts",
         "lb/index.ts",

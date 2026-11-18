@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,9 +19,17 @@ import (
 	"testing"
 )
 
-func TestAccEcsExperimentalStandalonePython(t *testing.T) {
-	pt := newExperimentalPackageTest(t, "python")
-	pt.Preview(t)
+func TestAccEcsTaskDefinitionPython(t *testing.T) {
+	region := getEnvRegion(t)
+	test := getPythonBaseOptions(t).With(integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:region":        region,
+			"aws-native:region": region,
+		},
+		RunUpdateTest: false,
+		Dir:           filepath.Join(getCwd(t), "ecs-task-definition", "python"),
+	})
+	integration.ProgramTest(t, &test)
 }
 
 func TestAccTrailPython(t *testing.T) {

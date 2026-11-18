@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,17 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
-func TestAccEcsExperimentalStandaloneGo(t *testing.T) {
-	// Standalone Go acceptance coverage is tracked with the component feature:
-	// https://github.com/pulumi/pulumi-awsx/issues/2181
-	t.Skip("pulumi package add currently generates a missing ContainerDefinitionOptionsArgs Go type")
-	pt := newExperimentalPackageTest(t, "go")
-	pt.Preview(t)
+func TestAccEcsTaskDefinitionGo(t *testing.T) {
+	region := getEnvRegion(t)
+	test := getGoBaseOptions(t).With(integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:region":        region,
+			"aws-native:region": region,
+		},
+		RunUpdateTest: false,
+		Dir:           filepath.Join(getCwd(t), "ecs-task-definition", "go"),
+	})
+	integration.ProgramTest(t, &test)
 }
 
 func TestAccTrail(t *testing.T) {

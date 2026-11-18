@@ -5,9 +5,9 @@ import type { ecs } from '@pulumi/aws-native/types/input';
 import { validateContainerOptions } from './validateContainerOptions';
 import type { input } from '@pulumi/aws/types';
 import type {
-  AwsLogsLogDriver,
+  CloudWatchLogging,
   AwsvpcPortMapping,
-  ContainerDefinitionOptions,
+  ContainerDefinition,
   EnvironmentFile,
   EnvironmentVariable,
   SecretsManagerSecret,
@@ -45,7 +45,7 @@ export interface TaskDefinitionArgs {
    *
    * AWSX uses each map key as the corresponding ECS container name.
    */
-  containers: Record<string, ContainerDefinitionOptions>;
+  containers: Record<string, ContainerDefinition>;
 
   /**
    * Compute environments this task definition must support. When multiple environments are
@@ -188,20 +188,25 @@ export const fargateTaskDefinitionStandaloneIdentity: ComponentIdentity = {
 };
 
 export const fargateTaskDefinitionAwsxIdentity: ComponentIdentity = {
-  type: 'awsx:experimental/ecs:TaskDefinition',
+  type: 'awsx:ecs:TaskDefinition',
   aliases: [],
 };
 
+// Keep implementation-only state out of inferred component outputs.
+const providerRegions = new WeakMap<pulumi.ComponentResource, pulumi.Output<string>>();
+const componentNames = new WeakMap<TaskDefinition, string>();
+const executionRoles = new WeakMap<TaskDefinition, native.iam.Role>();
+
 export class TaskDefinition extends pulumi.ComponentResource {
   /**
-   * The Task Role of the task
+   * The ARN of the task role.
    */
-  public readonly taskRole!: aws.iam.Role;
+  public readonly taskRoleArn!: pulumi.Output<string>;
 
   /**
-   * The Execution Role of the task
+   * The ARN of the task execution role.
    */
-  public readonly executionRole!: aws.iam.Role;
+  public readonly executionRoleArn!: pulumi.Output<string>;
 
   /**
    * The ARN of the registered task-definition revision. Pass this to an ECS service or task.
@@ -225,10 +230,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
    */
   public logGroup?: aws.cloudwatch.LogGroup;
 
-  public readonly name!: string;
-
   public readonly region?: string;
-  private providerRegion?: pulumi.Output<string>;
 
   constructor(
     name: string,
@@ -244,14 +246,13 @@ export class TaskDefinition extends pulumi.ComponentResource {
     // creating children; their values are populated from the serialized resource reference.
     const inputs = opts.urn
       ? {
-          taskRole: undefined,
-          executionRole: undefined,
+          taskRoleArn: undefined,
+          executionRoleArn: undefined,
           taskDefinitionArn: undefined,
           family: undefined,
           revision: undefined,
           logGroup: undefined,
           region: undefined,
-          name: undefined,
         }
       : args;
     super(
@@ -267,7 +268,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     }
     this.region = args.region;
 
-    this.name = name;
+    componentNames.set(this, name);
 
     const compatibilities = [...new Set(args.compatibilities ?? [TaskCompatibility.FARGATE])];
     if (
@@ -364,22 +365,21 @@ export class TaskDefinition extends pulumi.ComponentResource {
       : { cpu: args.cpuUnits, memory: args.memoryMiB };
 
     const family = args.family ?? name;
+    let executionRole: native.iam.Role;
+    let taskRole: native.iam.Role;
     if (args.executionRoleArn) {
-      this.executionRole = aws.iam.Role.get(
-        `${this.name}-execution-role`,
+      executionRole = native.iam.Role.get(
+        `${componentNames.get(this)!}-execution-role`,
         roleNameFromArn(args.executionRoleArn, this),
-        undefined,
         {
           parent: this,
         },
       );
     } else {
-      this.executionRole = new aws.iam.Role(
+      executionRole = new native.iam.Role(
         `${name}-execution-role`,
         {
-          // Retained secret policies must not prevent this role from being deleted.
-          forceDetachPolicies: true,
-          assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
+          assumeRolePolicyDocument: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
           ),
         },
@@ -388,25 +388,28 @@ export class TaskDefinition extends pulumi.ComponentResource {
     }
 
     if (args.taskRoleArn) {
-      this.taskRole = aws.iam.Role.get(
-        `${this.name}-task-role`,
+      taskRole = native.iam.Role.get(
+        `${componentNames.get(this)!}-task-role`,
         roleNameFromArn(args.taskRoleArn, this),
-        undefined,
         {
           parent: this,
         },
       );
     } else {
-      this.taskRole = new aws.iam.Role(
+      taskRole = new native.iam.Role(
         `${name}-task-role`,
         {
-          assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal(
+          assumeRolePolicyDocument: aws.iam.assumeRolePolicyForPrincipal(
             aws.iam.Principals.EcsTasksPrincipal,
           ),
         },
         { parent: this },
       );
     }
+
+    executionRoles.set(this, executionRole);
+    this.executionRoleArn = executionRole.arn;
+    this.taskRoleArn = taskRole.arn;
 
     const executionRoleStatements: pulumi.Output<ResolvedPolicyStatement | undefined>[] = [];
     const ecrRepositories: pulumi.Output<string | undefined>[] = [];
@@ -450,11 +453,14 @@ export class TaskDefinition extends pulumi.ComponentResource {
       );
     });
 
-    const rolePolicy = new aws.iam.RolePolicy(
+    const rolePolicy = new native.iam.RolePolicy(
       `${name}-execution-role-policy`,
       {
-        role: this.executionRole.name,
-        policy: this.renderContainerExecRolePolicy(executionRoleStatements, ecrRepositories),
+        roleName: executionRole.id,
+        policyDocument: this.renderContainerExecRolePolicy(
+          executionRoleStatements,
+          ecrRepositories,
+        ),
       },
       { parent: this },
     );
@@ -482,8 +488,8 @@ export class TaskDefinition extends pulumi.ComponentResource {
         cpu: cpu !== undefined ? `${cpu}` : undefined,
         memory: memory !== undefined ? `${memory}` : undefined,
         requiresCompatibilities: compatibilities,
-        executionRoleArn: this.executionRole.arn,
-        taskRoleArn: this.taskRole.arn,
+        executionRoleArn: this.executionRoleArn,
+        taskRoleArn: this.taskRoleArn,
         networkMode: 'awsvpc',
         runtimePlatform: args.cpuArchitecture
           ? {
@@ -518,13 +524,12 @@ export class TaskDefinition extends pulumi.ComponentResource {
     this.revision = taskIdentity.apply((value) => value.revision);
 
     this.registerOutputs({
-      executionRole: this.executionRole,
-      taskRole: this.taskRole,
+      executionRoleArn: this.executionRoleArn,
+      taskRoleArn: this.taskRoleArn,
       taskDefinitionArn: this.taskDefinitionArn,
       family: this.family,
       revision: this.revision,
       logGroup: this.logGroup,
-      name: this.name,
       region: this.region,
     });
   }
@@ -536,7 +541,12 @@ export class TaskDefinition extends pulumi.ComponentResource {
    * @returns The inherited provider region.
    */
   private getProviderRegion(): pulumi.Output<string> {
-    return (this.providerRegion ??= aws.getRegionOutput(undefined, { parent: this }).region);
+    let region = providerRegions.get(this);
+    if (!region) {
+      region = aws.getRegionOutput(undefined, { parent: this }).region;
+      providerRegions.set(this, region);
+    }
+    return region;
   }
 
   /**
@@ -547,7 +557,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
   private obtainDefaultLogGroup(): aws.cloudwatch.LogGroup {
     if (!this.logGroup) {
       this.logGroup = new aws.cloudwatch.LogGroup(
-        `${this.name}-log-group`,
+        `${componentNames.get(this)!}-log-group`,
         {
           region: this.region,
         },
@@ -602,10 +612,10 @@ export class TaskDefinition extends pulumi.ComponentResource {
   private renderContainerExecRolePolicy(
     statements: pulumi.Output<ResolvedPolicyStatement | undefined>[],
     ecrRepositories: pulumi.Output<string | undefined>[],
-  ): pulumi.Output<string> {
+  ): pulumi.Output<pulumi.Unwrap<input.iam.PolicyDocument>> {
     return pulumi
       .all([statements, ecrRepositories])
-      .apply(([resolvedStatements, resolvedRepos]) => {
+      .apply(([resolvedStatements, resolvedRepos]): pulumi.Unwrap<input.iam.PolicyDocument> => {
         const uniqueStatements = new Map<string, ResolvedPolicyStatement>();
         const uniqueRepos = new Set<string>();
         for (const repo of resolvedRepos) {
@@ -631,7 +641,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
           const key = JSON.stringify(statement);
           uniqueStatements.set(key, statement);
         }
-        return JSON.stringify({
+        return {
           Version: '2012-10-17',
           // We have to have at least one statement otherwise we create a role policy with and empty statements which is not allowed
           // All execution roles will get this policy even if they don't need to pull from ECR
@@ -643,7 +653,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
             },
             ...uniqueStatements.values(),
           ],
-        });
+        };
       });
   }
 
@@ -677,7 +687,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
         reason: 'Specify exactly one of key or config for the credential specification',
       });
     }
-    const name = `${this.name}-${containerName}-credential-spec`;
+    const name = `${componentNames.get(this)!}-${containerName}-credential-spec`;
     const bucketName = Arn.split(spec.bucketArn, ArnFormat.NO_RESOURCE_NAME, this).apply(
       (parts) => parts.resource,
     );
@@ -872,7 +882,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     name: string,
     value: pulumi.Output<string>,
   ): pulumi.Output<ecs.TaskDefinitionSecretArgs> {
-    const resourceName = `${this.name}-${containerName}-${name}-environment`;
+    const resourceName = `${componentNames.get(this)!}-${containerName}-${name}-environment`;
     const opts = { parent: this, retainOnDelete: true };
     const secret = new aws.secretsmanager.Secret(resourceName, { region: this.region }, opts);
     const version = new aws.secretsmanager.SecretVersion(
@@ -886,11 +896,11 @@ export class TaskDefinition extends pulumi.ComponentResource {
     );
     // Keep permissions with retained storage. Removing a variable must not revoke
     // access needed by older task definitions using the same execution role.
-    const policy = new aws.iam.RolePolicy(
+    const policy = new native.iam.RolePolicy(
       `${resourceName}-policy`,
       {
-        role: this.executionRole.name,
-        policy: pulumi.jsonStringify({
+        roleName: executionRoles.get(this)!.id,
+        policyDocument: {
           Version: '2012-10-17',
           Statement: [
             {
@@ -899,7 +909,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
               Resource: secret.arn,
             },
           ],
-        }),
+        },
       },
       opts,
     );
@@ -934,7 +944,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       },
     );
     const secret = aws.secretsmanager.Secret.get(
-      `${this.name}-${containerName}-${name}-secret`,
+      `${componentNames.get(this)!}-${containerName}-${name}-secret`,
       source.secretArn,
       { region: secretRegion },
       { parent: this },
@@ -979,7 +989,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     parameterArn: pulumi.Input<string>,
   ): Rendered<ecs.TaskDefinitionSecretArgs> {
     const parameter = aws.ssm.Parameter.get(
-      `${this.name}-${containerName}-secret-${name}-param`,
+      `${componentNames.get(this)!}-${containerName}-secret-${name}-param`,
       parameterNameFromArn(parameterArn, this.getProviderRegion(), this),
       undefined,
       { parent: this },
@@ -1084,7 +1094,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
    */
   private renderCloudWatchLogDriver(
     containerName: string,
-    driver?: AwsLogsLogDriver,
+    driver?: CloudWatchLogging,
   ): Rendered<ecs.TaskDefinitionLogConfigurationArgs> | undefined {
     if (!driver) {
       return;
@@ -1099,7 +1109,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
     let logGroup: aws.cloudwatch.LogGroup | undefined = undefined;
     if (driver.logGroupArn) {
       logGroup = aws.cloudwatch.LogGroup.get(
-        `${this.name}-${containerName}-log-group`,
+        `${componentNames.get(this)!}-${containerName}-log-group`,
         logGroupNameFromArn(driver.logGroupArn, this.getProviderRegion(), this),
         undefined,
         {
@@ -1112,7 +1122,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
       .all([
         logGroup.name,
         logGroup.region,
-        driver.streamPrefix ?? this.name,
+        driver.streamPrefix ?? componentNames.get(this)!,
         driver.datetimeFormat,
         driver.multilinePattern,
         driver.mode,
@@ -1168,7 +1178,7 @@ export class TaskDefinition extends pulumi.ComponentResource {
   private toContainerDefinition(
     containerName: string,
     options: Omit<
-      ContainerDefinitionOptions,
+      ContainerDefinition,
       'credentialSpec' | 'environmentFiles' | 'environment' | 'logging'
     >,
     credentialSpecs?: pulumi.Output<string>[],
@@ -1375,10 +1385,7 @@ function logGroupNameFromArn(
  * @param options The container configuration.
  * @param path The input property path.
  */
-export function validateFargateContainerOptions(
-  options: ContainerDefinitionOptions,
-  path: string,
-): void {
+export function validateFargateContainerOptions(options: ContainerDefinition, path: string): void {
   options.linuxParameters?.capabilities?.add?.forEach((capability, index) => {
     if (capability !== 'SYS_PTRACE') {
       throw new pulumi.InputPropertyError({

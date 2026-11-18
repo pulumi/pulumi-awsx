@@ -1,0 +1,3 @@
+name: ecs-task-definition-nodejs
+runtime: nodejs
+description: AWSX ECS task definition SDK acceptance test

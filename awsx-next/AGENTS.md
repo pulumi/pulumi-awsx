@@ -3,7 +3,7 @@
 ## Source-based package exports
 
 This directory implements a Pulumi source-based plugin, not a consumer-facing
-Node.js library. Users consume SDKs generated from its inferred schema.
+Node.js library. Users consume the normal AWSX SDKs generated from the merged schema.
 
 - `index.ts` must export each public component class as a runtime value. Use
   explicit named class exports, not `export *` barrels. A type-only export cannot
@@ -23,6 +23,17 @@ Validate with `pulumi package get-schema ./awsx-next` from the repository root.
 `npm --prefix awsx-next run test:plugin` is a schema-inference smoke check. For
 export changes, compare the actual schemas, including descriptions, enum members,
 required fields, and references.
+
+## Provider integration constraints
+
+- `TaskDefinition` and `Service` publish as `awsx:ecs:TaskDefinition` and
+  `awsx:ecs:Service`. Preserve their standalone source-plugin identities when
+  changing provider registration.
+- Keep AWS, AWS Native, and Pulumi dependencies aligned with `awsx/package.json`.
+- Public args and outputs are stable SDK surface. Regenerate the combined schema
+  and language SDKs after changing them.
+- Keep internal caches outside component instance properties, such as in a
+  `WeakMap`, so schema inference does not publish implementation state as outputs.
 
 The public entrypoint exports `TaskDefinition` and `Service`.
 Task definitions use AWS Native's structured container inputs internally. Keep

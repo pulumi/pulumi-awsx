@@ -1,5 +1,5 @@
 import * as pulumi from '@pulumi/pulumi';
-import type { ContainerDefinitionOptions } from './containerDefinition';
+import type { ContainerDefinition } from './containerDefinition';
 
 /**
  * Validates the AWSX container configuration before rendering Native inputs.
@@ -7,7 +7,7 @@ import type { ContainerDefinitionOptions } from './containerDefinition';
  * @param options The container configuration.
  * @param path The container's input property path.
  */
-export function validateContainerOptions(options: ContainerDefinitionOptions, path: string): void {
+export function validateContainerOptions(options: ContainerDefinition, path: string): void {
   if (
     options.memoryMiB !== undefined &&
     options.memoryReservationMiB !== undefined &&
