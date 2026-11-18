@@ -1,3 +1,0 @@
-name: ecs-task-definition-permissions
-runtime: nodejs
-description: Exercise AWSX-generated execution-role permissions with real Fargate tasks

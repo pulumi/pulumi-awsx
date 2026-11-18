@@ -1,6 +1,0 @@
-**/node_modules/
-**/venv/
-**/.venv/
-**/bin/
-**/obj/
-**/grpc.json
