@@ -43,6 +43,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/diag/colors"
 
+	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/docgen"
 	gen "github.com/pulumi/pulumi-awsx/provider/v3/pkg/schemagen"
 	"github.com/pulumi/pulumi-awsx/provider/v3/pkg/version"
 )
@@ -95,7 +96,7 @@ func parseLanguage(text string) (Language, error) {
 }
 
 func rootCmd() *cobra.Command {
-	var outDir string
+	var outDir, docsOutDir string
 	cmd := &cobra.Command{
 		Use:   Tool,
 		Short: "Pulumi Package Schema and SDK generator for pulumi-awsx",
@@ -117,21 +118,45 @@ func rootCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return generate(lang, cwd, outDir)
+			if docsOutDir != "" && lang != Schema {
+				return fmt.Errorf("--docs-out is supported only for schema generation")
+			}
+			return generate(lang, cwd, outDir, docsOutDir)
 		},
 	}
 	cmd.PersistentFlags().StringVarP(&outDir, "out", "o", "", "Emit the generated code to this directory")
+	cmd.PersistentFlags().StringVar(&docsOutDir, "docs-out", "", "Write generated landing pages here instead of docs/")
 	return cmd
 }
 
-func generate(language Language, cwd, outDir string) error {
-	pkgSpec := gen.GenerateSchema(filepath.Join(cwd, packageDir))
+func generate(language Language, cwd, outDir, docsOutDir string) error {
 	if language == Schema {
+		pkgSpec := gen.GenerateSchema(filepath.Join(cwd, packageDir))
+		if err := enrichComponentDocs(&pkgSpec, cwd); err != nil {
+			return err
+		}
+		if docsOutDir == "" {
+			docsOutDir = filepath.Join(cwd, "docs")
+		}
+		if err := docgen.GenerateLandingPagesTo(&pkgSpec, filepath.Join(cwd, "docs", "source"), docsOutDir); err != nil {
+			return err
+		}
 		return writePulumiSchema(pkgSpec, outDir)
 	}
 
-	// The checked-in schema is the all-language docs source of truth. Filter it per SDK target
-	// before generation so chooser blocks and inflected identifiers don't leak into every SDK.
+	// Make refreshes this schema before generating SDKs. Reuse its inferred types and converted
+	// examples instead of repeating inference and every documentation conversion for each SDK.
+	schemaPath := filepath.Join(cwd, "provider", "cmd", "pulumi-resource-awsx", "schema.json")
+	raw, err := os.ReadFile(schemaPath)
+	if err != nil {
+		return fmt.Errorf("read generated schema, run make schema first: %w", err)
+	}
+	var pkgSpec schema.PackageSpec
+	if err := json.Unmarshal(raw, &pkgSpec); err != nil {
+		return fmt.Errorf("parse generated schema %s: %w", schemaPath, err)
+	}
+
+	// Filter the all-language docs per SDK so chooser blocks and inflected identifiers don't leak.
 	filteredSpec, filteredSchemaJSON, err := filterSchema(pkgSpec, version.Version, language)
 	if err != nil {
 		return err
@@ -167,6 +192,10 @@ func generate(language Language, cwd, outDir string) error {
 	default:
 		return fmt.Errorf("unrecognized language %q", language)
 	}
+}
+
+func enrichComponentDocs(spec *schema.PackageSpec, root string) error {
+	return docgen.Enrich(spec, filepath.Join(root, "awsx-next", "docs"))
 }
 
 func filterSchema(pkgSpec schema.PackageSpec, version string, language Language) (schema.PackageSpec, []byte, error) {

@@ -35,6 +35,13 @@ required fields, and references.
 - Keep internal caches outside component instance properties, such as in a
   `WeakMap`, so schema inference does not publish implementation state as outputs.
 
+## Component authoring
+
+- Use schema-compatible public argument and output types, with constructor parameters `name`, `args`, and optional `opts` so Pulumi can infer the schema.
+- Assign public outputs before calling `registerOutputs`.
+- Do not bundle the source entry point. Pulumi analyzes its TypeScript declarations.
+- Keep the package CommonJS-compatible. The Pulumi Node.js plugin host loads the entry point through `require()`.
+
 The public entrypoint exports `TaskDefinition` and `Service`.
 Task definitions use AWS Native's structured container inputs internally. Keep
 AWSX user-facing container types independent and do not add a parallel raw ECS

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Serve the local AWSX registry preview"
+#MISE depends=["docs:build"]
+set -euo pipefail
+
+: "${REGISTRY_DIR:?Set REGISTRY_DIR=/path/to/pulumi-registry}"
+registry=$(cd "$REGISTRY_DIR" && pwd -P)
+site="$registry/.make/awsx-docs-preview-site"
+[[ -f "$site/go.mod" ]] || { echo "Run mise run docs:build first" >&2; exit 1; }
+export GOMEMLIMIT="${GOMEMLIMIT:-2GiB}" GOMAXPROCS="${GOMAXPROCS:-2}"
+port=${DOCS_PREVIEW_PORT:-1313}
+cd "$site"
+exec "$(mise which hugo)" server \
+    --bind 127.0.0.1 --port "$port" --baseURL "http://localhost:$port/" \
+    --buildDrafts --buildFuture --disableFastRender \
+    --ignoreVendorPaths='github.com/pulumi/registry/**/*'
