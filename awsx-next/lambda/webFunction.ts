@@ -183,7 +183,7 @@ export class WebFunction extends pulumi.ComponentResource {
       },
       { parent: this },
     );
-    const versioning = new aws.s3.BucketVersioningV2(
+    const versioning = new aws.s3.BucketVersioning(
       `${name}-code`,
       { region, bucket: bucket.id, versioningConfiguration: { status: 'Enabled' } },
       { parent: this },
