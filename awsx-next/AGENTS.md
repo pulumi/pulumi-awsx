@@ -35,6 +35,12 @@ required fields, and references.
 - Keep internal caches outside component instance properties, such as in a
   `WeakMap`, so schema inference does not publish implementation state as outputs.
 
+## Documentation
+
+After editing component docs under `docs/`, run `make generate` from the repository
+root and commit the updated schema and SDK descriptions. `make schema` alone leaves
+the SDK documentation stale and fails CI's regeneration check.
+
 ## Component authoring
 
 - Use schema-compatible public argument and output types, with constructor parameters `name`, `args`, and optional `opts` so Pulumi can infer the schema.
