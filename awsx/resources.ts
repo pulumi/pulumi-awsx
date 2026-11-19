@@ -22,9 +22,11 @@ import * as schemaTypes from "./schema-types";
 import { TaskDefinition } from "@pulumi/awsx-next/src/ecs/taskDefinition";
 import { Service } from "@pulumi/awsx-next/src/ecs/service";
 import { WebFunction } from "@pulumi/awsx-next/src/lambda/webFunction";
+import { WebFunctionEndpoint } from "@pulumi/awsx-next/src/lambda/webFunctionEndpoint";
 
 type NextResourceConstructors = {
   "awsx:lambda:WebFunction": schemaTypes.ConstructComponent<WebFunction>;
+  "awsx:lambda:WebFunctionEndpoint": schemaTypes.ConstructComponent<WebFunctionEndpoint>;
   "awsx:ecs:TaskDefinition": schemaTypes.ConstructComponent<TaskDefinition>;
   "awsx:ecs:Service": schemaTypes.ConstructComponent<Service>;
 };
@@ -42,6 +44,8 @@ const resources: schemaTypes.ResourceConstructor & NextResourceConstructors = {
     }),
   "awsx:lambda:WebFunction": (name, args, opts) =>
     new WebFunction(name, args, opts, { type: "awsx:lambda:WebFunction", aliases: [] }),
+  "awsx:lambda:WebFunctionEndpoint": (name, args, opts) =>
+    new WebFunctionEndpoint(name, args, opts, { type: "awsx:lambda:WebFunctionEndpoint", aliases: [] }),
   "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
   "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
   "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),

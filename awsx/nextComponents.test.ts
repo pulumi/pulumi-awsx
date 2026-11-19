@@ -17,6 +17,7 @@ import { construct } from "./resources";
 import { TaskDefinition } from "@pulumi/awsx-next/src/ecs/taskDefinition";
 import { Service } from "@pulumi/awsx-next/src/ecs/service";
 import { WebFunction } from "@pulumi/awsx-next/src/lambda/webFunction";
+import { WebFunctionEndpoint } from "@pulumi/awsx-next/src/lambda/webFunctionEndpoint";
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const region = "us-west-2";
@@ -35,6 +36,9 @@ beforeAll(async () => {
         state.taskDefinitionArn = `arn:aws:ecs:${region}:${accountId}:task-definition/${args.name}:1`;
       } else if (args.type === "aws:ecs/service:Service") {
         state.arn = `arn:aws:ecs:${region}:${accountId}:service/cluster/${args.name}`;
+      } else if (args.type === "aws-native:lambda:WebFunctionEndpoint") {
+        state.endpointArn = `arn:aws:lambda:${region}:${accountId}:web-function/test/endpoint/${args.name}`;
+        state.domainName = "example.lambda.test";
       } else if (args.type === "aws:iam/role:Role") {
         state.arn = `arn:aws:iam::${accountId}:role/${args.name}`;
       }
@@ -83,6 +87,30 @@ test("provider registration uses the AWSX Lambda WebFunction identity", async ()
   expect(component).toBeInstanceOf(WebFunction);
   expect(await unwrap(component!.urn)).toContain("::awsx:lambda:WebFunction::");
   expect(construct("obsolete", "awsx-next:index:WebFunction", {}, {})).toBeUndefined();
+});
+
+test("provider constructs a Lambda endpoint with the resolved function name and default routing", async () => {
+  const endpoint = construct(
+    "integrated-endpoint",
+    "awsx:lambda:WebFunctionEndpoint",
+    {
+      functionName: pulumi.output("test"),
+      revisions: [{ revisionId: pulumi.output("revision-1") }],
+      authType: "ApplicationManaged",
+    },
+    {},
+  ) as WebFunctionEndpoint;
+
+  expect(endpoint).toBeInstanceOf(WebFunctionEndpoint);
+  expect(await unwrap(endpoint.urn)).toContain("::awsx:lambda:WebFunctionEndpoint::");
+  expect(await unwrap(endpoint.url)).toBe("https://example.lambda.test");
+  expect(
+    resources.find((resource) => resource.type === "aws-native:lambda:WebFunctionEndpoint")?.inputs,
+  ).toMatchObject({
+    functionName: "test",
+    endpointType: "HomeRegion",
+    revisionWeights: [{ revisionId: "revision-1", weight: 100 }],
+  });
 });
 
 test("provider registration composes the current task and service with AWSX identities", async () => {

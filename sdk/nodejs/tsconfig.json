@@ -129,6 +129,7 @@
         "index.ts",
         "lambda/index.ts",
         "lambda/webFunction.ts",
+        "lambda/webFunctionEndpoint.ts",
         "lb/applicationLoadBalancer.ts",
         "lb/index.ts",
         "lb/networkLoadBalancer.ts",

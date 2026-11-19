@@ -25,6 +25,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 	switch typ {
 	case "awsx:lambda:WebFunction":
 		r = &WebFunction{}
+	case "awsx:lambda:WebFunctionEndpoint":
+		r = &WebFunctionEndpoint{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}

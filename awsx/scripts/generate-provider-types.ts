@@ -25,6 +25,7 @@ function getExternallyImplementedTokens(schema: pulumiSchema.PulumiPackageMetasc
     "awsx:ecs:TaskDefinition",
     "awsx:ecs:Service",
     "awsx:lambda:WebFunction",
+    "awsx:lambda:WebFunctionEndpoint",
   ]);
   function visit(value: unknown): void {
     if (Array.isArray(value)) {

@@ -8,4 +8,5 @@ import typing
 # Export this package's modules as members:
 from ._enums import *
 from .web_function import *
+from .web_function_endpoint import *
 from ._inputs import *

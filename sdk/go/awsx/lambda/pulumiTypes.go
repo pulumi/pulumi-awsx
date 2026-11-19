@@ -68,7 +68,123 @@ func (o WebFunctionCodeOutput) Archive() pulumi.ArchiveOutput {
 	return o.ApplyT(func(v WebFunctionCode) pulumi.Archive { return v.Archive }).(pulumi.ArchiveOutput)
 }
 
+type WebFunctionRevisionWeight struct {
+	// ID of a published revision of the endpoint's function.
+	RevisionId string `pulumi:"revisionId"`
+	// Integer percentage of traffic to send to this revision.
+	//
+	// Default - 100 for a single revision. Required for each entry when splitting traffic.
+	Weight *float64 `pulumi:"weight"`
+}
+
+// WebFunctionRevisionWeightInput is an input type that accepts WebFunctionRevisionWeightArgs and WebFunctionRevisionWeightOutput values.
+// You can construct a concrete instance of `WebFunctionRevisionWeightInput` via:
+//
+//	WebFunctionRevisionWeightArgs{...}
+type WebFunctionRevisionWeightInput interface {
+	pulumi.Input
+
+	ToWebFunctionRevisionWeightOutput() WebFunctionRevisionWeightOutput
+	ToWebFunctionRevisionWeightOutputWithContext(context.Context) WebFunctionRevisionWeightOutput
+}
+
+type WebFunctionRevisionWeightArgs struct {
+	// ID of a published revision of the endpoint's function.
+	RevisionId pulumi.StringInput `pulumi:"revisionId"`
+	// Integer percentage of traffic to send to this revision.
+	//
+	// Default - 100 for a single revision. Required for each entry when splitting traffic.
+	Weight pulumi.Float64PtrInput `pulumi:"weight"`
+}
+
+func (WebFunctionRevisionWeightArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionRevisionWeight)(nil)).Elem()
+}
+
+func (i WebFunctionRevisionWeightArgs) ToWebFunctionRevisionWeightOutput() WebFunctionRevisionWeightOutput {
+	return i.ToWebFunctionRevisionWeightOutputWithContext(context.Background())
+}
+
+func (i WebFunctionRevisionWeightArgs) ToWebFunctionRevisionWeightOutputWithContext(ctx context.Context) WebFunctionRevisionWeightOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(WebFunctionRevisionWeightOutput)
+}
+
+// WebFunctionRevisionWeightArrayInput is an input type that accepts WebFunctionRevisionWeightArray and WebFunctionRevisionWeightArrayOutput values.
+// You can construct a concrete instance of `WebFunctionRevisionWeightArrayInput` via:
+//
+//	WebFunctionRevisionWeightArray{ WebFunctionRevisionWeightArgs{...} }
+type WebFunctionRevisionWeightArrayInput interface {
+	pulumi.Input
+
+	ToWebFunctionRevisionWeightArrayOutput() WebFunctionRevisionWeightArrayOutput
+	ToWebFunctionRevisionWeightArrayOutputWithContext(context.Context) WebFunctionRevisionWeightArrayOutput
+}
+
+type WebFunctionRevisionWeightArray []WebFunctionRevisionWeightInput
+
+func (WebFunctionRevisionWeightArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]WebFunctionRevisionWeight)(nil)).Elem()
+}
+
+func (i WebFunctionRevisionWeightArray) ToWebFunctionRevisionWeightArrayOutput() WebFunctionRevisionWeightArrayOutput {
+	return i.ToWebFunctionRevisionWeightArrayOutputWithContext(context.Background())
+}
+
+func (i WebFunctionRevisionWeightArray) ToWebFunctionRevisionWeightArrayOutputWithContext(ctx context.Context) WebFunctionRevisionWeightArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(WebFunctionRevisionWeightArrayOutput)
+}
+
+type WebFunctionRevisionWeightOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionRevisionWeightOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionRevisionWeight)(nil)).Elem()
+}
+
+func (o WebFunctionRevisionWeightOutput) ToWebFunctionRevisionWeightOutput() WebFunctionRevisionWeightOutput {
+	return o
+}
+
+func (o WebFunctionRevisionWeightOutput) ToWebFunctionRevisionWeightOutputWithContext(ctx context.Context) WebFunctionRevisionWeightOutput {
+	return o
+}
+
+// ID of a published revision of the endpoint's function.
+func (o WebFunctionRevisionWeightOutput) RevisionId() pulumi.StringOutput {
+	return o.ApplyT(func(v WebFunctionRevisionWeight) string { return v.RevisionId }).(pulumi.StringOutput)
+}
+
+// Integer percentage of traffic to send to this revision.
+//
+// Default - 100 for a single revision. Required for each entry when splitting traffic.
+func (o WebFunctionRevisionWeightOutput) Weight() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v WebFunctionRevisionWeight) *float64 { return v.Weight }).(pulumi.Float64PtrOutput)
+}
+
+type WebFunctionRevisionWeightArrayOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionRevisionWeightArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]WebFunctionRevisionWeight)(nil)).Elem()
+}
+
+func (o WebFunctionRevisionWeightArrayOutput) ToWebFunctionRevisionWeightArrayOutput() WebFunctionRevisionWeightArrayOutput {
+	return o
+}
+
+func (o WebFunctionRevisionWeightArrayOutput) ToWebFunctionRevisionWeightArrayOutputWithContext(ctx context.Context) WebFunctionRevisionWeightArrayOutput {
+	return o
+}
+
+func (o WebFunctionRevisionWeightArrayOutput) Index(i pulumi.IntInput) WebFunctionRevisionWeightOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) WebFunctionRevisionWeight {
+		return vs[0].([]WebFunctionRevisionWeight)[vs[1].(int)]
+	}).(WebFunctionRevisionWeightOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionCodeInput)(nil)).Elem(), WebFunctionCodeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionRevisionWeightInput)(nil)).Elem(), WebFunctionRevisionWeightArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionRevisionWeightArrayInput)(nil)).Elem(), WebFunctionRevisionWeightArray{})
 	pulumi.RegisterOutputType(WebFunctionCodeOutput{})
+	pulumi.RegisterOutputType(WebFunctionRevisionWeightOutput{})
+	pulumi.RegisterOutputType(WebFunctionRevisionWeightArrayOutput{})
 }

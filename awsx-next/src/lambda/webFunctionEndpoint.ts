@@ -1,5 +1,6 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as native from '@pulumi/aws-native';
+import type { ComponentIdentity } from '../componentIdentity';
 
 /**
  * Who authorizes requests to the endpoint.
@@ -56,9 +57,9 @@ export interface WebFunctionRevisionWeight {
  */
 export interface WebFunctionEndpointArgs {
   /**
-   * ARN of the Web Function to serve.
+   * Name of the Web Function to serve.
    */
-  functionArn: pulumi.Input<string>;
+  functionName: pulumi.Input<string>;
 
   /**
    * Choose `IamAuth` to let Lambda check whether the caller has permission. Choose
@@ -156,26 +157,33 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
     name: string,
     args: WebFunctionEndpointArgs,
     opts: pulumi.ComponentResourceOptions = {},
+    identity: ComponentIdentity = { type: 'awsx-next:index:WebFunctionEndpoint', aliases: [] },
   ) {
     super(
-      'awsx-next:index:WebFunctionEndpoint',
+      identity.type,
       name,
       opts.urn ? { endpointArn: undefined, url: undefined, regionalUrls: undefined } : args,
-      opts,
+      pulumi.mergeOptions(opts, { aliases: identity.aliases }),
     );
     if (opts.urn) {
       return;
     }
 
     const endpointType = args.endpointType ?? WebFunctionEndpointType.HOME_REGION;
+    const homeRegion =
+      args.regions === undefined ? undefined : native.getRegionOutput({ parent: this }).region;
     const endpoint = new native.lambda.WebFunctionEndpoint(
       name,
       {
-        functionName: args.functionArn,
+        functionName: args.functionName,
         endpointName: args.endpointName,
         authType: args.authType,
         endpointType,
-        regions: resolveRegions(args.functionArn, endpointType, args.regions),
+        regions: pulumi
+          .output({ homeRegion, endpointType, regions: args.regions })
+          .apply((values) =>
+            resolveRegions(values.homeRegion, values.endpointType, values.regions),
+          ),
         revisionWeights: pulumi.output(args.revisions).apply(resolveRevisionWeights),
         // Send an empty config when a limit is removed. Omitting the config would leave the
         // old limit in effect.
@@ -217,40 +225,37 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
 /**
  * Normalize the serving Regions to a stable list of replicas. Lambda adds the home Region.
  *
- * @param functionArn The function ARN, which includes its home Region.
+ * @param homeRegion The Region of the endpoint's AWS Native provider.
  * @param endpointType The requested endpoint type.
  * @param regions Requested serving Regions.
  * @returns The sorted replica Regions, or undefined for a home-only endpoint.
  */
-function resolveRegions(
-  functionArn: pulumi.Input<string>,
-  endpointType: pulumi.Input<WebFunctionEndpointType>,
-  regions: WebFunctionEndpointArgs['regions'],
-): pulumi.Output<string[] | undefined> {
-  return pulumi.output({ functionArn, endpointType, regions }).apply((values) => {
-    const homeRegion = values.functionArn.split(':')[3];
-    const replicas = [...new Set(values.regions ?? [])].filter((region) => region !== homeRegion);
-    // eslint-disable-next-line unicorn/no-array-sort -- The component targets ES2022.
-    replicas.sort();
-    if (values.endpointType === WebFunctionEndpointType.HOME_REGION) {
-      if (replicas.length !== 0) {
-        throw new pulumi.InputPropertyError({
-          propertyPath: 'regions',
-          reason:
-            'HomeRegion endpoints cannot serve additional Regions. Use MultiRegion or PerRegion.',
-        });
-      }
-      return undefined;
-    }
-    if (replicas.length === 0) {
+export function resolveRegions(
+  homeRegion: string | undefined,
+  endpointType: WebFunctionEndpointType,
+  regions: string[] | undefined,
+): string[] | undefined {
+  const replicas = [...new Set(regions ?? [])].filter((region) => region !== homeRegion);
+  // eslint-disable-next-line unicorn/no-array-sort -- The component targets ES2022.
+  replicas.sort();
+  if (endpointType === WebFunctionEndpointType.HOME_REGION) {
+    if (replicas.length !== 0) {
       throw new pulumi.InputPropertyError({
         propertyPath: 'regions',
         reason:
-          'MultiRegion and PerRegion endpoints require at least one Region other than the home Region.',
+          'HomeRegion endpoints cannot serve additional Regions. Use MultiRegion or PerRegion.',
       });
     }
-    return replicas;
-  });
+    return undefined;
+  }
+  if (replicas.length === 0) {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'regions',
+      reason:
+        'MultiRegion and PerRegion endpoints require at least one Region other than the home Region.',
+    });
+  }
+  return replicas;
 }
 
 /**
@@ -259,7 +264,7 @@ function resolveRegions(
  * @param revisions The resolved routing entries.
  * @returns The routing entries with explicit weights.
  */
-function resolveRevisionWeights(
+export function resolveRevisionWeights(
   revisions: { revisionId: string; weight?: number }[],
 ): { revisionId: string; weight: number }[] {
   if (revisions.length < 1 || revisions.length > 2) {

@@ -10,6 +10,344 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+type WebFunctionAuthType string
+
+const (
+	// Lambda checks that the caller has permission to invoke this endpoint using AWS credentials.
+	WebFunctionAuthTypeIAM = WebFunctionAuthType("IamAuth")
+	// Anyone can reach the app at this URL. The app decides whether to require a login or token.
+	WebFunctionAuthType_APPLICATION_MANAGED = WebFunctionAuthType("ApplicationManaged")
+)
+
+func (WebFunctionAuthType) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionAuthType)(nil)).Elem()
+}
+
+func (e WebFunctionAuthType) ToWebFunctionAuthTypeOutput() WebFunctionAuthTypeOutput {
+	return pulumi.ToOutput(e).(WebFunctionAuthTypeOutput)
+}
+
+func (e WebFunctionAuthType) ToWebFunctionAuthTypeOutputWithContext(ctx context.Context) WebFunctionAuthTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(WebFunctionAuthTypeOutput)
+}
+
+func (e WebFunctionAuthType) ToWebFunctionAuthTypePtrOutput() WebFunctionAuthTypePtrOutput {
+	return e.ToWebFunctionAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (e WebFunctionAuthType) ToWebFunctionAuthTypePtrOutputWithContext(ctx context.Context) WebFunctionAuthTypePtrOutput {
+	return WebFunctionAuthType(e).ToWebFunctionAuthTypeOutputWithContext(ctx).ToWebFunctionAuthTypePtrOutputWithContext(ctx)
+}
+
+func (e WebFunctionAuthType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e WebFunctionAuthType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e WebFunctionAuthType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e WebFunctionAuthType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type WebFunctionAuthTypeOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionAuthTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionAuthType)(nil)).Elem()
+}
+
+func (o WebFunctionAuthTypeOutput) ToWebFunctionAuthTypeOutput() WebFunctionAuthTypeOutput {
+	return o
+}
+
+func (o WebFunctionAuthTypeOutput) ToWebFunctionAuthTypeOutputWithContext(ctx context.Context) WebFunctionAuthTypeOutput {
+	return o
+}
+
+func (o WebFunctionAuthTypeOutput) ToWebFunctionAuthTypePtrOutput() WebFunctionAuthTypePtrOutput {
+	return o.ToWebFunctionAuthTypePtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionAuthTypeOutput) ToWebFunctionAuthTypePtrOutputWithContext(ctx context.Context) WebFunctionAuthTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v WebFunctionAuthType) *WebFunctionAuthType {
+		return &v
+	}).(WebFunctionAuthTypePtrOutput)
+}
+
+func (o WebFunctionAuthTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o WebFunctionAuthTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e WebFunctionAuthType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o WebFunctionAuthTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionAuthTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e WebFunctionAuthType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type WebFunctionAuthTypePtrOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionAuthTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**WebFunctionAuthType)(nil)).Elem()
+}
+
+func (o WebFunctionAuthTypePtrOutput) ToWebFunctionAuthTypePtrOutput() WebFunctionAuthTypePtrOutput {
+	return o
+}
+
+func (o WebFunctionAuthTypePtrOutput) ToWebFunctionAuthTypePtrOutputWithContext(ctx context.Context) WebFunctionAuthTypePtrOutput {
+	return o
+}
+
+func (o WebFunctionAuthTypePtrOutput) Elem() WebFunctionAuthTypeOutput {
+	return o.ApplyT(func(v *WebFunctionAuthType) WebFunctionAuthType {
+		if v != nil {
+			return *v
+		}
+		var ret WebFunctionAuthType
+		return ret
+	}).(WebFunctionAuthTypeOutput)
+}
+
+func (o WebFunctionAuthTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionAuthTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *WebFunctionAuthType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// WebFunctionAuthTypeInput is an input type that accepts values of the WebFunctionAuthType enum
+// A concrete instance of `WebFunctionAuthTypeInput` can be one of the following:
+//
+//	WebFunctionAuthTypeIAM
+//	WebFunctionAuthType_APPLICATION_MANAGED
+type WebFunctionAuthTypeInput interface {
+	pulumi.Input
+
+	ToWebFunctionAuthTypeOutput() WebFunctionAuthTypeOutput
+	ToWebFunctionAuthTypeOutputWithContext(context.Context) WebFunctionAuthTypeOutput
+}
+
+var webFunctionAuthTypePtrType = reflect.TypeOf((**WebFunctionAuthType)(nil)).Elem()
+
+type WebFunctionAuthTypePtrInput interface {
+	pulumi.Input
+
+	ToWebFunctionAuthTypePtrOutput() WebFunctionAuthTypePtrOutput
+	ToWebFunctionAuthTypePtrOutputWithContext(context.Context) WebFunctionAuthTypePtrOutput
+}
+
+type webFunctionAuthTypePtr string
+
+func WebFunctionAuthTypePtr(v string) WebFunctionAuthTypePtrInput {
+	return (*webFunctionAuthTypePtr)(&v)
+}
+
+func (*webFunctionAuthTypePtr) ElementType() reflect.Type {
+	return webFunctionAuthTypePtrType
+}
+
+func (in *webFunctionAuthTypePtr) ToWebFunctionAuthTypePtrOutput() WebFunctionAuthTypePtrOutput {
+	return pulumi.ToOutput(in).(WebFunctionAuthTypePtrOutput)
+}
+
+func (in *webFunctionAuthTypePtr) ToWebFunctionAuthTypePtrOutputWithContext(ctx context.Context) WebFunctionAuthTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(WebFunctionAuthTypePtrOutput)
+}
+
+type WebFunctionEndpointType string
+
+const (
+	// Serve traffic from the function's home Region only.
+	WebFunctionEndpointType_HOME_REGION = WebFunctionEndpointType("HomeRegion")
+	// Serve traffic at one global URL. Lambda routes callers by latency, without health-based
+	// failover.
+	WebFunctionEndpointType_MULTI_REGION = WebFunctionEndpointType("MultiRegion")
+	// Get a URL for each serving Region and decide how to route callers yourself.
+	WebFunctionEndpointType_PER_REGION = WebFunctionEndpointType("PerRegion")
+)
+
+func (WebFunctionEndpointType) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionEndpointType)(nil)).Elem()
+}
+
+func (e WebFunctionEndpointType) ToWebFunctionEndpointTypeOutput() WebFunctionEndpointTypeOutput {
+	return pulumi.ToOutput(e).(WebFunctionEndpointTypeOutput)
+}
+
+func (e WebFunctionEndpointType) ToWebFunctionEndpointTypeOutputWithContext(ctx context.Context) WebFunctionEndpointTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(WebFunctionEndpointTypeOutput)
+}
+
+func (e WebFunctionEndpointType) ToWebFunctionEndpointTypePtrOutput() WebFunctionEndpointTypePtrOutput {
+	return e.ToWebFunctionEndpointTypePtrOutputWithContext(context.Background())
+}
+
+func (e WebFunctionEndpointType) ToWebFunctionEndpointTypePtrOutputWithContext(ctx context.Context) WebFunctionEndpointTypePtrOutput {
+	return WebFunctionEndpointType(e).ToWebFunctionEndpointTypeOutputWithContext(ctx).ToWebFunctionEndpointTypePtrOutputWithContext(ctx)
+}
+
+func (e WebFunctionEndpointType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e WebFunctionEndpointType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e WebFunctionEndpointType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e WebFunctionEndpointType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type WebFunctionEndpointTypeOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionEndpointTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*WebFunctionEndpointType)(nil)).Elem()
+}
+
+func (o WebFunctionEndpointTypeOutput) ToWebFunctionEndpointTypeOutput() WebFunctionEndpointTypeOutput {
+	return o
+}
+
+func (o WebFunctionEndpointTypeOutput) ToWebFunctionEndpointTypeOutputWithContext(ctx context.Context) WebFunctionEndpointTypeOutput {
+	return o
+}
+
+func (o WebFunctionEndpointTypeOutput) ToWebFunctionEndpointTypePtrOutput() WebFunctionEndpointTypePtrOutput {
+	return o.ToWebFunctionEndpointTypePtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionEndpointTypeOutput) ToWebFunctionEndpointTypePtrOutputWithContext(ctx context.Context) WebFunctionEndpointTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v WebFunctionEndpointType) *WebFunctionEndpointType {
+		return &v
+	}).(WebFunctionEndpointTypePtrOutput)
+}
+
+func (o WebFunctionEndpointTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o WebFunctionEndpointTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e WebFunctionEndpointType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o WebFunctionEndpointTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionEndpointTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e WebFunctionEndpointType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type WebFunctionEndpointTypePtrOutput struct{ *pulumi.OutputState }
+
+func (WebFunctionEndpointTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**WebFunctionEndpointType)(nil)).Elem()
+}
+
+func (o WebFunctionEndpointTypePtrOutput) ToWebFunctionEndpointTypePtrOutput() WebFunctionEndpointTypePtrOutput {
+	return o
+}
+
+func (o WebFunctionEndpointTypePtrOutput) ToWebFunctionEndpointTypePtrOutputWithContext(ctx context.Context) WebFunctionEndpointTypePtrOutput {
+	return o
+}
+
+func (o WebFunctionEndpointTypePtrOutput) Elem() WebFunctionEndpointTypeOutput {
+	return o.ApplyT(func(v *WebFunctionEndpointType) WebFunctionEndpointType {
+		if v != nil {
+			return *v
+		}
+		var ret WebFunctionEndpointType
+		return ret
+	}).(WebFunctionEndpointTypeOutput)
+}
+
+func (o WebFunctionEndpointTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o WebFunctionEndpointTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *WebFunctionEndpointType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// WebFunctionEndpointTypeInput is an input type that accepts values of the WebFunctionEndpointType enum
+// A concrete instance of `WebFunctionEndpointTypeInput` can be one of the following:
+//
+//	WebFunctionEndpointType_HOME_REGION
+//	WebFunctionEndpointType_MULTI_REGION
+//	WebFunctionEndpointType_PER_REGION
+type WebFunctionEndpointTypeInput interface {
+	pulumi.Input
+
+	ToWebFunctionEndpointTypeOutput() WebFunctionEndpointTypeOutput
+	ToWebFunctionEndpointTypeOutputWithContext(context.Context) WebFunctionEndpointTypeOutput
+}
+
+var webFunctionEndpointTypePtrType = reflect.TypeOf((**WebFunctionEndpointType)(nil)).Elem()
+
+type WebFunctionEndpointTypePtrInput interface {
+	pulumi.Input
+
+	ToWebFunctionEndpointTypePtrOutput() WebFunctionEndpointTypePtrOutput
+	ToWebFunctionEndpointTypePtrOutputWithContext(context.Context) WebFunctionEndpointTypePtrOutput
+}
+
+type webFunctionEndpointTypePtr string
+
+func WebFunctionEndpointTypePtr(v string) WebFunctionEndpointTypePtrInput {
+	return (*webFunctionEndpointTypePtr)(&v)
+}
+
+func (*webFunctionEndpointTypePtr) ElementType() reflect.Type {
+	return webFunctionEndpointTypePtrType
+}
+
+func (in *webFunctionEndpointTypePtr) ToWebFunctionEndpointTypePtrOutput() WebFunctionEndpointTypePtrOutput {
+	return pulumi.ToOutput(in).(WebFunctionEndpointTypePtrOutput)
+}
+
+func (in *webFunctionEndpointTypePtr) ToWebFunctionEndpointTypePtrOutputWithContext(ctx context.Context) WebFunctionEndpointTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(WebFunctionEndpointTypePtrOutput)
+}
+
 type WebFunctionRuntime string
 
 const (
@@ -179,8 +517,16 @@ func (in *webFunctionRuntimePtr) ToWebFunctionRuntimePtrOutputWithContext(ctx co
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionAuthTypeInput)(nil)).Elem(), WebFunctionAuthType("IamAuth"))
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionAuthTypePtrInput)(nil)).Elem(), WebFunctionAuthType("IamAuth"))
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionEndpointTypeInput)(nil)).Elem(), WebFunctionEndpointType("HomeRegion"))
+	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionEndpointTypePtrInput)(nil)).Elem(), WebFunctionEndpointType("HomeRegion"))
 	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionRuntimeInput)(nil)).Elem(), WebFunctionRuntime("nodejs24.x"))
 	pulumi.RegisterInputType(reflect.TypeOf((*WebFunctionRuntimePtrInput)(nil)).Elem(), WebFunctionRuntime("nodejs24.x"))
+	pulumi.RegisterOutputType(WebFunctionAuthTypeOutput{})
+	pulumi.RegisterOutputType(WebFunctionAuthTypePtrOutput{})
+	pulumi.RegisterOutputType(WebFunctionEndpointTypeOutput{})
+	pulumi.RegisterOutputType(WebFunctionEndpointTypePtrOutput{})
 	pulumi.RegisterOutputType(WebFunctionRuntimeOutput{})
 	pulumi.RegisterOutputType(WebFunctionRuntimePtrOutput{})
 }

@@ -8,6 +8,79 @@ using Pulumi;
 namespace Pulumi.Awsx.Lambda
 {
     [EnumType]
+    public readonly struct WebFunctionAuthType : IEquatable<WebFunctionAuthType>
+    {
+        private readonly string _value;
+
+        private WebFunctionAuthType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Lambda checks that the caller has permission to invoke this endpoint using AWS credentials.
+        /// </summary>
+        public static WebFunctionAuthType IAM { get; } = new WebFunctionAuthType("IamAuth");
+        /// <summary>
+        /// Anyone can reach the app at this URL. The app decides whether to require a login or token.
+        /// </summary>
+        public static WebFunctionAuthType APPLICATION_MANAGED { get; } = new WebFunctionAuthType("ApplicationManaged");
+
+        public static bool operator ==(WebFunctionAuthType left, WebFunctionAuthType right) => left.Equals(right);
+        public static bool operator !=(WebFunctionAuthType left, WebFunctionAuthType right) => !left.Equals(right);
+
+        public static explicit operator string(WebFunctionAuthType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is WebFunctionAuthType other && Equals(other);
+        public bool Equals(WebFunctionAuthType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
+    public readonly struct WebFunctionEndpointType : IEquatable<WebFunctionEndpointType>
+    {
+        private readonly string _value;
+
+        private WebFunctionEndpointType(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Serve traffic from the function's home Region only.
+        /// </summary>
+        public static WebFunctionEndpointType HOME_REGION { get; } = new WebFunctionEndpointType("HomeRegion");
+        /// <summary>
+        /// Serve traffic at one global URL. Lambda routes callers by latency, without health-based
+        /// failover.
+        /// </summary>
+        public static WebFunctionEndpointType MULTI_REGION { get; } = new WebFunctionEndpointType("MultiRegion");
+        /// <summary>
+        /// Get a URL for each serving Region and decide how to route callers yourself.
+        /// </summary>
+        public static WebFunctionEndpointType PER_REGION { get; } = new WebFunctionEndpointType("PerRegion");
+
+        public static bool operator ==(WebFunctionEndpointType left, WebFunctionEndpointType right) => left.Equals(right);
+        public static bool operator !=(WebFunctionEndpointType left, WebFunctionEndpointType right) => !left.Equals(right);
+
+        public static explicit operator string(WebFunctionEndpointType value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is WebFunctionEndpointType other && Equals(other);
+        public bool Equals(WebFunctionEndpointType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    [EnumType]
     public readonly struct WebFunctionRuntime : IEquatable<WebFunctionRuntime>
     {
         private readonly string _value;

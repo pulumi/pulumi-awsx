@@ -81,7 +81,8 @@ _utilities.register(
   "mod": "lambda",
   "fqn": "pulumi_awsx.lambda_",
   "classes": {
-   "awsx:lambda:WebFunction": "WebFunction"
+   "awsx:lambda:WebFunction": "WebFunction",
+   "awsx:lambda:WebFunctionEndpoint": "WebFunctionEndpoint"
   }
  },
  {
