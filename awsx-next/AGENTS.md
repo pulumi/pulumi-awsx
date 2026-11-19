@@ -48,7 +48,8 @@ the SDK documentation stale and fails CI's regeneration check.
 - Do not bundle the source entry point. Pulumi analyzes its TypeScript declarations.
 - Keep the package CommonJS-compatible. The Pulumi Node.js plugin host loads the entry point through `require()`.
 
-The public entrypoint exports `TaskDefinition`, `Service`, and `WebFunction`.
+The public entrypoint exports `TaskDefinition`, `Service`, `WebFunction`, and
+`WebFunctionEndpoint`.
 Task definitions use AWS Native's structured container inputs internally. Keep
 AWSX user-facing container types independent and do not add a parallel raw ECS
 API model or a container component solely for transforms. The task's Native

@@ -39,6 +39,12 @@ beforeAll(async () => {
       } else if (args.type === "aws-native:lambda:WebFunctionEndpoint") {
         state.endpointArn = `arn:aws:lambda:${region}:${accountId}:web-function/test/endpoint/${args.name}`;
         state.domainName = "example.lambda.test";
+        if (args.inputs.endpointType === "PerRegion") {
+          state.regionalEndpoints = {
+            [region]: { domainName: "home.lambda.test" },
+            "eu-west-1": {},
+          };
+        }
       } else if (args.type === "aws:iam/role:Role") {
         state.arn = `arn:aws:iam::${accountId}:role/${args.name}`;
       }
@@ -104,13 +110,48 @@ test("provider constructs a Lambda endpoint with the resolved function name and 
   expect(endpoint).toBeInstanceOf(WebFunctionEndpoint);
   expect(await unwrap(endpoint.urn)).toContain("::awsx:lambda:WebFunctionEndpoint::");
   expect(await unwrap(endpoint.url)).toBe("https://example.lambda.test");
-  expect(
-    resources.find((resource) => resource.type === "aws-native:lambda:WebFunctionEndpoint")?.inputs,
-  ).toMatchObject({
+  const inputs = resources.find(
+    (resource) =>
+      resource.type === "aws-native:lambda:WebFunctionEndpoint" &&
+      resource.name === "integrated-endpoint",
+  )?.inputs;
+  expect(inputs).toMatchObject({
     functionName: "test",
     endpointType: "HomeRegion",
     revisionWeights: [{ revisionId: "revision-1", weight: 100 }],
   });
+  expect(inputs?.scalingConfig).toEqual({});
+  expect(inputs?.throttleConfig).toEqual({});
+});
+
+test("a PerRegion endpoint exposes only regional URLs and preserves a zero rate limit", async () => {
+  const endpoint = construct(
+    "regional-endpoint",
+    "awsx:lambda:WebFunctionEndpoint",
+    {
+      functionName: "test",
+      revisions: [{ revisionId: "revision-1" }],
+      authType: "ApplicationManaged",
+      endpointType: "PerRegion",
+      regions: [region, "eu-west-1"],
+      maxEnvironments: 5,
+      requestsPerSecond: 0,
+    },
+    {},
+  ) as WebFunctionEndpoint;
+
+  expect(await unwrap(endpoint.url)).toBeUndefined();
+  expect(await unwrap(endpoint.regionalUrls)).toEqual({
+    [region]: "https://home.lambda.test",
+  });
+  const inputs = resources.find(
+    (resource) =>
+      resource.type === "aws-native:lambda:WebFunctionEndpoint" &&
+      resource.name === "regional-endpoint",
+  )?.inputs;
+  expect(inputs?.regions).toEqual(["eu-west-1"]);
+  expect(inputs?.scalingConfig).toEqual({ maxEnvironments: 5 });
+  expect(inputs?.throttleConfig).toEqual({ rateLimit: 0 });
 });
 
 test("provider registration composes the current task and service with AWSX identities", async () => {
