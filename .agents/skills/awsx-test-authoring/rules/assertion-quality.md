@@ -8,7 +8,8 @@ status: draft
 
 Write assertions that prove the behavior under review, not just that a program
 compiled, constructed, or ran. State the remaining gap when a test is only smoke
-coverage.
+coverage. Before adding an assertion, name the current contract it protects and
+one plausible bug it would catch.
 
 ## Why
 
@@ -18,6 +19,21 @@ child input checks, no output unwrapping, no AWS-observed validation, or no
 generated SDK inspection.
 
 ## Avoid
+
+Tautological assertions derive the expected result from the same code or mock
+that produced the actual result. Assertions that copy fixed constructor inputs
+or forbid an abandoned implementation are not necessarily tautologies, but they
+are low-value unless they protect a current contract. Do not assert that a
+component avoids a particular resource or implementation merely because an
+unreleased draft used it.
+
+For example, test that a supplied Lambda execution role ARN with an IAM path
+resolves to its bare role name and that a cross-account ARN is rejected. Do not
+count IAM child resources just to confirm a single unconditional constructor
+call runs once. An explicit guarantee does not, by itself, justify a test.
+Test a resource count when it is a meaningful result of logic under test, such
+as deduplication, input-driven allocation, or interacting branches that could
+register the same resource twice.
 
 Smoke-only assertions for behavior changes:
 
@@ -42,7 +58,8 @@ Updated the recorded fixture; no assertion names the behavior that changed.
 
 ## Prefer
 
-Assert exact resource counts and exact child inputs when those are the contract:
+Assert exact results where they prove a decision or transformation. For example,
+when subnet allocation derives the number and tags of child subnets from inputs:
 
 ```ts
 const subnets = resources.filter(r => r.type === "aws:ec2/subnet:Subnet");

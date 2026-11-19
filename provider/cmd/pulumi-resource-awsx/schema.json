@@ -4968,6 +4968,90 @@
             ],
             "isComponent": true
         },
+        "awsx:lambda:WebFunction": {
+            "description": "A Node.js 24 Lambda Web Function and its current immutable revision.",
+            "properties": {
+                "executionRoleArn": {
+                    "type": "string",
+                    "description": "Execution role used by the current revision."
+                },
+                "functionArn": {
+                    "type": "string",
+                    "description": "ARN of the function."
+                },
+                "functionName": {
+                    "type": "string",
+                    "description": "Name of the function."
+                },
+                "logGroup": {
+                    "$ref": "/aws/v7.53.0/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "Central log group created in the home Region."
+                },
+                "revisionArn": {
+                    "type": "string",
+                    "description": "ARN of the current revision."
+                },
+                "revisionId": {
+                    "type": "string",
+                    "description": "Identifier of the current revision. Pass it to an endpoint to route traffic explicitly."
+                }
+            },
+            "type": "object",
+            "required": [
+                "executionRoleArn",
+                "functionArn",
+                "functionName",
+                "logGroup",
+                "revisionArn",
+                "revisionId"
+            ],
+            "inputProperties": {
+                "code": {
+                    "$ref": "pulumi.json#/Archive",
+                    "description": "Runnable application files, including dependencies. FileArchive accepts a directory or an\nexisting archive.\n\nThe runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names\nanother file. The application must start an HTTP server at the host and port supplied in\nAWS_LAMBDA_HTTP_ENDPOINT."
+                },
+                "egressNetworkConnectorVersionArn": {
+                    "type": "string",
+                    "description": "Version-qualified ARN of an existing network connector for VPC egress. Revisions using a\nconnector support only HomeRegion endpoints. Keep the connector available for as long as any\nretained revision uses it.\n\nDefault - No network connector."
+                },
+                "environmentVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Environment values included in each immutable revision. Pulumi secrets retain their Pulumi\nsecret tracking, but AWS receives the resolved values. This is not runtime secret retrieval and\ndoes not prevent authorized AWS users from reading the configuration.\n\nDefault - No application environment variables."
+                },
+                "executionRoleArn": {
+                    "type": "string",
+                    "description": "Execution role assumed by the application. A supplied role must be in the function's account,\ntrust lambda.amazonaws.com, and grant any AWS API access the application needs. AWSX adds\nscoped permissions for the central log group and its .local companions.\n\nDefault - AWSX creates a role with scoped CloudWatch Logs permissions. Add application\npermissions separately."
+                },
+                "functionName": {
+                    "type": "string",
+                    "description": "Physical function name.\n\nDefault - Automatically named by the AWS Native provider."
+                },
+                "maxConcurrencyPerEnvironment": {
+                    "type": "number",
+                    "description": "Maximum concurrent requests per execution environment. Must be an integer from 1 through 128.\n\nDefault - AWS default of 64."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "Tags applied to the function and AWSX-created supporting resources that accept tags.\n\nDefault - No additional tags."
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "description": "Maximum duration of an HTTP request, in seconds. Must be an integer from 3 through 900.\n\nDefault - AWS default of 30 seconds."
+                }
+            },
+            "requiredInputs": [
+                "code"
+            ],
+            "isComponent": true
+        },
         "awsx:lb:ApplicationLoadBalancer": {
             "description": "Provides an Application Load Balancer resource with listeners, default target group and default security group.",
             "properties": {

@@ -19,10 +19,13 @@ interface ExternalRef {
 
 type Direction = "Input" | "Output";
 
-// The source-based components share the ECS module with legacy implementations.
-// Exclude only their resource roots and reachable local types, not the whole module.
+// Exclude source-based resource roots and their reachable local types, not entire modules.
 function getExternallyImplementedTokens(schema: pulumiSchema.PulumiPackageMetaschema): Set<string> {
-  const tokens = new Set(["awsx:ecs:TaskDefinition", "awsx:ecs:Service"]);
+  const tokens = new Set([
+    "awsx:ecs:TaskDefinition",
+    "awsx:ecs:Service",
+    "awsx:lambda:WebFunction",
+  ]);
   function visit(value: unknown): void {
     if (Array.isArray(value)) {
       value.forEach(visit);

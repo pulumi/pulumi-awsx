@@ -49,7 +49,8 @@ func TestNormalizeNextComponents(t *testing.T) {
 				RequiredInputs: []string{"containers"},
 				IsComponent:    true,
 			},
-			"awsx-next:index:Service": {},
+			"awsx-next:index:Service":     {},
+			"awsx-next:index:WebFunction": {IsComponent: true},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx-next:index:ContainerDefinition": {
@@ -86,6 +87,8 @@ func TestNormalizeNextComponents(t *testing.T) {
 	assert.Equal(t, "#/types/awsx:ecs:ContainerDefinition",
 		task.InputProperties["containers"].AdditionalProperties.Ref)
 	assert.Contains(t, normalized.Resources, "awsx:ecs:Service")
+	assert.True(t, normalized.Resources["awsx:lambda:WebFunction"].IsComponent)
+	assert.NotContains(t, normalized.Resources, "awsx:ecs:WebFunction")
 	assert.NotContains(t, normalized.Resources, "awsx-next:index:TaskDefinition")
 
 	dependencies := normalized.Types["awsx:ecs:ContainerDefinition"].Properties["dependencies"]

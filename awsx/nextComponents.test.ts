@@ -16,6 +16,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { construct } from "./resources";
 import { TaskDefinition } from "@pulumi/awsx-next/src/ecs/taskDefinition";
 import { Service } from "@pulumi/awsx-next/src/ecs/service";
+import { WebFunction } from "@pulumi/awsx-next/src/lambda/webFunction";
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const region = "us-west-2";
@@ -46,6 +47,8 @@ beforeAll(async () => {
           return { accountId };
         case "aws:index/getRegion:getRegion":
           return { region, name: region };
+        case "aws-native:index:getPartition":
+          return { partition: "aws" };
         case "aws-native:index:getRegion":
           return { region };
         case "aws:ecs/getTaskDefinition:getTaskDefinition":
@@ -61,6 +64,22 @@ beforeAll(async () => {
       }
     },
   });
+});
+
+test("provider registration uses the AWSX Lambda WebFunction identity", async () => {
+  const component = construct(
+    "integrated-web",
+    "awsx:lambda:WebFunction",
+    {
+      code: new pulumi.asset.AssetArchive({
+        "index.js": new pulumi.asset.StringAsset("module.exports = {};"),
+      }),
+    },
+    {},
+  );
+  expect(component).toBeInstanceOf(WebFunction);
+  expect(await unwrap(component!.urn)).toContain("::awsx:lambda:WebFunction::");
+  expect(construct("obsolete", "awsx-next:index:WebFunction", {}, {})).toBeUndefined();
 });
 
 test("provider registration composes the current task and service with AWSX identities", async () => {

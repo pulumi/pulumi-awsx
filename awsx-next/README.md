@@ -3,14 +3,14 @@
 Internal TypeScript implementation workspace for AWSX components. It also supports Pulumi's
 [source-based plugin workflow](https://www.pulumi.com/docs/iac/guides/building-extending/packages/source-based-plugin/)
 for isolated development.
-`TaskDefinition` and `Service` are published as stable components in `awsx.ecs`.
+`TaskDefinition` and `Service` are published as stable components in `awsx.ecs`. `WebFunction` is published in `awsx.lambda`.
 Users install the normal [AWSX SDKs](../README.md#installing), not this workspace.
 
 ## AWSX provider integration
 
 Pulumi infers a schema from the component classes exported by `index.ts` and their
 reachable argument and output types. `provider/pkg/schemagen/next.go` remaps the
-standalone tokens into `awsx:ecs` and merges them with the existing AWSX schema.
+standalone tokens into `awsx:ecs` and `awsx:lambda` and merges them with the existing AWSX schema.
 The combined schema generates all language SDKs.
 
 `awsx/resources.ts` dispatches construction requests to these implementations with

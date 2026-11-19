@@ -87,6 +87,19 @@ func TestAccTrailWithCloudWatchLogsTs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccLambdaWebFunction(t *testing.T) {
+	pt := newAwsxNativeNodeTest(t, "lambda-web-function")
+	result := pt.Up(t)
+
+	functionArn, ok := result.Outputs["functionArn"].Value.(string)
+	require.True(t, ok)
+	require.Contains(t, functionArn, ":lambda:")
+	revisionID, ok := result.Outputs["revisionId"].Value.(string)
+	require.True(t, ok)
+	require.NotEmpty(t, revisionID)
+	require.Equal(t, functionArn+"/revision/"+revisionID, result.Outputs["revisionArn"].Value)
+}
+
 func TestAccEcsTaskDefinitionTs(t *testing.T) {
 	pt := newEcsNodeTest(t, "ecs-task-definition")
 	result := pt.Up(t)

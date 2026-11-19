@@ -127,6 +127,8 @@
         "ecs/service.ts",
         "ecs/taskDefinition.ts",
         "index.ts",
+        "lambda/index.ts",
+        "lambda/webFunction.ts",
         "lb/applicationLoadBalancer.ts",
         "lb/index.ts",
         "lb/networkLoadBalancer.ts",

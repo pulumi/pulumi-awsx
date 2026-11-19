@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as native from '@pulumi/aws-native';
+import type { ComponentIdentity } from '../componentIdentity';
 
 /**
  * Code and execution configuration for a Lambda Web Function.
@@ -8,12 +9,11 @@ import * as native from '@pulumi/aws-native';
 export interface WebFunctionArgs {
   /**
    * Runnable application files, including dependencies. FileArchive accepts a directory or an
-   * existing archive. AWSX packages the contents as ZIP and uploads them to a private, versioned S3
-   * bucket. It does not install dependencies, compile source, or run build commands.
+   * existing archive.
    *
-   * The unzipped package must not exceed 512 MB. The runtime loads index.js at the package root
-   * unless AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must start an HTTP
-   * server at the host and port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+   * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
+   * another file. The application must start an HTTP server at the host and port supplied in
+   * AWS_LAMBDA_HTTP_ENDPOINT.
    */
   code: pulumi.Input<pulumi.asset.Archive>;
 
@@ -55,9 +55,9 @@ export interface WebFunctionArgs {
   maxConcurrencyPerEnvironment?: pulumi.Input<number>;
 
   /**
-   * Execution role assumed by the application. A supplied role is not modified. It must trust
-   * lambda.amazonaws.com and allow logging to the central log group and its .local companions, plus
-   * any AWS API access the application needs.
+   * Execution role assumed by the application. A supplied role must be in the function's account,
+   * trust lambda.amazonaws.com, and grant any AWS API access the application needs. AWSX adds
+   * scoped permissions for the central log group and its .local companions.
    *
    * Default - AWSX creates a role with scoped CloudWatch Logs permissions. Add application
    * permissions separately.
@@ -108,10 +108,15 @@ export class WebFunction extends pulumi.ComponentResource {
    */
   public readonly logGroup!: aws.cloudwatch.LogGroup;
 
-  constructor(name: string, args: WebFunctionArgs, opts: pulumi.ComponentResourceOptions = {}) {
+  constructor(
+    name: string,
+    args: WebFunctionArgs,
+    opts: pulumi.ComponentResourceOptions = {},
+    identity: ComponentIdentity = { type: 'awsx-next:index:WebFunction', aliases: [] },
+  ) {
     // Resource-reference hydration must not register a second set of children.
     super(
-      'awsx-next:index:WebFunction',
+      identity.type,
       name,
       opts.urn
         ? {
@@ -123,7 +128,7 @@ export class WebFunction extends pulumi.ComponentResource {
             logGroup: undefined,
           }
         : args,
-      opts,
+      pulumi.mergeOptions(opts, { aliases: identity.aliases }),
     );
     if (opts.urn) {
       return;
@@ -139,17 +144,10 @@ export class WebFunction extends pulumi.ComponentResource {
         partition: native.getPartitionOutput({ parent: this }).partition,
       })
       .apply((value) => {
-        if (value.awsAccount !== value.nativeAccount) {
-          throw new pulumi.ResourceError(
-            'WebFunction requires AWS and AWS Native providers for the same account. ' +
-              `AWS selects ${value.awsAccount}; AWS Native selects ${value.nativeAccount}.`,
-            this,
-          );
-        }
+        validateWebFunctionAccounts(value.awsAccount, value.nativeAccount, this);
         return value;
       });
     const region = destination.apply((value) => value.region);
-    const retained = { parent: this, retainOnDelete: true };
     const tags = pulumi
       .output(args.tags ?? {})
       .apply((values) => Object.entries(values).map(([key, value]) => ({ key, value })));
@@ -167,22 +165,10 @@ export class WebFunction extends pulumi.ComponentResource {
       {
         region,
         tags: args.tags,
-        forceDestroy: false,
       },
       { parent: this },
     );
-    const publicAccess = new aws.s3.BucketPublicAccessBlock(
-      `${name}-code`,
-      {
-        region,
-        bucket: bucket.id,
-        blockPublicAcls: true,
-        blockPublicPolicy: true,
-        ignorePublicAcls: true,
-        restrictPublicBuckets: true,
-      },
-      { parent: this },
-    );
+    // S3 enables Block Public Access on new buckets by default.
     const versioning = new aws.s3.BucketVersioning(
       `${name}-code`,
       { region, bucket: bucket.id, versioningConfiguration: { status: 'Enabled' } },
@@ -229,11 +215,10 @@ export class WebFunction extends pulumi.ComponentResource {
           ],
         }),
       },
-      { parent: this, dependsOn: [publicAccess] },
+      { parent: this },
     );
-    // The bridge serializes a Pulumi Archive to ZIP for the S3 source property. Updating this
-    // stable key adds a version without deleting earlier ones. Keep noncurrent versions while
-    // the component exists; deleting this resource cleans up the managed key's versions.
+    // Each upload adds a version of app.zip so older revisions can still reference their ZIPs.
+    // On destroy, BucketObjectv2 deletes all versions and delete markers for app.zip only.
     const artifact = new aws.s3.BucketObjectv2(
       `${name}-code`,
       {
@@ -249,13 +234,16 @@ export class WebFunction extends pulumi.ComponentResource {
     this.logGroup = new aws.cloudwatch.LogGroup(
       `${name}-logs`,
       { region, tags: args.tags },
-      retained,
+      { parent: this, retainOnDelete: true },
     );
     // Lambda creates .local companions in every serving Region, including the home Region.
     // Their settings and lifecycle remain service-managed rather than component-owned.
-    const revisionDependencies: pulumi.Resource[] = [bucketPolicy];
+    let roleName: pulumi.Output<string>;
     if (args.executionRoleArn !== undefined) {
       this.executionRoleArn = pulumi.output(args.executionRoleArn);
+      roleName = pulumi
+        .all([destination, this.executionRoleArn])
+        .apply(([value, arn]) => executionRoleName(arn, value.partition, value.nativeAccount));
     } else {
       const role = new native.iam.Role(
         `${name}-execution`,
@@ -272,41 +260,41 @@ export class WebFunction extends pulumi.ComponentResource {
             ],
           },
         },
-        retained,
-      );
-      const loggingPolicy = new native.iam.RolePolicy(
-        `${name}-logging`,
-        {
-          roleName: role.id,
-          policyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-                Resource: [
-                  pulumi.interpolate`${this.logGroup.arn}:*`,
-                  pulumi
-                    .all([destination, this.logGroup.name])
-                    .apply(
-                      ([value, logGroupName]) =>
-                        `arn:${value.partition}:logs:*:${value.awsAccount}:log-group:${logGroupName}.local:*`,
-                    ),
-                ],
-              },
-            ],
-          },
-        },
-        retained,
+        { parent: this, retainOnDelete: true },
       );
       this.executionRoleArn = role.arn;
-      revisionDependencies.push(loggingPolicy);
+      roleName = role.id;
     }
+    const loggingPolicy = new native.iam.RolePolicy(
+      `${name}-logging`,
+      {
+        roleName,
+        policyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+              Resource: [
+                pulumi.interpolate`${this.logGroup.arn}:*`,
+                pulumi
+                  .all([destination, this.logGroup.name])
+                  .apply(
+                    ([value, logGroupName]) =>
+                      `arn:${value.partition}:logs:*:${value.awsAccount}:log-group:${logGroupName}.local:*`,
+                  ),
+              ],
+            },
+          ],
+        },
+      },
+      { parent: this, retainOnDelete: true },
+    );
 
     const revision = new native.lambda.WebFunctionRevision(
       name,
       {
-        functionName: fn.functionArn,
+        functionName: fn.functionName,
         buildConfig: {
           codeConfig: {
             s3Object: { bucket: bucket.id, key: artifact.key, versionId: artifact.versionId },
@@ -327,7 +315,7 @@ export class WebFunction extends pulumi.ComponentResource {
           telemetryConfig: { loggingConfig: { logGroup: this.logGroup.name } },
         },
       },
-      { ...retained, dependsOn: revisionDependencies },
+      { parent: this, retainOnDelete: true, dependsOn: [bucketPolicy, loggingPolicy] },
     );
 
     this.functionArn = fn.functionArn;
@@ -343,6 +331,47 @@ export class WebFunction extends pulumi.ComponentResource {
       logGroup: this.logGroup,
     });
   }
+}
+
+/**
+ * Require both providers to target the same account.
+ *
+ * @param awsAccount The AWS provider account.
+ * @param nativeAccount The AWS Native provider account.
+ * @param resource The component reporting the error.
+ */
+export function validateWebFunctionAccounts(
+  awsAccount: string,
+  nativeAccount: string,
+  resource?: pulumi.Resource,
+): void {
+  if (awsAccount !== nativeAccount) {
+    throw new pulumi.ResourceError(
+      'WebFunction requires AWS and AWS Native providers for the same account. ' +
+        `AWS selects ${awsAccount}; AWS Native selects ${nativeAccount}.`,
+      resource,
+    );
+  }
+}
+
+/**
+ * Resolve the IAM name for the inline policy without targeting a same-named role in another
+ * account.
+ *
+ * @param arn The supplied execution role ARN.
+ * @param partition The function's AWS partition.
+ * @param account The function's AWS account.
+ * @returns The role name, without its IAM path.
+ */
+export function executionRoleName(arn: string, partition: string, account: string): string {
+  const match = /^arn:([^:]+):iam::([0-9]{12}):role\/(?:[^:]+\/)?([\w+=,.@-]{1,64})$/.exec(arn);
+  if (!match || match[1] !== partition || match[2] !== account) {
+    throw new pulumi.InputPropertyError({
+      propertyPath: 'executionRoleArn',
+      reason: 'Expected an IAM role ARN in the function’s account and partition.',
+    });
+  }
+  return match[3]!;
 }
 
 /**
