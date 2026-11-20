@@ -13,7 +13,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-// A Node.js 24 Lambda Web Function and its current immutable revision.
+// A Lambda Web Function and its current immutable revision.
 type WebFunction struct {
 	pulumi.ResourceState
 
@@ -41,6 +41,9 @@ func NewWebFunction(ctx *pulumi.Context,
 	if args.Code == nil {
 		return nil, errors.New("invalid value for required argument 'Code'")
 	}
+	if args.Runtime == nil {
+		return nil, errors.New("invalid value for required argument 'Runtime'")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource WebFunction
 	err := ctx.RegisterRemoteComponentResource("awsx:lambda:WebFunction", name, args, &resource, opts...)
@@ -51,13 +54,8 @@ func NewWebFunction(ctx *pulumi.Context,
 }
 
 type webFunctionArgs struct {
-	// Runnable application files, including dependencies. FileArchive accepts a directory or an
-	// existing archive.
-	//
-	// The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-	// another file. The application must start an HTTP server at the host and port supplied in
-	// AWS_LAMBDA_HTTP_ENDPOINT.
-	Code pulumi.Archive `pulumi:"code"`
+	// Application code to deploy.
+	Code WebFunctionCode `pulumi:"code"`
 	// Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
 	// connector support only HomeRegion endpoints. Keep the connector available for as long as any
 	// retained revision uses it.
@@ -85,6 +83,10 @@ type webFunctionArgs struct {
 	//
 	// Default - AWS default of 64.
 	MaxConcurrencyPerEnvironment *float64 `pulumi:"maxConcurrencyPerEnvironment"`
+	// Runtime for the revision. Node.js loads index.js at the package root unless
+	// AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+	// port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+	Runtime WebFunctionRuntime `pulumi:"runtime"`
 	// Tags applied to the function and AWSX-created supporting resources that accept tags.
 	//
 	// Default - No additional tags.
@@ -97,13 +99,8 @@ type webFunctionArgs struct {
 
 // The set of arguments for constructing a WebFunction resource.
 type WebFunctionArgs struct {
-	// Runnable application files, including dependencies. FileArchive accepts a directory or an
-	// existing archive.
-	//
-	// The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-	// another file. The application must start an HTTP server at the host and port supplied in
-	// AWS_LAMBDA_HTTP_ENDPOINT.
-	Code pulumi.ArchiveInput
+	// Application code to deploy.
+	Code WebFunctionCodeInput
 	// Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
 	// connector support only HomeRegion endpoints. Keep the connector available for as long as any
 	// retained revision uses it.
@@ -131,6 +128,10 @@ type WebFunctionArgs struct {
 	//
 	// Default - AWS default of 64.
 	MaxConcurrencyPerEnvironment pulumi.Float64PtrInput
+	// Runtime for the revision. Node.js loads index.js at the package root unless
+	// AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+	// port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+	Runtime WebFunctionRuntimeInput
 	// Tags applied to the function and AWSX-created supporting resources that accept tags.
 	//
 	// Default - No additional tags.

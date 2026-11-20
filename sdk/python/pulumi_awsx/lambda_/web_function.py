@@ -13,6 +13,8 @@ if sys.version_info >= (3, 11):
 else:
     from typing_extensions import NotRequired, TypedDict, TypeAlias
 from .. import _utilities
+from ._enums import *
+from ._inputs import *
 import pulumi_aws
 
 __all__ = ['WebFunctionArgs', 'WebFunction']
@@ -20,7 +22,8 @@ __all__ = ['WebFunctionArgs', 'WebFunction']
 @pulumi.input_type
 class WebFunctionArgs:
     def __init__(__self__, *,
-                 code: pulumi.Input[pulumi.Archive],
+                 code: pulumi.Input['WebFunctionCodeArgs'],
+                 runtime: pulumi.Input['WebFunctionRuntime'],
                  egress_network_connector_version_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  environment_variables: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
@@ -31,12 +34,10 @@ class WebFunctionArgs:
         """
         The set of arguments for constructing a WebFunction resource.
 
-        :param pulumi.Input[pulumi.Archive] code: Runnable application files, including dependencies. FileArchive accepts a directory or an
-               existing archive.
-               
-               The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-               another file. The application must start an HTTP server at the host and port supplied in
-               AWS_LAMBDA_HTTP_ENDPOINT.
+        :param pulumi.Input['WebFunctionCodeArgs'] code: Application code to deploy.
+        :param pulumi.Input['WebFunctionRuntime'] runtime: Runtime for the revision. Node.js loads index.js at the package root unless
+               AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+               port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
         :param pulumi.Input[_builtins.str] egress_network_connector_version_arn: Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
                connector support only HomeRegion endpoints. Keep the connector available for as long as any
                retained revision uses it.
@@ -67,6 +68,7 @@ class WebFunctionArgs:
                Default - AWS default of 30 seconds.
         """
         pulumi.set(__self__, "code", code)
+        pulumi.set(__self__, "runtime", runtime)
         if egress_network_connector_version_arn is not None:
             pulumi.set(__self__, "egress_network_connector_version_arn", egress_network_connector_version_arn)
         if environment_variables is not None:
@@ -84,20 +86,29 @@ class WebFunctionArgs:
 
     @_builtins.property
     @pulumi.getter
-    def code(self) -> pulumi.Input[pulumi.Archive]:
+    def code(self) -> pulumi.Input['WebFunctionCodeArgs']:
         """
-        Runnable application files, including dependencies. FileArchive accepts a directory or an
-        existing archive.
-
-        The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-        another file. The application must start an HTTP server at the host and port supplied in
-        AWS_LAMBDA_HTTP_ENDPOINT.
+        Application code to deploy.
         """
         return pulumi.get(self, "code")
 
     @code.setter
-    def code(self, value: pulumi.Input[pulumi.Archive]):
+    def code(self, value: pulumi.Input['WebFunctionCodeArgs']):
         pulumi.set(self, "code", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def runtime(self) -> pulumi.Input['WebFunctionRuntime']:
+        """
+        Runtime for the revision. Node.js loads index.js at the package root unless
+        AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+        port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+        """
+        return pulumi.get(self, "runtime")
+
+    @runtime.setter
+    def runtime(self, value: pulumi.Input['WebFunctionRuntime']):
+        pulumi.set(self, "runtime", value)
 
     @_builtins.property
     @pulumi.getter(name="egressNetworkConnectorVersionArn")
@@ -211,26 +222,22 @@ class WebFunction(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 code: pulumi.Input[Optional[pulumi.Archive]] = None,
+                 code: pulumi.Input[Optional[Union['WebFunctionCodeArgs', 'WebFunctionCodeArgsDict']]] = None,
                  egress_network_connector_version_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  environment_variables: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  function_name: pulumi.Input[Optional[_builtins.str]] = None,
                  max_concurrency_per_environment: pulumi.Input[Optional[_builtins.float]] = None,
+                 runtime: pulumi.Input[Optional['WebFunctionRuntime']] = None,
                  tags: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  timeout_seconds: pulumi.Input[Optional[_builtins.float]] = None,
                  __props__=None):
         """
-        A Node.js 24 Lambda Web Function and its current immutable revision.
+        A Lambda Web Function and its current immutable revision.
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[pulumi.Archive] code: Runnable application files, including dependencies. FileArchive accepts a directory or an
-               existing archive.
-               
-               The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-               another file. The application must start an HTTP server at the host and port supplied in
-               AWS_LAMBDA_HTTP_ENDPOINT.
+        :param pulumi.Input[Union['WebFunctionCodeArgs', 'WebFunctionCodeArgsDict']] code: Application code to deploy.
         :param pulumi.Input[_builtins.str] egress_network_connector_version_arn: Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
                connector support only HomeRegion endpoints. Keep the connector available for as long as any
                retained revision uses it.
@@ -253,6 +260,9 @@ class WebFunction(pulumi.ComponentResource):
         :param pulumi.Input[_builtins.float] max_concurrency_per_environment: Maximum concurrent requests per execution environment. Must be an integer from 1 through 128.
                
                Default - AWS default of 64.
+        :param pulumi.Input['WebFunctionRuntime'] runtime: Runtime for the revision. Node.js loads index.js at the package root unless
+               AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+               port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
         :param Mapping[str, pulumi.Input[_builtins.str]] tags: Tags applied to the function and AWSX-created supporting resources that accept tags.
                
                Default - No additional tags.
@@ -267,7 +277,7 @@ class WebFunction(pulumi.ComponentResource):
                  args: WebFunctionArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        A Node.js 24 Lambda Web Function and its current immutable revision.
+        A Lambda Web Function and its current immutable revision.
 
         :param str resource_name: The name of the resource.
         :param WebFunctionArgs args: The arguments to use to populate this resource's properties.
@@ -284,12 +294,13 @@ class WebFunction(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 code: pulumi.Input[Optional[pulumi.Archive]] = None,
+                 code: pulumi.Input[Optional[Union['WebFunctionCodeArgs', 'WebFunctionCodeArgsDict']]] = None,
                  egress_network_connector_version_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  environment_variables: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  execution_role_arn: pulumi.Input[Optional[_builtins.str]] = None,
                  function_name: pulumi.Input[Optional[_builtins.str]] = None,
                  max_concurrency_per_environment: pulumi.Input[Optional[_builtins.float]] = None,
+                 runtime: pulumi.Input[Optional['WebFunctionRuntime']] = None,
                  tags: Optional[Mapping[str, pulumi.Input[_builtins.str]]] = None,
                  timeout_seconds: pulumi.Input[Optional[_builtins.float]] = None,
                  __props__=None):
@@ -311,6 +322,9 @@ class WebFunction(pulumi.ComponentResource):
             __props__.__dict__["execution_role_arn"] = execution_role_arn
             __props__.__dict__["function_name"] = function_name
             __props__.__dict__["max_concurrency_per_environment"] = max_concurrency_per_environment
+            if runtime is None and not opts.urn:
+                raise TypeError("Missing required property 'runtime'")
+            __props__.__dict__["runtime"] = runtime
             __props__.__dict__["tags"] = tags
             __props__.__dict__["timeout_seconds"] = timeout_seconds
             __props__.__dict__["function_arn"] = None

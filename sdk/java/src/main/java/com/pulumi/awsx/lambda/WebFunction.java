@@ -14,7 +14,7 @@ import java.lang.String;
 import javax.annotation.Nullable;
 
 /**
- * A Node.js 24 Lambda Web Function and its current immutable revision.
+ * A Lambda Web Function and its current immutable revision.
  * 
  */
 @ResourceType(type="awsx:lambda:WebFunction")

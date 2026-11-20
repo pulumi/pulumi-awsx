@@ -138,6 +138,7 @@
         "types/enums/ecr/index.ts",
         "types/enums/ecs/index.ts",
         "types/enums/index.ts",
+        "types/enums/lambda/index.ts",
         "types/index.ts",
         "types/input.ts",
         "types/output.ts",

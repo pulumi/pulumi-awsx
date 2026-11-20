@@ -11,6 +11,9 @@ export const WebFunction: typeof import("./webFunction").WebFunction = null as a
 utilities.lazyLoad(exports, ["WebFunction"], () => require("./webFunction"));
 
 
+// Export enums:
+export * from "../types/enums/lambda";
+
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {

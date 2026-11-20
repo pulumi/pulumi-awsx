@@ -4,7 +4,8 @@ import * as awsx from "@pulumi/awsx";
 
 // Clean up the retained children in this test stack.
 const app = new awsx.lambda.WebFunction("app", {
-    code: new pulumi.asset.FileArchive(path.join(__dirname, "app")),
+    code: { archive: new pulumi.asset.FileArchive(path.join(__dirname, "app")) },
+    runtime: awsx.lambda.WebFunctionRuntime.NODEJS_LATEST,
 }, {
     transforms: [async (args) => {
         if (args.name !== "app" && !args.name.startsWith("app-")) {

@@ -2,12 +2,15 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
 
 /**
- * A Node.js 24 Lambda Web Function and its current immutable revision.
+ * A Lambda Web Function and its current immutable revision.
  */
 export class WebFunction extends pulumi.ComponentResource {
     /** @internal */
@@ -63,12 +66,16 @@ export class WebFunction extends pulumi.ComponentResource {
             if (args?.code === undefined && !opts.urn) {
                 throw new Error("Missing required property 'code'");
             }
+            if (args?.runtime === undefined && !opts.urn) {
+                throw new Error("Missing required property 'runtime'");
+            }
             resourceInputs["code"] = args?.code;
             resourceInputs["egressNetworkConnectorVersionArn"] = args?.egressNetworkConnectorVersionArn;
             resourceInputs["environmentVariables"] = args?.environmentVariables;
             resourceInputs["executionRoleArn"] = args?.executionRoleArn;
             resourceInputs["functionName"] = args?.functionName;
             resourceInputs["maxConcurrencyPerEnvironment"] = args?.maxConcurrencyPerEnvironment;
+            resourceInputs["runtime"] = args?.runtime;
             resourceInputs["tags"] = args?.tags;
             resourceInputs["timeoutSeconds"] = args?.timeoutSeconds;
             resourceInputs["functionArn"] = undefined /*out*/;
@@ -93,14 +100,9 @@ export class WebFunction extends pulumi.ComponentResource {
  */
 export interface WebFunctionArgs {
     /**
-     * Runnable application files, including dependencies. FileArchive accepts a directory or an
-     * existing archive.
-     *
-     * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-     * another file. The application must start an HTTP server at the host and port supplied in
-     * AWS_LAMBDA_HTTP_ENDPOINT.
+     * Application code to deploy.
      */
-    code: pulumi.Input<pulumi.asset.Archive>;
+    code: pulumi.Input<inputs.lambda.WebFunctionCodeArgs>;
     /**
      * Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
      * connector support only HomeRegion endpoints. Keep the connector available for as long as any
@@ -138,6 +140,12 @@ export interface WebFunctionArgs {
      * Default - AWS default of 64.
      */
     maxConcurrencyPerEnvironment?: pulumi.Input<number | undefined>;
+    /**
+     * Runtime for the revision. Node.js loads index.js at the package root unless
+     * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+     * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+     */
+    runtime: pulumi.Input<enums.lambda.WebFunctionRuntime>;
     /**
      * Tags applied to the function and AWSX-created supporting resources that accept tags.
      *

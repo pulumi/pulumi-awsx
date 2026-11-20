@@ -4,18 +4,46 @@ import * as native from '@pulumi/aws-native';
 import type { ComponentIdentity } from '../componentIdentity';
 
 /**
+ * Supported Lambda Web Function runtimes.
+ */
+export enum WebFunctionRuntime {
+  /**
+   * Node.js 24.x.
+   */
+  NodeJS24X = 'nodejs24.x',
+  /**
+   * The latest Node.js runtime selected by AWSX, currently Node.js 24.x. Upgrading AWSX can publish
+   * a new revision if this selection changes. Use a versioned runtime to pin it.
+   */
+  NODEJS_LATEST = 'nodejs-latest',
+}
+
+/**
+ * Source of the application code for a Lambda Web Function revision.
+ */
+export interface WebFunctionCode {
+  /**
+   * Runnable application files, including dependencies. FileArchive accepts a directory or an
+   * existing archive.
+   */
+  archive: pulumi.Input<pulumi.asset.Archive>;
+}
+
+/**
  * Code and execution configuration for a Lambda Web Function.
  */
 export interface WebFunctionArgs {
   /**
-   * Runnable application files, including dependencies. FileArchive accepts a directory or an
-   * existing archive.
-   *
-   * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-   * another file. The application must start an HTTP server at the host and port supplied in
-   * AWS_LAMBDA_HTTP_ENDPOINT.
+   * Application code to deploy.
    */
-  code: pulumi.Input<pulumi.asset.Archive>;
+  code: pulumi.Input<WebFunctionCode>;
+
+  /**
+   * Runtime for the revision. Node.js loads index.js at the package root unless
+   * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+   * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+   */
+  runtime: pulumi.Input<WebFunctionRuntime>;
 
   /**
    * Physical function name.
@@ -75,7 +103,7 @@ export interface WebFunctionArgs {
 }
 
 /**
- * A Node.js 24 Lambda Web Function and its current immutable revision.
+ * A Lambda Web Function and its current immutable revision.
  */
 export class WebFunction extends pulumi.ComponentResource {
   /**
@@ -225,7 +253,7 @@ export class WebFunction extends pulumi.ComponentResource {
         region,
         bucket: bucket.id,
         key: 'app.zip',
-        source: args.code,
+        source: pulumi.output(args.code).apply((code) => code.archive),
         contentType: 'application/zip',
       },
       { parent: this, dependsOn: [versioning, encryption, bucketPolicy] },
@@ -299,7 +327,15 @@ export class WebFunction extends pulumi.ComponentResource {
           codeConfig: {
             s3Object: { bucket: bucket.id, key: artifact.key, versionId: artifact.versionId },
           },
-          runtimeConfig: { runtime: 'nodejs24.x' },
+          runtimeConfig: {
+            runtime: pulumi
+              .output(args.runtime)
+              .apply((runtime) =>
+                runtime === WebFunctionRuntime.NODEJS_LATEST
+                  ? WebFunctionRuntime.NodeJS24X
+                  : runtime,
+              ),
+          },
         },
         serviceConfig: {
           executionRoleArn: this.executionRoleArn,

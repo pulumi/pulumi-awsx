@@ -57,7 +57,15 @@ func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	const newPrefix = "awsx:ecs:"
 	const webFunction = oldPrefix + "WebFunction"
 	const publicWebFunction = "awsx:lambda:WebFunction"
+	lambdaTypes := []string{"WebFunctionCode", "WebFunctionRuntime"}
+	lambdaTypeTokens := make(map[string]string, len(lambdaTypes))
+	for _, name := range lambdaTypes {
+		lambdaTypeTokens[oldPrefix+name] = "awsx:lambda:" + name
+	}
 	renameRefs := func(properties map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+		for from, to := range lambdaTypeTokens {
+			properties = renamePropertiesRefs(properties, "#/types/"+from, "#/types/"+to)
+		}
 		properties = renamePropertiesRefs(properties, "#/types/"+oldPrefix, "#/types/"+newPrefix)
 		properties = renamePropertiesRefs(properties, "#/resources/"+webFunction, "#/resources/"+publicWebFunction)
 		return renamePropertiesRefs(properties, "#/resources/"+oldPrefix, "#/resources/"+newPrefix)
@@ -78,7 +86,11 @@ func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	}
 	for token, typ := range inferred.Types {
 		typ.Properties = renameRefs(typ.Properties)
-		result.Types[strings.Replace(token, oldPrefix, newPrefix, 1)] = typ
+		if publicToken, ok := lambdaTypeTokens[token]; ok {
+			result.Types[publicToken] = typ
+		} else {
+			result.Types[strings.Replace(token, oldPrefix, newPrefix, 1)] = typ
+		}
 	}
 	return result
 }

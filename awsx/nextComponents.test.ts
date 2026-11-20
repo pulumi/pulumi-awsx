@@ -71,9 +71,12 @@ test("provider registration uses the AWSX Lambda WebFunction identity", async ()
     "integrated-web",
     "awsx:lambda:WebFunction",
     {
-      code: new pulumi.asset.AssetArchive({
-        "index.js": new pulumi.asset.StringAsset("module.exports = {};"),
-      }),
+      code: {
+        archive: new pulumi.asset.AssetArchive({
+          "index.js": new pulumi.asset.StringAsset("module.exports = {};"),
+        }),
+      },
+      runtime: "nodejs24.x",
     },
     {},
   );

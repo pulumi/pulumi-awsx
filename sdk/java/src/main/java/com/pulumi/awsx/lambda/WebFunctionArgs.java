@@ -3,7 +3,8 @@
 
 package com.pulumi.awsx.lambda;
 
-import com.pulumi.asset.Archive;
+import com.pulumi.awsx.lambda.enums.WebFunctionRuntime;
+import com.pulumi.awsx.lambda.inputs.WebFunctionCodeArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import com.pulumi.exceptions.MissingRequiredPropertyException;
@@ -20,27 +21,17 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
     public static final WebFunctionArgs Empty = new WebFunctionArgs();
 
     /**
-     * Runnable application files, including dependencies. FileArchive accepts a directory or an
-     * existing archive.
-     * 
-     * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-     * another file. The application must start an HTTP server at the host and port supplied in
-     * AWS_LAMBDA_HTTP_ENDPOINT.
+     * Application code to deploy.
      * 
      */
     @Import(name="code", required=true)
-    private Output<Archive> code;
+    private Output<WebFunctionCodeArgs> code;
 
     /**
-     * @return Runnable application files, including dependencies. FileArchive accepts a directory or an
-     * existing archive.
-     * 
-     * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-     * another file. The application must start an HTTP server at the host and port supplied in
-     * AWS_LAMBDA_HTTP_ENDPOINT.
+     * @return Application code to deploy.
      * 
      */
-    public Output<Archive> code() {
+    public Output<WebFunctionCodeArgs> code() {
         return this.code;
     }
 
@@ -154,6 +145,25 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Runtime for the revision. Node.js loads index.js at the package root unless
+     * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+     * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+     * 
+     */
+    @Import(name="runtime", required=true)
+    private Output<WebFunctionRuntime> runtime;
+
+    /**
+     * @return Runtime for the revision. Node.js loads index.js at the package root unless
+     * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+     * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+     * 
+     */
+    public Output<WebFunctionRuntime> runtime() {
+        return this.runtime;
+    }
+
+    /**
      * Tags applied to the function and AWSX-created supporting resources that accept tags.
      * 
      * Default - No additional tags.
@@ -200,6 +210,7 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
         this.executionRoleArn = $.executionRoleArn;
         this.functionName = $.functionName;
         this.maxConcurrencyPerEnvironment = $.maxConcurrencyPerEnvironment;
+        this.runtime = $.runtime;
         this.tags = $.tags;
         this.timeoutSeconds = $.timeoutSeconds;
     }
@@ -223,33 +234,23 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param code Runnable application files, including dependencies. FileArchive accepts a directory or an
-         * existing archive.
-         * 
-         * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-         * another file. The application must start an HTTP server at the host and port supplied in
-         * AWS_LAMBDA_HTTP_ENDPOINT.
+         * @param code Application code to deploy.
          * 
          * @return builder
          * 
          */
-        public Builder code(Output<Archive> code) {
+        public Builder code(Output<WebFunctionCodeArgs> code) {
             $.code = code;
             return this;
         }
 
         /**
-         * @param code Runnable application files, including dependencies. FileArchive accepts a directory or an
-         * existing archive.
-         * 
-         * The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-         * another file. The application must start an HTTP server at the host and port supplied in
-         * AWS_LAMBDA_HTTP_ENDPOINT.
+         * @param code Application code to deploy.
          * 
          * @return builder
          * 
          */
-        public Builder code(Archive code) {
+        public Builder code(WebFunctionCodeArgs code) {
             return code(Output.of(code));
         }
 
@@ -379,6 +380,31 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
+         * @param runtime Runtime for the revision. Node.js loads index.js at the package root unless
+         * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+         * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder runtime(Output<WebFunctionRuntime> runtime) {
+            $.runtime = runtime;
+            return this;
+        }
+
+        /**
+         * @param runtime Runtime for the revision. Node.js loads index.js at the package root unless
+         * AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+         * port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder runtime(WebFunctionRuntime runtime) {
+            return runtime(Output.of(runtime));
+        }
+
+        /**
          * @param tags Tags applied to the function and AWSX-created supporting resources that accept tags.
          * 
          * Default - No additional tags.
@@ -419,6 +445,9 @@ public final class WebFunctionArgs extends com.pulumi.resources.ResourceArgs {
         public WebFunctionArgs build() {
             if ($.code == null) {
                 throw new MissingRequiredPropertyException("WebFunctionArgs", "code");
+            }
+            if ($.runtime == null) {
+                throw new MissingRequiredPropertyException("WebFunctionArgs", "runtime");
             }
             return $;
         }

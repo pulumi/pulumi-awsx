@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Lambda
 {
     /// <summary>
-    /// A Node.js 24 Lambda Web Function and its current immutable revision.
+    /// A Lambda Web Function and its current immutable revision.
     /// </summary>
     [AwsxResourceType("awsx:lambda:WebFunction")]
     public partial class WebFunction : global::Pulumi.ComponentResource
@@ -80,15 +80,10 @@ namespace Pulumi.Awsx.Lambda
     public sealed class WebFunctionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Runnable application files, including dependencies. FileArchive accepts a directory or an
-        /// existing archive.
-        /// 
-        /// The runtime loads index.js at the package root unless AWS_LAMBDA_NODEJS_ENTRYPOINT names
-        /// another file. The application must start an HTTP server at the host and port supplied in
-        /// AWS_LAMBDA_HTTP_ENDPOINT.
+        /// Application code to deploy.
         /// </summary>
         [Input("code", required: true)]
-        public Input<Archive> Code { get; set; } = null!;
+        public Input<Inputs.WebFunctionCodeArgs> Code { get; set; } = null!;
 
         /// <summary>
         /// Version-qualified ARN of an existing network connector for VPC egress. Revisions using a
@@ -142,6 +137,14 @@ namespace Pulumi.Awsx.Lambda
         /// </summary>
         [Input("maxConcurrencyPerEnvironment")]
         public Input<double>? MaxConcurrencyPerEnvironment { get; set; }
+
+        /// <summary>
+        /// Runtime for the revision. Node.js loads index.js at the package root unless
+        /// AWS_LAMBDA_NODEJS_ENTRYPOINT names another file. The application must listen on the host and
+        /// port supplied in AWS_LAMBDA_HTTP_ENDPOINT.
+        /// </summary>
+        [Input("runtime", required: true)]
+        public Input<Pulumi.Awsx.Lambda.WebFunctionRuntime> Runtime { get; set; } = null!;
 
         [Input("tags")]
         private Dictionary<string, Input<string>>? _tags;
