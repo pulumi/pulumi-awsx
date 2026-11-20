@@ -1,3 +1,0 @@
-name: ecs-service-canary
-runtime: nodejs
-description: Fargate canary deployment with a caller-owned ALB

@@ -1,3 +1,0 @@
-name: lambda-web-function-nodejs
-runtime: nodejs
-description: AWSX Lambda WebFunction SDK acceptance test

@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "noEmit": false,
-    "outDir": "../awsx/bin/node_modules/@pulumi/awsx-next"
-  },
-  "include": ["index.ts", "src/**/*.ts"]
-}

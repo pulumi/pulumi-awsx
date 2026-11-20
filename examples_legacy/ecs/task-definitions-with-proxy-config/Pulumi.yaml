@@ -1,3 +1,0 @@
-name: task-definitions-with-proxy-config
-runtime: nodejs
-description: A minimal TypeScript Pulumi program
