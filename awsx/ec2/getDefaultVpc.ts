@@ -18,8 +18,12 @@ import * as schema from "../schema-types";
 
 export async function getDefaultVpc(
   opts: pulumi.InvokeOptions,
+  region?: pulumi.Input<string>,
 ): Promise<schema.getDefaultVpcOutputs> {
-  const vpc = await aws.ec2.getVpc({ default: true }, opts);
+  const resolvedRegion = await new Promise<string | undefined>((resolve) =>
+    pulumi.output(region).apply(resolve),
+  );
+  const vpc = await aws.ec2.getVpc({ default: true, region: resolvedRegion }, opts);
 
   if (vpc === undefined) {
     throw new Error("unable to find default VPC for this region and account");
@@ -28,12 +32,13 @@ export async function getDefaultVpc(
   const subnetIds = aws.ec2.getSubnetsOutput(
     {
       filters: [{ name: "vpc-id", values: [vpc.id] }],
+      region,
     },
     opts,
   ).ids;
 
   const subnets = subnetIds.apply((subnetIds) =>
-    pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }, opts))),
+    pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id, region }, opts))),
   );
 
   const { publicSubnetIds, privateSubnetIds } = subnets.apply((ss) => {
