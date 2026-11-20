@@ -16,12 +16,13 @@ import (
 type WebFunctionEndpoint struct {
 	pulumi.ResourceState
 
+	// Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+	// regionalDomainNames.
+	DomainName pulumi.StringPtrOutput `pulumi:"domainName"`
 	// ARN of the endpoint. Use it to scope IAM invocation permissions.
 	EndpointArn pulumi.StringOutput `pulumi:"endpointArn"`
-	// HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
-	RegionalUrls pulumi.StringMapOutput `pulumi:"regionalUrls"`
-	// HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-	Url pulumi.StringPtrOutput `pulumi:"url"`
+	// Hostnames without `https://` for individual serving Regions, keyed by Region code.
+	RegionalDomainNames pulumi.StringMapOutput `pulumi:"regionalDomainNames"`
 }
 
 // NewWebFunctionEndpoint registers a new resource with the given unique name, arguments, and options.
@@ -227,19 +228,20 @@ func (o WebFunctionEndpointOutput) ToWebFunctionEndpointOutputWithContext(ctx co
 	return o
 }
 
+// Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+// regionalDomainNames.
+func (o WebFunctionEndpointOutput) DomainName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *WebFunctionEndpoint) pulumi.StringPtrOutput { return v.DomainName }).(pulumi.StringPtrOutput)
+}
+
 // ARN of the endpoint. Use it to scope IAM invocation permissions.
 func (o WebFunctionEndpointOutput) EndpointArn() pulumi.StringOutput {
 	return o.ApplyT(func(v *WebFunctionEndpoint) pulumi.StringOutput { return v.EndpointArn }).(pulumi.StringOutput)
 }
 
-// HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
-func (o WebFunctionEndpointOutput) RegionalUrls() pulumi.StringMapOutput {
-	return o.ApplyT(func(v *WebFunctionEndpoint) pulumi.StringMapOutput { return v.RegionalUrls }).(pulumi.StringMapOutput)
-}
-
-// HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-func (o WebFunctionEndpointOutput) Url() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v *WebFunctionEndpoint) pulumi.StringPtrOutput { return v.Url }).(pulumi.StringPtrOutput)
+// Hostnames without `https://` for individual serving Regions, keyed by Region code.
+func (o WebFunctionEndpointOutput) RegionalDomainNames() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *WebFunctionEndpoint) pulumi.StringMapOutput { return v.RegionalDomainNames }).(pulumi.StringMapOutput)
 }
 
 type WebFunctionEndpointArrayOutput struct{ *pulumi.OutputState }

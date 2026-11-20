@@ -5138,26 +5138,26 @@
         "awsx:lambda:WebFunctionEndpoint": {
             "description": "An HTTPS endpoint with explicit routing to published Lambda Web Function revisions.",
             "properties": {
+                "domainName": {
+                    "type": "string",
+                    "description": "Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use\nregionalDomainNames."
+                },
                 "endpointArn": {
                     "type": "string",
                     "description": "ARN of the endpoint. Use it to scope IAM invocation permissions."
                 },
-                "regionalUrls": {
+                "regionalDomainNames": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code."
-                },
-                "url": {
-                    "type": "string",
-                    "description": "HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls."
+                    "description": "Hostnames without `https://` for individual serving Regions, keyed by Region code."
                 }
             },
             "type": "object",
             "required": [
                 "endpointArn",
-                "regionalUrls"
+                "regionalDomainNames"
             ],
             "inputProperties": {
                 "authType": {

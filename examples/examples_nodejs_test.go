@@ -99,9 +99,10 @@ func TestAccLambdaWebFunction(t *testing.T) {
 	require.NotEmpty(t, revisionID)
 	require.Equal(t, functionArn+"/revision/"+revisionID, result.Outputs["revisionArn"].Value)
 
-	endpointURL, ok := result.Outputs["endpointUrl"].Value.(string)
+	endpointDomainName, ok := result.Outputs["endpointDomainName"].Value.(string)
 	require.True(t, ok)
-	require.True(t, strings.HasPrefix(endpointURL, "https://"))
+	require.NotEmpty(t, endpointDomainName)
+	endpointURL := "https://" + endpointDomainName
 	endpointArn, ok := result.Outputs["endpointArn"].Value.(string)
 	require.True(t, ok)
 	require.NotEmpty(t, endpointArn)
@@ -119,7 +120,7 @@ func TestAccLambdaWebFunction(t *testing.T) {
 	require.Equal(t, functionArn, updated.Outputs["functionArn"].Value)
 	require.Equal(t, functionArn+"/revision/"+candidateID, updated.Outputs["revisionArn"].Value)
 	require.Equal(t, endpointArn, updated.Outputs["endpointArn"].Value)
-	require.Equal(t, endpointURL, updated.Outputs["endpointUrl"].Value)
+	require.Equal(t, endpointDomainName, updated.Outputs["endpointDomainName"].Value)
 	assertLambdaWebFunctionReleases(t, client, endpointURL, "stable", "candidate")
 }
 

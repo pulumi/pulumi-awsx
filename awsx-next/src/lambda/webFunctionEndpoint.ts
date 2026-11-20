@@ -144,14 +144,15 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
   public readonly endpointArn!: pulumi.Output<string>;
 
   /**
-   * HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
+   * Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+   * regionalDomainNames.
    */
-  public readonly url!: pulumi.Output<string | undefined>;
+  public readonly domainName!: pulumi.Output<string | undefined>;
 
   /**
-   * HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+   * Hostnames without `https://` for individual serving Regions, keyed by Region code.
    */
-  public readonly regionalUrls!: pulumi.Output<Record<string, string>>;
+  public readonly regionalDomainNames!: pulumi.Output<Record<string, string>>;
 
   constructor(
     name: string,
@@ -162,7 +163,9 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
     super(
       identity.type,
       name,
-      opts.urn ? { endpointArn: undefined, url: undefined, regionalUrls: undefined } : args,
+      opts.urn
+        ? { endpointArn: undefined, domainName: undefined, regionalDomainNames: undefined }
+        : args,
       pulumi.mergeOptions(opts, { aliases: identity.aliases }),
     );
     if (opts.urn) {
@@ -202,22 +205,22 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
     );
 
     this.endpointArn = endpoint.endpointArn;
-    this.url = pulumi
+    this.domainName = pulumi
       .all([endpoint.endpointType, endpoint.domainName])
       .apply(([type, domain]) =>
-        type !== 'PerRegion' && domain ? `https://${domain}` : undefined,
+        type !== WebFunctionEndpointType.PER_REGION && domain ? domain : undefined,
       );
-    this.regionalUrls = endpoint.regionalEndpoints.apply((regionalEndpoints) =>
+    this.regionalDomainNames = endpoint.regionalEndpoints.apply((regionalEndpoints) =>
       Object.fromEntries(
         Object.entries(regionalEndpoints ?? {}).flatMap(([region, regionalEndpoint]) =>
-          regionalEndpoint.domainName ? [[region, `https://${regionalEndpoint.domainName}`]] : [],
+          regionalEndpoint.domainName ? [[region, regionalEndpoint.domainName]] : [],
         ),
       ),
     );
     this.registerOutputs({
       endpointArn: this.endpointArn,
-      url: this.url,
-      regionalUrls: this.regionalUrls,
+      domainName: this.domainName,
+      regionalDomainNames: this.regionalDomainNames,
     });
   }
 }

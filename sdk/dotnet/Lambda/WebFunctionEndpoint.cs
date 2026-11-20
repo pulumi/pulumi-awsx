@@ -16,22 +16,23 @@ namespace Pulumi.Awsx.Lambda
     public partial class WebFunctionEndpoint : global::Pulumi.ComponentResource
     {
         /// <summary>
+        /// Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+        /// regionalDomainNames.
+        /// </summary>
+        [Output("domainName")]
+        public Output<string?> DomainName { get; private set; } = null!;
+
+        /// <summary>
         /// ARN of the endpoint. Use it to scope IAM invocation permissions.
         /// </summary>
         [Output("endpointArn")]
         public Output<string> EndpointArn { get; private set; } = null!;
 
         /// <summary>
-        /// HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+        /// Hostnames without `https://` for individual serving Regions, keyed by Region code.
         /// </summary>
-        [Output("regionalUrls")]
-        public Output<ImmutableDictionary<string, string>> RegionalUrls { get; private set; } = null!;
-
-        /// <summary>
-        /// HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-        /// </summary>
-        [Output("url")]
-        public Output<string?> Url { get; private set; } = null!;
+        [Output("regionalDomainNames")]
+        public Output<ImmutableDictionary<string, string>> RegionalDomainNames { get; private set; } = null!;
 
 
         /// <summary>

@@ -37,7 +37,7 @@ const endpoint = new awsx.lambda.WebFunctionEndpoint("app", {
 });
 
 export const endpointArn = endpoint.endpointArn;
-export const endpointUrl = endpoint.url;
+export const endpointDomainName = endpoint.domainName;
 export const functionArn = app.functionArn;
 export const revisionId = app.revisionId;
 export const revisionArn = app.revisionArn;

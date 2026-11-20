@@ -109,7 +109,7 @@ test("provider constructs a Lambda endpoint with the resolved function name and 
 
   expect(endpoint).toBeInstanceOf(WebFunctionEndpoint);
   expect(await unwrap(endpoint.urn)).toContain("::awsx:lambda:WebFunctionEndpoint::");
-  expect(await unwrap(endpoint.url)).toBe("https://example.lambda.test");
+  expect(await unwrap(endpoint.domainName)).toBe("example.lambda.test");
   const inputs = resources.find(
     (resource) =>
       resource.type === "aws-native:lambda:WebFunctionEndpoint" &&
@@ -124,7 +124,7 @@ test("provider constructs a Lambda endpoint with the resolved function name and 
   expect(inputs?.throttleConfig).toEqual({});
 });
 
-test("a PerRegion endpoint exposes only regional URLs and preserves a zero rate limit", async () => {
+test("a PerRegion endpoint exposes only regional hostnames and preserves a zero rate limit", async () => {
   const endpoint = construct(
     "regional-endpoint",
     "awsx:lambda:WebFunctionEndpoint",
@@ -140,9 +140,9 @@ test("a PerRegion endpoint exposes only regional URLs and preserves a zero rate 
     {},
   ) as WebFunctionEndpoint;
 
-  expect(await unwrap(endpoint.url)).toBeUndefined();
-  expect(await unwrap(endpoint.regionalUrls)).toEqual({
-    [region]: "https://home.lambda.test",
+  expect(await unwrap(endpoint.domainName)).toBeUndefined();
+  expect(await unwrap(endpoint.regionalDomainNames)).toEqual({
+    [region]: "home.lambda.test",
   });
   const inputs = resources.find(
     (resource) =>

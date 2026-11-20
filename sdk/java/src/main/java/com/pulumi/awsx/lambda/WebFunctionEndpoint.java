@@ -21,6 +21,22 @@ import javax.annotation.Nullable;
 @ResourceType(type="awsx:lambda:WebFunctionEndpoint")
 public class WebFunctionEndpoint extends com.pulumi.resources.ComponentResource {
     /**
+     * Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+     * regionalDomainNames.
+     * 
+     */
+    @Export(name="domainName", refs={String.class}, tree="[0]")
+    private Output</* @Nullable */ String> domainName;
+
+    /**
+     * @return Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+     * regionalDomainNames.
+     * 
+     */
+    public Output<Optional<String>> domainName() {
+        return Codegen.optional(this.domainName);
+    }
+    /**
      * ARN of the endpoint. Use it to scope IAM invocation permissions.
      * 
      */
@@ -35,32 +51,18 @@ public class WebFunctionEndpoint extends com.pulumi.resources.ComponentResource 
         return this.endpointArn;
     }
     /**
-     * HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+     * Hostnames without `https://` for individual serving Regions, keyed by Region code.
      * 
      */
-    @Export(name="regionalUrls", refs={Map.class,String.class}, tree="[0,1,1]")
-    private Output<Map<String,String>> regionalUrls;
+    @Export(name="regionalDomainNames", refs={Map.class,String.class}, tree="[0,1,1]")
+    private Output<Map<String,String>> regionalDomainNames;
 
     /**
-     * @return HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+     * @return Hostnames without `https://` for individual serving Regions, keyed by Region code.
      * 
      */
-    public Output<Map<String,String>> regionalUrls() {
-        return this.regionalUrls;
-    }
-    /**
-     * HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-     * 
-     */
-    @Export(name="url", refs={String.class}, tree="[0]")
-    private Output</* @Nullable */ String> url;
-
-    /**
-     * @return HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-     * 
-     */
-    public Output<Optional<String>> url() {
-        return Codegen.optional(this.url);
+    public Output<Map<String,String>> regionalDomainNames() {
+        return this.regionalDomainNames;
     }
 
     /**

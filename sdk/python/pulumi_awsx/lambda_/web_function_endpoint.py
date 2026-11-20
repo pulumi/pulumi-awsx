@@ -349,15 +349,24 @@ class WebFunctionEndpoint(pulumi.ComponentResource):
             if revisions is None and not opts.urn:
                 raise TypeError("Missing required property 'revisions'")
             __props__.__dict__["revisions"] = revisions
+            __props__.__dict__["domain_name"] = None
             __props__.__dict__["endpoint_arn"] = None
-            __props__.__dict__["regional_urls"] = None
-            __props__.__dict__["url"] = None
+            __props__.__dict__["regional_domain_names"] = None
         super(WebFunctionEndpoint, __self__).__init__(
             'awsx:lambda:WebFunctionEndpoint',
             resource_name,
             __props__,
             opts,
             remote=True)
+
+    @_builtins.property
+    @pulumi.getter(name="domainName")
+    def domain_name(self) -> pulumi.Output[Optional[_builtins.str]]:
+        """
+        Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+        regionalDomainNames.
+        """
+        return pulumi.get(self, "domain_name")
 
     @_builtins.property
     @pulumi.getter(name="endpointArn")
@@ -368,18 +377,10 @@ class WebFunctionEndpoint(pulumi.ComponentResource):
         return pulumi.get(self, "endpoint_arn")
 
     @_builtins.property
-    @pulumi.getter(name="regionalUrls")
-    def regional_urls(self) -> pulumi.Output[Mapping[str, _builtins.str]]:
+    @pulumi.getter(name="regionalDomainNames")
+    def regional_domain_names(self) -> pulumi.Output[Mapping[str, _builtins.str]]:
         """
-        HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+        Hostnames without `https://` for individual serving Regions, keyed by Region code.
         """
-        return pulumi.get(self, "regional_urls")
-
-    @_builtins.property
-    @pulumi.getter
-    def url(self) -> pulumi.Output[Optional[_builtins.str]]:
-        """
-        HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-        """
-        return pulumi.get(self, "url")
+        return pulumi.get(self, "regional_domain_names")
 

@@ -26,17 +26,18 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
     }
 
     /**
+     * Hostname for a HomeRegion or MultiRegion endpoint, without `https://`. For PerRegion use
+     * regionalDomainNames.
+     */
+    declare public /*out*/ readonly domainName: pulumi.Output<string | undefined>;
+    /**
      * ARN of the endpoint. Use it to scope IAM invocation permissions.
      */
     declare public /*out*/ readonly endpointArn: pulumi.Output<string>;
     /**
-     * HTTPS URLs reported by Lambda for individual serving Regions, keyed by Region code.
+     * Hostnames without `https://` for individual serving Regions, keyed by Region code.
      */
-    declare public /*out*/ readonly regionalUrls: pulumi.Output<{[key: string]: string}>;
-    /**
-     * HTTPS URL for a HomeRegion or MultiRegion endpoint. For PerRegion use regionalUrls.
-     */
-    declare public /*out*/ readonly url: pulumi.Output<string | undefined>;
+    declare public /*out*/ readonly regionalDomainNames: pulumi.Output<{[key: string]: string}>;
 
     /**
      * Create a WebFunctionEndpoint resource with the given unique name, arguments, and options.
@@ -66,13 +67,13 @@ export class WebFunctionEndpoint extends pulumi.ComponentResource {
             resourceInputs["regions"] = args?.regions;
             resourceInputs["requestsPerSecond"] = args?.requestsPerSecond;
             resourceInputs["revisions"] = args?.revisions;
+            resourceInputs["domainName"] = undefined /*out*/;
             resourceInputs["endpointArn"] = undefined /*out*/;
-            resourceInputs["regionalUrls"] = undefined /*out*/;
-            resourceInputs["url"] = undefined /*out*/;
+            resourceInputs["regionalDomainNames"] = undefined /*out*/;
         } else {
+            resourceInputs["domainName"] = undefined /*out*/;
             resourceInputs["endpointArn"] = undefined /*out*/;
-            resourceInputs["regionalUrls"] = undefined /*out*/;
-            resourceInputs["url"] = undefined /*out*/;
+            resourceInputs["regionalDomainNames"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(WebFunctionEndpoint.__pulumiType, name, resourceInputs, opts, true /*remote*/);
