@@ -18,6 +18,8 @@ from ._enums import *
 __all__ = [
     'WebFunctionCodeArgs',
     'WebFunctionCodeArgsDict',
+    'WebFunctionRevisionWeightArgs',
+    'WebFunctionRevisionWeightArgsDict',
 ]
 
 class WebFunctionCodeArgsDict(TypedDict):
@@ -49,5 +51,59 @@ class WebFunctionCodeArgs:
     @archive.setter
     def archive(self, value: pulumi.Input[pulumi.Archive]):
         pulumi.set(self, "archive", value)
+
+
+class WebFunctionRevisionWeightArgsDict(TypedDict):
+    revision_id: pulumi.Input[_builtins.str]
+    """
+    ID of a published revision of the endpoint's function.
+    """
+    weight: NotRequired[pulumi.Input[Optional[_builtins.float]]]
+    """
+    Integer percentage of traffic to send to this revision.
+
+    Default - 100 for a single revision. Required for each entry when splitting traffic.
+    """
+
+@pulumi.input_type
+class WebFunctionRevisionWeightArgs:
+    def __init__(__self__, *,
+                 revision_id: pulumi.Input[_builtins.str],
+                 weight: pulumi.Input[Optional[_builtins.float]] = None):
+        """
+        :param pulumi.Input[_builtins.str] revision_id: ID of a published revision of the endpoint's function.
+        :param pulumi.Input[_builtins.float] weight: Integer percentage of traffic to send to this revision.
+               
+               Default - 100 for a single revision. Required for each entry when splitting traffic.
+        """
+        pulumi.set(__self__, "revision_id", revision_id)
+        if weight is not None:
+            pulumi.set(__self__, "weight", weight)
+
+    @_builtins.property
+    @pulumi.getter(name="revisionId")
+    def revision_id(self) -> pulumi.Input[_builtins.str]:
+        """
+        ID of a published revision of the endpoint's function.
+        """
+        return pulumi.get(self, "revision_id")
+
+    @revision_id.setter
+    def revision_id(self, value: pulumi.Input[_builtins.str]):
+        pulumi.set(self, "revision_id", value)
+
+    @_builtins.property
+    @pulumi.getter
+    def weight(self) -> pulumi.Input[Optional[_builtins.float]]:
+        """
+        Integer percentage of traffic to send to this revision.
+
+        Default - 100 for a single revision. Required for each entry when splitting traffic.
+        """
+        return pulumi.get(self, "weight")
+
+    @weight.setter
+    def weight(self, value: pulumi.Input[Optional[_builtins.float]]):
+        pulumi.set(self, "weight", value)
 
 

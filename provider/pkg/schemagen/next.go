@@ -54,21 +54,22 @@ func generateNextComponents(packageDir string) schema.PackageSpec {
 // External provider references are left intact.
 func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	const oldPrefix = "awsx-next:index:"
-	const newPrefix = "awsx:ecs:"
-	const webFunction = oldPrefix + "WebFunction"
-	const publicWebFunction = "awsx:lambda:WebFunction"
-	lambdaTypes := []string{"WebFunctionCode", "WebFunctionRuntime"}
-	lambdaTypeTokens := make(map[string]string, len(lambdaTypes))
-	for _, name := range lambdaTypes {
-		lambdaTypeTokens[oldPrefix+name] = "awsx:lambda:" + name
+	const ecsPrefix = "awsx:ecs:"
+	// Lambda resources and their supporting types all start with WebFunction.
+	const oldLambdaPrefix = oldPrefix + "WebFunction"
+	const lambdaPrefix = "awsx:lambda:WebFunction"
+	renameToken := func(token string) string {
+		if strings.HasPrefix(token, oldLambdaPrefix) {
+			return lambdaPrefix + strings.TrimPrefix(token, oldLambdaPrefix)
+		}
+		return strings.Replace(token, oldPrefix, ecsPrefix, 1)
 	}
 	renameRefs := func(properties map[string]schema.PropertySpec) map[string]schema.PropertySpec {
-		for from, to := range lambdaTypeTokens {
-			properties = renamePropertiesRefs(properties, "#/types/"+from, "#/types/"+to)
+		for _, section := range []string{"#/types/", "#/resources/"} {
+			properties = renamePropertiesRefs(properties, section+oldLambdaPrefix, section+lambdaPrefix)
+			properties = renamePropertiesRefs(properties, section+oldPrefix, section+ecsPrefix)
 		}
-		properties = renamePropertiesRefs(properties, "#/types/"+oldPrefix, "#/types/"+newPrefix)
-		properties = renamePropertiesRefs(properties, "#/resources/"+webFunction, "#/resources/"+publicWebFunction)
-		return renamePropertiesRefs(properties, "#/resources/"+oldPrefix, "#/resources/"+newPrefix)
+		return properties
 	}
 
 	result := schema.PackageSpec{
@@ -78,19 +79,11 @@ func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	for token, resource := range inferred.Resources {
 		resource.Properties = renameRefs(resource.Properties)
 		resource.InputProperties = renameRefs(resource.InputProperties)
-		if token == webFunction {
-			result.Resources[publicWebFunction] = resource
-		} else {
-			result.Resources[strings.Replace(token, oldPrefix, newPrefix, 1)] = resource
-		}
+		result.Resources[renameToken(token)] = resource
 	}
 	for token, typ := range inferred.Types {
 		typ.Properties = renameRefs(typ.Properties)
-		if publicToken, ok := lambdaTypeTokens[token]; ok {
-			result.Types[publicToken] = typ
-		} else {
-			result.Types[strings.Replace(token, oldPrefix, newPrefix, 1)] = typ
-		}
+		result.Types[renameToken(token)] = typ
 	}
 	return result
 }

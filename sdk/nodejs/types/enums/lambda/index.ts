@@ -2,6 +2,37 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 
+export const WebFunctionAuthType = {
+    /**
+     * Lambda checks that the caller has permission to invoke this endpoint using AWS credentials.
+     */
+    IAM: "IamAuth",
+    /**
+     * Anyone can reach the app at this URL. The app decides whether to require a login or token.
+     */
+    APPLICATION_MANAGED: "ApplicationManaged",
+} as const;
+
+export type WebFunctionAuthType = (typeof WebFunctionAuthType)[keyof typeof WebFunctionAuthType];
+
+export const WebFunctionEndpointType = {
+    /**
+     * Serve traffic from the function's home Region only.
+     */
+    HOME_REGION: "HomeRegion",
+    /**
+     * Serve traffic at one global URL. Lambda routes callers by latency, without health-based
+     * failover.
+     */
+    MULTI_REGION: "MultiRegion",
+    /**
+     * Get a URL for each serving Region and decide how to route callers yourself.
+     */
+    PER_REGION: "PerRegion",
+} as const;
+
+export type WebFunctionEndpointType = (typeof WebFunctionEndpointType)[keyof typeof WebFunctionEndpointType];
+
 export const WebFunctionRuntime = {
     /**
      * Node.js 24.x.

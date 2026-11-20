@@ -17,6 +17,7 @@ import { construct } from "./resources";
 import { TaskDefinition } from "@pulumi/awsx-next/src/ecs/taskDefinition";
 import { Service } from "@pulumi/awsx-next/src/ecs/service";
 import { WebFunction } from "@pulumi/awsx-next/src/lambda/webFunction";
+import { WebFunctionEndpoint } from "@pulumi/awsx-next/src/lambda/webFunctionEndpoint";
 
 const resources: pulumi.runtime.MockResourceArgs[] = [];
 const region = "us-west-2";
@@ -35,6 +36,15 @@ beforeAll(async () => {
         state.taskDefinitionArn = `arn:aws:ecs:${region}:${accountId}:task-definition/${args.name}:1`;
       } else if (args.type === "aws:ecs/service:Service") {
         state.arn = `arn:aws:ecs:${region}:${accountId}:service/cluster/${args.name}`;
+      } else if (args.type === "aws-native:lambda:WebFunctionEndpoint") {
+        state.endpointArn = `arn:aws:lambda:${region}:${accountId}:web-function/test/endpoint/${args.name}`;
+        state.domainName = "example.lambda.test";
+        if (args.inputs.endpointType === "PerRegion") {
+          state.regionalEndpoints = {
+            [region]: { domainName: "home.lambda.test" },
+            "eu-west-1": {},
+          };
+        }
       } else if (args.type === "aws:iam/role:Role") {
         state.arn = `arn:aws:iam::${accountId}:role/${args.name}`;
       }
@@ -83,6 +93,65 @@ test("provider registration uses the AWSX Lambda WebFunction identity", async ()
   expect(component).toBeInstanceOf(WebFunction);
   expect(await unwrap(component!.urn)).toContain("::awsx:lambda:WebFunction::");
   expect(construct("obsolete", "awsx-next:index:WebFunction", {}, {})).toBeUndefined();
+});
+
+test("provider constructs a Lambda endpoint with the resolved function name and default routing", async () => {
+  const endpoint = construct(
+    "integrated-endpoint",
+    "awsx:lambda:WebFunctionEndpoint",
+    {
+      functionName: pulumi.output("test"),
+      revisions: [{ revisionId: pulumi.output("revision-1") }],
+      authType: "ApplicationManaged",
+    },
+    {},
+  ) as WebFunctionEndpoint;
+
+  expect(endpoint).toBeInstanceOf(WebFunctionEndpoint);
+  expect(await unwrap(endpoint.urn)).toContain("::awsx:lambda:WebFunctionEndpoint::");
+  expect(await unwrap(endpoint.domainName)).toBe("example.lambda.test");
+  const inputs = resources.find(
+    (resource) =>
+      resource.type === "aws-native:lambda:WebFunctionEndpoint" &&
+      resource.name === "integrated-endpoint",
+  )?.inputs;
+  expect(inputs).toMatchObject({
+    functionName: "test",
+    endpointType: "HomeRegion",
+    revisionWeights: [{ revisionId: "revision-1", weight: 100 }],
+  });
+  expect(inputs?.scalingConfig).toEqual({});
+  expect(inputs?.throttleConfig).toEqual({});
+});
+
+test("a PerRegion endpoint exposes only regional hostnames and preserves a zero rate limit", async () => {
+  const endpoint = construct(
+    "regional-endpoint",
+    "awsx:lambda:WebFunctionEndpoint",
+    {
+      functionName: "test",
+      revisions: [{ revisionId: "revision-1" }],
+      authType: "ApplicationManaged",
+      endpointType: "PerRegion",
+      regions: [region, "eu-west-1"],
+      maxEnvironments: 5,
+      requestsPerSecond: 0,
+    },
+    {},
+  ) as WebFunctionEndpoint;
+
+  expect(await unwrap(endpoint.domainName)).toBeUndefined();
+  expect(await unwrap(endpoint.regionalDomainNames)).toEqual({
+    [region]: "home.lambda.test",
+  });
+  const inputs = resources.find(
+    (resource) =>
+      resource.type === "aws-native:lambda:WebFunctionEndpoint" &&
+      resource.name === "regional-endpoint",
+  )?.inputs;
+  expect(inputs?.regions).toEqual(["eu-west-1"]);
+  expect(inputs?.scalingConfig).toEqual({ maxEnvironments: 5 });
+  expect(inputs?.throttleConfig).toEqual({ rateLimit: 0 });
 });
 
 test("provider registration composes the current task and service with AWSX identities", async () => {

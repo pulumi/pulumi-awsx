@@ -57,8 +57,20 @@ func TestNormalizeNextComponents(t *testing.T) {
 					"runtime": {TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-next:index:WebFunctionRuntime"}},
 				},
 			},
+			"awsx-next:index:WebFunctionEndpoint": {
+				InputProperties: map[string]schema.PropertySpec{
+					"revisions": {TypeSpec: schema.TypeSpec{
+						Type:  "array",
+						Items: &schema.TypeSpec{Ref: "#/types/awsx-next:index:WebFunctionRevisionWeight"},
+					}},
+				},
+				IsComponent: true,
+			},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
+			"awsx-next:index:WebFunctionRevisionWeight": {
+				ObjectTypeSpec: schema.ObjectTypeSpec{Type: "object"},
+			},
 			"awsx-next:index:WebFunctionCode":    {},
 			"awsx-next:index:WebFunctionRuntime": {},
 			"awsx-next:index:ContainerDefinition": {
@@ -101,6 +113,12 @@ func TestNormalizeNextComponents(t *testing.T) {
 	assert.Equal(t, "#/types/awsx:lambda:WebFunctionRuntime", webFunction.InputProperties["runtime"].Ref)
 	assert.Contains(t, normalized.Types, "awsx:lambda:WebFunctionCode")
 	assert.Contains(t, normalized.Types, "awsx:lambda:WebFunctionRuntime")
+	endpoint := normalized.Resources["awsx:lambda:WebFunctionEndpoint"]
+	require.True(t, endpoint.IsComponent)
+	require.NotNil(t, endpoint.InputProperties["revisions"].Items)
+	assert.Equal(t, "#/types/awsx:lambda:WebFunctionRevisionWeight",
+		endpoint.InputProperties["revisions"].Items.Ref)
+	assert.Contains(t, normalized.Types, "awsx:lambda:WebFunctionRevisionWeight")
 	assert.NotContains(t, normalized.Resources, "awsx:ecs:WebFunction")
 	assert.NotContains(t, normalized.Resources, "awsx-next:index:TaskDefinition")
 

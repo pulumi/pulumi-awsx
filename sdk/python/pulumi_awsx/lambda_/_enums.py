@@ -7,8 +7,39 @@ import pulumi
 from enum import Enum
 
 __all__ = [
+    'WebFunctionAuthType',
+    'WebFunctionEndpointType',
     'WebFunctionRuntime',
 ]
+
+
+@pulumi.type_token("awsx:lambda:WebFunctionAuthType")
+class WebFunctionAuthType(_builtins.str, Enum):
+    IAM = "IamAuth"
+    """
+    Lambda checks that the caller has permission to invoke this endpoint using AWS credentials.
+    """
+    APPLICATIO_N_MANAGED = "ApplicationManaged"
+    """
+    Anyone can reach the app at this URL. The app decides whether to require a login or token.
+    """
+
+
+@pulumi.type_token("awsx:lambda:WebFunctionEndpointType")
+class WebFunctionEndpointType(_builtins.str, Enum):
+    HOM_E_REGION = "HomeRegion"
+    """
+    Serve traffic from the function's home Region only.
+    """
+    MULT_I_REGION = "MultiRegion"
+    """
+    Serve traffic at one global URL. Lambda routes callers by latency, without health-based
+    failover.
+    """
+    PE_R_REGION = "PerRegion"
+    """
+    Get a URL for each serving Region and decide how to route callers yourself.
+    """
 
 
 @pulumi.type_token("awsx:lambda:WebFunctionRuntime")

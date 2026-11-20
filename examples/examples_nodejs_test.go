@@ -98,6 +98,58 @@ func TestAccLambdaWebFunction(t *testing.T) {
 	require.True(t, ok)
 	require.NotEmpty(t, revisionID)
 	require.Equal(t, functionArn+"/revision/"+revisionID, result.Outputs["revisionArn"].Value)
+
+	endpointDomainName, ok := result.Outputs["endpointDomainName"].Value.(string)
+	require.True(t, ok)
+	require.NotEmpty(t, endpointDomainName)
+	endpointURL := "https://" + endpointDomainName
+	endpointArn, ok := result.Outputs["endpointArn"].Value.(string)
+	require.True(t, ok)
+	require.NotEmpty(t, endpointArn)
+	client := &http.Client{Timeout: 10 * time.Second}
+	assertLambdaWebFunctionReleases(t, client, endpointURL, "stable")
+
+	pt.SetConfig(t, "stableRevisionId", revisionID)
+	pt.SetConfig(t, "release", "candidate")
+	updated := pt.Up(t)
+
+	candidateID, ok := updated.Outputs["revisionId"].Value.(string)
+	require.True(t, ok)
+	require.NotEmpty(t, candidateID)
+	require.NotEqual(t, revisionID, candidateID)
+	require.Equal(t, functionArn, updated.Outputs["functionArn"].Value)
+	require.Equal(t, functionArn+"/revision/"+candidateID, updated.Outputs["revisionArn"].Value)
+	require.Equal(t, endpointArn, updated.Outputs["endpointArn"].Value)
+	require.Equal(t, endpointDomainName, updated.Outputs["endpointDomainName"].Value)
+	assertLambdaWebFunctionReleases(t, client, endpointURL, "stable", "candidate")
+}
+
+func assertLambdaWebFunctionReleases(t *testing.T, client *http.Client, endpointURL string, releases ...string) {
+	t.Helper()
+	seen := make(map[string]bool, len(releases))
+	require.EventuallyWithT(t, func(c *assert.CollectT) {
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, endpointURL, nil)
+		if !assert.NoError(c, err) {
+			return
+		}
+		resp, err := client.Do(req)
+		if !assert.NoError(c, err) {
+			return
+		}
+		defer resp.Body.Close()
+		body, err := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		if !assert.NoError(c, err) || !assert.Equal(c, http.StatusOK, resp.StatusCode) {
+			return
+		}
+		release, ok := strings.CutPrefix(string(body), "hello from Lambda: ")
+		if !assert.True(c, ok, "unexpected response: %q", body) || !assert.Contains(c, releases, release) {
+			return
+		}
+		seen[release] = true
+		for _, expected := range releases {
+			assert.True(c, seen[expected], "endpoint has not served the %q release", expected)
+		}
+	}, 2*time.Minute, time.Second)
 }
 
 func TestAccEcsTaskDefinitionTs(t *testing.T) {

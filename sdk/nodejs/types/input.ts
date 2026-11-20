@@ -2368,6 +2368,19 @@ export namespace lambda {
          */
         archive: pulumi.Input<pulumi.asset.Archive>;
     }
+
+    export interface WebFunctionRevisionWeightArgs {
+        /**
+         * ID of a published revision of the endpoint's function.
+         */
+        revisionId: pulumi.Input<string>;
+        /**
+         * Integer percentage of traffic to send to this revision.
+         *
+         * Default - 100 for a single revision. Required for each entry when splitting traffic.
+         */
+        weight?: pulumi.Input<number | undefined>;
+    }
 }
 
 export namespace lb {

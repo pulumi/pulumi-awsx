@@ -10,6 +10,11 @@ export type WebFunction = import("./webFunction").WebFunction;
 export const WebFunction: typeof import("./webFunction").WebFunction = null as any;
 utilities.lazyLoad(exports, ["WebFunction"], () => require("./webFunction"));
 
+export { WebFunctionEndpointArgs } from "./webFunctionEndpoint";
+export type WebFunctionEndpoint = import("./webFunctionEndpoint").WebFunctionEndpoint;
+export const WebFunctionEndpoint: typeof import("./webFunctionEndpoint").WebFunctionEndpoint = null as any;
+utilities.lazyLoad(exports, ["WebFunctionEndpoint"], () => require("./webFunctionEndpoint"));
+
 
 // Export enums:
 export * from "../types/enums/lambda";
@@ -20,6 +25,8 @@ const _module = {
         switch (type) {
             case "awsx:lambda:WebFunction":
                 return new WebFunction(name, <any>undefined, { urn })
+            case "awsx:lambda:WebFunctionEndpoint":
+                return new WebFunctionEndpoint(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
