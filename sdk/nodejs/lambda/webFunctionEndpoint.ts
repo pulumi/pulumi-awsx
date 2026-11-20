@@ -8,7 +8,110 @@ import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 /**
- * An HTTPS endpoint with explicit routing to published Lambda Web Function revisions.
+ * # Web function endpoints
+ *
+ * A `WebFunctionEndpoint` provides HTTPS access to a Lambda Web Function. The endpoint selects which published revisions receive requests. You can create separate endpoints for production and testing.
+ *
+ * ## Example usage
+ *
+ * ### Route to the current revision
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as awsx from "@pulumi/awsx";
+ *
+ * const app = new awsx.lambda.WebFunction("app", {
+ *     runtime: awsx.lambda.WebFunctionRuntime.NodeJS24X,
+ *     code: {
+ *         archive: new pulumi.asset.FileArchive("./app"),
+ *     },
+ * });
+ * const endpoint = new awsx.lambda.WebFunctionEndpoint("endpoint", {
+ *     functionName: app.functionName,
+ *     authType: awsx.lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+ *     revisions: [{
+ *         revisionId: app.revisionId,
+ *     }],
+ * });
+ * export const url = pulumi.interpolate`https://${endpoint.domainName}`;
+ * ```
+ *
+ * `ApplicationManaged` allows anyone to reach the application. The application must enforce its own access controls. Set `authType` to `IamAuth` to require AWS credentials and IAM permission to invoke the endpoint.
+ *
+ * ### Canary deployment
+ *
+ * An endpoint can split traffic between two revisions. This example sends 90% of requests to a previous revision and 10% to the current revision. Set `stableRevisionId` to a published revision ID of the same function before the update.
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as awsx from "@pulumi/awsx";
+ *
+ * const config = new pulumi.Config();
+ * const stableRevisionId = config.require("stableRevisionId");
+ * const app = new awsx.lambda.WebFunction("app", {
+ *     runtime: awsx.lambda.WebFunctionRuntime.NodeJS24X,
+ *     code: {
+ *         archive: new pulumi.asset.FileArchive("./app"),
+ *     },
+ * });
+ * const test = new awsx.lambda.WebFunctionEndpoint("test", {
+ *     functionName: app.functionName,
+ *     authType: awsx.lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+ *     revisions: [{
+ *         revisionId: app.revisionId,
+ *     }],
+ * });
+ * const production = new awsx.lambda.WebFunctionEndpoint("production", {
+ *     functionName: app.functionName,
+ *     authType: awsx.lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+ *     revisions: [
+ *         {
+ *             revisionId: stableRevisionId,
+ *             weight: 90,
+ *         },
+ *         {
+ *             revisionId: app.revisionId,
+ *             weight: 10,
+ *         },
+ *     ],
+ * });
+ * export const testUrl = pulumi.interpolate`https://${test.domainName}`;
+ * export const productionUrl = pulumi.interpolate`https://${production.domainName}`;
+ * ```
+ *
+ * The test endpoint sends all requests to the current revision. To promote the current revision, update `production.revisions` to contain only `app.revisionId`. To roll back, use only the stable revision ID. The endpoint does not advance or roll back the weights automatically.
+ *
+ * When you split traffic, provide a positive whole-number weight for each revision. The weights must total 100. A single revision receives 100% by default.
+ *
+ * ### Serve multiple Regions
+ *
+ * Set `endpointType` to `MultiRegion` to serve one global URL. Lambda routes requests by latency, without health-based failover. List at least one additional Region in `regions`. Lambda includes the home Region automatically.
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as awsx from "@pulumi/awsx";
+ *
+ * const app = new awsx.lambda.WebFunction("app", {
+ *     runtime: awsx.lambda.WebFunctionRuntime.NodeJS24X,
+ *     code: {
+ *         archive: new pulumi.asset.FileArchive("./app"),
+ *     },
+ * });
+ * const endpoint = new awsx.lambda.WebFunctionEndpoint("endpoint", {
+ *     functionName: app.functionName,
+ *     authType: awsx.lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+ *     endpointType: awsx.lambda.WebFunctionEndpointType.MULTI_REGION,
+ *     regions: ["us-west-2"],
+ *     revisions: [{
+ *         revisionId: app.revisionId,
+ *     }],
+ * });
+ * export const url = pulumi.interpolate`https://${endpoint.domainName}`;
+ * ```
+ *
+ * Configure the AWS Cloud Control provider with a home Region other than `us-west-2` for this example. Use `PerRegion` and the `regionalDomainNames` output to route clients to individual Regions yourself. The `domainName` and `regionalDomainNames` outputs contain hostnames without the `https://` scheme. Revisions that use an egress network connector support only `HomeRegion` endpoints.
+ *
+ * Changing the endpoint type or serving Regions replaces the endpoint and can change its URLs. To avoid interrupting clients, create a second endpoint and switch clients to its URLs before removing the first endpoint.
  */
 export class WebFunctionEndpoint extends pulumi.ComponentResource {
     /** @internal */
