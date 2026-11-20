@@ -361,7 +361,7 @@ public class App {
 
     public static void stack(Context ctx) {
         var app = new WebFunction("app", WebFunctionArgs.builder()
-            .runtime("nodejs24.x")
+            .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
             .code(WebFunctionCodeArgs.builder()
                 .archive(new FileArchive("./app"))
                 .build())
@@ -369,7 +369,7 @@ public class App {
 
         var endpoint = new WebFunctionEndpoint("endpoint", WebFunctionEndpointArgs.builder()
             .functionName(app.functionName())
-            .authType("ApplicationManaged")
+            .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
             .revisions(WebFunctionRevisionWeightArgs.builder()
                 .revisionId(app.revisionId())
                 .build())
@@ -641,7 +641,7 @@ func main() {
 			return err
 		}
 		frontendHttp, err := vpc.NewSecurityGroupIngressRule(ctx, "frontendHttp", &vpc.SecurityGroupIngressRuleArgs{
-			SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+			SecurityGroupId: frontend.ID(),
 			IpProtocol:      pulumi.String("tcp"),
 			FromPort:        pulumi.Int(80),
 			ToPort:          pulumi.Int(80),
@@ -651,7 +651,7 @@ func main() {
 			return err
 		}
 		frontendEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "frontendEgress", &vpc.SecurityGroupEgressRuleArgs{
-			SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+			SecurityGroupId: frontend.ID(),
 			IpProtocol:      pulumi.String("-1"),
 			CidrIpv4:        pulumi.String("0.0.0.0/0"),
 		})
@@ -663,7 +663,7 @@ func main() {
 			Internal:         pulumi.Bool(false),
 			Subnets:          vpc2.PublicSubnetIds,
 			SecurityGroups: pulumi.StringArray{
-				frontend.ID().ToIDOutput().ToStringOutput(),
+				frontend.ID(),
 			},
 		})
 		if err != nil {
@@ -725,13 +725,13 @@ func main() {
 			TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 			VpcSubnetIds:      vpc2.PrivateSubnetIds,
 			LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-				"app": ecs.ServiceLoadBalancerAttachmentArgs{
-					Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+				"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+					Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 						ContainerName: "app",
 						ContainerPort: 80,
 						ListenerArn:   listener.Arn,
 						Priority:      10,
-						TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+						TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 							Path: "/health",
 						},
 					},
@@ -944,8 +944,8 @@ public class App {
 
     public static void stack(Context ctx) {
         var vpc = new Vpc("vpc", VpcArgs.builder()
-            .subnetStrategy("AutoMerge")
-            .subnetNameTagStrategy("AvailabilityZone")
+            .subnetStrategy(com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy.)
+            .subnetNameTagStrategy(com.pulumi.awsx.ec2.enums.SubnetNameTagStrategy.)
             .build());
 
         var frontend = new SecurityGroup("frontend", SecurityGroupArgs.builder()

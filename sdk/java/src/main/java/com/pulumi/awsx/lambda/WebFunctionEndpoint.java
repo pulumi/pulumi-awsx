@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var app = new WebFunction("app", WebFunctionArgs.builder()
- *             .runtime("nodejs24.x")
+ *             .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
  *             .code(WebFunctionCodeArgs.builder()
  *                 .archive(new FileArchive("./app"))
  *                 .build())
@@ -59,7 +59,7 @@ import javax.annotation.Nullable;
  * 
  *         var endpoint = new WebFunctionEndpoint("endpoint", WebFunctionEndpointArgs.builder()
  *             .functionName(app.functionName())
- *             .authType("ApplicationManaged")
+ *             .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
  *             .revisions(WebFunctionRevisionWeightArgs.builder()
  *                 .revisionId(app.revisionId())
  *                 .build())
@@ -107,7 +107,7 @@ import javax.annotation.Nullable;
  *         final var config = ctx.config();
  *         final var stableRevisionId = config.require("stableRevisionId");
  *         var app = new WebFunction("app", WebFunctionArgs.builder()
- *             .runtime("nodejs24.x")
+ *             .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
  *             .code(WebFunctionCodeArgs.builder()
  *                 .archive(new FileArchive("./app"))
  *                 .build())
@@ -115,7 +115,7 @@ import javax.annotation.Nullable;
  * 
  *         var test = new WebFunctionEndpoint("test", WebFunctionEndpointArgs.builder()
  *             .functionName(app.functionName())
- *             .authType("ApplicationManaged")
+ *             .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
  *             .revisions(WebFunctionRevisionWeightArgs.builder()
  *                 .revisionId(app.revisionId())
  *                 .build())
@@ -123,7 +123,7 @@ import javax.annotation.Nullable;
  * 
  *         var production = new WebFunctionEndpoint("production", WebFunctionEndpointArgs.builder()
  *             .functionName(app.functionName())
- *             .authType("ApplicationManaged")
+ *             .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
  *             .revisions(            
  *                 WebFunctionRevisionWeightArgs.builder()
  *                     .revisionId(stableRevisionId)
@@ -178,7 +178,7 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var app = new WebFunction("app", WebFunctionArgs.builder()
- *             .runtime("nodejs24.x")
+ *             .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
  *             .code(WebFunctionCodeArgs.builder()
  *                 .archive(new FileArchive("./app"))
  *                 .build())
@@ -186,8 +186,8 @@ import javax.annotation.Nullable;
  * 
  *         var endpoint = new WebFunctionEndpoint("endpoint", WebFunctionEndpointArgs.builder()
  *             .functionName(app.functionName())
- *             .authType("ApplicationManaged")
- *             .endpointType("MultiRegion")
+ *             .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
+ *             .endpointType(com.pulumi.awsx.lambda.enums.WebFunctionEndpointType.MULTI_REGION)
  *             .regions("us-west-2")
  *             .revisions(WebFunctionRevisionWeightArgs.builder()
  *                 .revisionId(app.revisionId())
