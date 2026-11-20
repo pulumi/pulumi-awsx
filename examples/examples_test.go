@@ -38,6 +38,11 @@ func getCwd(t *testing.T) string {
 
 func newEcsNodeTest(t *testing.T, example string) *pulumitest.PulumiTest {
 	t.Helper()
+	return newAwsxNativeNodeTest(t, example)
+}
+
+func newAwsxNativeNodeTest(t *testing.T, example string) *pulumitest.PulumiTest {
+	t.Helper()
 	region := getEnvRegion(t)
 	cwd := getCwd(t)
 	pt := pulumitest.NewPulumiTest(

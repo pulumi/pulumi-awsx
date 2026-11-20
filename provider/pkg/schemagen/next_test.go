@@ -50,8 +50,17 @@ func TestNormalizeNextComponents(t *testing.T) {
 				IsComponent:    true,
 			},
 			"awsx-next:index:Service": {},
+			"awsx-next:index:WebFunction": {
+				IsComponent: true,
+				InputProperties: map[string]schema.PropertySpec{
+					"code":    {TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-next:index:WebFunctionCode"}},
+					"runtime": {TypeSpec: schema.TypeSpec{Ref: "#/types/awsx-next:index:WebFunctionRuntime"}},
+				},
+			},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
+			"awsx-next:index:WebFunctionCode":    {},
+			"awsx-next:index:WebFunctionRuntime": {},
 			"awsx-next:index:ContainerDefinition": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type: "object",
@@ -86,6 +95,13 @@ func TestNormalizeNextComponents(t *testing.T) {
 	assert.Equal(t, "#/types/awsx:ecs:ContainerDefinition",
 		task.InputProperties["containers"].AdditionalProperties.Ref)
 	assert.Contains(t, normalized.Resources, "awsx:ecs:Service")
+	webFunction := normalized.Resources["awsx:lambda:WebFunction"]
+	assert.True(t, webFunction.IsComponent)
+	assert.Equal(t, "#/types/awsx:lambda:WebFunctionCode", webFunction.InputProperties["code"].Ref)
+	assert.Equal(t, "#/types/awsx:lambda:WebFunctionRuntime", webFunction.InputProperties["runtime"].Ref)
+	assert.Contains(t, normalized.Types, "awsx:lambda:WebFunctionCode")
+	assert.Contains(t, normalized.Types, "awsx:lambda:WebFunctionRuntime")
+	assert.NotContains(t, normalized.Resources, "awsx:ecs:WebFunction")
 	assert.NotContains(t, normalized.Resources, "awsx-next:index:TaskDefinition")
 
 	dependencies := normalized.Types["awsx:ecs:ContainerDefinition"].Properties["dependencies"]

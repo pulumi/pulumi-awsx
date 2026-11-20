@@ -2360,6 +2360,16 @@ export namespace ecs {
     }
 }
 
+export namespace lambda {
+    export interface WebFunctionCodeArgs {
+        /**
+         * Runnable application files, including dependencies. FileArchive accepts a directory or an
+         * existing archive.
+         */
+        archive: pulumi.Input<pulumi.asset.Archive>;
+    }
+}
+
 export namespace lb {
     /**
      * Provides a Load Balancer Listener resource.

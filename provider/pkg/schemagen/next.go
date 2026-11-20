@@ -50,13 +50,24 @@ func generateNextComponents(packageDir string) schema.PackageSpec {
 	return normalizeNextComponents(inferred)
 }
 
-// All public AWSX Next components and their reachable types belong to the ECS module.
+// Publish Lambda and ECS components under their respective AWSX modules.
 // External provider references are left intact.
 func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	const oldPrefix = "awsx-next:index:"
 	const newPrefix = "awsx:ecs:"
+	const webFunction = oldPrefix + "WebFunction"
+	const publicWebFunction = "awsx:lambda:WebFunction"
+	lambdaTypes := []string{"WebFunctionCode", "WebFunctionRuntime"}
+	lambdaTypeTokens := make(map[string]string, len(lambdaTypes))
+	for _, name := range lambdaTypes {
+		lambdaTypeTokens[oldPrefix+name] = "awsx:lambda:" + name
+	}
 	renameRefs := func(properties map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+		for from, to := range lambdaTypeTokens {
+			properties = renamePropertiesRefs(properties, "#/types/"+from, "#/types/"+to)
+		}
 		properties = renamePropertiesRefs(properties, "#/types/"+oldPrefix, "#/types/"+newPrefix)
+		properties = renamePropertiesRefs(properties, "#/resources/"+webFunction, "#/resources/"+publicWebFunction)
 		return renamePropertiesRefs(properties, "#/resources/"+oldPrefix, "#/resources/"+newPrefix)
 	}
 
@@ -67,11 +78,19 @@ func normalizeNextComponents(inferred schema.PackageSpec) schema.PackageSpec {
 	for token, resource := range inferred.Resources {
 		resource.Properties = renameRefs(resource.Properties)
 		resource.InputProperties = renameRefs(resource.InputProperties)
-		result.Resources[strings.Replace(token, oldPrefix, newPrefix, 1)] = resource
+		if token == webFunction {
+			result.Resources[publicWebFunction] = resource
+		} else {
+			result.Resources[strings.Replace(token, oldPrefix, newPrefix, 1)] = resource
+		}
 	}
 	for token, typ := range inferred.Types {
 		typ.Properties = renameRefs(typ.Properties)
-		result.Types[strings.Replace(token, oldPrefix, newPrefix, 1)] = typ
+		if publicToken, ok := lambdaTypeTokens[token]; ok {
+			result.Types[publicToken] = typ
+		} else {
+			result.Types[strings.Replace(token, oldPrefix, newPrefix, 1)] = typ
+		}
 	}
 	return result
 }

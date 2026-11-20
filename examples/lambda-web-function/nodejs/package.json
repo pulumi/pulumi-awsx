@@ -1,0 +1,12 @@
+{
+  "name": "lambda-web-function-nodejs",
+  "private": true,
+  "dependencies": {
+    "@pulumi/awsx": "3.14.0",
+    "@pulumi/pulumi": "3.277.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "^5.9.3"
+  }
+}

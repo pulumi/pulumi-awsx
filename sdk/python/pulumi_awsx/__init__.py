@@ -20,6 +20,8 @@ if typing.TYPE_CHECKING:
     ecr = __ecr
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
+    import pulumi_awsx.lambda_ as __lambda_
+    lambda_ = __lambda_
     import pulumi_awsx.lb as __lb
     lb = __lb
 else:
@@ -28,6 +30,7 @@ else:
     ec2 = _utilities.lazy_import('pulumi_awsx.ec2')
     ecr = _utilities.lazy_import('pulumi_awsx.ecr')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
+    lambda_ = _utilities.lazy_import('pulumi_awsx.lambda_')
     lb = _utilities.lazy_import('pulumi_awsx.lb')
 
 _utilities.register(
@@ -71,6 +74,14 @@ _utilities.register(
    "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition",
    "awsx:ecs:Service": "Service",
    "awsx:ecs:TaskDefinition": "TaskDefinition"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "lambda",
+  "fqn": "pulumi_awsx.lambda_",
+  "classes": {
+   "awsx:lambda:WebFunction": "WebFunction"
   }
  },
  {
