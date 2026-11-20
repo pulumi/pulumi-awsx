@@ -176,7 +176,7 @@ import (
 //					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
-//							"API_TOKEN": ecs.EnvironmentVariableArgs{
+//							"API_TOKEN": *ecs.EnvironmentVariableArgs{
 //								Value: apiToken,
 //							},
 //						},
@@ -233,8 +233,8 @@ import (
 //					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
-//							"DATABASE_PASSWORD": ecs.EnvironmentVariableArgs{
-//								SecretsManager: ecs.SecretsManagerSecretArgs{
+//							"DATABASE_PASSWORD": *ecs.EnvironmentVariableArgs{
+//								SecretsManager: *ecs.SecretsManagerSecretArgs{
 //									SecretArn: databaseSecret.AwsId,
 //									JsonKey:   pulumi.String("password"),
 //								},
@@ -280,7 +280,7 @@ import (
 //					"app": ecs.ContainerDefinitionArgs{
 //						Image: pulumi.String("nginx:stable"),
 //						Environment: map[string]ecs.EnvironmentVariableArgs{
-//							"SHARED_TOKEN": ecs.EnvironmentVariableArgs{
+//							"SHARED_TOKEN": *ecs.EnvironmentVariableArgs{
 //								SsmParameterArn: pulumi.String(sharedTokenParameterArn),
 //							},
 //						},
@@ -336,8 +336,8 @@ import (
 //								ContainerPort: 80,
 //							},
 //						},
-//						Logging: ecs.ContainerLoggingArgs{
-//							Cloudwatch: ecs.CloudWatchLoggingArgs{
+//						Logging: *ecs.ContainerLoggingArgs{
+//							Cloudwatch: *ecs.CloudWatchLoggingArgs{
 //								LogGroupArn:  applicationLogs.Arn,
 //								StreamPrefix: pulumi.String("app"),
 //							},

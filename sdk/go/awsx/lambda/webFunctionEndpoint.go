@@ -12,7 +12,190 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-// An HTTPS endpoint with explicit routing to published Lambda Web Function revisions.
+// # Web function endpoints
+//
+// A `WebFunctionEndpoint` provides HTTPS access to a Lambda Web Function. The endpoint selects which published revisions receive requests. You can create separate endpoints for production and testing.
+//
+// ## Example usage
+//
+// ### Route to the current revision
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			app, err := lambda.NewWebFunction(ctx, "app", &lambda.WebFunctionArgs{
+//				Runtime: lambda.WebFunctionRuntimeNodeJS24X,
+//				Code: &lambda.WebFunctionCodeArgs{
+//					Archive: pulumi.NewFileArchive("./app"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			endpoint, err := lambda.NewWebFunctionEndpoint(ctx, "endpoint", &lambda.WebFunctionEndpointArgs{
+//				FunctionName: app.FunctionName,
+//				AuthType:     lambda.WebFunctionAuthType_APPLICATION_MANAGED,
+//				Revisions: lambda.WebFunctionRevisionWeightArray{
+//					&lambda.WebFunctionRevisionWeightArgs{
+//						RevisionId: app.RevisionId,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("url", endpoint.DomainName.ApplyT(func(domainName *string) (string, error) {
+//				return fmt.Sprintf("https://%v", domainName), nil
+//			}).(pulumi.StringOutput))
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// `ApplicationManaged` allows anyone to reach the application. The application must enforce its own access controls. Set `authType` to `IamAuth` to require AWS credentials and IAM permission to invoke the endpoint.
+//
+// ### Canary deployment
+//
+// An endpoint can split traffic between two revisions. This example sends 90% of requests to a previous revision and 10% to the current revision. Set `stableRevisionId` to a published revision ID of the same function before the update.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			cfg := config.New(ctx, "")
+//			stableRevisionId := cfg.Require("stableRevisionId")
+//			app, err := lambda.NewWebFunction(ctx, "app", &lambda.WebFunctionArgs{
+//				Runtime: lambda.WebFunctionRuntimeNodeJS24X,
+//				Code: &lambda.WebFunctionCodeArgs{
+//					Archive: pulumi.NewFileArchive("./app"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			test, err := lambda.NewWebFunctionEndpoint(ctx, "test", &lambda.WebFunctionEndpointArgs{
+//				FunctionName: app.FunctionName,
+//				AuthType:     lambda.WebFunctionAuthType_APPLICATION_MANAGED,
+//				Revisions: lambda.WebFunctionRevisionWeightArray{
+//					&lambda.WebFunctionRevisionWeightArgs{
+//						RevisionId: app.RevisionId,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			production, err := lambda.NewWebFunctionEndpoint(ctx, "production", &lambda.WebFunctionEndpointArgs{
+//				FunctionName: app.FunctionName,
+//				AuthType:     lambda.WebFunctionAuthType_APPLICATION_MANAGED,
+//				Revisions: lambda.WebFunctionRevisionWeightArray{
+//					&lambda.WebFunctionRevisionWeightArgs{
+//						RevisionId: pulumi.String(stableRevisionId),
+//						Weight:     pulumi.Float64(90),
+//					},
+//					&lambda.WebFunctionRevisionWeightArgs{
+//						RevisionId: app.RevisionId,
+//						Weight:     pulumi.Float64(10),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("testUrl", test.DomainName.ApplyT(func(domainName *string) (string, error) {
+//				return fmt.Sprintf("https://%v", domainName), nil
+//			}).(pulumi.StringOutput))
+//			ctx.Export("productionUrl", production.DomainName.ApplyT(func(domainName *string) (string, error) {
+//				return fmt.Sprintf("https://%v", domainName), nil
+//			}).(pulumi.StringOutput))
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// The test endpoint sends all requests to the current revision. To promote the current revision, update `production.revisions` to contain only `app.revisionId`. To roll back, use only the stable revision ID. The endpoint does not advance or roll back the weights automatically.
+//
+// When you split traffic, provide a positive whole-number weight for each revision. The weights must total 100. A single revision receives 100% by default.
+//
+// ### Serve multiple Regions
+//
+// Set `endpointType` to `MultiRegion` to serve one global URL. Lambda routes requests by latency, without health-based failover. List at least one additional Region in `regions`. Lambda includes the home Region automatically.
+//
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			app, err := lambda.NewWebFunction(ctx, "app", &lambda.WebFunctionArgs{
+//				Runtime: lambda.WebFunctionRuntimeNodeJS24X,
+//				Code: &lambda.WebFunctionCodeArgs{
+//					Archive: pulumi.NewFileArchive("./app"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			endpoint, err := lambda.NewWebFunctionEndpoint(ctx, "endpoint", &lambda.WebFunctionEndpointArgs{
+//				FunctionName: app.FunctionName,
+//				AuthType:     lambda.WebFunctionAuthType_APPLICATION_MANAGED,
+//				EndpointType: lambda.WebFunctionEndpointType_MULTI_REGION,
+//				Regions: pulumi.StringArray{
+//					pulumi.String("us-west-2"),
+//				},
+//				Revisions: lambda.WebFunctionRevisionWeightArray{
+//					&lambda.WebFunctionRevisionWeightArgs{
+//						RevisionId: app.RevisionId,
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			ctx.Export("url", endpoint.DomainName.ApplyT(func(domainName *string) (string, error) {
+//				return fmt.Sprintf("https://%v", domainName), nil
+//			}).(pulumi.StringOutput))
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// Configure the AWS Cloud Control provider with a home Region other than `us-west-2` for this example. Use `PerRegion` and the `regionalDomainNames` output to route clients to individual Regions yourself. The `domainName` and `regionalDomainNames` outputs contain hostnames without the `https://` scheme. Revisions that use an egress network connector support only `HomeRegion` endpoints.
+//
+// Changing the endpoint type or serving Regions replaces the endpoint and can change its URLs. To avoid interrupting clients, create a second endpoint and switch clients to its URLs before removing the first endpoint.
 type WebFunctionEndpoint struct {
 	pulumi.ResourceState
 

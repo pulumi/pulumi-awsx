@@ -59,6 +59,39 @@ output "publicSubnetIds" {
 
 <!--End PulumiCodeChooser -->
 
+## Lambda
+
+The Lambda components in `awsx.lambda` deploy Node.js web applications to AWS Lambda.
+
+- A [WebFunction](./api-docs/lambda/webfunction/) creates a function and its current revision from an application archive.
+- A [WebFunctionEndpoint](./api-docs/lambda/webfunctionendpoint/) provides an HTTPS URL and routes requests to one or two revisions.
+
+```yaml pulumi-example
+name: lambda-web-application
+runtime: yaml
+resources:
+  app:
+    type: awsx:lambda:WebFunction
+    properties:
+      runtime: nodejs24.x
+      code:
+        archive:
+          fn::fileArchive: ./app
+  endpoint:
+    type: awsx:lambda:WebFunctionEndpoint
+    properties:
+      functionName: ${app.functionName}
+      authType: ApplicationManaged
+      revisions:
+        - revisionId: ${app.revisionId}
+outputs:
+  url: https://${endpoint.domainName}
+```
+
+The application must start an HTTP server at the host and port in `AWS_LAMBDA_HTTP_ENDPOINT`. The archive must include the application and its dependencies. The example selects the Node.js 24 runtime, which loads `index.js` from the archive root.
+
+`ApplicationManaged` allows anyone to reach the application. The application must enforce its own access controls. Use `IamAuth` to require AWS credentials and IAM permission instead. For revision routing and multi-Region endpoints, see [WebFunctionEndpoint](./api-docs/lambda/webfunctionendpoint/).
+
 ## ECS
 
 The ECS components in `awsx.ecs` allow you to deploy containerized applications to AWS.

@@ -157,7 +157,7 @@ func withExampleConverter(spec *schema.PackageSpec, render func(func(docExample)
 	if err != nil {
 		return err
 	}
-	pctx, err := plugin.NewContext(ctx, sink, sink, host, nil, cwd, nil, false, nil)
+	pctx, err := plugin.NewContext(ctx, sink, sink, host, nil, cwd, nil, false, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -395,7 +395,7 @@ func generateLanguage(
 			err = errors.Join(err, fmt.Errorf("close %s generator: %w", language, closeErr))
 		}
 	}()
-	files, diagnostics, err := runtime.GenerateProgram(pctx.Request(), program, loaderTarget, true)
+	files, diagnostics, err := runtime.GenerateProgram(pctx.Request(), program, loaderTarget, pctx.MapperAddr(), true)
 	if err != nil {
 		return nil, err
 	}
