@@ -113,7 +113,7 @@ import (
 //				return err
 //			}
 //			frontendHttp, err := vpc.NewSecurityGroupIngressRule(ctx, "frontendHttp", &vpc.SecurityGroupIngressRuleArgs{
-//				SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+//				SecurityGroupId: frontend.ID(),
 //				IpProtocol:      pulumi.String("-1"),
 //				CidrIpv4:        pulumi.String("0.0.0.0/0"),
 //			})
@@ -121,7 +121,7 @@ import (
 //				return err
 //			}
 //			frontendEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "frontendEgress", &vpc.SecurityGroupEgressRuleArgs{
-//				SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+//				SecurityGroupId: frontend.ID(),
 //				IpProtocol:      pulumi.String("tcp"),
 //				FromPort:        pulumi.Int(80),
 //				ToPort:          pulumi.Int(80),
@@ -137,7 +137,7 @@ import (
 //				Internal:         pulumi.Bool(false),
 //				Subnets:          vpc2.PublicSubnetIds,
 //				SecurityGroups: pulumi.StringArray{
-//					frontend.ID().ToIDOutput().ToStringOutput(),
+//					frontend.ID(),
 //				},
 //			})
 //			if err != nil {
@@ -199,13 +199,13 @@ import (
 //				TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 //				VpcSubnetIds:      vpc2.PrivateSubnetIds,
 //				LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//					"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//						Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//					"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//						Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //							ContainerName: "app",
 //							ContainerPort: 80,
 //							ListenerArn:   listener.Arn,
 //							Priority:      10,
-//							TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//							TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //								Path: "/health",
 //							},
 //						},
@@ -244,28 +244,28 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("api.example.com"),
 //							},
 //						},
 //					},
 //					Priority: 50,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
@@ -291,26 +291,26 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("api.example.com"),
 //							},
 //						},
-//						PathPatterns: ecs.StringMatchArgs{
+//						PathPatterns: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("/api/*"),
 //								pulumi.String("/admin/*"),
@@ -318,7 +318,7 @@ import (
 //						},
 //					},
 //					Priority: 50,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
@@ -354,56 +354,56 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"admin": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"admin": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("admin.example.com"),
 //							},
 //						},
-//						PathPatterns: ecs.StringMatchArgs{
+//						PathPatterns: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("/admin/*"),
 //							},
 //						},
 //					},
 //					Priority: 20,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
 //			},
-//			"api": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"api": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("api.example.com"),
 //							},
 //						},
-//						PathPatterns: ecs.StringMatchArgs{
+//						PathPatterns: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("/api/*"),
 //							},
 //						},
 //					},
 //					Priority: 10,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
@@ -453,8 +453,8 @@ import (
 //	privateIngress, err := vpc.NewSecurityGroupIngressRule(ctx, "privateIngress", &vpc.SecurityGroupIngressRuleArgs{
 //		FromPort:                  pulumi.Int(80),
 //		IpProtocol:                pulumi.String("tcp"),
-//		ReferencedSecurityGroupId: privateAlbGroup.ID().ToIDOutput().ToStringOutput(),
-//		SecurityGroupId:           taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		ReferencedSecurityGroupId: privateAlbGroup.ID(),
+//		SecurityGroupId:           taskGroup.ID(),
 //		ToPort:                    pulumi.Int(80),
 //	})
 //
@@ -465,8 +465,8 @@ import (
 //	publicIngress, err := vpc.NewSecurityGroupIngressRule(ctx, "publicIngress", &vpc.SecurityGroupIngressRuleArgs{
 //		FromPort:                  pulumi.Int(80),
 //		IpProtocol:                pulumi.String("tcp"),
-//		ReferencedSecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
-//		SecurityGroupId:           taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		ReferencedSecurityGroupId: frontend.ID(),
+//		SecurityGroupId:           taskGroup.ID(),
 //		ToPort:                    pulumi.Int(80),
 //	})
 //
@@ -477,7 +477,7 @@ import (
 //	taskEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "taskEgress", &vpc.SecurityGroupEgressRuleArgs{
 //		CidrIpv4:        pulumi.String("0.0.0.0/0"),
 //		IpProtocol:      pulumi.String("-1"),
-//		SecurityGroupId: taskGroup.ID().ToIDOutput().ToStringOutput(),
+//		SecurityGroupId: taskGroup.ID(),
 //	})
 //
 //	if err != nil {
@@ -486,21 +486,21 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"private": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"private": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   privateListener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						PathPatterns: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						PathPatterns: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("/*"),
 //							},
@@ -509,13 +509,13 @@ import (
 //					Priority: 50,
 //				},
 //			},
-//			"public": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"public": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						PathPatterns: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						PathPatterns: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("/*"),
 //							},
@@ -527,7 +527,7 @@ import (
 //		},
 //		ManageIngress: false,
 //		SecurityGroupIds: []pulumi.String{
-//			taskGroup.ID().ToIDOutput().ToStringOutput(),
+//			taskGroup.ID(),
 //		},
 //		TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 //		VpcSubnetIds:      vpc2.PrivateSubnetIds,
@@ -561,46 +561,46 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"api": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"api": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "api",
 //					ContainerPort: 8080,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("api.example.com"),
 //							},
 //						},
 //					},
 //					Priority: 20,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
 //			},
-//			"ui": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"ui": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "ui",
 //					ContainerPort: 3000,
 //					ListenerArn:   listener.Arn,
-//					Match: ecs.ListenerConditionsArgs{
-//						Hostnames: ecs.StringMatchArgs{
+//					Match: *ecs.ListenerConditionsArgs{
+//						Hostnames: *ecs.StringMatchArgs{
 //							Values: []pulumi.String{
 //								pulumi.String("www.example.com"),
 //							},
 //						},
 //					},
 //					Priority: 10,
-//					TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+//					TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 //						Path: "/health",
 //					},
 //				},
@@ -641,14 +641,14 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: *ecs.RollingDeploymentStrategyArgs{
 //				FailureAction: awsxecs.DeploymentFailureActionROLLBACK,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -680,14 +680,14 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			BlueGreen: ecs.BlueGreenDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			BlueGreen: *ecs.BlueGreenDeploymentStrategyArgs{
 //				BakeTimeMinutes: 5,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -719,16 +719,16 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Linear: ecs.LinearDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Linear: *ecs.LinearDeploymentStrategyArgs{
 //				BakeTimeMinutes:     5,
 //				StepBakeTimeMinutes: 3,
 //				StepPercent:         20,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -762,16 +762,16 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -811,8 +811,8 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: *ecs.RollingDeploymentStrategyArgs{
 //				LambdaHooks: []ecs.RollingLambdaHookArgs{
 //					{
 //						FunctionArn: pulumi.String("arn:aws:lambda:us-west-2:123456789012:function:deployment-validation"),
@@ -824,8 +824,8 @@ import (
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -859,8 +859,8 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Rolling: ecs.RollingDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Rolling: *ecs.RollingDeploymentStrategyArgs{
 //				PauseHooks: []ecs.RollingPauseHookArgs{
 //					{
 //						TimeoutAction:  awsxecs.PauseTimeoutActionROLLBACK,
@@ -870,8 +870,8 @@ import (
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
@@ -905,8 +905,8 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			Canary: ecs.CanaryDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			Canary: *ecs.CanaryDeploymentStrategyArgs{
 //				BakeTimeMinutes:       5,
 //				CanaryBakeTimeMinutes: 10,
 //				CanaryPercent:         10,
@@ -930,14 +930,14 @@ import (
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
 //					Priority:      10,
-//					TestTraffic: ecs.TestTrafficArgs{
-//						Match: ecs.ListenerConditionsArgs{
+//					TestTraffic: *ecs.TestTrafficArgs{
+//						Match: *ecs.ListenerConditionsArgs{
 //							Headers: []ecs.HeaderConditionArgs{
 //								{
 //									Name: pulumi.String("X-Deployment-Test"),
@@ -977,8 +977,8 @@ import (
 //
 //	service, err := awsxecs.NewService(ctx, "service", &awsxecs.ServiceArgs{
 //		ClusterArn: cluster.Arn,
-//		DeploymentStrategy: ecs.ServiceDeploymentStrategyArgs{
-//			BlueGreen: ecs.BlueGreenDeploymentStrategyArgs{
+//		DeploymentStrategy: *ecs.ServiceDeploymentStrategyArgs{
+//			BlueGreen: *ecs.BlueGreenDeploymentStrategyArgs{
 //				BakeTimeMinutes: 5,
 //				PauseHooks: []ecs.ProgressivePauseHookArgs{
 //					{
@@ -992,14 +992,14 @@ import (
 //			},
 //		},
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,
 //					Priority:      10,
-//					TestTraffic: ecs.TestTrafficArgs{
-//						Match: ecs.ListenerConditionsArgs{
+//					TestTraffic: *ecs.TestTrafficArgs{
+//						Match: *ecs.ListenerConditionsArgs{
 //							Headers: []ecs.HeaderConditionArgs{
 //								{
 //									Name: pulumi.String("X-Deployment-Test"),
@@ -1041,8 +1041,8 @@ import (
 //		ClusterArn:        cluster.Arn,
 //		DeploymentTimeout: "2h",
 //		LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-//			"app": ecs.ServiceLoadBalancerAttachmentArgs{
-//				Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+//			"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+//				Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 //					ContainerName: "app",
 //					ContainerPort: 80,
 //					ListenerArn:   listener.Arn,

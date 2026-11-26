@@ -233,7 +233,7 @@ func bindSchema(pkgSpec schema.PackageSpec) (*schema.Package, error) {
 
 	// The loader only needs the plugin context for schema resolution during codegen.
 	pluginContext, err := plugin.NewContext(
-		ctx, sink, sink, pluginHost, nil, cwd, nil, false, nil)
+		ctx, sink, sink, pluginHost, nil, cwd, nil, false, nil, nil)
 	if err != nil {
 		return nil, err
 	}

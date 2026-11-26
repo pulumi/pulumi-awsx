@@ -186,6 +186,236 @@ output "publicSubnetIds" {
 
 </pulumi-examples></div>
 
+## Lambda
+
+The Lambda components in `awsx.lambda` deploy Node.js web applications to AWS Lambda.
+
+- A [WebFunction](./api-docs/lambda/webfunction/) creates a function and its current revision from an application archive.
+- A [WebFunctionEndpoint](./api-docs/lambda/webfunctionendpoint/) provides an HTTPS URL and routes requests to one or two revisions.
+
+<div><pulumi-examples>
+<div><pulumi-chooser type="language" options="typescript,python,go,csharp,java,yaml"></pulumi-chooser></div>
+
+<div><pulumi-choosable type="language" values="typescript">
+
+```typescript
+import * as pulumi from "@pulumi/pulumi";
+import * as awsx from "@pulumi/awsx";
+
+const app = new awsx.lambda.WebFunction("app", {
+    runtime: awsx.lambda.WebFunctionRuntime.NodeJS24X,
+    code: {
+        archive: new pulumi.asset.FileArchive("./app"),
+    },
+});
+const endpoint = new awsx.lambda.WebFunctionEndpoint("endpoint", {
+    functionName: app.functionName,
+    authType: awsx.lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+    revisions: [{
+        revisionId: app.revisionId,
+    }],
+});
+export const url = pulumi.interpolate`https://${endpoint.domainName}`;
+```
+
+
+</pulumi-choosable></div>
+
+<div><pulumi-choosable type="language" values="python">
+
+```python
+import pulumi
+import pulumi_awsx as awsx
+
+app = awsx.lambda_.WebFunction("app",
+    runtime=awsx.lambda_.WebFunctionRuntime.NODE_JS24_X,
+    code={
+        "archive": pulumi.FileArchive("./app"),
+    })
+endpoint = awsx.lambda_.WebFunctionEndpoint("endpoint",
+    function_name=app.function_name,
+    auth_type=awsx.lambda_.WebFunctionAuthType.APPLICATIO_N_MANAGED,
+    revisions=[{
+        "revision_id": app.revision_id,
+    }])
+pulumi.export("url", endpoint.domain_name.apply(lambda domain_name: f"https://{domain_name}"))
+```
+
+
+</pulumi-choosable></div>
+
+<div><pulumi-choosable type="language" values="go">
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/pulumi/pulumi-awsx/sdk/v3/go/awsx/lambda"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+)
+
+func main() {
+	pulumi.Run(func(ctx *pulumi.Context) error {
+		app, err := lambda.NewWebFunction(ctx, "app", &lambda.WebFunctionArgs{
+			Runtime: lambda.WebFunctionRuntimeNodeJS24X,
+			Code: &lambda.WebFunctionCodeArgs{
+				Archive: pulumi.NewFileArchive("./app"),
+			},
+		})
+		if err != nil {
+			return err
+		}
+		endpoint, err := lambda.NewWebFunctionEndpoint(ctx, "endpoint", &lambda.WebFunctionEndpointArgs{
+			FunctionName: app.FunctionName,
+			AuthType:     lambda.WebFunctionAuthType_APPLICATION_MANAGED,
+			Revisions: lambda.WebFunctionRevisionWeightArray{
+				&lambda.WebFunctionRevisionWeightArgs{
+					RevisionId: app.RevisionId,
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+		ctx.Export("url", endpoint.DomainName.ApplyT(func(domainName *string) (string, error) {
+			return fmt.Sprintf("https://%v", domainName), nil
+		}).(pulumi.StringOutput))
+		return nil
+	})
+}
+```
+
+
+</pulumi-choosable></div>
+
+<div><pulumi-choosable type="language" values="csharp">
+
+```csharp
+using System.Collections.Generic;
+using System.Linq;
+using Pulumi;
+using Awsx = Pulumi.Awsx;
+
+return await Deployment.RunAsync(() => 
+{
+    var app = new Awsx.Lambda.WebFunction("app", new()
+    {
+        Runtime = Awsx.Lambda.WebFunctionRuntime.NodeJS24X,
+        Code = new Awsx.Lambda.Inputs.WebFunctionCodeArgs
+        {
+            Archive = new FileArchive("./app"),
+        },
+    });
+
+    var endpoint = new Awsx.Lambda.WebFunctionEndpoint("endpoint", new()
+    {
+        FunctionName = app.FunctionName,
+        AuthType = Awsx.Lambda.WebFunctionAuthType.APPLICATION_MANAGED,
+        Revisions = new[]
+        {
+            new Awsx.Lambda.Inputs.WebFunctionRevisionWeightArgs
+            {
+                RevisionId = app.RevisionId,
+            },
+        },
+    });
+
+    return new Dictionary<string, object?>
+    {
+        ["url"] = endpoint.DomainName.Apply(domainName => $"https://{domainName}"),
+    };
+});
+```
+
+
+</pulumi-choosable></div>
+
+<div><pulumi-choosable type="language" values="java">
+
+```java
+package generated_program;
+
+import com.pulumi.Context;
+import com.pulumi.Pulumi;
+import com.pulumi.core.Output;
+import com.pulumi.awsx.lambda.WebFunction;
+import com.pulumi.awsx.lambda.WebFunctionArgs;
+import com.pulumi.awsx.lambda.inputs.WebFunctionCodeArgs;
+import com.pulumi.awsx.lambda.WebFunctionEndpoint;
+import com.pulumi.awsx.lambda.WebFunctionEndpointArgs;
+import com.pulumi.awsx.lambda.inputs.WebFunctionRevisionWeightArgs;
+import com.pulumi.asset.FileArchive;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class App {
+    public static void main(String[] args) {
+        Pulumi.run(App::stack);
+    }
+
+    public static void stack(Context ctx) {
+        var app = new WebFunction("app", WebFunctionArgs.builder()
+            .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
+            .code(WebFunctionCodeArgs.builder()
+                .archive(new FileArchive("./app"))
+                .build())
+            .build());
+
+        var endpoint = new WebFunctionEndpoint("endpoint", WebFunctionEndpointArgs.builder()
+            .functionName(app.functionName())
+            .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
+            .revisions(WebFunctionRevisionWeightArgs.builder()
+                .revisionId(app.revisionId())
+                .build())
+            .build());
+
+        ctx.export("url", endpoint.domainName().applyValue(_domainName -> String.format("https://%s", _domainName)));
+    }
+}
+```
+
+
+</pulumi-choosable></div>
+
+<div><pulumi-choosable type="language" values="yaml">
+
+```yaml
+name: lambda-web-application
+runtime: yaml
+resources:
+  app:
+    type: awsx:lambda:WebFunction
+    properties:
+      runtime: nodejs24.x
+      code:
+        archive:
+          fn::fileArchive: ./app
+  endpoint:
+    type: awsx:lambda:WebFunctionEndpoint
+    properties:
+      functionName: ${app.functionName}
+      authType: ApplicationManaged
+      revisions:
+        - revisionId: ${app.revisionId}
+outputs:
+  url: https://${endpoint.domainName}
+```
+
+
+</pulumi-choosable></div>
+
+</pulumi-examples></div>
+
+The application must start an HTTP server at the host and port in `AWS_LAMBDA_HTTP_ENDPOINT`. The archive must include the application and its dependencies. The example selects the Node.js 24 runtime, which loads `index.js` from the archive root.
+
+`ApplicationManaged` allows anyone to reach the application. The application must enforce its own access controls. Use `IamAuth` to require AWS credentials and IAM permission instead. For revision routing and multi-Region endpoints, see [WebFunctionEndpoint](./api-docs/lambda/webfunctionendpoint/).
+
 ## ECS
 
 The ECS components in `awsx.ecs` allow you to deploy containerized applications to AWS.
@@ -411,7 +641,7 @@ func main() {
 			return err
 		}
 		frontendHttp, err := vpc.NewSecurityGroupIngressRule(ctx, "frontendHttp", &vpc.SecurityGroupIngressRuleArgs{
-			SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+			SecurityGroupId: frontend.ID(),
 			IpProtocol:      pulumi.String("tcp"),
 			FromPort:        pulumi.Int(80),
 			ToPort:          pulumi.Int(80),
@@ -421,7 +651,7 @@ func main() {
 			return err
 		}
 		frontendEgress, err := vpc.NewSecurityGroupEgressRule(ctx, "frontendEgress", &vpc.SecurityGroupEgressRuleArgs{
-			SecurityGroupId: frontend.ID().ToIDOutput().ToStringOutput(),
+			SecurityGroupId: frontend.ID(),
 			IpProtocol:      pulumi.String("-1"),
 			CidrIpv4:        pulumi.String("0.0.0.0/0"),
 		})
@@ -433,7 +663,7 @@ func main() {
 			Internal:         pulumi.Bool(false),
 			Subnets:          vpc2.PublicSubnetIds,
 			SecurityGroups: pulumi.StringArray{
-				frontend.ID().ToIDOutput().ToStringOutput(),
+				frontend.ID(),
 			},
 		})
 		if err != nil {
@@ -495,13 +725,13 @@ func main() {
 			TaskDefinitionArn: taskDefinition.TaskDefinitionArn,
 			VpcSubnetIds:      vpc2.PrivateSubnetIds,
 			LoadBalancerAttachments: map[string]ecs.ServiceLoadBalancerAttachmentArgs{
-				"app": ecs.ServiceLoadBalancerAttachmentArgs{
-					Application: ecs.ApplicationLoadBalancerAttachmentArgs{
+				"app": *ecs.ServiceLoadBalancerAttachmentArgs{
+					Application: *ecs.ApplicationLoadBalancerAttachmentArgs{
 						ContainerName: "app",
 						ContainerPort: 80,
 						ListenerArn:   listener.Arn,
 						Priority:      10,
-						TargetHealthCheck: ecs.TargetGroupHealthCheckArgs{
+						TargetHealthCheck: *ecs.TargetGroupHealthCheckArgs{
 							Path: "/health",
 						},
 					},
@@ -714,8 +944,8 @@ public class App {
 
     public static void stack(Context ctx) {
         var vpc = new Vpc("vpc", VpcArgs.builder()
-            .subnetStrategy("AutoMerge")
-            .subnetNameTagStrategy("AvailabilityZone")
+            .subnetStrategy(com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy.)
+            .subnetNameTagStrategy(com.pulumi.awsx.ec2.enums.SubnetNameTagStrategy.)
             .build());
 
         var frontend = new SecurityGroup("frontend", SecurityGroupArgs.builder()

@@ -14,7 +14,123 @@ import java.lang.String;
 import javax.annotation.Nullable;
 
 /**
- * A Lambda Web Function and its current immutable revision.
+ * # Web functions
+ * 
+ * A Lambda Web Function runs a Node.js web application. `WebFunction` creates the function and its current immutable revision. Use a `WebFunctionEndpoint` to give the revision an HTTPS URL.
+ * 
+ * The component uses the [AWS](https://www.pulumi.com/registry/packages/aws/) and [AWS Cloud Control](https://www.pulumi.com/registry/packages/aws-native/) providers. Configure both providers to use the same AWS account. The AWS Cloud Control provider selects the function&#39;s home Region.
+ * 
+ * ## Example usage
+ * 
+ * ### Web application
+ * 
+ * The application must start an HTTP server at the host and port in `AWS_LAMBDA_HTTP_ENDPOINT`. Package the application and its dependencies in `./app`. The example selects the Node.js 24 runtime, which loads `index.js` from the package root by default.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.lambda.WebFunction;
+ * import com.pulumi.awsx.lambda.WebFunctionArgs;
+ * import com.pulumi.awsx.lambda.inputs.WebFunctionCodeArgs;
+ * import com.pulumi.awsx.lambda.WebFunctionEndpoint;
+ * import com.pulumi.awsx.lambda.WebFunctionEndpointArgs;
+ * import com.pulumi.awsx.lambda.inputs.WebFunctionRevisionWeightArgs;
+ * import com.pulumi.asset.FileArchive;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var app = new WebFunction("app", WebFunctionArgs.builder()
+ *             .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
+ *             .code(WebFunctionCodeArgs.builder()
+ *                 .archive(new FileArchive("./app"))
+ *                 .build())
+ *             .build());
+ * 
+ *         var endpoint = new WebFunctionEndpoint("endpoint", WebFunctionEndpointArgs.builder()
+ *             .functionName(app.functionName())
+ *             .authType(com.pulumi.awsx.lambda.enums.WebFunctionAuthType.APPLICATION_MANAGED)
+ *             .revisions(WebFunctionRevisionWeightArgs.builder()
+ *                 .revisionId(app.revisionId())
+ *                 .build())
+ *             .build());
+ * 
+ *         ctx.export("url", endpoint.domainName().applyValue(_domainName -> String.format("https://%s", _domainName)));
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * `ApplicationManaged` allows anyone to reach the application. The application must enforce its own access controls. For IAM authorization, set `authType` to `IamAuth` and grant callers permission to invoke the endpoint.
+ * 
+ * ### Configure a revision
+ * 
+ * Use `environmentVariables`, `timeoutSeconds`, and `maxConcurrencyPerEnvironment` to configure the revision. Set `runtime` to `nodejs-latest` to use the latest Node.js runtime selected by AWSX. An AWSX upgrade can change that runtime and publish a new revision. Use `AWS_LAMBDA_NODEJS_ENTRYPOINT` if the application entry point is not `index.js`.
+ * 
+ * <pre>
+ * {@code
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.lambda.WebFunction;
+ * import com.pulumi.awsx.lambda.WebFunctionArgs;
+ * import com.pulumi.awsx.lambda.inputs.WebFunctionCodeArgs;
+ * import com.pulumi.asset.FileArchive;
+ * import java.util.ArrayList;
+ * import java.util.Arrays;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var app = new WebFunction("app", WebFunctionArgs.builder()
+ *             .runtime(com.pulumi.awsx.lambda.enums.WebFunctionRuntime.NodeJS24X)
+ *             .code(WebFunctionCodeArgs.builder()
+ *                 .archive(new FileArchive("./app"))
+ *                 .build())
+ *             .environmentVariables(Map.ofEntries(
+ *                 Map.entry("AWS_LAMBDA_NODEJS_ENTRYPOINT", "server.js"),
+ *                 Map.entry("LOG_LEVEL", "info")
+ *             ))
+ *             .timeoutSeconds(60.0)
+ *             .maxConcurrencyPerEnvironment(32.0)
+ *             .build());
+ * 
+ *     }
+ * }
+ * }
+ * </pre>
+ * 
+ * Pulumi tracks secret environment values as secrets, but AWS receives their resolved values. Authorized AWS users can read the function configuration.
+ * 
+ * ## Resources and revisions
+ * 
+ * AWSX stores the code archive in a versioned S3 bucket and creates a CloudWatch log group. By default, AWSX creates an execution role with permissions for the function&#39;s logs. Grant the role any permissions the application needs, or provide an existing role with `executionRoleArn`.
+ * 
+ * Changes to the code or revision configuration create a new revision. AWSX retains old revisions, the log group, and the execution role it creates when those resources are removed from the stack. The versioned code objects remain available until the code object is deleted. Plan for cleanup of retained resources when they are no longer needed.
+ * 
+ * The `revisionId` output identifies the current revision. An endpoint can route to that revision, an earlier revision, or both. See [WebFunctionEndpoint](../webfunctionendpoint/) for routing examples.
  * 
  */
 @ResourceType(type="awsx:lambda:WebFunction")

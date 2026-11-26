@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
  * The VPC component provides a VPC with configured subnets and NAT gateways.
  * 
  * ## Example Usage
- * 
  * Basic usage:
  * 
  * <pre>

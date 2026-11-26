@@ -99,9 +99,9 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
  *             .compatibilities(            
- *                 "FARGATE",
- *                 "MANAGED_INSTANCES",
- *                 "EC2")
+ *                 com.pulumi.awsx.ecs.enums.TaskCompatibility.FARGATE,
+ *                 com.pulumi.awsx.ecs.enums.TaskCompatibility.MANAGED_INSTANCES,
+ *                 com.pulumi.awsx.ecs.enums.TaskCompatibility.EC2)
  *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
@@ -148,7 +148,7 @@ import javax.annotation.Nullable;
  *         var task = new TaskDefinition("task", TaskDefinitionArgs.builder()
  *             .cpuUnits(256.0)
  *             .memoryMiB(256.0)
- *             .compatibilities("MANAGED_INSTANCES")
+ *             .compatibilities(com.pulumi.awsx.ecs.enums.TaskCompatibility.MANAGED_INSTANCES)
  *             .containers(Map.of("app", ContainerDefinitionArgs.builder()
  *                 .image("nginx:stable")
  *                 .portMappings(AwsvpcPortMappingArgs.builder()
@@ -245,15 +245,15 @@ import javax.annotation.Nullable;
  * import java.nio.file.Files;
  * import java.nio.file.Paths;
  * 
- * public class App {
- *     public static void main(String[] args) {
+ * public class App }{{@code
+ *     public static void main(String[] args) }{{@code
  *         Pulumi.run(App::stack);
- *     }
+ *     }}{@code
  * 
- *     public static void stack(Context ctx) {
+ *     public static void stack(Context ctx) }{{@code
  *         var databaseSecret = new Secret("databaseSecret", SecretArgs.builder()
  *             .generateSecretString(SecretGenerateSecretStringArgs.builder()
- *                 .secretStringTemplate("{\"username\":\"app\"}")
+ *                 .secretStringTemplate("}{&#92;{@code "username}&#92;{@code ":}&#92;{@code "app}&#92;{@code "}}{@code ")
  *                 .generateStringKey("password")
  *                 .passwordLength(32)
  *                 .excludePunctuation(true)
@@ -276,8 +276,8 @@ import javax.annotation.Nullable;
  *             .build());
  * 
  *         ctx.export("taskDefinitionArn", task.taskDefinitionArn());
- *     }
- * }
+ *     }}{@code
+ * }}{@code
  * }
  * </pre>
  * 
