@@ -43,9 +43,10 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       defaultTargetGroupPort,
       listener,
       listeners,
+      region,
       ...restArgs
     } = args;
-    const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
+    const lbArgs: aws.lb.LoadBalancerArgs = { ...restArgs, region };
 
     const definedSubnetArgs = utils.countDefined([subnetIds, subnets, restArgs.subnetMappings]);
     if (definedSubnetArgs > 1) {
@@ -58,13 +59,15 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       lbArgs.subnets = subnetIds;
       this.vpcId = pulumi
         .output(subnetIds)
-        .apply((ids) => aws.ec2.getSubnet({ id: ids[0] }, { parent: this })).vpcId;
+        .apply((ids) => aws.ec2.getSubnetOutput({ id: ids[0], region }, { parent: this })).vpcId;
     } else if (restArgs.subnetMappings) {
       this.vpcId = pulumi
         .output(restArgs.subnetMappings!)
-        .apply((s) => aws.ec2.getSubnet({ id: s[0].subnetId }, { parent: this })).vpcId;
+        .apply((s) =>
+          aws.ec2.getSubnetOutput({ id: s[0].subnetId, region }, { parent: this }),
+        ).vpcId;
     } else {
-      const defaultVpc = pulumi.output(getDefaultVpc({ parent: this }));
+      const defaultVpc = pulumi.output(getDefaultVpc({ parent: this }, region));
       this.vpcId = defaultVpc.vpcId;
       lbArgs.subnets = defaultVpc.publicSubnetIds;
     }
@@ -97,6 +100,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
         vpcId: this.vpcId,
         protocol: "TCP",
         port: defaultTargetGroupPort ?? 80,
+        region,
         ...defaultTargetGroup,
       },
       { parent: this },
@@ -117,6 +121,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
             defaultActions,
             protocol: "TCP",
             port: 80,
+            region,
             ...listener,
             loadBalancerArn: this.loadBalancer.arn,
           },
@@ -132,6 +137,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
               defaultActions,
               protocol: "TCP",
               port: 80,
+              region,
               ...args,
               loadBalancerArn: this.loadBalancer.arn,
             },
@@ -146,6 +152,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
             defaultActions,
             protocol: "TCP",
             port: 80,
+            region,
             loadBalancerArn: this.loadBalancer.arn,
           },
           { parent: this },
